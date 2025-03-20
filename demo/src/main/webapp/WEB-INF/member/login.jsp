@@ -10,7 +10,7 @@
     <style>
         /* 배경 설정 */ 
         body {
-            background: url('main1.jpg') no-repeat center center/cover;
+            background: url("../img/main1.jpg") no-repeat center center/cover;
             height: 100vh;
             display: flex;
             justify-content: center;
