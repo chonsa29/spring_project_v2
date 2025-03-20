@@ -51,6 +51,19 @@
             
         },
         mounted() {
+
+            // Floating 아이콘 hover 이벤트 추가
+            const floatingIcon = document.querySelector(".floating-icon img");
+
+            // 마우스를 올렸을 때 이미지 변경
+            floatingIcon.parentElement.addEventListener("mouseover", function () {
+                floatingIcon.src = "/img/icon2.png"; // hover 상태 이미지 경로
+            });
+
+            // 마우스를 뗐을 때 원래 이미지 복원
+            floatingIcon.parentElement.addEventListener("mouseout", function () {
+                floatingIcon.src = "/img/icon.png"; // 기본 상태 이미지 경로
+            });
         }
     });
 
