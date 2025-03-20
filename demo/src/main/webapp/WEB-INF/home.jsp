@@ -12,22 +12,8 @@
         <title>MealPick - 밀키트 쇼핑몰</title>
     </head>
     <body>
+        <jsp:include page="/WEB-INF/common/header.jsp" />
         <div id="app">
-            <header class="header">
-                <div class="logo">
-                    <img src="/img/icon.png" alt="MealPick 로고">
-                </div>
-                <div class="logo2">
-                    <img src="/img/MEALPICK.png" alt="MealPick 로고">
-                </div>
-                <nav class="nav">
-                    <a href="#">MENU1</a>
-                    <a href="#">MENU2</a>
-                    <a href="#">BRAND</a>
-                    <a href="#">PRODUCT</a>
-                    <a href="#">GRADE</a>
-                </nav>
-            </header>
     
             <div class="slider">
                 <div class="swiper-container">
