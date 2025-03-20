@@ -1,7 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
     <!DOCTYPE html>
     <html lang="ko">
-
     <head>
         <meta charset="UTF-8">
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -11,7 +11,6 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8.4.7/swiper-bundle.min.css" />
         <title>MealPick - 밀키트 쇼핑몰</title>
     </head>
-
     <body>
         <div id="header">
             <header class="header">
@@ -34,49 +33,41 @@
                     <a href="#">GRADE</a>
                 </nav>
             </header>
-
+    
             <div class="floating-icon">
                 <img src="/img/icon.png" alt="아이콘">
             </div>
         </div>
     </body>
+</html>
+<script>
+    const header = Vue.createApp({
+        data() {
+            return {
+                
+            };
+        },
+        methods: {
+            
+        },
+        mounted() {
 
-    </html>
-    <script>
-        window.addEventListener("scroll", function () {
-            const header = document.querySelector(".header");
-            if (window.scrollY > 50) {
-                header.classList.add("shrink");
-            } else {
-                header.classList.remove("shrink");
-            }
-        });
-        const header = Vue.createApp({
-            data() {
-                return {
+            // Floating 아이콘 hover 이벤트 추가
+            const floatingIcon = document.querySelector(".floating-icon img");
 
-                };
-            },
-            methods: {
+            // 마우스를 올렸을 때 이미지 변경
+            floatingIcon.parentElement.addEventListener("mouseover", function () {
+                floatingIcon.src = "/img/icon2.png"; // hover 상태 이미지 경로
+            });
 
-            },
-            mounted() {
+            // 마우스를 뗐을 때 원래 이미지 복원
+            floatingIcon.parentElement.addEventListener("mouseout", function () {
+                floatingIcon.src = "/img/icon.png"; // 기본 상태 이미지 경로
+            });
+        }
+    });
 
-                // Floating 아이콘 hover 이벤트 추가
-                const floatingIcon = document.querySelector(".floating-icon img");
+    header.mount('#app');
 
-                // 마우스를 올렸을 때 이미지 변경
-                floatingIcon.parentElement.addEventListener("mouseover", function () {
-                    floatingIcon.src = "/img/icon2.png"; // hover 상태 이미지 경로
-                });
-
-                // 마우스를 뗐을 때 원래 이미지 복원
-                floatingIcon.parentElement.addEventListener("mouseout", function () {
-                    floatingIcon.src = "/img/icon.png"; // 기본 상태 이미지 경로
-                });
-            }
-        });
-
-        header.mount('#app');
-
-    </script>
+</script>
+    
