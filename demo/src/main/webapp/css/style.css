@@ -33,43 +33,78 @@
             font-size: 16px;
             font-weight: bold;
         }
-        .slider {
-            position: relative;
-            width: 90%;
-            max-width: 90%;
-            height: 800px;
-            margin: auto;
-            overflow: hidden;
-            background-color: transparent;
-            border-radius: 15px;
-        }
-        .slides {
-            display: flex;
-            transition: transform 0.5s ease-in-out;
-        }
-        .slide {
-            min-width: 100%;
-        }
-        .slide img {
-            width: 100%;
-            height: 100%;
-            display: block;
-            border-radius: 15px;
-            object-fit: cover;
-        }
-        .prev, .next {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            font-size: 20px;
-        }
-        .prev { left: 10px; }
-        .next { right: 10px; }
+		.slider {
+		    position: relative;
+		    width: 90%;
+		    height: 700px;
+		    overflow: hidden; /* 슬라이드 밖 콘텐츠 숨기기 */
+		    margin: auto;
+		    border-radius: 15px;
+		    background-color: transparent;
+		}
+
+		.swiper-container {
+		    width: 100%;
+		    height: 100%;
+		}
+
+		.swiper-wrapper {
+		    display: flex; /* 슬라이드 나열 */
+		    transition: transform 0.5s ease-in-out;
+		    will-change: transform;
+		}
+
+		.swiper-slide {
+		    flex: 0 0 100%;
+		    height: 100%;
+		}
+
+		.swiper-slide img {
+		    width: 100%;
+		    height: 100%;
+		    object-fit: cover; /* 이미지 비율 유지 */
+		    display: block;
+		    border-radius: 15px;
+		}
+
+		.swiper-pagination {
+		    position: absolute;
+		    bottom: 10px;
+		    text-align: center;
+		    z-index: 10;
+		}
+		.swiper-pagination-bullet {
+		    width: 12px; /* 동그라미 크기 */
+		    height: 12px;
+		    margin: 5px; /* 간격 조정 */
+		    border: 1px solid rgb(200, 200, 200) !important; /* 테두리 추가 */
+			background-color: rgb(50, 50, 50) !important;
+		}
+
+		.swiper-pagination-bullet-active {
+		    width: 14px; /* 활성화된 동그라미 크기 */
+		    height: 14px;
+		    background-color: white !important; /* 활성화된 동그라미 색상 */
+		    
+		}
+
+
+
+		.swiper-button-prev,
+		.swiper-button-next {
+		    color: rgb(255, 255, 255) !important; /* 기본 색상 */
+		}
+
+		.swiper-button-prev:hover,
+		.swiper-button-next:hover {
+		    color: rgb(50, 50, 50) !important; /* hover 시 색상 */
+		}
+
+		.swiper-button-prev:active,
+		.swiper-button-next:active {
+		    color: rgb(30, 30, 30) !important; /* 클릭 시 색상 */
+		}
+
         .product-section {
             padding: 40px 0;
             background-color: #f9f9f9;
@@ -140,24 +175,29 @@
         .btn.green { background-color: #4CAF50; }
         .btn.blue { background-color: #007BFF; }
         .btn.orange { background-color: #FF9800; }
-        .floating-icon {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 100px;
-            height: 100px;
-            background: #ffffff;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease-in-out;
-        }
-        .floating-icon:hover {
-            background: #4CAF50;
-        }
+		.floating-icon {
+		    position: fixed;
+		    bottom: 20px;
+		    right: 20px;
+		    width: 100px;
+		    height: 100px;
+		    background: #ffffff url('/img/icon.png') no-repeat center center;
+		    background-size: 60px 40px; /* 기본 아이콘 크기 */
+		    border-radius: 50%;
+		    display: flex;
+		    justify-content: center;
+		    align-items: center;
+		    cursor: pointer;
+		    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		    transition: background 0.3s ease-in-out, transform 0.3s ease-in-out;
+		    z-index: 9999;
+		}
+
+		.floating-icon:hover {
+		    background: #4CAF50 url('/img/icon2.png') no-repeat center center;
+		    background-size: 60px 40px; /* hover 시 변경된 아이콘 크기 */
+		}
+
         .floating-icon img {
             width: 60px;
             height: 40px;
