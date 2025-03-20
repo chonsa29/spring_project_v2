@@ -17,8 +17,13 @@
                 <div class="logo">
                     <img src="/img/icon.png" alt="MealPick 로고">
                 </div>
+
                 <div class="logo2">
                     <img src="/img/MEALPICK.png" alt="MealPick 로고">
+                </div>
+                <div class="login-container">
+                    <span class="login"><a href="javascript:;">LOGIN</a></span>
+                    <span class="cart"><a href="javascript:;">CART</a></span>
                 </div>
                 <nav class="nav">
                     <a href="#">MENU1</a>
