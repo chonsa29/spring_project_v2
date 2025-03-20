@@ -23,4 +23,10 @@ public class MemberController {
 
         return "/member/join"; 
     }
+	
+	@RequestMapping("/member/term.do") 
+    public String term(Model model) throws Exception{
+
+        return "/member/term"; 
+    }
 }
