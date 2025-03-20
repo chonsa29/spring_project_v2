@@ -43,19 +43,19 @@
                 <div class="swiper-container product-swiper">
                     <div class="swiper-wrapper">
                         <div class="swiper-slide product-box">
-                            <img src="/img/product1.jpg" alt="상품 1">
+                            <img src="/img/menu.jpg" alt="상품 1">
                         </div>
                         <div class="swiper-slide product-box">
-                            <img src="/img/product2.jpg" alt="상품 2">
+                            <img src="/img/menu.jpg" alt="상품 2">
                         </div>
                         <div class="swiper-slide product-box">
-                            <img src="/img/product3.jpg" alt="상품 3">
+                            <img src="/img/menu.jpg" alt="상품 3">
                         </div>
                         <div class="swiper-slide product-box">
-                            <img src="/img/product4.jpg" alt="상품 4">
+                            <img src="/img/menu.jpg" alt="상품 4">
                         </div>
                         <div class="swiper-slide product-box">
-                            <img src="/img/product5.jpg" alt="상품 5">
+                            <img src="/img/menu.jpg" alt="상품 5">
                         </div>
                     </div>
                     <!-- 페이지네이션 -->
@@ -75,7 +75,8 @@
     const app = Vue.createApp({
         data() {
             return {
-                swiper: null // Swiper 인스턴스를 저장할 변수
+                swiper: null, // Swiper 인스턴스를 저장할 변수
+                productSwiper: null, // 상품 슬라이더 인스턴스를 저장할 변수
             };
         },
         methods: {
@@ -83,15 +84,15 @@
         },
         mounted() {
             // 기존 메인 슬라이더 초기화
-            new Swiper('.swiper-container', {
-                loop: true,
+            this.swiper = new Swiper('.swiper-container', {
+                loop: true, // 슬라이드 반복
                 autoplay: {
-                    delay: 3000,
-                    disableOnInteraction: false,
+                    delay: 3000, // 자동 재생 시간
+                    disableOnInteraction: false, // 사용자 인터랙션 후에도 자동 재생 유지
                 },
                 pagination: {
                     el: '.swiper-pagination',
-                    clickable: true,
+                    clickable: true, // 페이지네이션 클릭 가능
                 },
                 navigation: {
                     nextEl: '.swiper-button-next.custom',
@@ -100,28 +101,45 @@
             });
 
             // 상품 슬라이더 초기화
-            new Swiper('.product-swiper', {
-                loop: true,
+            this.productSwiper = new Swiper('.product-swiper', {
+                loop: false, // 반복 비활성화 (복제 슬라이드 제거)
                 slidesPerView: 5, // 화면에 보이는 슬라이드 수
                 spaceBetween: 20, // 슬라이드 간 간격
                 pagination: {
-                    el: '.product-pagination', // 상품 섹션 페이지네이션
-                    clickable: true,
+                    el: '.product-pagination', // 페이지네이션 요소
+                    clickable: true, // 페이지네이션 클릭 가능
+                    type: 'bullets', // 기본 페이지네이션 형태
                 },
                 navigation: {
                     nextEl: '.product-next', // 상품 섹션 다음 버튼
                     prevEl: '.product-prev', // 상품 섹션 이전 버튼
                 },
                 autoplay: {
-                    delay: 3000,
-                    disableOnInteraction: false,
+                    delay: 3000, // 3초마다 자동 재생
+                    disableOnInteraction: false, // 사용자가 조작 시 자동 재생 유지
+                },
+                // 페이지네이션과 슬라이드 움직임 동기화
+                on: {
+                    slideChange: function () {
+                        // 페이지네이션 활성화 상태를 수동으로 설정
+                        const paginationBullets = document.querySelectorAll(
+                            '.product-pagination .swiper-pagination-bullet'
+                        );
+                        paginationBullets.forEach((bullet, index) => {
+                            bullet.classList.toggle(
+                                'swiper-pagination-bullet-active',
+                                index === this.realIndex
+                            );
+                        });
+                    },
                 },
             });
 
-        }
+            console.log('상품 슬라이더 초기화 완료:', this.productSwiper); // 디버깅용 로그
+        },
     });
 
     app.mount('#app');
-
 </script>
+
     
