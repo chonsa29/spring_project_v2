@@ -7,6 +7,9 @@ import com.example.demo.dao.PayService;
 
 @Controller
 public class PayController {
+	
 	@Autowired
 	PayService payService;
+	
+	
 }
