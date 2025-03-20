@@ -15,7 +15,7 @@ public class MemberController {
 	@RequestMapping("/member/login.do") 
     public String add(Model model) throws Exception{
 
-        return "/login"; 
+        return "/member/login"; 
     }
 	
 }
