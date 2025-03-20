@@ -118,8 +118,6 @@
 		    
 		}
 
-
-
 		.swiper-button-prev,
 		.swiper-button-next {
 		    color: rgb(255, 255, 255) !important; /* 기본 색상 */
@@ -168,16 +166,17 @@
 		    overflow: hidden;
 		    border-radius: 8px;
 		    background-color: #ffffff;
-		    height: 100%; /* 슬라이드 높이를 부모에 맞춤 */
-			width: 20%; /* 박스의 가로 크기 */
-			margin: auto; /* 가로 중앙 정렬 */
+		    width: 100%; /* 상품 박스의 기본 가로 크기를 100%로 설정 */
+		    max-width: 250px; /* 각 박스의 최대 가로 크기 */
+		    margin: auto; /* 중앙 정렬 */
 		}
 
 		.product-box img {
-		    width: 100%;
+		    width: 100%; /* 박스 크기에 맞춤 */
 		    height: auto;
 		    display: block;
 		}
+
 
 
 		/* 상품 페이지네이션 */
