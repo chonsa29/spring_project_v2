@@ -187,43 +187,5 @@
             font-size: 18px;
             margin-bottom: 10px;
         }
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            border: none;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .btn.green { background-color: #4CAF50; }
-        .btn.blue { background-color: #007BFF; }
-        .btn.orange { background-color: #FF9800; }
-		.floating-icon {
-		    position: fixed;
-		    bottom: 20px;
-		    right: 20px;
-		    width: 100px;
-		    height: 100px;
-		    background: #ffffff url('/img/icon.png') no-repeat center center;
-		    background-size: 60px 40px; /* 기본 아이콘 크기 */
-		    border-radius: 50%;
-		    display: flex;
-		    justify-content: center;
-		    align-items: center;
-		    cursor: pointer;
-		    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-		    transition: background 0.3s ease-in-out, transform 0.3s ease-in-out;
-		    z-index: 9999;
-		}
-
-		.floating-icon:hover {
-		    background: #4CAF50 url('/img/icon2.png') no-repeat center center;
-		    background-size: 60px 40px; /* hover 시 변경된 아이콘 크기 */
-		}
-
-        .floating-icon img {
-            width: 60px;
-            height: 40px;
-        }
+        
+		
