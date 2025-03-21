@@ -8,11 +8,13 @@
         <script src="https://cdn.jsdelivr.net/npm/swiper@8.4.7/swiper-bundle.min.js"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/main.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8.4.7/swiper-bundle.min.css" />
         <title>MealPick - 밀키트 쇼핑몰</title>
     </head>
     <body>
         <jsp:include page="/WEB-INF/common/header.jsp" />
+        
         <div id="app">
     
             <!-- 기존 메인 슬라이더 -->
@@ -65,10 +67,8 @@
                     <div class="swiper-button-next product-next"></div>
                 </div>
             </div>
-    
-            <jsp:include page="/WEB-INF/common/footer.jsp" />
-    
         </div>
+        <jsp:include page="/WEB-INF/common/footer.jsp" />
     </body>
 </html>
 <script>
