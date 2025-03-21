@@ -14,10 +14,13 @@
             font-family: Arial, sans-serif;
             text-align: center;
         }
+		/* 헤더 전체 스타일 */
 		.header {
+		    display: flex;
+		    align-items: center;
+		    justify-content: space-between;
+		    padding: 20px 100px;
 		    position: fixed;
-			padding-top:20px;
-			padding-bottom:30px;
 		    top: 0;
 		    left: 0;
 		    width: 100%;
@@ -25,44 +28,91 @@
 		    z-index: 1000;
 		    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 		}
-        .logo img {
-            height: 50px;
-        }
-        .logo2 img {
-            height: 30px;
-            margin: 10px;
-            margin-bottom: 40px;
-        }
-		.login-container{
-			display:flex;
-			position:absolute;
-			right:100px;
-			top:100px;
-			gap:30px;
+
+		/* 로고 & 텍스트 정렬 */
+		.logo-container {
+		    align-items: center;
+		    gap: 10px;
 		}
-		.login-container a{
-			text-decoration:none;
-			color:#aaa;
-			font-size:18px;
+
+		.logo {
+		    height: 55px;
+			margin: 10px;
 		}
-		.login-container a:hover{
-			color:green;
+		
+		.logo img {
+			width: auto;
 		}
-        .nav {
-            display: flex;
-            justify-content: center;
-            gap: 200px;
-            margin-top: 10px;
-        }
-        .nav a {
-            text-decoration: none;
-            color: black;
-            font-size: 16px;
-            font-weight: bold;
-        }
+
+		.logo2 {
+			margin: 20px;
+		}		
+
+		.logo2 img {
+		    width: 120px;
+		}
+
+		/* 네비게이션 중앙 정렬 */
+		.nav {
+		    display: flex;
+		    justify-content: center;
+		    gap: 70px;
+		}
+
+		.nav a {
+		    text-decoration: none;
+		    color: black;
+		    font-size: 16px;
+		    font-weight: bold;
+		}
+
 		.nav a:hover {
-		           color:green;
-		       }
+		    color: green;
+		}
+		
+		/* 검색창과 로그인/장바구니 전체 컨테이너 스타일 */
+		.right-container {
+		    display: flex;
+		    flex-direction: column; /* 세로로 정렬 */
+		    align-items: flex-end; /* 오른쪽 정렬 */
+		    gap: 10px; /* 검색창과 로그인/장바구니 간의 간격 */
+		}
+
+		/* 검색창 스타일 */
+		.search-container {
+		    display: flex;
+		    align-items: center;
+		    width: 400px;
+		    border: 1px solid green;
+		    padding: 5px 10px;
+		    border-radius: 20px;
+			
+		}
+
+		.search-container input {
+		    border: none;
+		    outline: none;
+		    font-size: 14px;
+		    width: 150px;
+		}
+
+		/* 로그인/장바구니 링크 스타일 */
+		.login-container {
+		    display: flex;
+		    align-items: center;
+		    gap: 10px;
+		}
+
+		.login-container a {
+		    text-decoration: none;
+		    color: #aaa;
+		    font-size: 18px;
+		}
+
+		.login-container a:hover {
+		    color: green;
+		}
+
 		.slider {
 		    position: relative;
 		    width: 90%;
