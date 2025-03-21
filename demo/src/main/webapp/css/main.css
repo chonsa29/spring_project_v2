@@ -187,17 +187,5 @@
             font-size: 18px;
             margin-bottom: 10px;
         }
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            border: none;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .btn.green { background-color: #4CAF50; }
-        .btn.blue { background-color: #007BFF; }
-        .btn.orange { background-color: #FF9800; }
+        
 		
