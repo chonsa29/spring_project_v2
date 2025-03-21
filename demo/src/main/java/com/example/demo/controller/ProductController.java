@@ -16,4 +16,9 @@ public class ProductController {
 	public String productList(Model model) throws Exception{
         return "/product/product-list"; 
     }
+	
+	@RequestMapping("/product/info.do")
+	public String productInfo(Model model) throws Exception{
+		return "/product/product-info"; 
+	}
 }
