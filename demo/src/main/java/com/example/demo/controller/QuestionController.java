@@ -18,10 +18,8 @@ public class QuestionController {
 	@Autowired
 	QuestionService questionService;
 	
-	@RequestMapping("/inquire.do") 
-    public String view(HttpServletRequest request, Model model, 
-    		@RequestParam HashMap<String, Object> map) throws Exception{
-		request.setAttribute("map", map);
-        return "/inquire";
+	@RequestMapping("/inquire.do")
+	public String home(Model model) throws Exception{
+        return "/question/inquire"; 
     }
 }
