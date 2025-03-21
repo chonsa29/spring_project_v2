@@ -30,8 +30,8 @@
                     <a href="#">MENU1</a>
                     <a href="#">MENU2</a>
                     <a href="#">BRAND</a>
-                    <a href="#">PRODUCT</a>
-                    <a href="#">GRADE</a>
+                    <a href="/product.do">PRODUCT</a>
+                    <a href="#">HELP</a>
                 </nav>
             </header>
 
