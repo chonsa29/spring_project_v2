@@ -13,37 +13,24 @@
     </head>
     <style>
         /* 기본 스타일 설정 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        body {
-            font-family: 'Arial', sans-serif;
-            color: #333;
-            margin: 0 0 0 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-        }
 
         .product-list {
             display: flex;
             flex-wrap: wrap;
-            justify-content: left;
+            justify-content: center;
             margin: 30px 0 30px 0;
         }
 
         .product {
-            width: 250px;
+            width: 380px;
             background-color: #fff;
             border-radius: 15px;
             transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
             overflow: hidden;
             transform-origin: center;
             border-radius: 8px;
-            margin: 0 10px 0 10px;
+            margin: 0 10px 10px 10px;
             box-shadow: 0 2px 8px #eee;
             padding: 20px;
         }
@@ -81,10 +68,11 @@
 
         #name {
             text-align: left;
+            margin-left:15vw;
         }
 
         .product-image {
-            height: 150px;
+            height: 300px;
             background-color: #bbb;
         }
 
@@ -101,11 +89,13 @@
 
         #selectproduct {
             font-weight: bold;
+            margin-left:15vw;
             margin-right: 10px;
         }
         #rootname {
             text-align: left;
             color: #bbb;
+            margin-left:15vw;
             margin-bottom: 20px;
         }
     </style>
@@ -127,49 +117,54 @@
                 <span id="selectproduct">전체개수</span>
                 <span>(14건)</span>
             </div>
-
             <div class="product-list">
                 <div class="product">
-                    <a href="#">
-                        <div class="product-image"></div>
-                        <h4 class="product-name">이름 : 이름</h4>
-                        <p class="product-price">가격 : 15,000원</p>
-                    </a>
-                </div>
-                <br>
-                <div class="product">
-                    <a href="#">
+                    <a href="/product/info.do">
                         <div class="product-image"></div>
                         <h4 class="product-name">이름 : 이름</h4>
                         <p class="product-price">가격 : 15,000원</p>
                     </a>
                 </div>
                 <div class="product">
-                    <a href="#">
+                    <a href="/product/info.do">
                         <div class="product-image"></div>
                         <h4 class="product-name">이름 : 이름</h4>
                         <p class="product-price">가격 : 15,000원</p>
                     </a>
                 </div>
                 <div class="product">
-                    <a href="#">
+                    <a href="/product/info.do">
                         <div class="product-image"></div>
                         <h4 class="product-name">이름 : 이름</h4>
                         <p class="product-price">가격 : 15,000원</p>
                     </a>
                 </div>
-                <div class="product">
-                    <a href="#">
-                        <div class="product-image"></div>
-                        <h4 class="product-name">이름 : 이름</h4>
-                        <p class="product-price">가격 : 15,000원</p>
-                    </a>
-                </div>
-                <br>
-
             </div>
-            <jsp:include page="/WEB-INF/common/footer.jsp" />
+            <div class="product-list">
+                <div class="product">
+                    <a href="/product/info.do">
+                        <div class="product-image"></div>
+                        <h4 class="product-name">이름 : 이름</h4>
+                        <p class="product-price">가격 : 15,000원</p>
+                    </a>
+                </div>
+                <div class="product">
+                    <a href="/product/info.do">
+                        <div class="product-image"></div>
+                        <h4 class="product-name">이름 : 이름</h4>
+                        <p class="product-price">가격 : 15,000원</p>
+                    </a>
+                </div>
+                <div class="product">
+                    <a href="/product/info.do">
+                        <div class="product-image"></div>
+                        <h4 class="product-name">이름 : 이름</h4>
+                        <p class="product-price">가격 : 15,000원</p>
+                    </a>
+                </div>
+            </div>
         </div>
+        <jsp:include page="/WEB-INF/common/footer.jsp" />
     </body>
 
     </html>
