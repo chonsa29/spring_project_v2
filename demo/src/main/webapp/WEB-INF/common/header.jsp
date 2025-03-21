@@ -30,13 +30,13 @@
                     <a href="#">MENU2</a>
                     <a href="#">BRAND</a>
                     <a href="/product.do">PRODUCT</a>
-                    <a href="#">HELP</a>
+                    <a href="/inquire.do">HELP</a>
                 </nav>
 
                 <div class="right-container">
                     <div class="login-container">
                         <a href="javascript:;">LOGIN</a>
-                        <a href="javascript:;">CART</a>
+                        <a href="/pay.do">CART</a>
                     </div>
                     <div class="search-container">
                         <input type="text" placeholder="Search">
