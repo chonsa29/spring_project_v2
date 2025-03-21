@@ -65,10 +65,8 @@
                     <div class="swiper-button-next product-next"></div>
                 </div>
             </div>
-    
-            <jsp:include page="/WEB-INF/common/footer.jsp" />
-    
         </div>
+        <jsp:include page="/WEB-INF/common/footer.jsp" />
     </body>
 </html>
 <script>

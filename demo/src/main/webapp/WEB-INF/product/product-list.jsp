@@ -11,8 +11,8 @@
 </head>
 <style>
 </style>
-<jsp:include page="/WEB-INF/common/header.jsp" />
 <body>
+    <jsp:include page="/WEB-INF/common/header.jsp" />
 	<div id="app">
         product-list.test
 	</div>
