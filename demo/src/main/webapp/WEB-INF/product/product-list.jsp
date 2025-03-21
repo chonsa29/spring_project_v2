@@ -6,14 +6,17 @@
 	<meta charset="UTF-8">
 	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="/css/style.css">
 	<title>첫번째 페이지</title>
 </head>
 <style>
 </style>
+<jsp:include page="/WEB-INF/common/header.jsp" />
 <body>
 	<div id="app">
-        product-list test
+        product-list.test
 	</div>
+    <jsp:include page="/WEB-INF/common/footer.jsp" />
 </body>
 </html>
 <script>
