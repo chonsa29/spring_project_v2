@@ -157,7 +157,6 @@
                         <p class="product-price">가격 : 15,000원</p>
                     </a>
                 </div>
-                <br>
                 <div class="product">
                     <a href="#">
                         <div class="product-image"></div>
@@ -165,6 +164,7 @@
                         <p class="product-price">가격 : 15,000원</p>
                     </a>
                 </div>
+                <br>
 
             </div>
             <jsp:include page="/WEB-INF/common/footer.jsp" />
