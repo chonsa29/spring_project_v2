@@ -20,6 +20,6 @@ public class QuestionController {
 	
 	@RequestMapping("/inquire.do")
 	public String home(Model model) throws Exception{
-        return "/question/inquire"; 
+        return "/help/inquire";
     }
 }

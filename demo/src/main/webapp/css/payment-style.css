@@ -1,0 +1,85 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+}
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+}
+.logo img {
+    height: 50px;
+}
+nav a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: black;
+}
+nav .active {
+    color: green;
+    font-weight: bold;
+}
+.user-menu a {
+    margin-left: 10px;
+    text-decoration: none;
+    color: black;
+}
+main {
+    width: 50%;
+    margin: 30px auto;
+}
+h1 {
+    text-align: center;
+}
+section {
+    margin-bottom: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+.product {
+    display: flex;
+    align-items: center;
+}
+.product img {
+    width: 80px;
+    height: 80px;
+    margin-right: 20px;
+}
+.product-details p {
+    margin: 5px 0;
+}
+.summary-details p {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+.total-price {
+    font-weight: bold;
+}
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+button {
+    background-color: green;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
+}
+button:hover {
+    background-color: darkgreen;
+}
+.pay-btn {
+    font-size: 16px;
+    font-weight: bold;
+}

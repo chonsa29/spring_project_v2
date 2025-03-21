@@ -1,66 +1,127 @@
+/* ---------------------- */
+/* ✅ 전체 레이아웃 스타일 */
+/* ---------------------- */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f5f5f5;
 }
 
-header {
-    background-color: #4CAF50;
-    padding: 15px;
-    text-align: center;
-    font-size: 24px;
-    color: white;
-}
-
-.inquiry-container {
+/* 컨테이너 */
+#app {
     width: 80%;
-    margin: 20px auto;
-    background: white;
+    margin: auto;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.search-box {
+/* ---------------------- */
+/* ✅ 탭 메뉴 스타일 */
+/* ---------------------- */
+.tab-menu {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 2px solid #ddd;
+    padding: 10px 0;
+    background: #f8f8f8;
 }
 
-.search-box select,
-.search-box input {
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-.search-box button {
-    background: #4CAF50;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
+.tab-item {
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 20px;
     cursor: pointer;
 }
 
-.search-box button:hover {
-    background: #45a049;
+.tab-item.active {
+    color: #4CAF50;
+    border-bottom: 2px solid #4CAF50;
 }
 
-.inquiry-table {
-    width: 100%;
-    border-collapse: collapse;
+.tab-separator {
+    color: #ccc;
 }
 
-.inquiry-table th,
-.inquiry-table td {
+/* ---------------------- */
+/* ✅ FAQ 스타일 */
+/* ---------------------- */
+.faq-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 2px solid #ddd;
+}
+
+/* "자주 묻는 질문" */
+.faq-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* 필터 버튼 */
+.faq-filter {
+    display: flex;
+    justify-content: start;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.filter-btn {
     border: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
+    background-color: white;
+    padding: 8px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 20px;
 }
 
-.inquiry-table th {
+.filter-btn.active {
     background-color: #4CAF50;
     color: white;
+}
+
+/* ---------------------- */
+/* ✅ FAQ 리스트 스타일 */
+/* ---------------------- */
+.faq-item {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.faq-question {
+    font-weight: bold;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.faq-answer {
+    display: none;
+    padding: 10px;
+    color: #555;
+}
+
+/* Q 아이콘 */
+.faq-question::before {
+    content: "Q.";
+    font-weight: bold;
+    color: #333;
+    margin-right: 5px;
+}
+
+/* 펼침/닫힘 아이콘 */
+.faq-question::after {
+    content: "▼";
+    font-size: 12px;
+    margin-left: auto;
+}
+
+.faq-item.open .faq-answer {
+    display: block;
+}
+
+.faq-item.open .faq-question::after {
+    content: "▲";
 }
