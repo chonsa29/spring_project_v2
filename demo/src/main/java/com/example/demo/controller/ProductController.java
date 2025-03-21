@@ -16,4 +16,9 @@ public class ProductController {
 	public String productList(Model model) throws Exception{
         return "/product/product-list"; 
     }
+	
+	@RequestMapping("/cart.do")
+	public String cartList(Model model) throws Exception{
+        return "/product/cart"; 
+    }
 }

@@ -27,16 +27,16 @@
                 <!-- nav를 logo-container 내부에 포함 -->
                 <nav class="nav">
                     <a href="#">MENU1</a>
-                    <a href="#">MENU2</a>
-                    <a href="#">BRAND</a>
                     <a href="/product.do">PRODUCT</a>
+                    <a href="#">BRAND</a>
+                    <a href="#">COMMUNITY</a>
                     <a href="#">HELP</a>
                 </nav>
 
                 <div class="right-container">
                     <div class="login-container">
                         <a href="javascript:;">LOGIN</a>
-                        <a href="javascript:;">CART</a>
+                        <a href="/cart.do">CART</a>
                     </div>
                     <div class="search-container">
                         <input type="text" placeholder="Search">

@@ -15,6 +15,7 @@ body {
     text-align: center;
 }
 
+/* 헤더 */
 .header {
     position: fixed;
     top: 0;
@@ -23,11 +24,11 @@ body {
     display: flex; /* 가로 정렬 */
     align-items: center; /* 세로 중앙 정렬 */
     justify-content: space-between; /* 좌우 간격 조정 */
-    padding: 20px 50px;
+    padding: 2% 5%; /* 화면 크기에 따라 자동 조정 */
     background-color: white;
     z-index: 1000;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: 0.3s ease all;
+    transition: all 0.3s ease-in-out;
 }
 
 .header.shrink {
@@ -35,175 +36,175 @@ body {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* 로고 컨테이너 스타일 */
+/* 로고 컨테이너 */
 .logo-container {
-	display: flex; /* 내부 요소를 가로로 정렬 */
-	    align-items: center; /* 세로 중앙 정렬 */
-	    justify-content: space-between; /* 좌우로 배치 */
-	    gap: 210px; /* 각 요소 간 간격 설정 */
-		margin-left: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5%; /* 요소 간 간격 조정 */
+    flex: 1; /* 공간을 유연하게 차지 */
 }
 
 .logo-contents {
-	display: flex; /* Flex 레이아웃 활성화 */
-	    flex-direction: column; /* 요소를 세로로 정렬 */
-	    align-items: center; /* 세로 정렬에서 중앙 정렬 */
-	    gap: 1px; /* 로고 사이 간격 */
+    display: flex;
+    flex-direction: column; /* 요소를 세로로 정렬 */
+    align-items: center;
+    gap: 1%;
 }
 
-.logo {
-	display: flex;
-	margin: 12px;
-}
-.logo2 {
-	display: flex;
-}
-/* 로고 스타일 */
 .logo img {
-    height: 70px; /* 이미지 높이 유지 */
+    height: 5vh; /* 화면 높이에 따라 크기 조정 */
+    max-height: 70px;
+	margin: 4%;
 }
 
 .logo2 img {
-    height: 27px;
-    margin: 10px;
-    margin-bottom: 40px;
+    height: 3vh; /* 보조 로고 크기 자동 조정 */
+    max-height: 50px;
 }
 
-/* 검색창과 로그인/장바구니 전체 컨테이너 */
-.right-container {
-    display: flex;
-    flex-direction: column; /* 세로 정렬 */
-    align-items: flex-end; /* 오른쪽 정렬 */
-    gap: 10px; /* 검색창과 로그인/장바구니 간 간격 */
-}
-
-/* 로그인/장바구니 스타일 */
-.login-container {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* 로그인과 장바구니 간의 간격 */
-    margin-bottom: 10px; /* 검색창과의 간격 */
-	margin-top: -30px;
-}
-
-.login-container a {
-    text-decoration: none;
-    color: #aaa;
-    font-size: 18px;
-}
-
-.login-container a:hover {
-    color: green;
-}
-
-/* 검색창 스타일 */
-.search-container {
-    display: flex;
-    align-items: center;
-    width: 300px; /* 검색창 너비 */
-    border: 2px solid green; /* 초록색 테두리 */
-    border-radius: 20px;
-    padding: 5px 15px;
-    background-color: #fff;
-}
-
-.search-container input {
-    border: none;
-    outline: none;
-    font-size: 16px;
-    width: 100%;
-    color: black;
-}
-
-.search-container input::placeholder {
-    color: grey; /* placeholder 색상 */
-    font-style: italic;
-}
-
+/* 네비게이션 */
 .nav {
     display: flex;
     justify-content: center;
-    gap: 100px;
-    margin-top: 10px;
+    gap: 10%; /* 비율 기반 간격 */
+    flex: 12; /* 네비게이션이 여유 공간을 더 차지 */
 }
 
 .nav a {
     text-decoration: none;
     color: black;
-    font-size: 16px;
+    font-size: 0.9vw; /* 화면 너비에 따라 크기 조정 */
     font-weight: bold;
+    white-space: nowrap; /* 줄바꿈 방지 */
 }
 
 .nav a:hover {
     color: green;
 }
 
+/* 오른쪽 컨테이너 */
+.right-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1%; /* 요소 간 간격 자동 조정 */
+    flex: 1;
+	margin-top: -2%;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    width: 20vw; /* 검색창 너비를 화면 크기에 맞게 조정 */
+    max-width: 700px;
+    border: 2px solid green;
+    border-radius: 20px;
+    padding: 1vh 1vw;
+	margin-top: 4%;
+	
+}
+
+.search-container input {
+    border: none;
+    outline: none;
+    font-size: 0.9vw;
+    width: 100%;
+}
+
+/* 로그인/장바구니 스타일 */
+.login-container {
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+}
+
+.login-container a {
+    text-decoration: none;
+    color: #aaa;
+    font-size: 1vw;
+}
+
+.login-container a:hover {
+    color: green;
+}
+
+/* 플로팅 아이콘 */
 .floating-icon {
-		    position: fixed;
-		    bottom: 20px;
-		    right: 20px;
-		    width: 100px;
-		    height: 100px;
-		    background: #ffffff url('/img/icon.png') no-repeat center center;
-		    background-size: 60px 40px; /* 기본 아이콘 크기 */
-		    border-radius: 50%;
-		    display: flex;
-		    justify-content: center;
-		    align-items: center;
-		    cursor: pointer;
-		    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-		    transition: background 0.3s ease-in-out, transform 0.3s ease-in-out;
-		    z-index: 9999;
-		}
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 100px;
+    height: 100px;
+    background: #ffffff url('/img/icon.png') no-repeat center center;
+    background-size: 60px 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s ease-in-out, transform 0.3s ease-in-out;
+    z-index: 9999;
+}
 
-		.floating-icon:hover {
-		    background: #4CAF50 url('/img/icon2.png') no-repeat center center;
-		    background-size: 60px 40px; /* hover 시 변경된 아이콘 크기 */
-		}
+.floating-icon:hover {
+    background: #4CAF50 url('/img/icon2.png') no-repeat center center;
+    background-size: 60px 40px;
+}
 
-        .floating-icon img {
-            width: 60px;
-            height: 40px;
-        }
-		
-		.footer {
-		           background-color: #8ACB7B;
-		           color: white;
-		           padding: 40px 0;
-		           text-align: center;
-		       }
-		       .footer .container {
-		           max-width: 1200px;
-		           margin: 0 auto;
-		           padding: 0 20px;
-		       }
-		       .footer h2 {
-		           font-size: 18px;
-		           margin-bottom: 5px;
-		       }
-		       .footer p {
-		           font-size: 14px;
-		           color: #ffffff;
-		       }
-		       .footer nav ul {
-		           list-style: none;
-		           padding: 0;
-		           display: flex;
-		           justify-content: center;
-		           margin: 10px 0;
-		       }
-		       .footer nav ul li {
-		           margin: 0 15px;
-		       }
-		       .footer nav ul li a {
-		           color: #ffffff;
-		           text-decoration: none;
-		       }
-		       .footer nav ul li a:hover {
-		           color: white;
-		       }
-		       .footer .copyright {
-		           margin-top: 10px;
-		           font-size: 12px;
-		           color: #e9e9e9;
-		       }
+.floating-icon img {
+    width: 60px;
+    height: 40px;
+}
+
+/* 푸터 */
+.footer {
+    background-color: #8ACB7B;
+    color: white;
+    padding: 40px 0;
+    text-align: center;
+}
+
+.footer .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.footer h2 {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.footer p {
+    font-size: 14px;
+    color: #ffffff;
+}
+
+.footer nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+.footer nav ul li {
+    margin: 0 15px;
+}
+
+.footer nav ul li a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.footer nav ul li a:hover {
+    color: white;
+}
+
+.footer .copyright {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #e9e9e9;
+}
