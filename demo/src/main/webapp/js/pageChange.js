@@ -30,4 +30,3 @@ function pageChange(url, param) {
     form.submit();
     document.body.removeChild(form);
 }
-<script src="js/pageChange.js"></script>

@@ -7,6 +7,7 @@
 	<select id="SelectProduct" parameterType="hashmap" resultType="com.example.demo.model.Product">
 		SELECT *
 		FROM PRODUCT
+		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	</select>
 	
 	<!-- product 전체 개수 구하기 -->
