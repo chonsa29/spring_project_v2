@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import java.util.HashMap;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,6 +39,17 @@ public class ProductController {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
 		resultMap = productService.productList(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	// 상품 상세정보 가져오기
+	@RequestMapping(value = "/product/info.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	
+	public String productInfo(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		resultMap = productService.productInfo(map);
 		return new Gson().toJson(resultMap);
 	}
 	
