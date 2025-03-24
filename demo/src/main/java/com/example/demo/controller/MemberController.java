@@ -13,7 +13,7 @@ public class MemberController {
 	MemberService memberService;
 	
 	@RequestMapping("/member/login.do") 
-    public String add(Model model) throws Exception{
+    public String login(Model model) throws Exception{
 
         return "/member/login"; 
     }
@@ -28,5 +28,12 @@ public class MemberController {
     public String term(Model model) throws Exception{
 
         return "/member/term"; 
+    }
+	
+	
+	@RequestMapping("/member/mypage.do") 
+    public String mypage(Model model) throws Exception{
+
+        return "/member/mypage"; 
     }
 }
