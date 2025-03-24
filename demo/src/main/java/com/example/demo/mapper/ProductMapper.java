@@ -17,4 +17,6 @@ public interface ProductMapper {
 
 	Product SelectProductInfo(HashMap<String, Object> map);
 
+	int SelectProductCount(HashMap<String, Object> map);
+
 }

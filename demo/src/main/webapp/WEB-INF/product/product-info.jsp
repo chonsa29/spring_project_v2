@@ -106,7 +106,7 @@
                     info : {},
                     quantity : 1,
                     allergensFlg : false,
-                    
+                    count : 0,
                 };
             },
             methods: {
@@ -124,17 +124,19 @@
                             if(data.result=="success") {
                                 console.log(data.info);
                                 self.info = data.info;
+                                self.count = data.count;
                                 if(data.info.allergens != "없음") {
                                     self.allergensFlg = true;
                                 }
                                 
                             }
-                        }
+                        },
                     });
                 },
-                fnquantity(action) {
+                fnquantity : function(action) {
+                    var self = this;
                     if (action === 'sum') {
-                        if (this.quantity < 20) {
+                        if (this.quantity < count) {
                             this.quantity++;
                         } else {
                             alert("최대 수량입니다.");

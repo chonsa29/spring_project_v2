@@ -36,7 +36,9 @@ public class ProductService {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
 			Product info = productMapper.SelectProductInfo(map);
+			int count = productMapper.SelectProductCount(map);
 			resultMap.put("info", info);
+			resultMap.put("count", count);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			// TODO: handle exception
