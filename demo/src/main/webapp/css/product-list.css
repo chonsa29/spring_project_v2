@@ -1,0 +1,85 @@
+/* 기본 스타일 설정 */
+
+.product-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: left;
+    margin: 30px 0 30px 15vw;
+}
+
+.product {
+    width: 380px;
+    background-color: #fff;
+    border-radius: 15px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    overflow: hidden;
+    transform-origin: center;
+    border-radius: 8px;
+    margin: 0 10px 10px 10px;
+    box-shadow: 0 2px 8px #eee;
+    padding: 20px;
+}
+
+.product:hover {
+    transform: scale(1.05);
+}
+
+a {
+    text-decoration: none;
+    color: black;
+
+}
+
+#serach {
+    border-radius: 50px;
+    border: 1px solid #ccc;
+    width: 50%;
+    height: 50px;
+    margin: 30px 0 30px 0;
+}
+
+input {
+    text-align: center;
+}
+
+input::placeholder {
+    text-align: center;
+    padding: 10px;
+}
+
+input:focus{
+    outline : none;
+}
+
+#name {
+    text-align: left;
+    margin-left:15vw;
+}
+
+.product-image {
+    height: 300px;
+    background-color: #bbb;
+}
+
+.product-name,
+.product-price {
+    text-align: left;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#product-count {
+    text-align: left;
+}
+
+#selectproduct {
+    font-weight: bold;
+    margin-left:15vw;
+    margin-right: 10px;
+}
+#rootname {
+    text-align: left;
+    color: #bbb;
+    margin-left:15vw;
+    margin-bottom: 20px;
+}
