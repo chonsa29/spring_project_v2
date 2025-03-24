@@ -11,19 +11,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.dao.MemberService;
+import com.example.demo.model.Member;
 import com.google.gson.Gson;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class MemberController {
 	@Autowired
 	MemberService memberService;	
 	
-
-
-	
+    @Autowired
+    HttpSession session;
 	@RequestMapping("/member/login.do") 
     public String login(Model model) throws Exception{
-        return "/member/login"; 
+		return "/member/login"; 
     }
 	
 	@RequestMapping("/member/join.do") 
@@ -59,11 +61,25 @@ public class MemberController {
 		return new Gson().toJson(resultMap);
 	}
 	
-	@RequestMapping(value = "/member/login.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	@ResponseBody
-	public String login(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		resultMap = memberService.findMember(map); 
-		return new Gson().toJson(resultMap);
-	}
+	 @RequestMapping(value = "/member/login.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	    @ResponseBody
+	    public String login(@RequestParam HashMap<String, Object> map) throws Exception {
+	        HashMap<String, Object> resultMap = memberService.findMember(map);
+	        if ("success".equals(resultMap.get("result"))) {
+	            Member member = (Member) resultMap.get("member");
+	            session.setAttribute("sessionId", member.getUserId());
+	            session.setAttribute("sessionName", member.getUserName());
+	            session.setAttribute("sessionStatus", member.getStatus());
+	        }
+	        return new Gson().toJson(resultMap);
+	    }
+	 
+	    @RequestMapping(value = "/member/logout.dox", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	    @ResponseBody
+	    public String logout() {
+	        session.invalidate();
+	        HashMap<String, Object> resultMap = new HashMap<>();
+	        resultMap.put("result", "logout");
+	        return new Gson().toJson(resultMap);
+	    }
 }

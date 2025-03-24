@@ -38,7 +38,10 @@
 
                     <div class="right-container">
                         <div class="login-container">
-                            <a href="/member/login.do">LOGIN</a>
+                            <a href="/member/mypage.do" v-if="sessionStatus=='A'">ADMIN</a>
+                            <a href="/member/mypage.do" v-if="sessionStatus">MYPAGE</a>
+                            <a href="/member/login.do" v-if="!sessionStatus">LOGIN</a>
+                            <a href="/home.do" v-else @click="fnLogout">LOGOUT</a>
                             <a href="/cart.do">CART</a>
                         </div>
                         <div class="search-container">
@@ -73,10 +76,25 @@
         const appHeader = Vue.createApp({
             data() {
                 return {
-
+                    sessionStatus : "${sessionStatus}"
                 };
             },
             methods: {
+                fnLogout(){
+				var self = this;
+				var nparmap = {
+				};
+				$.ajax({
+					url:"/member/logout.dox",
+					dataType:"json",	
+					type : "GET", 
+					data : nparmap,
+					success : function(data) { 
+                        alert("로그아웃 되었습니다!");
+					}
+                    
+				});
+            }
             },
             mounted() {
                 const floatingIcon = document.querySelector(".floating-icon img");

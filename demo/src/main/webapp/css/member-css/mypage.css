@@ -1,87 +1,61 @@
 
-
-.user-container {
-    width: 80%;
-	height:100vh;
-    margin: auto;
-	margin-bottom:100px;
-    background-color: #ffffff;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-	border-radius:20px;
-}
-
-.user-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.user-details{
-    flex: 1;
-    text-align: left;
-    margin:100px 50px;
-}
-
-.user-details p {
-    margin: 10px 0;
-}
-
-.user-details button {
-    margin-top: 10px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-}
-
-.user-details button:hover {
-    background-color: #0056b3;
-}
-
-.user-profile {
-    text-align: center;
-    margin-right:100px;
-}
-
-.user-profile img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    margin-bottom: 10px;
-}
-
-.shipping-status {
-    margin-top: 20px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.shipping-status div {
-    flex: 1;
-    text-align: center;
-    padding: 10px;
-    background-color: #eeeeee;
-    margin-right: 5px;
-}
-
-.shipping-status div:last-child {
-    margin-right: 0;
-}
-
-.user-like-product {
-    margin-top: 20px;
-}
-
-.user-like-product div {
-    display: inline-block;
-    width: 23%;
-    height: 150px;
-    background-color: #eeeeee;
-    margin-right: 5px;
-}
-
-.user-like-product div:last-child {
-    margin-right: 0;
-}
+        .mypage-container {
+            display: flex;
+            gap: 30px;
+			margin-left:25%;
+			margin-bottom:100px;
+        }
+		.profile-card {
+		    background: white;
+		    padding: 20px;
+		    border-radius: 10px;
+		    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		    text-align: center;
+		    width: 250px;
+		}
+		.profile-icon {
+		    width: 80px;
+		    height: 80px;
+		    border-radius: 50%;
+		    background: #4caf50;
+		    display: flex;
+		    justify-content: center;
+		    align-items: center;
+		    color: white;
+		    font-size: 30px;
+		    margin: 0 auto 10px auto;
+		}
+		.profile-card h2, .profile-card p, .menu-list li, .profile-details p {
+		    margin: 10px 0;
+		}
+		.menu-list {
+		    margin-top: 20px;
+		}
+		.menu-list ul {
+		    list-style: none;
+		    padding: 0;
+		}
+		.menu-list li {
+		    padding: 10px;
+		    cursor: pointer;
+		    font-size: 18px;
+		    text-align: center;
+		}
+		.menu-list li:hover {
+		    font-weight: bold;
+		}
+		.profile-details {
+		    background: white;
+		    padding: 20px;
+		    border-radius: 10px;
+		    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		    width: 600px;
+		    display: flex;
+		    flex-direction: column;
+		    align-items: center;
+		    text-align: left;
+		}
+		.profile-details h3 {
+		    align-self: flex-start;
+		    margin-bottom: 15px;
+		}

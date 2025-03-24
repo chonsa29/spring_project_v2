@@ -154,6 +154,7 @@
         },
         mounted() {
             console.log(this.sessionStatus);
+            console.log(this.userId);
             // 기존 메인 슬라이더 초기화
             this.swiper = new Swiper('.swiper-container', {
                 loop: true, // 슬라이드 반복

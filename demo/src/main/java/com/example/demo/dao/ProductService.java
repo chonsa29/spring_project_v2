@@ -25,7 +25,6 @@ public class ProductService {
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println(e.getMessage());
 			resultMap.put("result", "fail");
 		}
 		return resultMap;
@@ -42,7 +41,6 @@ public class ProductService {
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println(e.getMessage());
 			resultMap.put("result", "fail");
 		}
 		return resultMap;

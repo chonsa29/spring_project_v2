@@ -70,8 +70,9 @@ const app = Vue.createApp({
                             alert("아이디와 비밀번호를 확인해주세요.");
                         }else{
                             alert(data.member.userName + "님 환영합니다!");
+                            location.href = "/home.do";
                         }
-                        location.href = "/home.do";
+                     
 					}
                     
 				});
