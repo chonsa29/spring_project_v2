@@ -30,6 +30,7 @@ public class CartController {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
 		resultMap = cartService.getCartList(map);
+		System.out.println(resultMap);
 		return new Gson().toJson(resultMap);
 	}
 

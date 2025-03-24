@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-	
+
 <mapper namespace="com.example.demo.mapper.CartMapper">
-	<select id="selectCartList" parameterType="hashmap" resultType="com.example.test1.model.Cart">
-		SELECT * FROM TBL_PRODUCT P
-		INNER JOIN TBL_PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO AND I.THUMBNAIL = 'Y'
-		WHERE 1 = 1 
-		AND ITEM_NAME LIKE '%' || #{keyword} || '%'
+	<select id="selectCartList" parameterType="hashmap" resultType="com.example.demo.model.Cart">
+		SELECT * FROM CART C
+		LEFT JOIN PRODUCT_IMG I ON C.ITEM_NO = I.ITEM_NO
+		INNER JOIN PRODUCT P ON C.ITEM_NO = P.ITEM_NO
+		WHERE C.USERID = 'user001'
 	</select>
-	
 </mapper>
+
+
+
+
