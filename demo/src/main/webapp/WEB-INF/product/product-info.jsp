@@ -17,7 +17,7 @@
     <jsp:include page="/WEB-INF/common/header.jsp" />
     <div id="app">
             <div id="root">
-                🏚 > PRODUCT > {{info.itemName}}
+                HOME > PRODUCT > {{info.itemName}}
             </div>
             <div class="info-container">
                 <div id="product-box">
@@ -30,6 +30,7 @@
                 <div id="product-Info">
                     <div id="item-Info">{{info.itemInfo}}</div>
                     <div id="product-name">{{info.itemName}}</div>
+                    <span v-if="allergensFlg" id="allergens-info">{{info.allergens}} 주의!</span>
                     <div id="review">
                         <span class="stars">★★★★★</span>
                         <span>4.3</span>
@@ -104,6 +105,7 @@
                     itemNo : "${map.itemNo}",
                     info : {},
                     quantity : 1,
+                    allergensFlg : false,
                     
                 };
             },
@@ -122,6 +124,9 @@
                             if(data.result=="success") {
                                 console.log(data.info);
                                 self.info = data.info;
+                                if(data.info.allergens != "없음") {
+                                    self.allergensFlg = true;
+                                }
                                 
                             }
                         }
