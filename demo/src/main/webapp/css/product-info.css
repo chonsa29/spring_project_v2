@@ -43,18 +43,20 @@
     margin: 0 0 10px 10px;
 }
 
-#product-Info {
-    margin-left: 50px;
-}
-
 
 #product-Info {
+	margin-left: 50px;
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     text-align: left;
 }
+
+#item-Info {
+	color: #bbb;
+}
+
 
 #product-name {
     font-size: 24px;
@@ -80,7 +82,7 @@
     display: flex;
     font-size: 14px;
     color: #ccc;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     border-bottom: 1px solid #ddd;
     padding-bottom: 10px;
 }
@@ -99,6 +101,7 @@
     display: flex;
     font-size: 14px;
     color: #000000;
+	margin-top: 10px;
     margin-bottom: 15px;
     border-bottom: 1px solid #ddd;
     padding-bottom: 10px;
@@ -130,7 +133,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 400px;
+    width: 500px;
+	height: 100px;
     background-color: #eee;
     padding: 10px 15px;
     border-radius: 8px;
@@ -158,14 +162,16 @@
 
 .quantity-input {
     width: 40px;
+	height: 30px;
     text-align: center;
-    font-size: 16px;
+    font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
 .quantity-price {
     font-weight: bold;
+	font-size: 20px;
 }
 
 .total {
@@ -173,8 +179,12 @@
     justify-content: space-between;
     font-size: 18px;
     font-weight: bold;
-    /* border-top: 1px solid #ddd; */
-    padding-top: 10px;
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+}
+
+#price-total {
+	font-size: 20px;
 }
 
 .buttons {

@@ -8,7 +8,7 @@
 }
 
 .product {
-    width: 380px;
+    width: 330px;
     background-color: #fff;
     border-radius: 15px;
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
@@ -62,10 +62,15 @@ input:focus{
 }
 
 .product-name,
-.product-price {
+.product-price,
+.product-info {
     text-align: left;
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+.product-name {
+	font-size: 18px;
 }
 
 #product-count {
