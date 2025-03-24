@@ -1,0 +1,244 @@
+
+#root {
+    margin : 0 0 30px 18vw;
+    text-align: left;
+}
+
+.info-container {
+    display: flex;
+    gap: 10px;
+    max-width: 1200px;
+    margin: 0 0 50px 18vw;
+}
+
+#product-box {
+    width: 500px;
+    height: 500px;
+    background-color: #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.subimg-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-right: 50px;
+}
+
+.subimg {
+    width: 80px;
+    height: 80px;
+    background-color: #aaa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    margin: 0 0 10px 10px;
+}
+
+#product-Info {
+    margin-left: 50px;
+}
+
+
+#product-Info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: left;
+}
+
+#product-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.stars {
+    color: #272727;
+    font-size: 30px;
+    margin-bottom: 30px;
+    margin-right: 10px;
+}
+
+.price {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.delivery {
+    display: flex;
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+#delicery-total {
+    font-weight: bold;
+    color: #ccc;
+    margin-right: 5px;
+}
+
+#delivery-price {
+    margin-right: 30px;
+}
+
+#delivery-info {
+    display: flex;
+    font-size: 14px;
+    color: #000000;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+#delivery-day {
+    border: 2px solid black;
+    width: 80px;
+    padding: 3px;
+    border-radius: 30px;
+    background-color: #fff;
+    text-align: center;
+    margin-bottom: 10px;
+
+}
+
+/* 수량 체크 css */
+
+.quantity-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+}
+
+.quantity-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 400px;
+    background-color: #eee;
+    padding: 10px 15px;
+    border-radius: 8px;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+}
+
+.quantity-btn {
+    width: 30px;
+    height: 30px;
+    border: none;
+    background-color: #ddd;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 0 5px;
+    border-radius: 4px;
+}
+
+.quantity-btn:hover {
+    background-color: #ccc;
+}
+
+.quantity-input {
+    width: 40px;
+    text-align: center;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.quantity-price {
+    font-weight: bold;
+}
+
+.total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+    font-weight: bold;
+    /* border-top: 1px solid #ddd; */
+    padding-top: 10px;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.buttons button {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+
+.like {
+    background: #ffffff;
+    color: #ccc;
+}
+
+.like:active {
+    color: red;
+}
+
+.cart {
+    background: #ddd;
+}
+
+.cart:hover {
+    font-weight: bold;
+}
+
+.buy {
+    background: black;
+    color: white;
+}
+
+.buy:hover {
+    font-weight: bold;
+}
+
+.buy>a {
+    text-decoration: none;
+    color: white;
+}
+
+#product-view{
+    margin-top: 30px;
+}
+
+#product-menu {
+    display: flex;
+    margin: 30px 0 30px 5vw;
+    justify-content: space-around;
+    align-items: center;
+}
+
+#product-view-img {
+    width: 1300px;
+    height: 800px;
+    background-color: #aaa;
+    margin-left: 18vw;
+}
+
+

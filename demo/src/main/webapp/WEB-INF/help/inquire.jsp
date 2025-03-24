@@ -67,7 +67,33 @@
 		<!-- 공지사항 -->
 		<section id="notice" class="tab-content" v-show="activeTab === 'notice'">
 			<h2>공지사항</h2>
-			<p>현재 등록된 공지사항이 없습니다.</p>
+			<div class="search-bar">
+				<select v-model="selectedCategory">
+					<option value="">제목</option>
+					<option value="">상품</option>
+					<option value="">배송</option>
+				</select>
+				<input type="text" v-model="searchKeyword" placeholder="검색어를 입력하세요">
+				<button @click="searchNotice">검색</button>
+			</div>
+			<table class="notice-table">
+				<thead>
+					<tr>
+						<th>번호</th>
+						<th>제목</th>
+						<th>내용</th>
+						<th>날짜</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="notice in noticeList" :key="notice.id">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
 		</section>
 	</div>
 	<jsp:include page="/WEB-INF/common/footer.jsp" />

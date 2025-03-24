@@ -35,7 +35,7 @@
 
                 <div class="right-container">
                     <div class="login-container">
-                        <a href="javascript:;">LOGIN</a>
+                        <a href="javascript:;" @click="fnLogin">LOGIN</a>
                         <a href="/cart.do">CART</a>
                     </div>
                     <div class="search-container">
@@ -62,7 +62,9 @@
             };
         },
         methods: {
-        
+            fnLogin(){
+                location.href = "/member/login.do";
+            }
         },
         mounted() {
             const floatingIcon = document.querySelector(".floating-icon img");

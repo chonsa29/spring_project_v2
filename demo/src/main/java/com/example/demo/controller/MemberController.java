@@ -22,8 +22,7 @@ public class MemberController {
 
 	
 	@RequestMapping("/member/login.do") 
-	  public String login(Model model) throws Exception{
-				   
+    public String login(Model model) throws Exception{
         return "/member/login"; 
     }
 	
@@ -38,8 +37,11 @@ public class MemberController {
 
         return "/member/term"; 
     }
-	
-	
+	@RequestMapping("/member/mypage.do") 
+    public String mypage(Model model) throws Exception{
+
+        return "/member/mypage"; 
+    }
 	@RequestMapping(value = "/member/check.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String check(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
@@ -48,7 +50,4 @@ public class MemberController {
 		resultMap = memberService.searchMember(map); 
 		return new Gson().toJson(resultMap);
 	}
-
-	
-
 }

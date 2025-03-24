@@ -1,85 +1,153 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #fff;
-}
-header {
+/* 전체 페이지 정렬 */
+main {
+    max-width: 1000px;
+    margin: 40px auto;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid #ddd;
+    gap: 40px;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    align-items: stretch;
 }
-.logo img {
-    height: 50px;
-}
-nav a {
-    margin: 0 10px;
-    text-decoration: none;
-    color: black;
-}
-nav .active {
-    color: green;
-    font-weight: bold;
-}
-.user-menu a {
-    margin-left: 10px;
-    text-decoration: none;
-    color: black;
-}
-main {
-    width: 50%;
-    margin: 30px auto;
-}
+
 h1 {
     text-align: center;
+    max-width: 820px; 
+    margin: 0 auto;
+    margin-top: 50px;
+    margin-bottom: 80px; 
+    padding-bottom: 30px; /* 줄과의 간격 */
+    border-bottom: 2px solid #ddd; /* 아래 줄 추가 */
+    font-size: 26px; /* 글자 크기 조정 */
+    font-weight: bold; /* 글자 굵게 */
 }
-section {
-    margin-bottom: 20px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+
+/* 왼쪽(주문 정보) - 스크롤 가능 */
+.order-section {
+    flex: 1;
+    max-height: 700px;
+    overflow-y: auto; /* 스크롤 가능하지만 */
+    scrollbar-width: none; /* Firefox에서 스크롤바 숨김 */
+    -ms-overflow-style: none; /* IE 및 Edge에서 스크롤바 숨김 */
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
+
+.order-section::-webkit-scrollbar {
+    display: none;
+}
+
+/* 오른쪽(결제 정보) - 고정 */
+.payment-section {
+    width: 350px;
+    position: sticky;
+    top: 80px; /* 화면 상단에서 고정되는 위치 */
+    align-self: stretch;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* 섹션별 간격 */
+.order-section section,
+.payment-section section {
+    margin-bottom: 30px;
+}
+
+/* 상품 정보 스타일 */
 .product {
     display: flex;
     align-items: center;
+    gap: 20px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 15px;
 }
+
 .product img {
     width: 80px;
-    height: 80px;
-    margin-right: 20px;
+    border-radius: 10px;
 }
-.product-details p {
-    margin: 5px 0;
-}
-.summary-details p {
+
+/* 주문 요약 스타일 */
+.order-summary .summary-details p {
     display: flex;
     justify-content: space-between;
     margin: 10px 0;
+    font-size: 16px;
 }
+
+/* 총 주문 금액 강조 */
 .total-price {
     font-weight: bold;
+    font-size: 18px;
 }
+
+/* 입력 필드 공통 스타일 */
 input, select {
     width: 100%;
     padding: 10px;
-    margin: 5px 0;
+    margin: 8px 0;
     border: 1px solid #ddd;
     border-radius: 5px;
 }
+
+/* 쿠폰 및 포인트 입력 */
+.coupon, .point {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.coupon input,
+.point input {
+    flex: 1;
+}
+
+/* 버튼 스타일 */
 button {
-    background-color: green;
+    background: #0DA043;
     color: white;
-    border: none;
     padding: 10px;
-    width: 100%;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
+    width: 100%;
 }
+
 button:hover {
-    background-color: darkgreen;
+    background: #0b7d36;
 }
+
+/* 결제하기 버튼 */
 .pay-btn {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
+    background: #0DA043;
+    padding: 12px;
+}
+
+.pay-btn:hover {
+    background: #0b7d36;
+}
+
+/* 반응형 처리 (작은 화면에서 세로 정렬) */
+@media screen and (max-width: 768px) {
+    main {
+        flex-direction: column;
+    }
+    
+    .payment-section {
+        width: 100%;
+        position: relative; /* 고정 해제 */
+        top: unset;
+    }
 }
