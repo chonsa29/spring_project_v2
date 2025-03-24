@@ -18,15 +18,26 @@ public class MemberService {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		Member member = memberMapper.selectMember(map);
 		
-		int count = member != null ? 1 : 0 ;
-		resultMap.put("count", count);
-//		int count = 0;
-//		if(member != null) {
-//			count = 1;
-//		} else {
-//			count = 0;
-//		}
-		
+		if(member != null) { // member != null : 값이 있다는 뜻
+			resultMap.put("result", "check");
+			// result에 check 표시
+		} else {
+			resultMap.put("result", "none");
+			// result에 none 표시
+		}
+		return resultMap;
+	}
+
+	public HashMap<String, Object> getMember(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		Member member = memberMapper.selectMember(map);
+		if(member != null) {
+			resultMap.put("member", member);
+			resultMap.put("result", "success");
+		} else {
+			resultMap.put("result", "fail");
+		}
 		return resultMap;
 	}
 }
