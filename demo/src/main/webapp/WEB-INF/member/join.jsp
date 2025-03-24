@@ -1,201 +1,255 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
     <!DOCTYPE html>
     <html lang="ko">
+
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>회원가입</title>
-        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+        <script src="https://code.jquery.com/jquery-3.7.1.js"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
         <style>
-                .message {
-        color: red; /* ❌ 오류 메시지는 붉은색 */
-        font-size: 12px;
-    }
-    .available {
-        color: blue; /* ✅ 사용 가능 메시지는 파란색 */
-        font-size: 12px;
-    }
-            
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
             body {
-                font-family: Arial, sans-serif;
-                background-color: #f4f4f4;
+                font-family: 'Noto Sans KR', sans-serif;
+                background: linear-gradient(135deg, #eee, #eee);
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 height: 100vh;
-                margin: 0;
             }
+
             .signup-container {
                 background: white;
-                padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
                 width: 400px;
                 text-align: center;
             }
+
             .signup-container h2 {
                 margin-bottom: 20px;
+                font-weight: 600;
+                color: #333;
             }
-            .signup-container input {
-                width: 100%;
+
+            .input-box {
+                text-align: left;
+                margin-bottom: 15px;
+                display: flex;
+                align-items: center;
+            }
+
+            .input-box input,
+            .input-box select {
+                flex: 1;
                 padding: 10px;
-                margin: 10px 0;
-                border: 1px solid #ccc;
-                border-radius: 4px;
+                border: 2px solid #ccc;
+                border-radius: 8px;
+                outline: none;
+                font-size: 16px;
             }
+
+            .input-box button {
+                margin-left: 10px;
+                padding: 10px 15px;
+                border: none;
+                background: #007bff;
+                color: white;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 14px;
+                white-space: nowrap;
+            }
+
+            .input-box button:hover {
+                background: #0056b3;
+            }
+
+            .message {
+                font-size: 12px;
+                margin-top: 5px;
+            }
+
+            .message.error {
+                color: red;
+            }
+
+            .message.success {
+                color: blue;
+            }
+
             .signup-container button {
                 width: 100%;
-                padding: 10px;
+                padding: 12px;
                 background: #28a745;
                 color: white;
                 border: none;
-                border-radius: 4px;
+                border-radius: 8px;
+                font-size: 18px;
+                font-weight: bold;
                 cursor: pointer;
-                margin-top: 10px;
+                margin-top: 20px;
             }
+
             .signup-container button:disabled {
                 background: #ccc;
                 cursor: not-allowed;
             }
-            .signup-container button:hover {
-                background: #218838;
-            }
-            .checkbox-group {
-                text-align: left;
-                margin-bottom: 10px;
-            }
-            .step-indicator {
-                margin-bottom: 20px;
-                font-weight: bold;
-            }
         </style>
     </head>
+
     <body>
         <div id="app" class="signup-container">
             <h2>회원가입</h2>
-         
-    
-          
-    
-            <!-- STEP 2: 회원 정보 입력 -->
-            <div >
+
+            <div class="input-box">
                 <input type="text" v-model="username" @input="checkUsername" placeholder="아이디" required>
-                <div v-if="usernameMessage" :class="usernameAvailable ? 'available' : 'message'">{{ usernameMessage }}</div>
-    
-                <input type="email" v-model="email" placeholder="[선택] 이메일주소 (비밀번호 찾기 등 본인 확인용)" required>
-    
-                <input type="password" v-model="password" @input="validatePassword" placeholder="비밀번호 (10~20자)" required maxlength="20">
-                <div v-if="passwordMessage" class="message">{{ passwordMessage }}</div>
-    
-                <input type="password" v-model="confirmPassword" @input="validatePassword" placeholder="비밀번호 확인" required maxlength="20">
-                <div v-if="confirmPasswordMessage" class="message">{{ confirmPasswordMessage }}</div>
-    
-                <button @click="prevStep">이전</button>
-                <button :disabled="!canProceedStep2" @click="nextStep">다음</button>
             </div>
-    
-    
+            <p class="message"
+                :class="{'error': usernameMessage === '중복된 아이디 입니다.', 'success': usernameMessage === '사용 가능합니다.'}">{{
+                usernameMessage }}</p>
+
+            <div class="input-box">
+                <input type="email" v-model="email" placeholder="이메일 주소" required>
+            </div>
+
+            <div class="input-box">
+                <input type="password" v-model="password" @input="validatePassword" placeholder="비밀번호 (10~20자)"
+                    required>
+            </div>
+            <p class="message error" v-if="passwordMessage">{{ passwordMessage }}</p>
+
+            <div class="input-box">
+                <input type="password" v-model="confirmPassword" @input="validatePassword" placeholder="비밀번호 확인"
+                    required>
+            </div>
+            <p class="message error" v-if="confirmPasswordMessage">{{ confirmPasswordMessage }}</p>
+
+            <div class="input-box">
+                <input type="text" v-model="name" placeholder="이름" required>
+            </div>
+
+            <div class="input-box">
+                <select v-model="gender" required>
+                    <option value="" disabled>성별</option>
+                    <option value="남성">남성</option>
+                    <option value="여성">여성</option>
+                </select>
+            </div>
+
+            <div class="input-box">
+                <input type="text" v-model="address" placeholder="주소" required>
+                <button @click="findAddress">주소 찾기</button>
+            </div>
+
+            <div class="input-box">
+                <input type="text" v-model="detailedAddress" placeholder="상세주소" required>
+            </div>
+
+            <div class="input-box">
+                <input type="date" v-model="birth" required>
+            </div>
+
+            <div class="input-box">
+                <input type="text" v-model="phone" placeholder="휴대폰 번호" required>
+                <button @click="sendVerificationCode">본인 인증</button>
+            </div>
+
+            <button :disabled="!canProceedStep2" @click="registerUser">가입하기</button>
+        </div>
+
         <script>
-            new Vue({
-                el: '#app',
+            const app = Vue.createApp({
                 data() {
                     return {
-                        step: 1,
-                        agreeTerms: false,
-                        agreePrivacy: false,
-                        agreeMarketing: false,
                         username: '',
                         email: '',
                         password: '',
                         confirmPassword: '',
+                        name: '',
+                        gender: '',
+                        address: '',
+                        detailedAddress: '',
+                        birth: '',
+                        phone: '',
                         usernameMessage: '',
-                        usernameAvailable: false,
                         passwordMessage: '',
                         confirmPasswordMessage: ''
                     };
                 },
-                computed: {
-                    stepText() {
-                        return this.step === 1 ? '1단계: 약관 동의' :
-                               this.step === 2 ? '2단계: 회원 정보 입력' :
-                               '3단계: 가입 완료';
-                    },
-                    canProceedStep1() {
-                        return this.agreeTerms && this.agreePrivacy;
-                    },
-                    canProceedStep2() {
-                        return this.usernameAvailable && this.password.length >= 10 && this.password.length <= 20 &&
-                               this.passwordMessage === '' && this.confirmPasswordMessage === '' &&
-                               this.password === this.confirmPassword && this.email;
-                    }
-                },
                 methods: {
-                    nextStep() {
-                        if (this.step < 3) this.step++;
-                    },
-                    prevStep() {
-                        if (this.step > 1) this.step--;
-                    },
-                    restart() {
-                        this.step = 1;
-                        this.username = '';
-                        this.email = '';
-                        this.password = '';
-                        this.confirmPassword = '';
-                        this.usernameMessage = '';
-                        this.usernameAvailable = false;
-                        this.passwordMessage = '';
-                        this.confirmPasswordMessage = '';
-                    },
                     checkUsername() {
                         const usernameRegex = /^[a-zA-Z0-9]{6,}$/;
-                        if (this.username.length > 0) {
-                            if (!usernameRegex.test(this.username)) {
-                                this.usernameMessage = '아이디는 6자 이상, 영어와 숫자만 가능합니다';
-                                this.usernameAvailable = false;
-                            } else {
-                                this.usernameMessage = '사용 가능한 아이디입니다';
-                                this.usernameAvailable = true;
-                            }
+                        if (this.username.length < 6) {
+                            this.usernameMessage = '아이디는 6자 이상이어야 합니다.';
+                        } else if (!usernameRegex.test(this.username)) {
+                            this.usernameMessage = '아이디는 영문과 숫자만 가능합니다.';
                         } else {
-                            this.usernameMessage = '';
-                            this.usernameAvailable = false;
+                            $.post('/check-username', { username: this.username }, (response) => {
+                                this.usernameMessage = response.exists ? '중복된 아이디 입니다.' : '사용 가능합니다.';
+                            });
                         }
                     },
                     validatePassword() {
                         const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[\W_]).{10,20}$/;
-    
-                        if (this.password.length > 20) {
-                            this.password = this.password.slice(0, 20);
-                        }
-                        if (this.confirmPassword.length > 20) {
-                            this.confirmPassword = this.confirmPassword.slice(0, 20);
-                        }
-    
-                        if (this.password.length > 0) {
-                            if (!passwordRegex.test(this.password)) {
-                                this.passwordMessage = '비밀번호는 10~20자이며, 영문, 숫자, 특수문자를 포함해야 합니다.';
-                            } else {
-                                this.passwordMessage = '';
+                        this.passwordMessage = passwordRegex.test(this.password) ? '' : '비밀번호는 10~20자이며, 문자, 숫자, 특수문자를 포함해야 합니다.';
+                        this.confirmPasswordMessage = this.password === this.confirmPassword ? '' : '비밀번호가 일치하지 않습니다.';
+                    },
+                    sendVerificationCode() {
+                        // 본인 인증 코드 API 호출
+                        alert('본인 인증 코드가 전송되었습니다!');
+                    },
+                    findAddress() {
+                        const self = this; // Vue 인스턴스를 참조
+                        new daum.Postcode({
+                            oncomplete: function (data) {
+                                self.address = data.roadAddress; // this를 self로 바인딩
                             }
-                        } else {
-                            this.passwordMessage = '';
-                        }
-    
-                        if (this.confirmPassword.length > 0) {
-                            if (this.password !== this.confirmPassword) {
-                                this.confirmPasswordMessage = '비밀번호가 일치하지 않습니다.';
-                            } else {
-                                this.confirmPasswordMessage = '';
-                            }
-                        } else {
-                            this.confirmPasswordMessage = '';
-                        }
+                        }).open();
+                    },
+                registerUser() {
+                        $.post('/signup', {
+                            username: this.username,
+                            email: this.email,
+                            password: this.password,
+                            name: this.name,
+                            gender: this.gender,
+                            address: this.address,
+                            detailedAddress: this.detailedAddress,
+                            birth: this.birth,
+                            phone: this.phone
+                        }, (response) => {
+                            alert(response.message);
+                        });
+                    }
+                },
+                computed: {
+                    canProceedStep2() {
+                        return this.usernameMessage === '사용 가능합니다.' &&
+                            this.passwordMessage === '' &&
+                            this.confirmPasswordMessage === '' &&
+                            this.password === this.confirmPassword &&
+                            this.email &&
+                            this.name &&
+                            this.gender &&
+                            this.address &&
+                            this.detailedAddress &&
+                            this.birth &&
+                            this.phone;
                     }
                 }
             });
+
+            app.mount('#app');
         </script>
     </body>
+
     </html>
-    
