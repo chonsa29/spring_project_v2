@@ -7,16 +7,15 @@
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-        <link rel="stylesheet" href="/css/product-info.css">
-        <title>첫번째 페이지</title>
+        <link rel="stylesheet" href="/css/product-css/product-info.css">
     </head>
     <style>
-
+        
     </style>
 
-    <body>
-        <jsp:include page="/WEB-INF/common/header.jsp" />
-        <div id="app">
+<body>
+    <jsp:include page="/WEB-INF/common/header.jsp" />
+    <div id="app">
             <div id="root">
                 🏚 > PRODUCT > {{info.itemName}}
             </div>
