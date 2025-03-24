@@ -13,5 +13,5 @@ public class Product {
 	private String rDate;
 	private String itemInfo;
 	private String allergens;
-	
+	private String filePath;
 }
