@@ -26,7 +26,7 @@
             </div>
             <div id="product-count">
                 <span id="selectproduct">전체개수</span>
-                <span>{{count}}개</span>
+                <span>{{productcount}}개</span>
             </div>
             <div class="product-list">
                 <div class="product" v-for="item in list" @click="fnInfo(item.itemNo)">
@@ -36,23 +36,18 @@
                     <p class="product-price">{{item.price}}</p>
                 </div>
             </div>
-        </div>
-        <div id="indexnum">
-            <a v-if="page !=1" id="index" href="javascript:;" class="color-black" @click="fnPageMove('prev')">
-                < </a>
-                    <a id="index" href="javascript:;" v-for="num in index" @click="fnPage(num)">
-                        <span v-if="page == num">
+            <div id="indexnum">
+                <a v-if="page !=1" id="index" href="javascript:;" class="color-black" @click="fnPageMove('prev')">
+                    < </a>
+                        <a id="index" href="javascript:;" v-for="num in index" @click="fnPage(num)">
                             {{num}}
-                        </span>
-                        <span v-else class="color-black">
-                            {{num}}
-                        </span>
-                    </a>
-                    <a v-if="page!=index" id="index" href="javascript:;" class="color-black"
-                        @click="fnPageMove('next')"> >
-                    </a>
+                        </a>
+                        <a v-if="page!=index" id="index" href="javascript:;" class="color-black"
+                            @click="fnPageMove('next')"> >
+                        </a>
+            </div>
         </div>
-        </div>
+    </div>
         <jsp:include page="/WEB-INF/common/footer.jsp" />
     </body>
 
@@ -63,9 +58,9 @@
                 return {
                     list: [],
                     pageSize: 8,
+                    productcount : 0,
                     index: 0,
                     page: 1,
-                    num : 1,
                 };
             },
             methods: {
@@ -84,7 +79,7 @@
                             if (data.result == "success") {
                                 console.log(data);
                                 self.list = data.list;
-                                self.count = data.count;
+                                self.productcount = data.count;
                                 self.index = Math.ceil(data.count / self.pageSize);
                             } else {
                                 console.log("실패");
@@ -109,7 +104,6 @@
                     let prev = document.querySelector(".prev");
                     if (direction == "next") {
                         self.page++;
-
                     } else {
                         self.page--;
                     }
