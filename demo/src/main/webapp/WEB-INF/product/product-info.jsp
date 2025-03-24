@@ -130,9 +130,14 @@
                 },
                 fnquantity(action) {
                     if (action === 'sum') {
-                        this.quantity++;
+                        if (this.quantity < 20) {
+                            this.quantity++;
+                        } else {
+                            alert("최대 수량입니다.");
+                            return;
+                        }
                     } else if (action === 'sub' && this.quantity > 1) {
-                        this.quantity--;
+                        this.quantity--; 
                     }
                 }
             },

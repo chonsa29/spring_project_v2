@@ -63,7 +63,7 @@
             data() {
                 return {
                     list: [],
-                    pageSize: 5,
+                    pageSize: 8,
                     index: 0,
                     page: 1,
                     num : 1,
@@ -103,6 +103,7 @@
                     self.page = num;
                     self.fnProductList();
                 },
+                
                 fnPageMove: function (direction) {
                     let self = this;
                     let next = document.querySelector(".next");
