@@ -27,5 +27,9 @@ public class ProductController {
 	public String productInfo(Model model) throws Exception{
 		return "/product/product-info"; 
 	}
+	
+	
+	// 상품 목록 가져오기
+	
 
 }
