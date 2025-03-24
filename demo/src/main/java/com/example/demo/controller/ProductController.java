@@ -2,7 +2,7 @@ package com.example.demo.controller;
 
 import java.util.HashMap;
 
-import javax.servlet.http.HttpServletRequest;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.dao.ProductService;
 import com.google.gson.Gson;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class ProductController {

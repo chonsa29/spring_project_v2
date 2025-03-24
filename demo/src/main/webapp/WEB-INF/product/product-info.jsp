@@ -18,7 +18,7 @@
         <jsp:include page="/WEB-INF/common/header.jsp" />
         <div id="app">
             <div id="root">
-                HOME > PRODUCT > PRODUCT-TYPE
+                🏚 > PRODUCT > {{info.itemName}}
             </div>
             <div class="info-container">
                 <div id="product-box">
@@ -29,12 +29,13 @@
                     <div class="subimg"></div>
                 </div>
                 <div id="product-Info">
-                    <div id="product-name">상품 이름</div>
+                    <div id="item-Info">{{info.itemInfo}}</div>
+                    <div id="product-name">{{info.itemName}}</div>
                     <div id="review">
                         <span class="stars">★★★★★</span>
                         <span>4.3</span>
                     </div>
-                    <div class="price">₩15,000</div>
+                    <div class="price">{{info.price}}</div>
                     <div class="delivery">
                         <span id="delivery-price">배송비</span>
                         <span id="delicery-total">3,000원 </span>
@@ -51,23 +52,22 @@
                         </div>
                     </div>
 
-                    <!-- 수량 체크 박스-->
                     <div class="quantity-container">
                         <div class="quantity-box">
-                            <span>상품 이름</span>
+                            <span>{{info.itemName}}</span>
                             <div class="quantity-controls">
-                                <button class="quantity-btn">-</button>
-                                <input type="text" class="quantity-input" value="1">
-                                <button class="quantity-btn">+</button>
+                                <button class="quantity-btn" @click="fnquantity('sub')">-</button>
+                                <input type="text" class="quantity-input" v-model="quantity">
+                                <button class="quantity-btn" @click="fnquantity('sum')">+</button>
                             </div>
-                            <span class="quantity-price">18,000</span>
+                            <span class="quantity-price">{{info.price * quantity}}</span>
                         </div>
                     </div>
 
                     <!-- 합계 -->
                     <div class="total">
                         <span>합계</span>
-                        <span>₩18,000</span>
+                        <span id="price-total">{{info.price * quantity}}</span>
                     </div>
 
                     <!-- 좋아요, 장바구니, 구매하기 박스-->
@@ -102,26 +102,38 @@
         const app = Vue.createApp({
             data() {
                 return {
-                    itemNo : "",
+                    itemNo : "${map.itemNo}",
+                    info : {},
+                    quantity : 1,
+                    
                 };
             },
             methods: {
                 fngetInfo() {
                     var self = this;
-                    console.log(self.itemNo)
-                    // var self = this;
-                    // var nparmap = {
-                    //     itemNo : self.itemNo
-                    // };
-                    // $.ajax({
-                    //     url: "login.dox",
-                    //     dataType: "json",
-                    //     type: "POST",
-                    //     data: nparmap,
-                    //     success: function (data) {
-                    //         console.log(data);
-                    //     }
-                    // });
+                    var nparmap = {
+                        itemNo : self.itemNo
+                    };
+                    $.ajax({
+                        url: "/product/info.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: nparmap,
+                        success: function (data) {
+                            if(data.result=="success") {
+                                console.log(data.info);
+                                self.info = data.info;
+                                
+                            }
+                        }
+                    });
+                },
+                fnquantity(action) {
+                    if (action === 'sum') {
+                        this.quantity++;
+                    } else if (action === 'sub' && this.quantity > 1) {
+                        this.quantity--;
+                    }
                 }
             },
             mounted() {
@@ -130,5 +142,5 @@
             }
         });
         app.mount('#app');
-    </script>
+        </script>
     ​

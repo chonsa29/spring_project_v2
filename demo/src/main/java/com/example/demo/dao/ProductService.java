@@ -35,8 +35,8 @@ public class ProductService {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
-			Product product = productMapper.SelectProductInfo(map);
-			resultMap.put("prodcut", product);
+			Product info = productMapper.SelectProductInfo(map);
+			resultMap.put("info", info);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			// TODO: handle exception

@@ -8,7 +8,7 @@
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <link rel="stylesheet" href="/css/product-list.css">
-        <script src="/js/page-change.js"></script>
+        <script src="/js/pageChange.js"></script>
         <title>첫번째 페이지</title>
     </head>
 
@@ -38,6 +38,21 @@
                 </div>
             </div>
         </div>
+        <div id="indexnum">
+            <a v-if="page !=1" id="index" href="javascript:;" class="color-black" @click="fnPageMove('prev')">
+                < </a>
+                    <a id="index" href="javascript:;" v-for="num in index" @click="fnPage(num)">
+                        <span v-if="page == num">
+                            {{num}}
+                        </span>
+                        <span v-else class="color-black">
+                            {{num}}
+                        </span>
+                    </a>
+                    <a v-if="page!=index" id="index" href="javascript:;" class="color-black"
+                        @click="fnPageMove('next')"> >
+                    </a>
+        </div>
         </div>
         <jsp:include page="/WEB-INF/common/footer.jsp" />
     </body>
@@ -48,13 +63,18 @@
             data() {
                 return {
                     list: [],
-                    count: "",
+                    pageSize: 5,
+                    index: 0,
+                    page: 1,
+                    num : 1,
                 };
             },
             methods: {
                 fnProductList() {
                     var self = this;
                     var nparmap = {
+                        pageSize: self.pageSize,
+                        page: (self.page - 1) * self.pageSize,
                     };
                     $.ajax({
                         url: "/product/list.dox",
@@ -66,7 +86,7 @@
                                 console.log(data);
                                 self.list = data.list;
                                 self.count = data.count;
-                                console.log(data.count);
+                                self.index = Math.ceil(data.count / self.pageSize);
                             } else {
                                 console.log("실패");
                             }
@@ -75,7 +95,25 @@
                 },
 
                 fnInfo(itemNo) {
-                    pageChange("/product/info.do", {itemNo : itemNo})
+                    pageChange("/product/info.do", { itemNo: itemNo });
+                },
+
+                fnPage: function (num) {
+                    let self = this;
+                    self.page = num;
+                    self.fnProductList();
+                },
+                fnPageMove: function (direction) {
+                    let self = this;
+                    let next = document.querySelector(".next");
+                    let prev = document.querySelector(".prev");
+                    if (direction == "next") {
+                        self.page++;
+
+                    } else {
+                        self.page--;
+                    }
+                    self.fnProductList();
                 }
             },
             mounted() {
