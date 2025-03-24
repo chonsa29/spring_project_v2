@@ -50,7 +50,7 @@
                         </div>
                     </div>
                     <!-- 페이지네이션 -->
-                    <div class="swiper-pagination product-pagination"></div>
+                    <!-- <div class="swiper-pagination product-pagination"></div> -->
                     <!-- 네비게이션 버튼 -->
                     <div class="swiper-button-prev product-prev"></div>
                     <div class="swiper-button-next product-next"></div>
@@ -71,18 +71,43 @@
         },
         methods: {
             fnProductList() {
-                let self = this;
+        let self = this;
 
-                $.ajax({
-                    url: "/main/list.dox",
-                    dataType: "json",
-                    type: "POST",
-                    success: (data) => {
-                        console.log(data);
-                        self.list = data.list;
+        $.ajax({
+            url: "/main/list.dox",
+            dataType: "json",
+            type: "POST",
+            success: (data) => {
+                console.log(data);
+                self.list = data.list;
+
+                // Swiper 초기화: 데이터 로드 완료 후 실행
+                self.$nextTick(() => {
+                    self.productSwiper = new Swiper('.product-swiper', {
+                    loop: true, // 무한 루프 활성화
+                    slidesPerView: "auto", // 컨테이너 크기에 맞게 자동 조절
+                    spaceBetween: 20, // 슬라이드 간 간격
+                    centeredSlides: true, // 현재 활성화된 슬라이드를 중앙에 배치
+                    autoplay: {
+                        delay: 3000,
+                        disableOnInteraction: false,
+                    },
+                    pagination: {
+                        el: '.product-pagination',
+                        clickable: true,
+                    },
+                    navigation: {
+                        nextEl: '.product-next',
+                        prevEl: '.product-prev',
                     },
                 });
-            }
+
+
+                    console.log('상품 슬라이더 초기화 완료:', self.productSwiper); // 디버깅용 로그
+                });
+            },
+        });
+    }
         },
         mounted() {
             // 기존 메인 슬라이더 초기화
@@ -99,28 +124,6 @@
                 navigation: {
                     nextEl: '.swiper-button-next.custom',
                     prevEl: '.swiper-button-prev.custom',
-                },
-            });
-
-            // 상품 슬라이더 초기화
-            this.productSwiper = new Swiper('.product-swiper', {
-                loop: false, // 복제 슬라이드 제거
-                slidesPerView: 4, // 한 화면에 보이는 슬라이드 수
-                spaceBetween: 20,
-                autoplay: {
-                    delay: 3000,
-                    disableOnInteraction: false,
-                    stopOnLastSlide: false,
-                },
-                pagination: {
-                    el: '.product-pagination',
-                    clickable: true,
-                    type: 'bullets',
-                    dynamicBullets: true,
-                },
-                navigation: {
-                    nextEl: '.product-next',
-                    prevEl: '.product-prev',
                 },
             });
 

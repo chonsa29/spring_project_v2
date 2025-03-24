@@ -20,10 +20,11 @@
             <div class="progress-container">
                 <div class="progress-bar" id="progress-bar"></div>
                 <div class="progress-labels">
-                <span class="label-left">0원</span>
-                <span class="label-right">20,000원</span>
+                    <span class="label-left">0원</span>
+                    <span class="label-right">20,000원</span>
                 </div>
             </div>
+            
 
             <div class="cart-check">
                 <input type="checkbox" id="select-all" v-model="isAllSelected" @change="toggleAllSelection" /> 전체 선택
@@ -104,32 +105,56 @@
                             price: Number(item.price),
                             checked: false, // 초기 상태는 선택되지 않음
                         }));
+
+                        console.log(this.list);
+                        // 데이터 로드 후 초기화
+                        this.updateTotalAmount();
                     },
                 });
             },
             updateTotalAmount() {
+                console.log('updateTotalAmount 호출됨'); // 디버깅용 로그 추가
                 // 체크된 항목들의 가격을 합산
                 this.totalAmount = this.list
                     .filter(item => item.checked) // 체크된 항목만 필터링
                     .reduce((sum, item) => sum + item.price, 0); // 가격 합산
 
-                // 막대바 업데이트
-                this.updateProgressBar();    
+                    console.log("계산된 totalAmount:", this.totalAmount); // totalAmount 값 확인
+                // 프로그레스 바 업데이트
+                this.updateProgressBar();
             },
+
+            updateProgressBar() {
+                const maxAmount = 20000; // 최대 목표 금액
+                const progressBar = document.getElementById('progress-bar');
+                console.log(progressBar);
+
+                // 총 금액 비율 계산 (최대 100% 초과 방지)
+                const percentage = Math.min((this.totalAmount / maxAmount) * 100, 100);
+                console.log(`비율: ${percentage}%`);
+                // 막대바 너비 설정
+                progressBar.style.width = `${percentage}%`;
+
+                // 막대바 스타일 변경
+                if (progressBar) {
+                    progressBar.style.width = `${percentage}%`;
+                    console.log(`적용된 width: ${progressBar.style.width}`); // 스타일 확인
+                    if (percentage >= 100) {
+                        progressBar.style.backgroundColor = "#ff5733"; // 목표 도달 시 강조 색상
+                    } else {
+                        progressBar.style.backgroundColor = "#4caf50"; // 기본 색상
+                    }
+                } else {
+                    console.error("progressBar 요소를 찾을 수 없습니다.");
+                }
+            },
+
             toggleAllSelection() {
                 // 전체 선택 체크박스 상태에 따라 모든 항목 선택/해제
                 this.list.forEach(item => {
                     item.checked = this.isAllSelected;
                 });
                 this.updateTotalAmount(); // 총 금액 업데이트
-            },
-            updateProgressBar() {
-                const maxAmount = 20000; // 최대 금액
-                const progressBar = document.getElementById('progress-bar');
-                
-                // 총 금액 비율 계산
-                const percentage = Math.min((this.totalAmount / maxAmount) * 100, 100); // 100% 초과 방지
-                progressBar.style.width = `${percentage}%`; // 막대바 너비 설정
             }
         },
         mounted() {
