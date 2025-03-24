@@ -59,4 +59,11 @@ public class MemberController {
 		return new Gson().toJson(resultMap);
 	}
 	
+	@RequestMapping(value = "/member/login.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String login(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = memberService.findMember(map); 
+		return new Gson().toJson(resultMap);
+	}
 }

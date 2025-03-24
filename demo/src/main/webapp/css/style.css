@@ -27,13 +27,17 @@ body {
     padding: 2% 5%; /* 화면 크기에 따라 자동 조정 */
     background-color: white;
     z-index: 1000;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease-in-out;
 }
 
 .header.shrink {
-    margin-top: -145px;
+	margin-top:-45px;
+	padding-bottom: 0%;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	.logo2 img, .logo img{
+		opacity:0;
+	}
+
 }
 
 /* 로고 컨테이너 */

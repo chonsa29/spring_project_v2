@@ -28,6 +28,7 @@ body {
     border-radius: 25px;
     background: rgba(255, 255, 255, 0.346);
     font-size: 16px; 
+	color:white;
     outline: none;
 }
 .login-input::placeholder{

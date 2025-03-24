@@ -11,6 +11,8 @@ public interface MemberMapper {
 
 	Member selectMember(HashMap<String, Object> map);
 
+	Member loginMember(HashMap<String, Object> map);
+
 	
 
 }

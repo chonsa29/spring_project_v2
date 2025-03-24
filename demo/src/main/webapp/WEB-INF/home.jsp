@@ -107,7 +107,9 @@
             return {
                 swiper: null, // Swiper 인스턴스를 저장할 변수
                 productSwiper: null, // 상품 슬라이더 인스턴스를 저장할 변수
-                list: []
+                list: [],
+                sessionStatus: "${sessionStatus}",
+                userId : "${sessionId}"
             };
         },
         methods: {
@@ -151,6 +153,7 @@
     }
         },
         mounted() {
+            console.log(this.sessionStatus);
             // 기존 메인 슬라이더 초기화
             this.swiper = new Swiper('.swiper-container', {
                 loop: true, // 슬라이드 반복

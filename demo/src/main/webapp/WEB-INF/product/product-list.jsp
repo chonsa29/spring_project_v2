@@ -30,7 +30,9 @@
             </div>
             <div class="product-list">
                 <div class="product" v-for="item in list" @click="fnInfo(item.itemNo)">
-                    <div class="product-image"></div>
+                    <div class="product-image">
+                        <img class="product-image" :src="item.filePath" alt="상품 이미지" />
+                    </div>
                     <h4 class="product-name">{{item.itemName}}</h4>
                     <p class="product-info">{{item.itemInfo}}</p>
                     <p class="product-price">{{item.price}}</p>

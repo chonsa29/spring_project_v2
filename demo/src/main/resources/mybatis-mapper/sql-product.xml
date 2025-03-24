@@ -6,7 +6,8 @@
 	<!-- product 리스트 가져오기 -->
 	<select id="SelectProduct" parameterType="hashmap" resultType="com.example.demo.model.Product">
 		SELECT *
-		FROM PRODUCT
+		FROM PRODUCT P
+		INNER JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
 		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	</select>
 	
