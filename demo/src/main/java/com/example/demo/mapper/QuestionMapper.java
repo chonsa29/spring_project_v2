@@ -2,12 +2,17 @@ package com.example.demo.mapper;
 
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+
+import com.example.demo.model.Question;
 
 @Mapper
 public interface QuestionMapper {
 
-	void faqInquire(HashMap<String, Object> map);
+	List<Question> qnaInquire(HashMap<String, Object> map);
+
+	int selectQna(HashMap<String, Object> map);
 
 }
