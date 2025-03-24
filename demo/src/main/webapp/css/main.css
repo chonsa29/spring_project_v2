@@ -86,11 +86,15 @@
 
 		/* 상품 슬라이더 컨테이너 */
 		.product-swiper {
-		    width: 90%;
+			
+			position: relative;
+			width: 90%;
+			height: 300px;
+		    overflow: hidden; /* 슬라이드 밖 콘텐츠 숨기기 */
 		    margin: auto;
-		    position: relative;
-		    height: 300px; /* 명확한 높이 설정 */
-		    overflow: hidden; /* 슬라이드 영역 밖 콘텐츠 숨기기 */
+		    border-radius: 15px;
+		    background-color: transparent;
+			
 		}
 
 		/* 상품 슬라이드 박스 */
@@ -102,7 +106,7 @@
 		    border-radius: 8px;
 		    background-color: #ffffff;
 		    width: 100%; /* 상품 박스의 기본 가로 크기를 100%로 설정 */
-		    max-width: 250px; /* 각 박스의 최대 가로 크기 */
+		    max-width: 300px; /* 각 박스의 최대 가로 크기 */
 		    margin: auto; /* 중앙 정렬 */
 		}
 
@@ -140,7 +144,7 @@
 		    color: #555;
 		    position: absolute;
 		    top: 50%;
-		    transform: translateY(-50%);
+		    /*transform: translateY(-50%);*/
 		    width: 35px;
 		    height: 35px;
 		    background-color: rgba(255, 255, 255, 0.7);
@@ -148,6 +152,13 @@
 		    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 		    transition: all 0.3s ease;
 		}
+		
+		.product-swiper .swiper-button-prev::after,
+		.product-swiper .swiper-button-next::after {
+		    font-size: 15px; /* 화살표 아이콘 크기 줄임 */
+		    color: #555; /* 화살표 색상 (필요에 따라 변경 가능) */
+		}
+
 
 		.product-swiper .swiper-button-prev:hover,
 		.product-swiper .swiper-button-next:hover {
