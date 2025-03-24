@@ -25,10 +25,13 @@ public class ProductController {
         return "/product/product-list"; 
     }
 
-	@RequestMapping("/product/info.do")
-	public String productInfo(Model model) throws Exception{
-		return "/product/product-info"; 
+	
+	@RequestMapping("/product/info.do") 
+	public String View(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{
+		request.setAttribute("map", map);
+		return "/product/product-info";
 	}
+
 	
 	
 	// 상품 목록 가져오기
