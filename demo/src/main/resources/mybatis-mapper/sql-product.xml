@@ -3,9 +3,23 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.demo.mapper.ProductMapper">
+	<!-- product 리스트 가져오기 -->
 	<select id="SelectProduct" parameterType="hashmap" resultType="com.example.demo.model.Product">
 		SELECT *
 		FROM PRODUCT
+	</select>
+	
+	<!-- product 전체 개수 구하기 -->
+	<select id="CountProduct" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*)
+		FROM PRODUCT
+	</select>
+	
+	<!-- product 상세정보 가져오기 -->
+	<select id="SelectProductInfo" parameterType="hashmap" resultType="com.example.demo.model.Product">
+		SELECT *
+		FROM PRODUCT
+		WHERE ITEM_NO = #{itemNo}
 	</select>
 </mapper>
 

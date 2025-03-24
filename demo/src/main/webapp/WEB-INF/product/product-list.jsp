@@ -26,15 +26,14 @@
             </div>
             <div id="product-count">
                 <span id="selectproduct">전체개수</span>
-                <span>(14건)</span>
+                <span>{{count}}개</span>
             </div>
             <div class="product-list">
-                <div class="product" v-for="item in list">
-                    <a href="/product/info.do">
-                        <div class="product-image"></div>
-                        <h4 class="product-name">{{item.itemName}}</h4>
-                        <p class="product-price">{{item.price}}</p>
-                    </a>
+                <div class="product" v-for="item in list" @click="fnInfo(item.itemNo)">
+                    <div class="product-image"></div>
+                    <h4 class="product-name">{{item.itemName}}</h4>
+                    <p class="product-info">{{item.itemInfo}}</p>
+                    <p class="product-price">{{item.price}}</p>
                 </div>
             </div>
         </div>
@@ -48,6 +47,7 @@
             data() {
                 return {
                     list: [],
+                    count: "",
                 };
             },
             methods: {
@@ -64,11 +64,17 @@
                             if (data.result == "success") {
                                 console.log(data);
                                 self.list = data.list;
+                                self.count = data.count;
+                                console.log(data.count);
                             } else {
                                 console.log("실패");
                             }
                         }
                     });
+                },
+
+                fnInfo(itemNo) {
+                    location.href="/product/info.do?itemNo="+itemNo
                 }
             },
             mounted() {

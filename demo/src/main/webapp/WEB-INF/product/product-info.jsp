@@ -102,28 +102,31 @@
         const app = Vue.createApp({
             data() {
                 return {
-                    userId: "",
-                    pwd: ""
+                    itemNo : "",
                 };
             },
             methods: {
-                fnLogin() {
+                fngetInfo() {
                     var self = this;
-                    var nparmap = {
-                    };
-                    $.ajax({
-                        url: "login.dox",
-                        dataType: "json",
-                        type: "POST",
-                        data: nparmap,
-                        success: function (data) {
-                            console.log(data);
-                        }
-                    });
+                    console.log(self.itemNo)
+                    // var self = this;
+                    // var nparmap = {
+                    //     itemNo : self.itemNo
+                    // };
+                    // $.ajax({
+                    //     url: "login.dox",
+                    //     dataType: "json",
+                    //     type: "POST",
+                    //     data: nparmap,
+                    //     success: function (data) {
+                    //         console.log(data);
+                    //     }
+                    // });
                 }
             },
             mounted() {
                 var self = this;
+                self.fngetInfo();
             }
         });
         app.mount('#app');
