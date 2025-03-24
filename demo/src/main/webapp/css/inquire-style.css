@@ -87,6 +87,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 15px 0;
+    
     border-bottom: 2px solid #ddd;
 }
 
@@ -125,6 +126,8 @@ body {
     padding: 15px;
     border-bottom: 1px solid #ddd;
     cursor: pointer;
+    max-width: 820px; 
+    margin: 0 auto;
 }
 
 .faq-question {
@@ -209,6 +212,60 @@ body {
     background: #0b7d36;
 }
 
+/* Q&A 섹션 하단 페이징 및 글쓰기 영역 */
+.qna-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 페이징 버튼을 중앙에 정렬 */
+    margin-top: 20px;
+    position: relative;
+  }
+  
+  /* 페이징 스타일 */
+  .pagination {
+    display: flex;
+    gap: 10px;             /* 버튼 간 간격 */
+    margin-bottom: 10px;
+  }
+  
+  .pagination a {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 20px;    /* 둥근 모서리 */
+    color: #333;
+    text-decoration: none;
+    transition: background 0.3s, color 0.3s;
+  }
+  
+  .pagination a:hover {
+    background-color: #f7f7f7;
+  }
+  
+  .pagination a.active {
+    background-color: #333;
+    border-color: #333;
+    color: #fff;
+  }
+  
+  /* 글쓰기 버튼: 페이징 아래 오른쪽 정렬 */
+  .writing {
+    align-self: flex-end;
+  }
+  
+  .writing button {
+    background-color: #0DA043;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .writing button:hover {
+    background-color: #0b7d36;
+  }  
+
 /* 문의 테이블 스타일 */
 .inquiry-table {
     width: 100%;
@@ -267,4 +324,81 @@ body {
 .notice-table tbody tr:hover {
     background: #f0fdf4;
     cursor: pointer;
+}
+
+@media screen and (max-width: 820px) {
+    /* 컨테이너 */
+    #app {
+        width: 90%;
+        padding: 10px;
+    }
+
+    /* 탭 메뉴 */
+    .tab-menu {
+        flex-direction: column;
+        padding: 8px;
+        gap: 10px;
+        width: 100%;
+        box-shadow: none;
+        border: none;
+    }
+
+    .tab-item {
+        padding: 10px 0;
+        width: 100%;
+        text-align: center;
+        border-radius: 10px;
+    }
+
+    .tab-separator {
+        display: none; /* 구분선 제거 */
+    }
+
+    /* h2 제목 */
+    .tab-content h2 {
+        font-size: 20px;
+        margin-top: 30px;
+        margin-bottom: 50px;
+        padding-bottom: 20px;
+    }
+
+    /* 검색 바 */
+    .search-bar {
+        flex-direction: column;
+        gap: 8px;
+        padding: 15px;
+    }
+
+    .search-bar select, 
+    .search-bar input,
+    .search-bar button {
+        width: 100%;
+    }
+
+    /* FAQ */
+    .faq-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .faq-title {
+        font-size: 16px;
+    }
+
+    .faq-filter {
+        flex-wrap: wrap;
+    }
+
+    /* 테이블 */
+    .inquiry-table,
+    .notice-table {
+        max-width: 100%;
+        font-size: 14px;
+    }
+
+    .inquiry-table th, .inquiry-table td,
+    .notice-table th, .notice-table td {
+        padding: 10px;
+    }
 }

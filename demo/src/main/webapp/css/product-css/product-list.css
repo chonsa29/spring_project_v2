@@ -88,3 +88,16 @@ input:focus{
     margin-left:15vw;
     margin-bottom: 20px;
 }
+
+#indexnum {
+    margin-left: 20px;
+    color: black;
+    text-decoration: none;
+	margin-bottom: 30px;
+}
+
+#indexnum>a {
+    margin-left: 20px;
+    color: black;
+    text-decoration: none;
+}

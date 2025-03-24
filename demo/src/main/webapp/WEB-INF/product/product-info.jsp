@@ -7,18 +7,17 @@
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-        <link rel="stylesheet" href="/css/product-info.css">
-        <title>첫번째 페이지</title>
+        <link rel="stylesheet" href="/css/product-css/product-info.css">
     </head>
     <style>
-
+        
     </style>
 
-    <body>
-        <jsp:include page="/WEB-INF/common/header.jsp" />
-        <div id="app">
+<body>
+    <jsp:include page="/WEB-INF/common/header.jsp" />
+    <div id="app">
             <div id="root">
-                🏚 > PRODUCT > {{info.itemName}}
+                HOME > PRODUCT > {{info.itemName}}
             </div>
             <div class="info-container">
                 <div id="product-box">
@@ -31,6 +30,7 @@
                 <div id="product-Info">
                     <div id="item-Info">{{info.itemInfo}}</div>
                     <div id="product-name">{{info.itemName}}</div>
+                    <span v-if="allergensFlg" id="allergens-info">{{info.allergens}} 주의!</span>
                     <div id="review">
                         <span class="stars">★★★★★</span>
                         <span>4.3</span>
@@ -105,6 +105,7 @@
                     itemNo : "${map.itemNo}",
                     info : {},
                     quantity : 1,
+                    allergensFlg : false,
                     
                 };
             },
@@ -123,6 +124,9 @@
                             if(data.result=="success") {
                                 console.log(data.info);
                                 self.info = data.info;
+                                if(data.info.allergens != "없음") {
+                                    self.allergensFlg = true;
+                                }
                                 
                             }
                         }
@@ -130,9 +134,14 @@
                 },
                 fnquantity(action) {
                     if (action === 'sum') {
-                        this.quantity++;
+                        if (this.quantity < 20) {
+                            this.quantity++;
+                        } else {
+                            alert("최대 수량입니다.");
+                            return;
+                        }
                     } else if (action === 'sub' && this.quantity > 1) {
-                        this.quantity--;
+                        this.quantity--; 
                     }
                 }
             },

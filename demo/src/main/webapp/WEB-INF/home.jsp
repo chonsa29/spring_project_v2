@@ -1,23 +1,63 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
     <!DOCTYPE html>
     <html lang="ko">
+
     <head>
         <meta charset="UTF-8">
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/swiper@8.4.7/swiper-bundle.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="/css/style.css">
         <link rel="stylesheet" href="/css/main.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8.4.7/swiper-bundle.min.css" />
+        
         <title>MealPick - 밀키트 쇼핑몰</title>
     </head>
+    <style>
+        .product-slider {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            overflow: hidden;
+        }
+
+        .slides {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .slides img {
+            width: calc(100% / 3);
+            /* 화면에 표시할 이미지 개수에 따라 수정 */
+            border: 2px solid #fff;
+        }
+
+        .navigation {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+        }
+
+        .navigation button {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+        }
+    </style>
+
     <body>
         <jsp:include page="/WEB-INF/common/header.jsp" />
-        
+
         <div id="app">
-    
+
             <!-- 기존 메인 슬라이더 -->
             <div class="slider">
                 <div class="swiper-container">
@@ -56,6 +96,7 @@
                     <div class="swiper-button-next product-next"></div>
                 </div>
             </div>
+        </div>
         </div>
         <jsp:include page="/WEB-INF/common/footer.jsp" />
     </body>
@@ -131,7 +172,9 @@
         },
     });
 
-    app.mount('#app');
-</script>
+                this.fnProductList();
+            },
+        });
 
-    
+        app.mount('#app');
+    </script>

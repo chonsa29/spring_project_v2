@@ -114,11 +114,11 @@
             },
             updateTotalAmount() {
                 console.log('updateTotalAmount 호출됨'); // 디버깅용 로그 추가
+
                 // 체크된 항목들의 가격을 합산
                 this.totalAmount = this.list
                     .filter(item => item.checked) // 체크된 항목만 필터링
                     .reduce((sum, item) => sum + item.price, 0); // 가격 합산
-
                     console.log("계산된 totalAmount:", this.totalAmount); // totalAmount 값 확인
                 // 프로그레스 바 업데이트
                 this.updateProgressBar();
@@ -148,13 +148,13 @@
                     console.error("progressBar 요소를 찾을 수 없습니다.");
                 }
             },
-
             toggleAllSelection() {
                 // 전체 선택 체크박스 상태에 따라 모든 항목 선택/해제
                 this.list.forEach(item => {
                     item.checked = this.isAllSelected;
                 });
                 this.updateTotalAmount(); // 총 금액 업데이트
+
             }
         },
         mounted() {
