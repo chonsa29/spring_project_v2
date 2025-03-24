@@ -172,9 +172,5 @@
         },
     });
 
-                this.fnProductList();
-            },
-        });
-
         app.mount('#app');
     </script>
