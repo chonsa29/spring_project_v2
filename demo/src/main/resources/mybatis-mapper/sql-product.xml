@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.ProductMapper">
+	<select id="SelectProduct" parameterType="hashmap" resultType="com.example.demo.model.Product">
+		SELECT *
+		FROM PRODUCT
+	</select>
+</mapper>
+
+
+
+
