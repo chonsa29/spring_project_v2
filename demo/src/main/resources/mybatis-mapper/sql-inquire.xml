@@ -4,9 +4,37 @@
 
 <mapper namespace="com.example.demo.mapper.QuestionMapper">
 
-	<select id="faqInquire" parameterType="hashmap" resultType="com.example.demo.model.Question">
+	<select id="qnaInquire" parameterType="hashmap" resultType="com.example.demo.model.Question">
 		SELECT *
 		FROM QUESTION
+		WHERE 1=1
+		<if test="searchOption != null and searchOption == 'all'">
+			AND (QS_TITLE LIKE '%' || #{searchKeyword} || '%'
+			OR QS_CONTENTS LIKE '%' || #{searchKeyword} || '%')
+		</if>
+		<if test="searchOption != null and searchOption == 'title'">
+			AND QS_TITLE LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		<if test="searchOption != null and searchOption == 'contents'">
+			AND QS_CONTENTS LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+	</select>
+	
+	<select id="selectQna" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*)
+		FROM QUESTION
+		WHERE 1=1
+		<if test="searchOption != null and searchOption == 'all'">
+			AND (QS_TITLE LIKE '%' || #{searchKeyword} || '%'
+			OR QS_CONTENTS LIKE '%' || #{searchKeyword} || '%')
+		</if>
+		<if test="searchOption != null and searchOption == 'title'">
+			AND QS_TITLE LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		<if test="searchOption != null and searchOption == 'contents'">
+			AND QS_CONTENTS LIKE '%' || #{searchKeyword} || '%'
+		</if>
 	</select>
 	
 </mapper>

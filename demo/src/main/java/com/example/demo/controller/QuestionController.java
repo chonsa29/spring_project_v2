@@ -24,12 +24,12 @@ public class QuestionController {
         return "/help/inquire";
     }
 	
-	@RequestMapping(value = "/inquire/faq.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/inquire/qna.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String faq(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 				
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		resultMap = questionService.questionFaq(map);
+		resultMap = questionService.questionQna(map);
 		
 		return new Gson().toJson(resultMap);
 	}

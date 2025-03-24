@@ -26,8 +26,8 @@
 			<h2>자주 묻는 질문</h2>
 			<div class="faq-list">
 				<div v-for="faq in faqList" :key="faq.id" class="faq-item" @click="toggleFaq(faq)">
-					<div class="faq-question">Q. {{ faq.question }}</div>
-					<div class="faq-answer" v-show="faq.open">A. {{ faq.answer }}</div>
+					<div class="faq-question">{{ faq.question }}</div>
+					<div class="faq-answer" v-show="faq.open">{{ faq.answer }}</div>
 				</div>
 			</div>
 		</section>
@@ -36,10 +36,10 @@
 		<section id="qna" class="tab-content" v-show="activeTab === 'qna'">
 			<h2>문의게시판</h2>
 			<div class="search-bar">
-				<select v-model="selectedCategory">
-					<option value="">제목</option>
-					<option value="상품">상품</option>
-					<option value="배송">배송</option>
+				<select v-model="searchOption">
+					<option value="all">:: 전체 ::</option>
+					<option value="title">제목</option>
+					<option value="contents">내용</option>
 				</select>
 				<input type="text" v-model="searchKeyword" placeholder="검색어를 입력하세요">
 				<button @click="searchQuestions">검색</button>
@@ -50,18 +50,27 @@
 						<th>번호</th>
 						<th>제목</th>
 						<th>내용</th>
-						<th>날짜</th>
+						<th>상품 번호</th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="inquiry in inquiryList" :key="inquiry.id">
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
+					<tr v-for="inquiry in inquiryList" :key="inquiry.userId">
+						<td>{{ inquiry.qsNo }}</td>
+						<td>{{ inquiry.qsTitle }}</td>
+						<td>{{ inquiry.qsContents }}</td>
+						<td>{{ inquiry.itemNo }}</td>
 					</tr>
 				</tbody>
 			</table>
+				 <!-- 페이징 -->
+				 <div class="pagination">
+					<a href="javascript:;" v-for="num in index" @click="fnPage(num)" :class="{active: page === num}">
+						{{num}}
+					</a>
+				</div>
+				<div class="writing">
+				    <button @click="">글쓰기</button>
+				</div>
 		</section>
 
 		<!-- 공지사항 -->
@@ -97,18 +106,23 @@
 		</section>
 	</div>
 	<jsp:include page="/WEB-INF/common/footer.jsp" />
-</body>
 </html>
-
 <script>
 const app = Vue.createApp({
     data() {
         return {
             activeTab: 'faq', // 기본으로 '자주 묻는 질문' 탭 활성화
-            faqList: [],
-            selectedCategory: '',
+            searchOption: "all",
             searchKeyword: '',
             inquiryList: [],
+			pageSize: 5,
+			index: 0,
+			page: 1,
+			faqList: [
+				{ id: 1, question: '배송 기간은 얼마나 걸리나요?', answer: '보통 2~3일 소요됩니다.', open: false },
+				{ id: 2, question: '교환/환불은 어떻게 하나요?', answer: '고객센터를 통해 요청 가능합니다.', open: false },
+				{ id: 3, question: '회원 탈퇴는 어디서 하나요?', answer: '마이페이지에서 탈퇴 가능합니다.', open: false }
+            ]
         };
     },
     methods: {
@@ -117,35 +131,51 @@ const app = Vue.createApp({
             this.activeTab = tab;
         },
 
-        // FAQ 데이터 불러오기
-        loadFaqList() {
+        inquireList() {
+			var self = this;
+			var nparmap = {
+				searchKeyword: self.searchKeyword,
+				searchOption: self.searchOption,
+				pageSize: self.pageSize,
+				page: (self.page - 1) * self.pageSize
+			};
             $.ajax({
-                url: "/faqList",
-                type: "GET",
+                url: "/inquire/qna.dox",
+                type: "POST",
                 dataType: "json",
-                success: (response) => {
-                    this.faqList = response.map(faq => ({ ...faq, open: false }));
-                },
-                error: () => {
-                    console.error("FAQ 데이터를 불러오는 데 실패했습니다.");
-                },
+				data : nparmap,
+                success : function(data) { 
+					console.log(data);
+					self.inquiryList = data.inquiryList
+					self.index = Math.ceil(data.count / self.pageSize);
+                }
             });
         },
+		fnPage: function (num) {
+			let self = this;
+			self.page = num;
+			self.inquireList();
+		},
 
         // FAQ 질문 클릭 시 답변 토글
         toggleFaq(faq) {
-            faq.open = !faq.open;
+            this.faqList = this.faqList.map(item => {
+				if (item.id === faq.id) {
+					return { ...item, open: !item.open };
+				} else {
+					return { ...item, open: false };
+				}
+			});
         },
 
-        // 문의 검색 기능 (추후 API 연동 필요)
         searchQuestions() {
             console.log("검색: ", this.searchKeyword);
-            // API 연동 필요
         }
     },
     mounted() {
-        this.loadFaqList();
+        this.inquireList();
     }
 });
 app.mount('#app');
 </script>
+</body>
