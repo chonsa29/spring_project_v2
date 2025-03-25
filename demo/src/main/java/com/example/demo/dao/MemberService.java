@@ -14,9 +14,6 @@ import jakarta.servlet.http.HttpSession;
 public class MemberService {
 	@Autowired
 	MemberMapper memberMapper;
-
-	@Autowired
-	HttpSession session;
 	
 	public HashMap<String, Object> searchMember(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
@@ -38,10 +35,6 @@ public class MemberService {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		Member member = memberMapper.selectMember(map);
 		if(member != null) {
-			session.setAttribute("sessionId", member.getUserId());
-			session.setAttribute("sessionName", member.getUserName());
-			session.setAttribute("sessionStatus", member.getStatus());
-			
 			resultMap.put("member", member);
 			resultMap.put("result", "success");
 		} else {

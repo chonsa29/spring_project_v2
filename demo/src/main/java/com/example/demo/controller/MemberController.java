@@ -23,6 +23,7 @@ public class MemberController {
 	
     @Autowired
     HttpSession session;
+    
 	@RequestMapping("/member/login.do") 
     public String login(Model model) throws Exception{
 		return "/member/login"; 
@@ -44,6 +45,13 @@ public class MemberController {
 
         return "/member/mypage"; 
     }
+	
+	@RequestMapping("/member/admin.do") 
+    public String admin(Model model) throws Exception{
+
+        return "/member/admin-page"; 
+    }
+	
 	@RequestMapping(value = "/member/check.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String check(Model model, @RequestParam HashMap<String, Object> map) throws Exception {

@@ -16,6 +16,7 @@ public class Member {
 	private String createdAt ;
 	private String userName;
 	private String status;
+	private String nickName;
 	
 	public String getUserId() {
 		return userId;

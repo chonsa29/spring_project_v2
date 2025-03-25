@@ -30,6 +30,18 @@
 		FROM PRODUCT
 		WHERE ITEM_NO = #{itemNo}
 	</select>
+	
+	<!--product 추가-->
+	<insert id="addProduct" parameterType="hashmap"  useGeneratedKeys="true" keyColumn="ITEM_NO" keyProperty="itemNo">
+		INSERT INTO PRODUCT 
+		VALUES (PRODUCT_SEQ.NEXTVAL, #{price}, #{name}, #{quantity}, #{category}, SYSDATE, #{info}, #{allergens})
+	</insert>
+	
+	<!--product 이미지 추가-->
+		<insert id="insertProductFile" parameterType="hashmap">
+			INSERT INTO PRODUCT_IMG
+			VALUES(#{itemNo}, #{filename},#{path}, #{thumbNail})
+		</insert>
 </mapper>
 
 

@@ -25,9 +25,9 @@
                 <div>
                     <div class="profile-card">
                         <div class="profile-icon">👤</div>
-                        <h2>{{ user.username }}</h2>
+                        <h2>{{ user.nickName }}</h2>
                         <p>{{ user.email }}</p>
-                        <button @click="logout">로그아웃</button>
+                        <button @click="fnLogout">로그아웃</button>
                         <button @click="openSupport">고객센터</button>
                     </div>
                     <div class="menu-list">
@@ -42,10 +42,10 @@
                 </div>
                 <div class="profile-details">
                     <h3>{{ menuTitle }}</h3>
-                    <p v-if="selectedMenu === 'profile'"><strong>ID:</strong> {{ user.id }}</p>
-                    <p v-if="selectedMenu === 'profile'"><strong>NAME:</strong> {{ user.name }}</p>
-                    <p v-if="selectedMenu === 'profile'"><strong>USERNAME:</strong> {{ user.username }}</p>
-                    <p v-if="selectedMenu === 'profile'"><strong>PASSWORD:</strong> ************</p>
+                    <p v-if="selectedMenu === 'profile'"><strong>ID:</strong> {{ user.userId }}</p>
+                    <p v-if="selectedMenu === 'profile'"><strong>NAME:</strong> {{ user.userName }}</p>
+                    <p v-if="selectedMenu === 'profile'"><strong>USERNAME:</strong> {{ user.nickName }}</p>
+                    <p v-if="selectedMenu === 'profile'"><strong>PASSWORD:</strong> {{ maskedPassword }}</p>
                 </div>
             </div>
         </div>
@@ -57,12 +57,8 @@
         const app = Vue.createApp({
             data() {
                 return {
-                    user: {
-                        id: "user123",
-                        name: "홍길동",
-                        username: "USERNAME",
-                        email: "username@gmail.com",
-                    },
+                    user: {},
+                    userId: "${sessionId}",
                     selectedMenu: 'profile',
                     menuTitles: {
                         profile: '프로필',
@@ -75,23 +71,63 @@
             computed: {
                 menuTitle() {
                     return this.menuTitles[this.selectedMenu] || '프로필';
+                },
+                maskedPassword() {
+                    return this.user.password ? '*'.repeat(this.user.password.length) : '';
                 }
             },
             methods: {
                 selectMenu(menu) {
                     this.selectedMenu = menu;
                 },
-                logout() {
-                    alert("로그아웃 되었습니다.");
+                userInfo() {
+                    var self = this;
+                    var nparmap = {
+                        userId: self.userId
+                    };
+                    $.ajax({
+                        url: "/member/get.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: nparmap,
+                        success: function (data) {
+                            console.log(data);
+                            self.user = data.member;
+                            console.log(self.user);
+                        }
+
+                    });
+                },
+                fnLogout() {
+                    var self = this;
+                    var nparmap = {
+                    };
+                    $.ajax({
+                        url: "/member/logout.dox",
+                        dataType: "json",
+                        type: "GET",
+                        data: nparmap,
+                        success: function (data) {
+                            alert("로그아웃 되었습니다!");
+                            location.href = "/home.do"
+                        }
+
+                    });
                 },
                 openSupport() {
                     alert("고객센터 페이지로 이동합니다.");
+                    location.href = "/inquire.do";
                 },
                 withdraw() {
                     if (confirm("정말로 회원 탈퇴하시겠습니까?")) {
                         alert("회원 탈퇴가 완료되었습니다.");
                     }
-                }
+                },
+
+            },
+            mounted() {
+                var self = this;
+                self.userInfo();
             }
         });
         app.mount('#app');
