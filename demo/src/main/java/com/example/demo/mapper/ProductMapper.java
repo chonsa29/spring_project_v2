@@ -19,4 +19,8 @@ public interface ProductMapper {
 
 	int SelectProductCount(HashMap<String, Object> map);
 
+	int addProduct(HashMap<String, Object> map);
+
+	void insertProductFile(HashMap<String, Object> map);
+
 }
