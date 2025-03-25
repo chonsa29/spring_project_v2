@@ -6,7 +6,8 @@
 	<meta charset="UTF-8">
 	<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-	<link rel="stylesheet" href="/css/inquire-style.css">
+	<link rel="stylesheet" href="/css/inquire-css/inquire-style.css">
+	<script src="/js/pageChange.js"></script>
 	<title>문의 페이지</title>
 </head>
 <body>
@@ -22,12 +23,12 @@
 		</nav>
 
 		<!-- 자주 묻는 질문 -->
-		<section id="faq" class="tab-content" v-show="activeTab === 'faq'">
+		<section id="faq" class="tab-content" v-if="activeTab === 'faq'">
 			<h2>자주 묻는 질문</h2>
 			<div class="faq-list">
 				<div v-for="faq in faqList" :key="faq.id" class="faq-item" @click="toggleFaq(faq)">
 					<div class="faq-question">{{ faq.question }}</div>
-					<div class="faq-answer" v-show="faq.open">{{ faq.answer }}</div>
+					<div v-if="faq.open" class="faq-answer">{{ faq.answer }}</div>
 				</div>
 			</div>
 		</section>
@@ -50,15 +51,15 @@
 						<th>번호</th>
 						<th>제목</th>
 						<th>내용</th>
-						<th>상품 번호</th>
+						<th>날짜</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="inquiry in inquiryList" :key="inquiry.userId">
-						<td>{{ inquiry.qsNo }}</td>
-						<td>{{ inquiry.qsTitle }}</td>
-						<td>{{ inquiry.qsContents }}</td>
-						<td>{{ inquiry.itemNo }}</td>
+						<td @click="fnView(inquiry.qsNo)">{{ inquiry.qsNo }}</td>
+						<td @click="fnView(inquiry.qsNo)">{{ inquiry.qsTitle }}</td>
+						<td @click="fnView(inquiry.qsNo)">{{ inquiry.qsContents }}</td>
+						<td>{{ inquiry.cdatetime }}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -69,7 +70,7 @@
 					</a>
 				</div>
 				<div class="writing">
-				    <button @click="">글쓰기</button>
+				    <button @click="fnWriting">글쓰기</button>
 				</div>
 		</section>
 
@@ -159,18 +160,17 @@ const app = Vue.createApp({
 
         // FAQ 질문 클릭 시 답변 토글
         toggleFaq(faq) {
-            this.faqList = this.faqList.map(item => {
-				if (item.id === faq.id) {
-					return { ...item, open: !item.open };
-				} else {
-					return { ...item, open: false };
-				}
-			});
+			faq.open = !faq.open;
         },
 
-        searchQuestions() {
-            console.log("검색: ", this.searchKeyword);
-        }
+		fnWriting() {
+			location.href = "/inquire/add.do";
+		},
+
+		fnView(qsNo) {
+			pageChange("/inquire/view.do", { qsNo : qsNo });
+		}
+
     },
     mounted() {
         this.inquireList();

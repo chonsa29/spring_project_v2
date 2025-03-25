@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.example.demo.dao.QuestionService;
 import com.google.gson.Gson;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 public class QuestionController {
 	
@@ -20,8 +22,20 @@ public class QuestionController {
 	QuestionService questionService;
 	
 	@RequestMapping("/inquire.do")
-	public String home(Model model) throws Exception{
+	public String help(Model model) throws Exception{
         return "/help/inquire";
+    }
+	
+	@RequestMapping("/inquire/add.do")
+	public String add(Model model) throws Exception{
+        return "/help/inquire-add";
+    }
+	
+	@RequestMapping("/inquire/view.do") 
+    public String view(HttpServletRequest request,Model model, 
+    		@RequestParam HashMap<String, Object> map) throws Exception{
+		request.setAttribute("map", map);
+        return "/help/inquire-view";
     }
 	
 	@RequestMapping(value = "/inquire/qna.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -34,5 +48,24 @@ public class QuestionController {
 		return new Gson().toJson(resultMap);
 	}
 	
+	@RequestMapping(value = "/inquire/add.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String add(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+				
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = questionService.questionAdd(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/inquire/view.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String view(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+				
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = questionService.questionView(map);
+		
+		return new Gson().toJson(resultMap);
+	}
 	
 }

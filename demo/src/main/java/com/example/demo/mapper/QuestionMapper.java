@@ -15,4 +15,8 @@ public interface QuestionMapper {
 
 	int selectQna(HashMap<String, Object> map);
 
+	void qnaInsert(HashMap<String, Object> map);
+
+	Question qnaSelect(HashMap<String, Object> map);
+
 }
