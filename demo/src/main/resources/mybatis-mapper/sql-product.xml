@@ -21,8 +21,9 @@
 	<!-- product 상세정보 가져오기 -->
 	<select id="SelectProductInfo" parameterType="hashmap" resultType="com.example.demo.model.Product">
 		SELECT *
-		FROM PRODUCT
-		WHERE ITEM_NO = #{itemNo}
+		FROM PRODUCT P
+		INNER JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
+		WHERE P.ITEM_NO = #{itemNo}
 	</select>
 	
 	<!-- product의 재고 가져오기 -->
