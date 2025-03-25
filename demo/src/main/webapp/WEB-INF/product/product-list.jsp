@@ -16,13 +16,13 @@
 
         <div id="app">
             <div id="rootname">
-                <div>HOME>PRODUCT</div>
+                <div><a href="/home.do">HOME</a> > <a href="/product/product-list.do">PRODUCT</a></div>
             </div>
             <div id="name">
                 <h2>상품 목록</h2>
             </div>
             <div>
-                <input type="text" placeholder="검색하기" id="serach">
+                <input type="text" placeholder="검색하기" id="product-search">
             </div>
             <div id="product-count">
                 <span id="selectproduct">전체개수</span>
@@ -36,6 +36,7 @@
                     <h4 class="product-name">{{item.itemName}}</h4>
                     <p class="product-info">{{item.itemInfo}}</p>
                     <p class="product-price">{{item.price}}</p>
+                    <button class="product-like"></button>
                 </div>
             </div>
             <div id="indexnum">
