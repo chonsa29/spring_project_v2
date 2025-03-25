@@ -10,33 +10,33 @@
         <link rel="stylesheet" href="/css/product-css/product-info.css">
     </head>
     <style>
-
+        
     </style>
 
-    <body>
-        <jsp:include page="/WEB-INF/common/header.jsp" />
-        <div id="app">
-            <div id="root">
-                <a href="/home.do">HOME</a> > <a href="/product.do">PRODUCT</a> > {{info.itemName}}
+<body>
+    <jsp:include page="/WEB-INF/common/header.jsp" />
+    <div id="app">
+        <div id="root">
+            <a href="/home.do">HOME</a> > <a href="/product.do">PRODUCT</a> > {{info.itemName}}
+        </div>
+        <div class="info-container">
+            <div id="product-box">
+                <img :src="info.filePath" alt="info.itemName" class="product-mainimg">
             </div>
-            <div class="info-container">
-                <div id="product-box">
-                    <img :src="info.filePath" alt="info.itemName" class="product-mainimg">
-                </div>
-                <div class="subimg-container">
-                    <div class="subimg"></div>
-                    <div class="subimg"></div>
-                    <div class="subimg"></div>
-                </div>
-                <div id="product-Info">
-                    <div id="item-Info">{{info.itemInfo}}</div>
-                    <div id="product-name">{{info.itemName}}</div>
+            <div class="subimg-container">
+                <div class="subimg"></div>
+                <div class="subimg"></div>
+                <div class="subimg"></div>
+            </div>
+            <div id="product-Info">
+                <div id="item-Info">{{info.itemInfo}}</div>
+                <div id="product-name">{{info.itemName}} <button class="like">❤</button></div>
                     <span v-if="allergensFlg" id="allergens-info">{{info.allergens}} 주의!</span>
                     <div id="review">
                         <span class="stars">★★★★★</span>
                         <span>4.3</span>
                     </div>
-                    <div class="price">{{formattedPrice}}</div>
+                    <div class="price">{{formattedPrice}} 원</div>
                     <div class="delivery">
                         <span id="delivery-price">배송비</span>
                         <span id="delicery-total">3,000원 </span>
@@ -73,7 +73,6 @@
 
                     <!-- 좋아요, 장바구니, 구매하기 박스-->
                     <div class="buttons">
-                        <button class="like">❤</button>
                         <button class="cart">장바구니</button>
                         <button class="buy">
                             <a href="#">
@@ -123,14 +122,7 @@
                     price: 0,
                 };
             },
-            computed: {
-                formattedPrice() {
-                    return this.price.toLocaleString();
-                },
-                formattedTotalPrice() {
-                    return (this.price * this.quantity).toLocaleString();
-                }
-            },
+
             methods: {
                 fngetInfo() {
                     var self = this;
@@ -147,7 +139,7 @@
                                 self.info = data.info;
                                 self.count = data.count;
                                 self.price = data.info.price;
-                                console.log(self.price);
+                                
                                 if (data.info.allergens != "없음") {
                                     self.allergensFlg = true;
                                 }
@@ -170,6 +162,14 @@
                         self.quantity--;
 
                     }
+                }
+            },
+            computed: {
+                formattedPrice() {
+                    return parseInt(this.price).toLocaleString();
+                },
+                formattedTotalPrice() {
+                    return (this.price * this.quantity).toLocaleString();
                 }
             },
             mounted() {
