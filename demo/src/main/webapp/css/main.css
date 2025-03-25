@@ -89,7 +89,7 @@
 			
 			position: relative;
 			width: 90%;
-			height: 300px;
+			height: 200px;
 		    overflow: hidden; /* 슬라이드 밖 콘텐츠 숨기기 */
 		    margin: auto;
 		    border-radius: 15px;

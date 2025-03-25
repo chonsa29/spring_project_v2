@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="/css/style.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8.4.7/swiper-bundle.min.css" />
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+        <script src="/js/pageChange.js"></script>
         <title>MealPick - 밀키트 쇼핑몰</title>
     </head>
 
@@ -42,7 +43,7 @@
                             <a href="/member/mypage.do" v-if="sessionStatus">MYPAGE</a>
                             <a href="/member/login.do" v-if="!sessionStatus">LOGIN</a>
                             <a href="/home.do" v-else @click="fnLogout">LOGOUT</a>
-                            <a href="/cart.do">CART</a>
+                            <a  href="javascript:;" @click="fnCart(sessionId)">CART</a>
                         </div>
                         <div class="search-container">
                             <a href="#"><span class="material-symbols-outlined">
@@ -73,28 +74,33 @@
                 header.classList.remove("shrink"); // 맨 위로 올라가면 원래 크기로 복귀
             }
         });
+
         const appHeader = Vue.createApp({
             data() {
                 return {
-                    sessionStatus : "${sessionStatus}"
+                    sessionStatus : "${sessionStatus}",
+                    sessionId : "${sessionId}"
                 };
             },
             methods: {
                 fnLogout(){
-				var self = this;
-				var nparmap = {
-				};
-				$.ajax({
-					url:"/member/logout.dox",
-					dataType:"json",	
-					type : "GET", 
-					data : nparmap,
-					success : function(data) { 
-                        alert("로그아웃 되었습니다!");
-					}
-                    
-				});
-            }
+                    var self = this;
+                    var nparmap = {
+                    };
+                    $.ajax({
+                        url:"/member/logout.dox",
+                        dataType:"json",	
+                        type : "GET", 
+                        data : nparmap,
+                        success : function(data) { 
+                            alert("로그아웃 되었습니다!");
+                        }
+                        
+                    });
+                },
+                fnCart : function(userId) {
+                    pageChange("/cart.do", {userId : userId});
+                },
             },
             mounted() {
                 const floatingIcon = document.querySelector(".floating-icon img");

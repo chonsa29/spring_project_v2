@@ -29,4 +29,11 @@ public class CartService {
 		return resultMap;
 	}
 
+	public HashMap<String, Object> editCount(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		cartMapper.updateCount(map);
+		resultMap.put("result", "success");
+		return resultMap;
+	}
+
 }

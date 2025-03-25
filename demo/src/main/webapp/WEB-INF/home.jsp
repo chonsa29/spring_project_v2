@@ -48,7 +48,7 @@
             <div class="swiper-container product-swiper">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide product-box" v-for="item in list">
-                        <img src="/img/menu.jpg" alt="상품 1">
+                        <img :src="item.filePath" alt="상품">
                     </div>
                 </div>
                 <!-- 네비게이션 버튼 -->
