@@ -8,7 +8,6 @@
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <link rel="stylesheet" href="/css/product-css/product-info.css">
-        <script src="/js/pageChange.js"></script>
     </head>
     <style>
 
@@ -75,7 +74,7 @@
                     <!-- 좋아요, 장바구니, 구매하기 박스-->
                     <div class="buttons">
                         <button class="like">❤</button>
-                        <button class="cart" click="fnCartAdd(info.itemNo)">장바구니</button>
+                        <button class="cart">장바구니</button>
                         <button class="buy">
                             <a href="#">
                                 구매하기
@@ -163,39 +162,6 @@
                         self.quantity--;
 
                     }
-                },
-                fnCartAdd(itemNo) {
-                    var self = this;
-                    var nparmap = {
-                        title : self.title,
-                        contents : self.contents,
-                        userId : self.sessionId
-                    };
-				$.ajax({
-					url:"/board/add.dox",
-					dataType:"json",	
-					type : "POST", 
-					data : nparmap,
-					success : function(data) { 
-						console.log(data);
-                        alert("저장되었습니다.");
-
-                        if($("#file1")[0].files.length > 0) {
-                            var form = new FormData();
-                            //form.append( "file1",  $("#file1")[0].files[0] );
-                            for(let i = 0; i < $("#file1")[0].files.length; i++) {
-                                form.append("file1", $("#file1")[0].files[i]);
-                            }
-                            form.append( "boardNo",  data.boardNo); // 임시 pk
-                            self.upload(form); 
-                            location.href ="/board/list.do";
-                        } else {
-                            location.href ="/board/list.do";
-                        }
-
-                        
-					}
-				});
                 }
             },
             mounted() {

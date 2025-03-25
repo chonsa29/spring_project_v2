@@ -24,11 +24,6 @@ public class CommonController {
         return "/home"; 
     }
 	
-	@RequestMapping("/brand.do")
-	public String brand(Model model) throws Exception{
-        return "/brand"; 
-    }
-	
 	@RequestMapping(value = "/main/list.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String newProductList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
