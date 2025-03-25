@@ -22,7 +22,7 @@
                 <h2>상품 목록</h2>
             </div>
             <div>
-                <input type="text" placeholder="검색하기" id="product-search">
+                <input type="text" placeholder="검색하기" id="product-search" v-model="keyword" @keyup.enter="fnProductList">
             </div>
             <div id="product-count">
                 <span id="selectproduct">전체개수</span>
@@ -50,7 +50,12 @@
                 <a v-if="page !=1" id="index" href="javascript:;" class="color-black" @click="fnPageMove('prev')">
                     < </a>
                         <a id="index" href="javascript:;" v-for="num in index" @click="fnPage(num)">
-                            {{num}}
+                            <span v-if="page == num">
+                                {{num}}
+                            </span>
+                            <span v-else class="color-black">
+                                {{num}}
+                            </span>
                         </a>
                         <a v-if="page!=index" id="index" href="javascript:;" class="color-black"
                             @click="fnPageMove('next')"> >
@@ -73,12 +78,14 @@
                     index: 0,
                     page: 1,
                     price: 0,
+                    keyword : "",
                 };
             },
             methods: {
                 fnProductList() {
                     var self = this;
                     var nparmap = {
+                        keyword : self.keyword,
                         pageSize: self.pageSize,
                         page: (self.page - 1) * self.pageSize,
                     };

@@ -8,7 +8,7 @@
 		SELECT *
 		FROM PRODUCT P
 		INNER JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
-		WHERE THUMBNAIL = 'Y'
+		WHERE THUMBNAIL = 'Y' AND ITEM_NAME LIKE '%' || #{keyword} || '%' 
 		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	</select>
 	
@@ -16,6 +16,7 @@
 	<select id="CountProduct" parameterType="hashmap" resultType="int">
 		SELECT COUNT(*)
 		FROM PRODUCT
+		WHERE ITEM_NAME LIKE '%' || #{keyword} || '%' 
 	</select>
 	
 	<!-- product 상세정보 가져오기 -->
