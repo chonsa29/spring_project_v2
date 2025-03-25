@@ -17,7 +17,7 @@
     <jsp:include page="/WEB-INF/common/header.jsp" />
     <div id="app">
             <div id="root">
-                HOME > PRODUCT > {{info.itemName}}
+                <a href="/home.do">HOME</a> > <a href="/product/product-list.do">PRODUCT</a> > {{info.itemName}}
             </div>
             <div class="info-container">
                 <div id="product-box">

@@ -30,7 +30,7 @@ a {
 
 }
 
-#serach {
+#product-search {
     border-radius: 50px;
     border: 1px solid #ccc;
     width: 50%;
@@ -77,6 +77,12 @@ input:focus{
     text-align: left;
 }
 
+#product-price {
+	font-size: 18px;
+	font-weight: bold;
+	text-align: right;
+}
+
 #selectproduct {
     font-weight: bold;
     margin-left:15vw;
@@ -100,4 +106,7 @@ input:focus{
     margin-left: 20px;
     color: black;
     text-decoration: none;
+}
+a {
+	text-decoration: none;
 }
