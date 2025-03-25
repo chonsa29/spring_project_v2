@@ -44,7 +44,7 @@
 
         <!-- 새 상품 섹션 슬라이더 -->
         <div class="product-section">
-            <h2 class="product-title">PRODUCT(슬라이드 기능 구현)</h2>
+            <h2 class="product-title">NEW MEALPICK</h2>
             <div class="swiper-container product-swiper">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide product-box" v-for="item in list">
@@ -56,6 +56,22 @@
                 <div class="swiper-button-next product-next"></div>
             </div>
         </div>
+
+        <!-- 베스트 상품 섹션 슬라이더 -->
+        <div class="best-product-section">
+            <h2 class="product-title">BEST MEALPICK</h2>
+            <div class="swiper-container product-swiper">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide product-box" v-for="item in list">
+                        <img :src="item.filePath" alt="상품">
+                    </div>
+                </div>
+                <!-- 네비게이션 버튼 -->
+                <div class="swiper-button-prev product-prev"></div>
+                <div class="swiper-button-next product-next"></div>
+            </div>
+        </div>
+
     </div>
 
     <jsp:include page="/WEB-INF/common/footer.jsp" />
