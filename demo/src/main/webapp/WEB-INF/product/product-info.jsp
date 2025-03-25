@@ -36,7 +36,7 @@
                         <span class="stars">★★★★★</span>
                         <span>4.3</span>
                     </div>
-                    <div class="price">{{price}}</div>
+                    <div class="price">{{formattedPrice}}</div>
                     <div class="delivery">
                         <span id="delivery-price">배송비</span>
                         <span id="delicery-total">3,000원 </span>
@@ -61,14 +61,14 @@
                                 <input type="text" class="quantity-input" v-model="quantity">
                                 <button class="quantity-btn" @click="fnquantity('sum')">+</button>
                             </div>
-                            <span class="quantity-price">{{price * quantity}}</span>
+                            <span class="quantity-price">{{formattedTotalPrice}}</span>
                         </div>
                     </div>
 
                     <!-- 합계 -->
                     <div class="total">
                         <span>합계</span>
-                        <span id="price-total">{{price * quantity}}</span>
+                        <span id="price-total">{{formattedTotalPrice}}</span>
                     </div>
 
                     <!-- 좋아요, 장바구니, 구매하기 박스-->
@@ -120,8 +120,16 @@
                     quantity: 1,
                     allergensFlg: false,
                     count: 0,
-                    price : 0,
+                    price: 0,
                 };
+            },
+            computed: {
+                formattedPrice() {
+                    return this.price.toLocaleString();
+                },
+                formattedTotalPrice() {
+                    return (this.price * this.quantity).toLocaleString();
+                }
             },
             methods: {
                 fngetInfo() {
