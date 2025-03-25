@@ -29,54 +29,61 @@
             <p v-if="remainingAmount > 0" class="shipping-info">{{ remainingAmount.toLocaleString() }}원 이상 구매 시 무료배송! 🚚</p>
             <p v-else class="shipping-info" style="color: #ff5733;">무료배송 혜택을 받을 수 있습니다! 🎉</p>
 
-            
-
-            <div class="cart-check">
-                <input type="checkbox" id="select-all" v-model="isAllSelected" @change="toggleAllSelection" /> 전체 선택
-            </div>
-
-            <!-- 상품 리스트 -->
-            <div class="cart-item" v-for="(item, index) in list" :key="item.itemNo">
-                <div class="product-header">
-                    <input type="checkbox" v-model="item.checked" @change="updateTotalAmount" />
-                    <h3 class="product-name">{{ item.itemName }}</h3>
-                </div>
-                <div class="product-content">
-                    <img class="product-image" :src="item.filePath" alt="상품 이미지" />
-                    <div class="product-details">
-                        <div class="price-row">
-                            <h3>PRICE</h3>
-                            <span>{{ item.price }}원</span>
-                        </div>
-                        <div class="quantity">
-                            <span>수량</span>
-                            <input class="form-control" type="number" v-model="item.cartCount" max="50" min="1" />
-                            <button class="q-button" @click="fnCount(item)">변경</button>
-                        </div>
-                    </div>
+            <div class="notCart" v-if="list.length === 0">
+                <span>담은 상품이 없습니다</span>
+                <div>
+                    <button class="n-button" @click="fnProduct">상품 구경하러 가기</button>
                 </div>
             </div>
 
-            <!-- 주문 요약 -->
-            <div class="checkout-summary">
-                <div class="summary-details">
-                    <div class="summary-item">
-                        <span>총 상품 금액:</span>
-                        <span>{{ totalAmount.toLocaleString() }}원</span>
+            <div v-else>
+                <div class="cart-check">
+                    <input type="checkbox" id="select-all" v-model="isAllSelected" @change="toggleAllSelection" /> 전체 선택
+                </div>
+
+                <!-- 상품 리스트 -->
+                <div class="cart-item" v-for="(item, index) in list" :key="item.itemNo">
+                    <div class="product-header">
+                        <input type="checkbox" v-model="item.checked" @change="updateTotalAmount" />
+                        <h3 class="product-name">{{ item.itemName }}</h3>
                     </div>
-                    <div class="summary-item">
-                        <span>할인 금액:</span>
-                        <span>-10,000원</span>
+                    <div class="product-content">
+                        <img class="product-image" :src="item.filePath" alt="상품 이미지" />
+                        <div class="product-details">
+                            <div class="price-row">
+                                <h3>PRICE</h3>
+                                <span>{{ (item.price * item.cartCount).toLocaleString() }}원</span>
+                            </div>
+                            <div class="quantity">
+                                <span>수량</span>
+                                <input class="form-control" type="number" v-model="item.cartCount" max="50" min="1" />
+                                <button class="q-button" @click="fnCount(item)">변경</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="summary-item">
-                        <span>배송비:</span>
-                        <span>3,000원</span>
+                </div>
+
+                <!-- 주문 요약 -->
+                <div class="checkout-summary">
+                    <div class="summary-details">
+                        <div class="summary-item">
+                            <span>총 상품 금액:</span>
+                            <span>{{ totalAmount.toLocaleString() }}원</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>할인 금액:</span>
+                            <span>-10,000원</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>배송비:</span>
+                            <span>3,000원</span>
+                        </div>
+                        <div class="summary-item total">
+                            <span>총 결제 금액:</span>
+                            <span>{{ (totalAmount - 10000 + 3000).toLocaleString() }}원</span>
+                        </div>
+                        <button class="order-button">주문하기</button>
                     </div>
-                    <div class="summary-item total">
-                        <span>총 결제 금액:</span>
-                        <span>{{ (totalAmount - 10000 + 3000).toLocaleString() }}원</span>
-                    </div>
-                    <button class="order-button">주문하기</button>
                 </div>
             </div>
         </div>
@@ -157,6 +164,9 @@
                         self.fnCartList(); 
                     }
                 });
+            },
+            fnProduct : function(){
+                location.href = "/product.do";
             },
             updateTotalAmount() {
                 console.log('updateTotalAmount 호출됨'); // 디버깅용 로그 추가

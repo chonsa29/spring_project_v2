@@ -174,5 +174,23 @@
 	margin-bottom: 50px;
 }
 
+.notCart {
+	margin: 50px;
+}
 
+.n-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 10%; /* 버튼 크기 조정 가능 */
+  height: 25px;
+  padding: 10px;
+  padding-bottom: 30px;
+  margin-top: 30px;
+}
 
+.n-button:hover {
+  background-color: #45a049;
+}

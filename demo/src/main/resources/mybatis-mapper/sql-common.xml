@@ -5,7 +5,7 @@
 <mapper namespace="com.example.demo.mapper.CommonMapper">
 	<select id="selectNewProductList" parameterType="hashmap" resultType="com.example.demo.model.Product">
 		SELECT * FROM PRODUCT P
-		LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
+		LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO AND I.THUMBNAIL = 'Y'
 	</select>
 </mapper>
 
