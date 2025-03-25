@@ -23,4 +23,6 @@ public interface ProductMapper {
 
 	void insertProductFile(HashMap<String, Object> map);
 
+	List<Product> SelectProduct2(HashMap<String, Object> map);
+
 }

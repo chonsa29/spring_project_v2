@@ -52,8 +52,8 @@
 
                         <!-- 상품 추가/수정 폼 -->
                         <div v-if="showProductForm" class="product-form">
-                            <h4 v-if="formType === 'add'">상품 추가</h4>
-                            <h4 v-if="formType === 'edit'">상품 수정</h4>
+                            <h4 v-if="formType === 'add'" @click="showForm(formType)">상품 추가</h4>
+                            <h4 v-if="formType === 'edit'" @click="showForm(formType)">상품 수정</h4>
 
                             <form @submit.prevent="submitForm">
                                 <label for="name">상품 이름</label>
@@ -125,11 +125,12 @@
                     this.currentSection = section;
                 },
                 showForm(type) {
+                    var self = this;
                     this.formType = type;
                     this.showProductForm = true;
-                    if (type === 'add') {
-                    } else if (type === 'edit') {
-                        // 수정할 상품 데이터를 여기에 가져오는 로직 추가 가능
+                    console.log(self.formType);
+                    if (type === 'edit') {
+                        self.itemList();
                     }
                 },
                 handleFileChange(field) {
@@ -193,7 +194,46 @@
                 },
                 cancelForm() {
                     this.showProductForm = false;
+                },
+                fnEdit() {
+                    var self = this;
+                    self.itemInfo();
+                    $.ajax({
+                        url: "/product/info.dox"
+                        , type: "POST"
+                        , success: function (data) {
+                            console.log(data);
+                        }
+                    });
+                },
+                itemList() {
+                    var self = this;
+                    var nparmap = {
+                    };
+                    $.ajax({
+                        url: "/product/list2.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: nparmap,
+                        success: function (data) {
+                            console.log(data);
+
+                        }
+                    });
+                },
+                itemInfo() {
+                    var self = this;
+                    $.ajax({
+                        url: "/product/info.dox"
+                        , type: "POST"
+                        , success: function (data) {
+                            console.log(data);
+                        }
+                    });
                 }
+            },
+            mounted() {
+                var self = this;
             }
         });
         app.mount('#app');

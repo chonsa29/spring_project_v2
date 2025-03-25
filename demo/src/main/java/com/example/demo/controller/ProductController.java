@@ -48,6 +48,16 @@ public class ProductController {
 		return new Gson().toJson(resultMap);
 	}
 	
+	// 상품 목록 가져오기(페이징 제외)
+	@RequestMapping(value = "/product/list2.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	
+	public String productList2(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		resultMap = productService.productList2(map);
+		return new Gson().toJson(resultMap);
+	}
 	// 상품 상세정보 가져오기
 	@RequestMapping(value = "/product/info.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
@@ -68,7 +78,7 @@ public class ProductController {
 		resultMap = productService.productAdd(map);
 		return new Gson().toJson(resultMap);
 	}
-	
+	//파일 업로드
 	@RequestMapping("/product/fileUpload.dox")
 	public String result(@RequestParam("file1") List<MultipartFile> files, @RequestParam("itemNo") int itemNo,
 			HttpServletRequest request, HttpServletResponse response, Model model) {
@@ -119,4 +129,7 @@ public class ProductController {
 		}
 		return "redirect:/member/admin.do";
 	}
+	
+	//상품 수정
+
 }
