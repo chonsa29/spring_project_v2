@@ -33,11 +33,12 @@
                     <div class="product-image" @click="fnInfo(item.itemNo)">
                         <img class="product-image" :src="item.filePath" alt="item.itemName" />
                     </div>
-                    <div  @click="fnInfo(item.itemNo)">
+                    <div @click="fnInfo(item.itemNo)">
                         <p class="product-info">{{item.itemInfo}}</p>
                         <h4 class="product-name">{{item.itemName}}</h4>
-                        <p class="product-discount-style">{{item.price * 10 }}</p>
-                        <p class="product-discount">10%</p><p class="product-price">{{item.price}}</p>
+                        <p class="product-discount-style">{{formatPrice(item.price * 10) }}</p>
+                        <p class="product-discount">10%</p>
+                        <p class="product-price">{{formatPrice(item.price)}}원</p>
                     </div>
                     <div id="reaction-menu">
                         <button class="product-like">❤</button>
@@ -56,24 +57,22 @@
                         </a>
             </div>
         </div>
-    </div>
+        </div>
         <jsp:include page="/WEB-INF/common/footer.jsp" />
     </body>
 
     </html>
     <script>
-        
-        // 가격 ,(콤마) 표시
-
 
         const app = Vue.createApp({
             data() {
                 return {
                     list: [],
                     pageSize: 9,
-                    productcount : 0,
+                    productcount: 0,
                     index: 0,
                     page: 1,
+                    price: 0,
                 };
             },
             methods: {
@@ -110,7 +109,7 @@
                     self.page = num;
                     self.fnProductList();
                 },
-                
+
                 fnPageMove: function (direction) {
                     let self = this;
                     let next = document.querySelector(".next");
@@ -121,6 +120,9 @@
                         self.page--;
                     }
                     self.fnProductList();
+                },
+                formatPrice(value) {
+                    return value ? parseInt(value).toLocaleString() : "0";
                 }
             },
             mounted() {
