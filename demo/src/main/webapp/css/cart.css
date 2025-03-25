@@ -194,3 +194,8 @@
 .n-button:hover {
   background-color: #45a049;
 }
+
+
+.material-symbols-outlined {
+    color: #000; /* 원하는 기본 색상 */
+}
