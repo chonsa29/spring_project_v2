@@ -29,14 +29,18 @@
                 <span>{{productcount}}개</span>
             </div>
             <div class="product-list">
-                <div class="product" v-for="item in list" @click="fnInfo(item.itemNo)">
-                    <div class="product-image">
-                        <img class="product-image" :src="item.filePath" alt="상품 이미지" />
+                <div class="product" v-for="item in list">
+                    <div class="product-image" @click="fnInfo(item.itemNo)">
+                        <img class="product-image" :src="item.filePath" alt="item.itemName" />
                     </div>
-                    <h4 class="product-name">{{item.itemName}}</h4>
-                    <p class="product-info">{{item.itemInfo}}</p>
-                    <p class="product-price">{{item.price}}</p>
-                    <button class="product-like"></button>
+                    <div  @click="fnInfo(item.itemNo)">
+                        <p class="product-info">{{item.itemInfo}}</p>
+                        <h4 class="product-name">{{item.itemName}}</h4>
+                        <p class="product-discount-style">{{item.price * 2 }}</p>
+                        <p class="product-discount">20%</p><p class="product-price">{{item.price}}</p>
+                       
+                    </div>
+                    <button class="product-like" @click="fnLike">❤</button>
                 </div>
             </div>
             <div id="indexnum">

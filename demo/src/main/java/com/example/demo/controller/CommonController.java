@@ -30,7 +30,6 @@ public class CommonController {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
 		resultMap = commonService.getNewProductList(map);
-		System.out.println(resultMap);
 		return new Gson().toJson(resultMap);
 	}
 
