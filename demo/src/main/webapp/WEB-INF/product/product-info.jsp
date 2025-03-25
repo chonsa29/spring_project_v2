@@ -10,17 +10,18 @@
         <link rel="stylesheet" href="/css/product-css/product-info.css">
     </head>
     <style>
-        
+
     </style>
 
-<body>
-    <jsp:include page="/WEB-INF/common/header.jsp" />
-    <div id="app">
+    <body>
+        <jsp:include page="/WEB-INF/common/header.jsp" />
+        <div id="app">
             <div id="root">
-                <a href="/home.do">HOME</a> > <a href="/product/product-list.do">PRODUCT</a> > {{info.itemName}}
+                <a href="/home.do">HOME</a> > <a href="/product.do">PRODUCT</a> > {{info.itemName}}
             </div>
             <div class="info-container">
                 <div id="product-box">
+                    <img :src="info.filePath" alt="info.itemName" class="product-mainimg">
                 </div>
                 <div class="subimg-container">
                     <div class="subimg"></div>
@@ -35,7 +36,7 @@
                         <span class="stars">★★★★★</span>
                         <span>4.3</span>
                     </div>
-                    <div class="price">{{info.price}}</div>
+                    <div class="price">{{price}}</div>
                     <div class="delivery">
                         <span id="delivery-price">배송비</span>
                         <span id="delicery-total">3,000원 </span>
@@ -48,7 +49,7 @@
                         </div>
                         <div>
                             오전 12시 이전 구매시
-                            <b style="font-size: 16px;">3월 26일</b> 도착
+                            <b style="font-size: 16px;" id="day"></b> 도착
                         </div>
                     </div>
 
@@ -60,14 +61,14 @@
                                 <input type="text" class="quantity-input" v-model="quantity">
                                 <button class="quantity-btn" @click="fnquantity('sum')">+</button>
                             </div>
-                            <span class="quantity-price">{{info.price * quantity}}</span>
+                            <span class="quantity-price">{{price * quantity}}</span>
                         </div>
                     </div>
 
                     <!-- 합계 -->
                     <div class="total">
                         <span>합계</span>
-                        <span id="price-total">{{info.price * quantity}}</span>
+                        <span id="price-total">{{price * quantity}}</span>
                     </div>
 
                     <!-- 좋아요, 장바구니, 구매하기 박스-->
@@ -99,21 +100,34 @@
 
     </html>
     <script>
+
+        // 배송날짜
+        setInterval(() => {
+            let NowDate = new Date();
+            let month = NowDate.getMonth() + 1;  // 월
+            let date = NowDate.getDate() + 3;  // 날짜
+            let day = month + "월 " + date + "일";
+            let obj = document.getElementById("day");
+            obj.innerHTML = day;
+        }, 1000);
+
+
         const app = Vue.createApp({
             data() {
                 return {
-                    itemNo : "${map.itemNo}",
-                    info : {},
-                    quantity : 1,
-                    allergensFlg : false,
-                    count : 0,
+                    itemNo: "${map.itemNo}",
+                    info: {},
+                    quantity: 1,
+                    allergensFlg: false,
+                    count: 0,
+                    price : 0,
                 };
             },
             methods: {
                 fngetInfo() {
                     var self = this;
                     var nparmap = {
-                        itemNo : self.itemNo
+                        itemNo: self.itemNo
                     };
                     $.ajax({
                         url: "/product/info.dox",
@@ -121,29 +135,32 @@
                         type: "POST",
                         data: nparmap,
                         success: function (data) {
-                            if(data.result=="success") {
-                                console.log(data.info);
+                            if (data.result == "success") {
                                 self.info = data.info;
                                 self.count = data.count;
-                                if(data.info.allergens != "없음") {
+                                self.price = data.info.price
+
+                                if (data.info.allergens != "없음") {
                                     self.allergensFlg = true;
                                 }
-                                
+
                             }
                         },
                     });
                 },
-                fnquantity : function(action) {
+                fnquantity: function (action) {
                     var self = this;
+                    console.log(self.count);
                     if (action === 'sum') {
-                        if (this.quantity < count) {
-                            this.quantity++;
+                        if (self.quantity < self.count) {
+                            self.quantity++;
                         } else {
                             alert("최대 수량입니다.");
                             return;
                         }
-                    } else if (action === 'sub' && this.quantity > 1) {
-                        this.quantity--; 
+                    } else if (action === 'sub' && self.quantity > 1) {
+                        self.quantity--;
+
                     }
                 }
             },
@@ -153,5 +170,5 @@
             }
         });
         app.mount('#app');
-        </script>
+    </script>
     ​
