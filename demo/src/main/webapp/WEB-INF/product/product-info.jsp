@@ -138,8 +138,8 @@
                             if (data.result == "success") {
                                 self.info = data.info;
                                 self.count = data.count;
-                                self.price = data.info.price
-
+                                self.price = data.info.price;
+                                console.log(self.price);
                                 if (data.info.allergens != "없음") {
                                     self.allergensFlg = true;
                                 }
