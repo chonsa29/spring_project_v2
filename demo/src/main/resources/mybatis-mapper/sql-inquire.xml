@@ -38,9 +38,9 @@
 		</if>
 	</select>
 	
-	<insert id="qnaInsert" parameterType="hashmap" useGeneratedKeys="true" keyColumn="boardNo" keyProperty="boardNo">
-		INSERT INTO QUESTION(QS_NO, USERID, QS_TITLE, QS_CONTENTS, CDATETIME)
-		VALUES(QUESTION_SEQ.NEXTVAL, #{userId}, #{title}, #{contents}, SYSDATE)
+	<insert id="qnaInsert" parameterType="hashmap">
+		INSERT INTO QUESTION
+		VALUES(QUESTION_SEQ.NEXTVAL, #{userId}, #{qsTitle}, #{qsContents}, 0, SYSDATE, 0)
 	</insert>
 	
 	<select id="qnaSelect" parameterType="hashmap" resultType="com.example.demo.model.Question">

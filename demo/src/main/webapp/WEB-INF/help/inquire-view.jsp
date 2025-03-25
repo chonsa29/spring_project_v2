@@ -17,7 +17,7 @@
         <h1 class="inquire-view">문의 상세보기</h1>
         <div class="detail-container">
             <div><span>제목:</span> {{ info.qsTitle }}</div>
-            <div><span>내용:</span> {{ info.qsContents }}</div>
+            <div>내용:<span v-html="info.qsContents"></span></div>
             <div><span>상품 번호:</span> {{ info.itemNo }}</div>
         </div>
         <div class="button-container">
@@ -52,7 +52,7 @@
 				});
             },
             goBack() {
-                location.href = "/inquire/qna.do";
+                location.href = "/inquire.do";
             }
         },
         mounted() {

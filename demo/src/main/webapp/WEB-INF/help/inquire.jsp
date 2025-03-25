@@ -52,14 +52,18 @@
 						<th>제목</th>
 						<th>내용</th>
 						<th>날짜</th>
+						<th></th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="inquiry in inquiryList" :key="inquiry.userId">
 						<td @click="fnView(inquiry.qsNo)">{{ inquiry.qsNo }}</td>
 						<td @click="fnView(inquiry.qsNo)">{{ inquiry.qsTitle }}</td>
-						<td @click="fnView(inquiry.qsNo)">{{ inquiry.qsContents }}</td>
+						<td @click="fnView(inquiry.qsNo)"><span v-html="inquiry.qsContents"></span></td>
 						<td>{{ inquiry.cdatetime }}</td>
+						<td>{{ inquiry.qsStatus }}</td>
+						<td>{{ inquiry.viewCnt }}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -116,6 +120,7 @@ const app = Vue.createApp({
             searchOption: "all",
             searchKeyword: '',
             inquiryList: [],
+			sessionStatus: "${sessionStatus}",
 			pageSize: 5,
 			index: 0,
 			page: 1,
