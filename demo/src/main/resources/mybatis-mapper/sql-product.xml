@@ -8,6 +8,7 @@
 		SELECT *
 		FROM PRODUCT P
 		INNER JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
+		WHERE THUMBNAIL = 'Y'
 		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	</select>
 	
@@ -38,10 +39,10 @@
 	</insert>
 	
 	<!--product 이미지 추가-->
-		<insert id="insertProductFile" parameterType="hashmap">
-			INSERT INTO PRODUCT_IMG
-			VALUES(#{itemNo}, #{filename},#{path}, #{thumbNail})
-		</insert>
+	<insert id="insertProductFile" parameterType="hashmap">
+		INSERT INTO PRODUCT_IMG
+		VALUES(#{itemNo}, #{filename},#{path}, #{thumbNail})
+	</insert>
 </mapper>
 
 

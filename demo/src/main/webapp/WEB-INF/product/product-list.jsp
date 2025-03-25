@@ -16,7 +16,7 @@
 
         <div id="app">
             <div id="rootname">
-                <div><a href="/home.do">HOME</a> > <a href="/product/product-list.do">PRODUCT</a></div>
+                <a href="/home.do">HOME</a> > <a href="/product.do">PRODUCT</a>
             </div>
             <div id="name">
                 <h2>상품 목록</h2>
@@ -36,11 +36,13 @@
                     <div  @click="fnInfo(item.itemNo)">
                         <p class="product-info">{{item.itemInfo}}</p>
                         <h4 class="product-name">{{item.itemName}}</h4>
-                        <p class="product-discount-style">{{item.price * 2 }}</p>
-                        <p class="product-discount">20%</p><p class="product-price">{{item.price}}</p>
-                       
+                        <p class="product-discount-style">{{item.price * 10 }}</p>
+                        <p class="product-discount">10%</p><p class="product-price">{{item.price}}</p>
                     </div>
-                    <button class="product-like" @click="fnLike">❤</button>
+                    <div id="reaction-menu">
+                        <button class="product-like">❤</button>
+                        <button class="product-cart">🛒</button>
+                    </div>
                 </div>
             </div>
             <div id="indexnum">
@@ -60,11 +62,15 @@
 
     </html>
     <script>
+        
+        // 가격 ,(콤마) 표시
+
+
         const app = Vue.createApp({
             data() {
                 return {
                     list: [],
-                    pageSize: 8,
+                    pageSize: 9,
                     productcount : 0,
                     index: 0,
                     page: 1,
