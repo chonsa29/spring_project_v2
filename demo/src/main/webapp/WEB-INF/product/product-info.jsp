@@ -110,7 +110,6 @@
             obj.innerHTML = day;
         }, 1000);
 
-
         const app = Vue.createApp({
             data() {
                 return {

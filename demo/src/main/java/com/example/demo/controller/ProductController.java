@@ -30,7 +30,6 @@ public class ProductController {
         return "/product/product-list"; 
     }
 
-	
 	@RequestMapping("/product/info.do") 
 	public String View(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{
 		request.setAttribute("map", map);

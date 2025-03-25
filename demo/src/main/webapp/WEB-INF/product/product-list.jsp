@@ -36,8 +36,8 @@
                     <div @click="fnInfo(item.itemNo)">
                         <p class="product-info">{{item.itemInfo}}</p>
                         <h4 class="product-name">{{item.itemName}}</h4>
-                        <p class="product-discount-style">{{formatPrice(item.price * 10) }}</p>
-                        <p class="product-discount">10%</p>
+                        <p class="product-discount-style">{{formatPrice(item.price * 3) }}</p>
+                        <p class="product-discount">30%</p>
                         <p class="product-price">{{formatPrice(item.price)}}원</p>
                     </div>
                     <div id="reaction-menu">
