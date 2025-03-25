@@ -31,4 +31,35 @@ public class QuestionService {
 		
 		return resultMap;
 	}
+
+	public HashMap<String, Object> questionAdd(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			questionMapper.qnaInsert(map);
+			System.out.println("key =>" + map.get("qsNo"));
+			resultMap.put("qsNo", map.get("qsNo"));
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+		}
+		
+		return resultMap;
+	}
+
+	public HashMap<String, Object> questionView(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			Question info = questionMapper.qnaSelect(map);
+			resultMap.put("info", info);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+		}
+		
+		return resultMap;
+	}
 }

@@ -1,5 +1,5 @@
 /* ---------------------- */
-/* ✅ 전체 레이아웃 스타일 */
+/* 전체 레이아웃 스타일 */
 /* ---------------------- */
 body {
     font-family: 'Arial', sans-serif;
@@ -138,7 +138,7 @@ body {
 }
 
 .faq-answer {
-    display: none;
+    display: block;
     padding: 10px;
     color: #555;
 }
@@ -216,16 +216,18 @@ body {
 .qna-footer {
     display: flex;
     flex-direction: column;
-    align-items: center; /* 페이징 버튼을 중앙에 정렬 */
+    align-items: center; 
     margin-top: 20px;
     position: relative;
+    margin: 0 auto;
   }
   
-  /* 페이징 스타일 */
-  .pagination {
+ /* 페이징 스타일 */
+.pagination {
     display: flex;
-    gap: 10px;             /* 버튼 간 간격 */
-    margin-bottom: 10px;
+    justify-content: center; /* 중앙 정렬 */
+    gap: 10px;
+    margin: 30px auto;  /* Q&A 테이블과 적당한 여백 */
   }
   
   .pagination a {
@@ -247,10 +249,14 @@ body {
     color: #fff;
   }
   
-  /* 글쓰기 버튼: 페이징 아래 오른쪽 정렬 */
+  /* 글쓰기 버튼: */
   .writing {
-    align-self: flex-end;
-  }
+    width: 100%;
+    max-width: 790px;
+    display: flex;
+    justify-content: flex-end; /* 오른쪽 정렬 */
+    margin: 10px auto 0 auto;
+}
   
   .writing button {
     background-color: #0DA043;
@@ -264,6 +270,7 @@ body {
   
   .writing button:hover {
     background-color: #0b7d36;
+    transform: scale(1.01); 
   }  
 
 /* 문의 테이블 스타일 */

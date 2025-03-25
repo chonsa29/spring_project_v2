@@ -5,7 +5,7 @@
 <mapper namespace="com.example.demo.mapper.QuestionMapper">
 
 	<select id="qnaInquire" parameterType="hashmap" resultType="com.example.demo.model.Question">
-		SELECT *
+		SELECT QS_NO, QS_TITLE, QS_CONTENTS, TO_CHAR(CDATETIME, 'YYYY-MM-DD') AS CDATETIME
 		FROM QUESTION
 		WHERE 1=1
 		<if test="searchOption != null and searchOption == 'all'">
@@ -18,6 +18,7 @@
 		<if test="searchOption != null and searchOption == 'contents'">
 			AND QS_CONTENTS LIKE '%' || #{searchKeyword} || '%'
 		</if>
+		ORDER BY CDATETIME DESC
 		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	</select>
 	
@@ -35,6 +36,17 @@
 		<if test="searchOption != null and searchOption == 'contents'">
 			AND QS_CONTENTS LIKE '%' || #{searchKeyword} || '%'
 		</if>
+	</select>
+	
+	<insert id="qnaInsert" parameterType="hashmap" useGeneratedKeys="true" keyColumn="boardNo" keyProperty="boardNo">
+		INSERT INTO QUESTION(QS_NO, USERID, QS_TITLE, QS_CONTENTS, CDATETIME)
+		VALUES(QUESTION_SEQ.NEXTVAL, #{userId}, #{title}, #{contents}, SYSDATE)
+	</insert>
+	
+	<select id="qnaSelect" parameterType="hashmap" resultType="com.example.demo.model.Question">
+		SELECT *
+		FROM QUESTION
+		WHERE QS_NO = #{qsNo}
 	</select>
 	
 </mapper>
