@@ -11,7 +11,13 @@
 		WHERE THUMBNAIL = 'Y'
 		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	</select>
-	
+	<!-- product 리스트 가져오기 -->
+	<select id="SelectProduct2" parameterType="hashmap" resultType="com.example.demo.model.Product">
+		SELECT *
+		FROM PRODUCT P
+		INNER JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
+		WHERE THUMBNAIL = 'Y'
+	</select>
 	<!-- product 전체 개수 구하기 -->
 	<select id="CountProduct" parameterType="hashmap" resultType="int">
 		SELECT COUNT(*)
