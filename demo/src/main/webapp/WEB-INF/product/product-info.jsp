@@ -73,7 +73,7 @@
 
                     <!-- 좋아요, 장바구니, 구매하기 박스-->
                     <div class="buttons">
-                        <button class="cart">장바구니</button>
+                        <button class="cart" >장바구니</button>
                         <button class="buy">
                             <a href="#">
                                 구매하기
