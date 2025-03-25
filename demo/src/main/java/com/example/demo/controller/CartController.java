@@ -24,6 +24,7 @@ public class CartController {
         return "/product/cart";
     }
 	
+	// 장바구니 리스트
 	@RequestMapping(value = "/cart/list.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String memberList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
@@ -31,6 +32,16 @@ public class CartController {
 		
 		resultMap = cartService.getCartList(map);
 		System.out.println(resultMap);
+		return new Gson().toJson(resultMap);
+	}
+	
+	// 수량 변경
+	@RequestMapping(value = "/cart/count.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String countEdit(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		resultMap = cartService.editCount(map);
 		return new Gson().toJson(resultMap);
 	}
 

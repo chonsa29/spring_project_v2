@@ -12,4 +12,6 @@ public interface CartMapper {
 
 	List<Cart> selectCartList(HashMap<String, Object> map);
 
+	void updateCount(HashMap<String, Object> map);
+
 }

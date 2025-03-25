@@ -7,8 +7,17 @@
 		SELECT * FROM CART C
 		LEFT JOIN PRODUCT_IMG I ON C.ITEM_NO = I.ITEM_NO
 		INNER JOIN PRODUCT P ON C.ITEM_NO = P.ITEM_NO
-		WHERE C.USERID = 'user001'
+		WHERE C.USERID = #{userId}
 	</select>
+	
+	<update id="updateCount" parameterType="hashmap">
+		UPDATE CART
+		SET
+			CART_COUNT = #{count}
+		WHERE ITEM_NO = #{itemNo}
+			AND USERID = #{userId}
+	</update>
+	
 </mapper>
 
 
