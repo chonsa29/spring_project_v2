@@ -176,3 +176,7 @@
 	    overflow: visible; /* 잘리는 문제 방지 */
 		margin-bottom: 50px;
 	}
+	
+	.material-symbols-outlined {
+	    color: #000; /* 원하는 기본 색상 */
+	}

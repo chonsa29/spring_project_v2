@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ChatController {
 	@RequestMapping("/chat.do") 
     public String add(Model model) throws Exception{
-        return "/chatting/chat"; 
+        return "/chat"; 
     }
 	@RequestMapping("/gemini.do") 
     public String gemini(Model model) throws Exception{
@@ -23,3 +23,4 @@ public class ChatController {
         return message;
     }
 }
+
