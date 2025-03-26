@@ -1,18 +1,96 @@
-.logo3{
-	margin: 10px;
+.image-container {
+    position: relative;
+    width: 100%;
 }
 
-.logo4{
-	margin: 10px;
-	margin-bottom: 20px;
+.image-container img {
+    width: 100%;
+    height: auto;
+    display: block;
 }
 
-.introduce{
-	background-color: #C1E8C7;
-	padding: 40px;
-	margin-bottom: 50px;
+.logo-wrapper {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    z-index: 10;
 }
 
-.material-symbols-outlined {
-    color: #000; /* 원하는 기본 색상 */
+.logo3 img,
+.logo4 img {
+    width: 200px;
+    height: auto;
+}
+
+.text-overlay {
+    position: absolute;
+    top: 350px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 2px 2px 5px black;
+    text-align: center;
+    z-index: 10;
+}
+
+.text-overlay2 {
+    position: absolute;
+    top: 420px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 2px 2px 5px black;
+    text-align: center;
+    z-index: 10;
+}
+
+.image-container2 {
+    display: flex; /* 자식 요소를 가로로 정렬 */
+    justify-content: center; /* 요소들을 중앙 정렬 */
+    align-items: center; /* 요소들을 수직 중앙 정렬 */
+    gap: -30px;
+    margin-top: 70px; /* 상단 여백 추가 */
+}
+
+.image-container2 div {
+    text-align: center; /* 텍스트 중앙 정렬 */
+    flex: 1; /* 각 요소가 동일한 공간을 차지하도록 설정 (optional) */
+}
+
+.image-container2 img {
+	width: 600px;
+}
+
+.intro{
+	margin-left: -100px;
+}
+
+.image-container3 {
+    display: flex; /* 자식 요소를 가로로 정렬 */
+    justify-content: center; /* 요소들을 중앙 정렬 */
+    align-items: center; /* 요소들을 수직 중앙 정렬 */
+    gap: -30px;
+    margin-top: 70px; /* 상단 여백 추가 */
+}
+
+.image-container3 div {
+    text-align: center; /* 텍스트 중앙 정렬 */
+    flex: 1; /* 각 요소가 동일한 공간을 차지하도록 설정 (optional) */
+}
+
+.image-container3 img {
+	width: 600px;
+}
+
+.intro2{
+	margin-right: -100px;
 }

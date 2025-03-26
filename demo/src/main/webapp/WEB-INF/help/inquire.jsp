@@ -43,7 +43,7 @@
 					<option value="contents">내용</option>
 				</select>
 				<input type="text" v-model="searchKeyword" placeholder="검색어를 입력하세요">
-				<button @click="searchQuestions">검색</button>
+				<button @click="inquireList">검색</button>
 			</div>
 			<table class="inquiry-table">
 				<thead>
@@ -62,15 +62,24 @@
 						<td @click="fnView(inquiry.qsNo)">{{ inquiry.qsTitle }}</td>
 						<td @click="fnView(inquiry.qsNo)"><span v-html="inquiry.qsContents"></span></td>
 						<td>{{ inquiry.cdatetime }}</td>
-						<td>{{ inquiry.qsStatus }}</td>
-						<td>{{ inquiry.viewCnt }}</td>
+						<td class="gray-text">{{ inquiry.viewCnt }}</td>
+						<td>
+							<button :class="getStatusClass(inquiry.qsStatus)">
+								{{ getStatusText(inquiry.qsStatus) }}
+							</button>
+						</td>
 					</tr>
 				</tbody>
 			</table>
 				 <!-- 페이징 -->
 				 <div class="pagination">
+					<a v-if="page !=1" id="index" href="javascript:;"
+					@click="fnPageMove('prev')"> < </a>
 					<a href="javascript:;" v-for="num in index" @click="fnPage(num)" :class="{active: page === num}">
 						{{num}}
+					</a>
+					<a v-if="page!=index" id="index" href="javascript:;"
+						@click="fnPageMove('next')"> >
 					</a>
 				</div>
 				<div class="writing">
@@ -157,9 +166,22 @@ const app = Vue.createApp({
                 }
             });
         },
+
 		fnPage: function (num) {
 			let self = this;
 			self.page = num;
+			self.inquireList();
+		},
+		
+		fnPageMove: function (direction) {
+			let self = this;
+			let next = document.querySelector(".next");
+			let prev = document.querySelector(".prev");
+			if (direction == "next") {
+				self.page++;
+			} else {
+				self.page--;
+			}
 			self.inquireList();
 		},
 
@@ -174,10 +196,34 @@ const app = Vue.createApp({
 
 		fnView(qsNo) {
 			pageChange("/inquire/view.do", { qsNo : qsNo });
+		},
+
+		getStatusClass(status) {
+			console.log("qsStatus 값:", status);
+			if (status == 0) return 'status-gray';      // 확인 중 (회색)
+			if (status == 1) return 'status-lightgreen'; // 처리 중 (연두색)
+			if (status == 2) return 'status-green';     // 처리 완료 (초록색)
+			return 'status-gray'; // 기본값
+		},
+		getStatusText(status) {
+			if (status == 0) return '확인 중';
+			if (status == 1) return '처리 중';
+			if (status == 2) return '처리 완료';
+			return '';
 		}
 
     },
     mounted() {
+		
+		// URL에서 'tab' 파라미터 가져오기
+		const urlParams = new URLSearchParams(window.location.search);
+		const tabParam = urlParams.get('tab');
+
+		// 'tab' 파라미터 값이 있으면 해당 탭을 활성화
+		if (tabParam && ['faq', 'qna', 'notice'].includes(tabParam)) {
+			this.activeTab = tabParam;
+		}
+
         this.inquireList();
     }
 });

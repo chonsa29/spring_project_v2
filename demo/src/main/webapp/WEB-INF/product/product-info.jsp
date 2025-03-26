@@ -139,7 +139,7 @@
                 fngetInfo() {
                     var self = this;
                     var nparmap = {
-                        itemNo: self.itemNo
+                        itemNo: self.itemNo,
                     };
                     $.ajax({
                         url: "/product/info.dox",

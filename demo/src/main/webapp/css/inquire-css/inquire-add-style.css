@@ -14,9 +14,10 @@ body {
     min-height: 100vh;
 }
 #app {
+    flex-grow: 1;
     width: 100%;
     max-width: 820px;
-    height: 100%;
+    min-height: auto;
     display: flex;
     flex-direction: column;
     padding: 20px;
@@ -108,7 +109,7 @@ body {
     margin: 10px auto 0 auto;
 }
   
-  .writing button {
+.writing button {
     background-color: #0DA043;
     color: #fff;
     border: none;
@@ -117,9 +118,85 @@ body {
     cursor: pointer;
     transition: background 0.3s;
     margin-bottom: 60px;
-  }
+}
   
-  .writing button:hover {
+.writing button:hover {
     background-color: #0b7d36;
     transform: scale(1.01); 
-  }  
+}  
+
+footer {
+    width: 100%;
+    text-align: center;
+    padding: 15px 0;
+    position: relative; /* 기본적으로 화면 아래로 배치 */
+}
+
+@media (max-width: 820px) {
+    #app {
+        padding: 15px;
+        min-height: calc(100vh - 60px);
+    }
+
+    .input-group {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .input-group input, .editor {
+        min-width: 100%;
+    }
+
+    .editor-container {
+        max-width: 100%;
+    }
+
+    #editor {
+        height: 300px; /* 모바일에서 너무 크지 않게 조정 */
+    }
+
+    .writing {
+        justify-content: center; /* 작은 화면에서는 중앙 정렬 */
+    }
+
+    .writing button {
+        background-color: #0DA043;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background 0.3s;
+        margin-bottom: 60px;
+    }
+      
+    .writing button:hover {
+        background-color: #0b7d36;
+        transform: scale(1.01); 
+    }  
+}
+
+@media (max-width: 480px) {
+    .inquire-input {
+        font-size: 20px;
+    }
+    .inquire-write {
+        font-size: 18px;
+    }
+    .input-group label {
+        font-size: 14px;
+    }
+    .input-group input {
+        font-size: 14px;
+        padding: 10px;
+    }
+    #editor {
+        height: 250px;
+        font-size: 14px;
+    }
+    footer {
+        font-size: 14px;
+        padding: 10px 0;
+    }
+}
