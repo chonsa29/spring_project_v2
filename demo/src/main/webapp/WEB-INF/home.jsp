@@ -54,7 +54,11 @@
                         <img :src="item.filePath" alt="상품">
                         <div class="product-info">
                             <span class="product-name">{{ item.itemName }}</span>
-                            <span class="product-price">{{ item.price }}원</span>
+                            <div class="product-discount-wrapper">
+                                <p class="product-discount-style">{{formatPrice(item.price * 3) }}</p>
+                                <p class="product-discount">30%</p>
+                            </div>
+                            <p class="product-price">{{formatPrice(item.price)}}원</p>
                         </div>
                     </div>
                 </div>
@@ -70,12 +74,17 @@
                 <img src="/img/main4.png" alt="추천 상품 배너">
             </div>
             <div class="monthly-products">
-                <div class="product-box1" v-for="item in monthlyList">
+                <div class="product-box1" v-for="item in monthlyList.slice(0, 9)">
                     <img :src="item.filePath" alt="상품 이미지">
-                    <p class="product-name">{{ item.name }}</p>
-                    <p class="product-price">{{ item.price.toLocaleString() }}원</p>
+                    <p class="product-name">{{ item.itemName }}</p>
+                    <div class="product-discount-wrapper">
+                        <p class="product-discount-style">{{formatPrice(item.price * 3) }}</p>
+                        <p class="product-discount">30%</p>
+                    </div>
+                    <p class="product-price">{{formatPrice(item.price)}}원</p>
                 </div>
             </div>
+            
         </div>
 
          
@@ -146,6 +155,9 @@ const app = Vue.createApp({
                     self.monthlyList = data.list;
                 }
             });
+        },
+        formatPrice(value) {
+            return value ? parseInt(value).toLocaleString() : "0";
         }
     },
     mounted() {

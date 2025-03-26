@@ -92,7 +92,7 @@
 		
 		position: relative;
 		width: 90%;
-		height: 200px;
+		height: 300px;
 	    overflow: hidden; /* 슬라이드 밖 콘텐츠 숨기기 */
 	    margin: auto;
 	    border-radius: 15px;
@@ -121,7 +121,10 @@
 	}
 	
 	.product-info {
-	    margin-top: 10px; /* 이미지와 텍스트 간격 */
+	    display: flex;
+	    flex-direction: column; /* 상품명과 가격을 세로 정렬 */
+	    align-items: center;
+	    margin-top: 10px;
 	}
 
 	.product-name {
@@ -132,8 +135,9 @@
 	}
 
 	.product-price {
-	    font-size: 14px;
-	    color: #ff5722; /* 가격 색상 강조 */
+	    font-size: 20px;
+	    color: rgb(0, 0, 0);
+		font-weight: bold;
 	}
 
 	/* 상품 페이지네이션 */
@@ -205,17 +209,6 @@
 		margin-left: 60px;
 	}
 
-	.monthly-banner h3 {
-	    font-size: 24px;
-	    font-weight: bold;
-	    margin-bottom: 10px;
-	}
-
-	.monthly-banner p {
-	    font-size: 16px;
-	    margin-bottom: 20px;
-	}
-
 	.monthly-banner img {
 	    width: 100%;
 	    border-radius: 10px;
@@ -223,6 +216,7 @@
 
 	.monthly-products {
 	    width: 70%;
+		height: 900px;
 	    display: grid;
 	    grid-template-columns: repeat(3, 1fr);
 	    gap: 20px;
@@ -230,36 +224,39 @@
 
 	.product-box1 {
 	    text-align: center;
-	    background: #fff;
+	    background-color: transparent;
 	    padding: 10px;
 	    border-radius: 10px;
-	    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-		
-		display: flex;
-	    justify-content: center;
-	    align-items: center;
+	    display: flex;
+	    flex-direction: column; /* 요소를 세로로 배치 */
+	    align-items: center; /* 가운데 정렬 */
 	    overflow: hidden;
-	    border-radius: 8px;
-	    background-color: transparent;
-	    width: 100%; /* 상품 박스의 기본 가로 크기를 100%로 설정 */
-	    max-width: 300px; /* 각 박스의 최대 가로 크기 */
-	    margin: auto; /* 중앙 정렬 */
+	    max-width: 300px; /* 최대 너비 설정 */
+	    margin: auto;
 	}
 	
 	.product-box1 img {
-	    width: 100%; /* 박스 크기에 맞춤 */
+	    width: 300px; /* 박스 크기에 맞춤 */
 	    height: 200px;
 	    display: block;
 	}
-
-
-	.product-name {
-	    font-size: 16px;
-	    margin: 10px 0;
-	    font-weight: bold;
+	
+	.product-discount-wrapper {
+	    display: flex; /* 가로로 정렬 */
+	    justify-content: center; /* 중앙 정렬 */
+	    align-items: center; /* 수직 중앙 정렬 */
+	    gap: 10px; /* 두 요소 사이 간격 */
+	    margin-top: 10px; /* 상단 여백 */
 	}
 
-	.product-price {
-	    font-size: 14px;
-	    color: #ff5722;
+	.product-discount-style {
+	    color: #bbb;
+	    text-decoration: line-through;
+	    font-size: 14px; /* 글씨 크기 */
+	}
+
+	.product-discount {
+	    color: red;
+	    font-weight: bold;
+	    font-size: 16px; /* 글씨 크기 */
 	}
