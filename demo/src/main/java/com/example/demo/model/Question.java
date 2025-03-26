@@ -12,5 +12,6 @@ public class Question {
 	private String qsStatus;
 	private String itemNo;
 	private String cdatetime;
+	private String viewCnt;
 
 }

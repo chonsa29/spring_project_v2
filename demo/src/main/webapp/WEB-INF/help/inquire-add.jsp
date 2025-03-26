@@ -37,7 +37,7 @@
             return {
                 title : "",
                 contents : "",
-                sessionId : "${sessionId}"
+                sessionId : "${sessionId}",
             };
         },
         methods: {
@@ -48,8 +48,8 @@
                     return;
                 }
 				var nparmap = {
-                    title : self.title,
-                    contents : self.contents,
+                    qsTitle : self.title,
+                    qsContents : self.contents,
                     userId : self.sessionId
 				};
 				$.ajax({
@@ -60,8 +60,12 @@
 					success : function(data) { 
 						console.log(data);
                         alert("문의가 등록되었습니다.");
-                        location.href="/inquire/qna.do";
-					}
+                        location.href="/inquire.do";
+					},
+                    error: function(xhr, status, error) {
+                        console.error("AJAX 요청 실패:", status, error);  // AJAX 요청 실패 확인
+                        alert("문의 등록에 실패했습니다.");
+                    }
 				});
             }
         },

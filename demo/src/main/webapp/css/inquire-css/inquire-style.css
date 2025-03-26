@@ -296,6 +296,11 @@ body {
 .inquiry-table th {
     background: #f4f4f4;
     font-weight: bold;
+    font-size: 16px;
+}
+
+.inquiry-table td {
+    font-size: 15px;
 }
 
 .inquiry-table tbody tr:hover {

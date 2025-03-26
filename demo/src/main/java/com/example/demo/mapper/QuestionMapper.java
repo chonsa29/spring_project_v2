@@ -19,4 +19,8 @@ public interface QuestionMapper {
 
 	Question qnaSelect(HashMap<String, Object> map);
 
+	void qnaUpdate(HashMap<String, Object> map);
+
+	void qnaDelete(HashMap<String, Object> map);
+
 }
