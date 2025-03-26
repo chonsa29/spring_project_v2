@@ -13,11 +13,17 @@
 
     </style>
 
-    <body>
-        <jsp:include page="/WEB-INF/common/header.jsp" />
-        <div id="app">
-            <div id="root">
-                <a href="/home.do"> HOME </a> > <a href="/product.do"> PRODUCT </a> > {{info.itemName}}
+<body>
+    <jsp:include page="/WEB-INF/common/header.jsp" />
+    <jsp:include page="/WEB-INF/product/cart-popup.jsp" />
+
+    <div id="app">
+        <div id="root">
+            <a href="/home.do">HOME</a> > <a href="/product.do">PRODUCT</a> > {{info.itemName}}
+        </div>
+        <div class="info-container">
+            <div id="product-box">
+                <img :src="info.filePath" alt="info.itemName" class="product-mainimg">
             </div>
             <div class="info-container">
                 <div id="product-box">
@@ -207,6 +213,8 @@
             mounted() {
                 var self = this;
                 self.fngetInfo();
+
+                document.querySelector('.cart').addEventListener('click', openPopup);
             }
         });
         app.mount('#app');
