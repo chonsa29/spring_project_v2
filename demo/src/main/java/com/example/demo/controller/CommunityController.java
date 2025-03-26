@@ -12,8 +12,8 @@ public class CommunityController {
 	@Autowired
 	CommunityService communityService;
 	
-	@RequestMapping("/recipe-main.do")
+	@RequestMapping("/commu-main.do")
 	public String home(Model model) throws Exception{
-        return "/community/recipe-main"; 
+        return "/community/commu-main"; 
     }
 }
