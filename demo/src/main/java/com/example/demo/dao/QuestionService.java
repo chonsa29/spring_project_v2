@@ -93,4 +93,27 @@ public class QuestionService {
 		
 		return resultMap;
 	}
+
+	public HashMap<String, Object> questionUpdateStatus(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			System.out.println("questionUpdateStatus 실행, map: " + map);
+			int updatedRows = questionMapper.qnaStatusUpdate(map);
+			System.out.println("변경된 행 개수: " + updatedRows);
+			map.put("qsStatus", Integer.parseInt(map.get("qsStatus").toString()));
+			if (updatedRows > 0) {
+	            resultMap.put("result", "success");
+	        } else {
+	            resultMap.put("result", "fail");
+	            resultMap.put("message", "업데이트된 행이 없습니다.");
+	        }
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+		}
+		
+		return resultMap;
+	}
 }
