@@ -18,11 +18,9 @@
         <h1 class="inquire-view">문의 상세보기</h1>
         <div class="detail-container">
             <div>{{ info.userId }}</div>
-            <div>
-                <span>{{ info.cdatetime }}</span>
-                <span>{{ info.viewCnt }}</span>
-                <span>{{ info.qsStatus }}</span>
-            </div>
+            <div>{{ info.cdatetime }}</div>
+            <div>{{ info.viewCnt }}</div>
+            <div>{{ info.qsStatus }}</div>
             <div><span>제목:</span>{{ info.qsTitle }}</div>
             <div>내용:<span v-html="info.qsContents"></span></div>
             <div><span>상품 번호:</span>{{ info.itemNo }}</div>
@@ -66,7 +64,7 @@
 				});
             },
             goBack() {
-                location.href = "/inquire.do";
+                location.href = "/inquire.do?tab=qna";
             },
             fnEdit(qsNo) {
                 pageChange("/inquire/edit.do", { qsNo: this.qsNo });
@@ -84,7 +82,7 @@
                     success: function (data) {
                         if(data.result == "success") {
 							alert("삭제되었습니다!");
-                            location.href="/inquire.do";
+                            location.href="/inquire.do?tab=qna";
 						} else {
                             alert("삭제 실패")
                         }

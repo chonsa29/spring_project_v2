@@ -23,4 +23,6 @@ public interface QuestionMapper {
 
 	void qnaDelete(HashMap<String, Object> map);
 
+	void updateCnt(HashMap<String, Object> map);
+
 }

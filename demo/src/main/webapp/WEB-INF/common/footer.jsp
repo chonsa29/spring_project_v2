@@ -21,8 +21,8 @@
                         <ul>
                             <li><a href="/about">회사 소개</a></li>ㅣ
                             <li><a href="/community">고객센터</a></li>ㅣ
-                            <li><a href="/faq">자주 묻는 질문</a></li>ㅣ
-                            <li><a href="/contact">문의하기</a></li>
+                            <li><a href="/inquire.do?tab=faq">자주 묻는 질문</a></li>ㅣ
+                            <li><a href="/inquire.do?tab=qna">문의하기</a></li>
                         </ul>
                     </nav>
                     <div class="copyright"> &copy; {{year}} MEALPICK. All Rights Reserved.</div>

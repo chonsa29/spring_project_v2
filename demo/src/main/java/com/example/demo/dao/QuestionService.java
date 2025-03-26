@@ -52,6 +52,9 @@ public class QuestionService {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
+			if(map.get("option").equals("SELECT")) {
+				questionMapper.updateCnt(map);
+			}
 			Question info = questionMapper.qnaSelect(map);
 			resultMap.put("info", info);
 			resultMap.put("result", "success");

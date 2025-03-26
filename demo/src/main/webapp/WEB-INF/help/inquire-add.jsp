@@ -60,7 +60,7 @@
 					success : function(data) { 
 						console.log(data);
                         alert("문의가 등록되었습니다.");
-                        location.href="/inquire.do";
+                        location.href="/inquire.do?tab=qna";
 					},
                     error: function(xhr, status, error) {
                         console.error("AJAX 요청 실패:", status, error);  // AJAX 요청 실패 확인
