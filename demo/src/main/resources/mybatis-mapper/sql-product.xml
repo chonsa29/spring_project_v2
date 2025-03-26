@@ -52,7 +52,7 @@
 	<select id="SelectProductImgList" parameterType="hashmap" resultType="com.example.demo.model.Product">
 		SELECT *
 		FROM PRODUCT_IMG
-		WHERE ITEM_NO = #{itemNo}
+		WHERE ITEM_NO = #{itemNo} AND THUMBNAIL ='N'
 	</select>
 	
 	<!--product 추가-->
@@ -66,6 +66,58 @@
 		INSERT INTO PRODUCT_IMG
 		VALUES(#{itemNo}, #{filename},#{path}, #{thumbNail})
 	</insert>
+	
+	<update id="updateProduct" parameterType="hashmap"  useGeneratedKeys="true" keyColumn="ITEM_NO" keyProperty="itemNo">
+		UPDATE PRODUCT
+		SET ITEM_NAME = #{name},
+			PRICE = #{price},
+			ITEM_COUNT = #{quantity},
+			ITEM_INFO = #{info},
+			ALLERGENS = #{allergens}
+		WHERE ITEM_NO = #{itemNo}
+	</update>
+	
+	<update id="updateProductThumbnail" parameterType="hashmap">
+		UPDATE PRODUCT_IMG
+			SET FILENAME = #{filename},
+				FILEPATH = #{path}
+			WHERE ITEM_NO = #{itemNo} AND THUMBNAIL = 'Y'
+	</update>
+	
+	
+	<update id="updateProductImage" parameterType="hashmap">
+		UPDATE PRODUCT_IMG
+			SET FILENAME = #{filename},
+				FILEPATH = #{path},
+				THUMBNAIL = #{thumbnail}
+			WHERE ITEM_NO = #{itemNo} AND THUMBNAIL = 'N'
+	</update>
+	
+	<delete id="deleteProduct" parameterType="hashmap">
+	    DELETE FROM PRODUCT
+	    WHERE ITEM_NO = #{itemNo}
+	</delete>
+	
+	<delete id="deleteProductImages" parameterType="hashmap">
+	    DELETE FROM PRODUCT_IMG
+	    WHERE ITEM_NO = #{itemNo}
+	</delete>
+	
+	<update id="updateProductFile" parameterType="hashmap">
+	    UPDATE PRODUCT_IMG
+	    SET FILENAME = #{filename},
+	        FILEPATH = #{path},
+	        THUMBNAIL = CASE 
+	                      WHEN #{thumbnail} = 'Y' THEN 'Y' 
+	                      ELSE 'N' 
+	                   END
+		WHERE ITEM_NO = #{itemNo}
+	</update>
+	
+	<delete id="deleteProductImg" parameterType="hashmap">
+		DELETE FROM PRODUCT_IMG
+		WHERE FILENAME = #{fileName}
+	</delete>
 </mapper>
 
 

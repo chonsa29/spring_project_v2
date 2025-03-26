@@ -1,228 +1,261 @@
 /* 관리자 페이지 스타일 */
-#app {
-    margin-top: -50px;
+body {
+	margin: 0;
+
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background: white;
+	padding: 10px;
+	border-bottom: 2px solid #ddd;
+}
+
+.header .button {
+	background: #4CAF50;
+	color: white;
+	padding: 10px;
+	border: none;
+	cursor: pointer;
+	border-radius: 5px;
 }
 
 /* 컨테이너 이름을 변경하여 충돌 방지 */
 .admin-container {
-    display: flex;
+	display: flex;
 }
 
 /* 사이드바 스타일 */
 .sidebar {
-    width: 250px;
-    background-color: #4CAF50;
-    color: white;
-    padding: 20px;
-	min-height:100vh;	
-    max-height: 150vh;
+	width: 250px;
+	background-color: #272727;
+	color: white;
+	padding: 20px;
+	min-height: 100vh;
+	max-height: 200vh;
 }
 
 .sidebar h2 {
-    text-align: center;
-    font-size: 1.5em;
+	text-align: center;
+	font-size: 1.5em;
 }
 
 .sidebar ul {
-    list-style-type: none;
-    padding: 0;
+	list-style-type: none;
+	padding: 0;
 }
 
 .sidebar ul li {
-    margin: 15px 0;
+	margin: 15px 0;
 }
 
 .sidebar ul li a {
-    color: white;
-    text-decoration: none;
-    font-size: 1.2em;
+	color: white;
+	text-decoration: none;
+	font-size: 1.2em;
 }
 
 .sidebar ul li a:hover {
-    color: #FFD700;  /* hover 효과 */
+	color: #FFD700;
+	/* hover 효과 */
 }
 
 /* 페이지 내용 */
 .content {
-    flex: 1;
-    padding: 20px;
+	flex: 1;
+	padding: 20px;
 }
 
 /* 대시보드 카드 스타일 */
 .card {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-    padding: 20px;
-    text-align: center;
+	background-color: #fff;
+	border: 1px solid #ddd;
+	border-radius: 10px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+	padding: 20px;
+	text-align: center;
 }
 
 .card h3 {
-    font-size: 1.5em;
-    margin-bottom: 10px;
+	font-size: 1.5em;
+	margin-bottom: 10px;
 }
 
 .card p {
-    font-size: 1em;
-    color: #333;
+	font-size: 1em;
+	color: #333;
 }
 
 /* 상품 관리 폼 스타일 */
 .product-form {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
+	background-color: #fff;
+	border-radius: 8px;
+	padding: 20px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	margin-top: 20px;
 }
 
 .product-form h4 {
-    margin-bottom: 20px;
-    font-size: 1.5rem;
+	margin-bottom: 20px;
+	font-size: 1.5rem;
 }
 
 .product-form label {
-    display: block;
-    margin-top: 10px;
-    font-weight: bold;
+	display: block;
+	margin-top: 10px;
+	font-weight: bold;
 }
 
-.product-form input, .product-form textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
+.product-form input,
+.product-form textarea {
+	width: 100%;
+	padding: 10px;
+	margin-top: 5px;
+	margin-bottom: 10px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-sizing: border-box;
 }
 
 .product-form button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 10px;
+	padding: 10px 20px;
+	background-color: #4CAF50;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	margin-top: 10px;
 }
 
 .product-form button:hover {
-    background-color: #388E3C;
+	background-color: #388E3C;
 }
 
 .product-form button[type="button"] {
-    background-color: #ccc;
+	background-color: #ccc;
 }
 
 .product-form button[type="button"]:hover {
-    background-color: #aaa;
+	background-color: #aaa;
 }
 
 /* 상품 리스트 스타일 */
 .product-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
 }
 
 .product-item {
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 45%;
-    padding: 20px;
-    text-align: center;
-    margin-bottom: 20px;
+	background-color: #fff;
+	border-radius: 10px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	width: 45%;
+	padding: 20px;
+	text-align: center;
+	margin-bottom: 20px;
 }
 
 .product-item h4 {
-    font-size: 1.3rem;
-    margin-bottom: 10px;
+	font-size: 1.3rem;
+	margin-bottom: 10px;
 }
 
 .product-item p {
-    font-size: 1em;
-    color: #333;
+	font-size: 1em;
+	color: #333;
 }
 
 .product-item button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 10px;
+	padding: 10px 20px;
+	background-color: #4CAF50;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	margin-top: 10px;
 }
 
 .product-item button:hover {
-    background-color: #388E3C;
+	background-color: #388E3C;
 }
 
 /* 텍스트 영역 스타일 */
 textarea {
-    resize: vertical;
-    min-height: 150px;
+	resize: vertical;
+	min-height: 150px;
 }
 
 /* 테이블 스타일 */
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background: #fff;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 20px;
+	background: #fff;
+	border-radius: 10px;
+	overflow: hidden;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* 테이블 헤더 스타일 */
 th {
-    background: #4CAF50;
-    color: white;
-    padding: 12px;
-    text-align: center;
-    font-size: 16px;
+	background: #4CAF50;
+	color: white;
+	padding: 12px;
+	text-align: center;
+	font-size: 16px;
 }
 
 /* 테이블 바디 스타일 */
 td {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    font-size: 14px;
+	padding: 10px;
+	border-bottom: 1px solid #ddd;
+	font-size: 14px;
+	text-align:center;
 }
 
 /* 짝수 행 배경색 변경 */
 tr:nth-child(even) {
-    background: #f9f9f9;
+	background: #f9f9f9;
 }
 
 /* 마우스 오버 효과 */
 tr:hover {
-    background: #e6f7e6;
-    transition: 0.3s;
+	background: #e6f7e6;
+	transition: 0.3s;
 }
 
 /* 링크 스타일 */
 td a {
-    color: #4CAF50;
-    text-decoration: none;
-    font-weight: bold;
+	color: #4CAF50;
+	text-decoration: none;
+	font-weight: bold;
 }
 
 td a:hover {
-    text-decoration: underline;
+	text-decoration: underline;
 }
 
 /* 반응형 스타일 */
-@media (max-width: 768px) {	
-    table {
-        font-size: 12px;
-    }
-    th, td {
-        padding: 8px;
-    }
+@media (max-width: 768px) {
+	table {
+		font-size: 12px;
+	}
+
+	th,
+	td {
+		padding: 8px;
+	}
+}
+
+img{
+	width:100px;
+	margin: 10px;
+}
+
+.subimg-container table{
+	width: 20vw;
 }

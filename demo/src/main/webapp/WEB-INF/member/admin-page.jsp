@@ -12,8 +12,11 @@
     </head>
 
     <body>
-        <jsp:include page="/WEB-INF/common/header.jsp" />
         <div id="app">
+            <div class="header">
+                <h2>MEALPICK</h2>
+                <a href="/home.do"><button class="button" @click="">나가기</button></a>
+            </div>
             <!-- 관리자 페이지 전체 구조 -->
             <div class="admin-container">
                 <!-- 사이드바 -->
@@ -32,13 +35,15 @@
                     <!-- 대시보드 -->
                     <div v-if="currentSection === 'dashboard'" class="section">
                         <h3>대시보드</h3>
-                        <div class="card">
-                            <h3>총 주문 수</h3>
-                            <p>1,250</p>
+                        <div>
+                            <h3>오늘 할 일</h3>
+                            <p>주문 관리: 3 | 취소 관리: 0 | 발품 관리: 0 | 답변대기 문의: 1</p>
                         </div>
-                        <div class="card">
-                            <h3>총 상품 수</h3>
-                            <p>500</p>
+                        <div class="dashboard-grid">
+                            <div class="card">방문자 현황</div>
+                            <div class="card">매출액</div>
+                            <div class="card">문의</div>
+                            <div class="card">리뷰</div>
                         </div>
                     </div>
 
@@ -73,10 +78,25 @@
                                 <label for="details">알레르기 정보</label>
                                 <textarea id="details" v-model="allergens" required></textarea>
 
-                                <label for="thumbnail">썸네일 사진</label>
-                                <input type="file" id="thumbnail" @change="handleFileChange('thumbnail')" required>
-
-                                <label for="additionalPhotos">추가 사진</label>
+                                <label for="thumbnail">썸네일 이미지</label>
+                                <div class="product-image" v-if="formType=='edit'">
+                                    <img class="product-image" :src="item.filePath" alt="item.itemName" />
+                                </div>
+                                <input v-if="formType='add'" type="file" id="thumbnail" @change="handleFileChange('thumbnail')" required>
+                                <inputtype="file" id="thumbnail" @change="handleFileChange('thumbnail')">
+                                <label for="additionalPhotos">추가 이미지</label>
+                                <div class="subimg-container" v-if="formType=='edit'">
+                                    <table>
+                                        <tr>
+                                            <th>추가 이미지</th>
+                                            <th>삭제</th>
+                                        </tr>
+                                        <tr v-for="(img,index) in imgList">
+                                            <td><img :src="img.filePath"></td>
+                                            <td><button @click="fnDeleteImg(img.fileName)">삭제</button></td>
+                                        </tr>
+                                    </table>
+                                </div>
                                 <input type="file" id="additionalPhotos" @change="handleFileChange('additionalPhotos')"
                                     multiple>
 
@@ -91,6 +111,7 @@
                                         <th>가격</th>
                                         <th>재고</th>
                                         <th>등록일</th>
+                                        <th>삭제</th>
                                     </tr>
                                     <tr v-for="item in list">
                                         <td>{{item.itemNo}}</td>
@@ -99,6 +120,7 @@
                                         <td>{{item.price}}</td>
                                         <td>{{item.itemCount}}</td>
                                         <td>{{item.rDate}}</td>
+                                        <td><button @click="fnDelete(item.itemNo)">삭제</button></td>
                                     </tr>
                                 </table>
                             </div>
@@ -119,7 +141,6 @@
                 </div>
             </div>
         </div>
-        <jsp:include page="/WEB-INF/common/footer.jsp" />
     </body>
 
     </html>
@@ -142,7 +163,8 @@
                     additionalPhotos: [],
                     list: [],
                     item: {},
-                    itemNo: ""
+                    itemNo: "",
+                    imgList: []
                 };
             },
             methods: {
@@ -161,6 +183,8 @@
                         self.category = "";
                         self.info = "";
                         self.allergens = "";
+                        self.item = {};
+                        thumbnail = null;
                     } else {
                         this.showProductForm = false;
                         this.showTable = true;
@@ -179,37 +203,65 @@
                 submitForm() {
                     var self = this;
                     var nparmap = {
-                        name: this.name,
-                        price: this.price,
-                        quantity: this.quantity,
-                        category: this.category,
-                        info: this.info,
-                        allergens: this.allergens,
+                        itemNo: self.item.itemNo,
+                        name: self.name,
+                        price: self.price,
+                        quantity: self.quantity,
+                        category: self.category,
+                        info: self.info,
+                        allergens: self.allergens,
                     };
-                    $.ajax({
-                        url: "/product/add.dox",
-                        dataType: "json",
-                        type: "POST",
-                        data: nparmap,
-                        success: function (data) {
-                            console.log(data);
-                            // 파일이 존재하면 업로드 처리
+                    if (self.item.itemNo == null) {
+                        $.ajax({
+                            url: "/product/add.dox",
+                            dataType: "json",
+                            type: "POST",
+                            data: nparmap,
+                            success: function (data) {
+                                console.log(data);
+                                // 파일이 존재하면 업로드 처리
 
-                            if (self.thumbnail || self.additionalPhotos.length > 0) {
-                                var form = new FormData();
-                                if (self.thumbnail) {
-                                    form.append("file1", self.thumbnail); // 썸네일 파일 추가
+                                if (self.thumbnail || self.additionalPhotos.length > 0) {
+                                    var form = new FormData();
+                                    if (self.thumbnail) {
+                                        form.append("file1", self.thumbnail); // 썸네일 파일 추가
+                                    }
+                                    if (self.additionalPhotos.length > 0) {
+                                        self.additionalPhotos.forEach((photo, index) => {
+                                            form.append("file1", photo); // 추가 사진 파일 추가
+                                        });
+                                    }
+                                    form.append("itemNo", data.itemNo); // 상품 아이디
+                                    self.upload(form); // 파일 업로드 함수 호출
                                 }
-                                if (self.additionalPhotos.length > 0) {
-                                    self.additionalPhotos.forEach((photo, index) => {
-                                        form.append("file1", photo); // 추가 사진 파일 추가
-                                    });
-                                }
-                                form.append("itemNo", data.itemNo); // 상품 아이디
-                                self.upload(form); // 파일 업로드 함수 호출
                             }
-                        }
-                    });
+                        });
+                    } else {
+                        $.ajax({
+                            url: "/product/update.dox",
+                            dataType: "json",
+                            type: "POST",
+                            data: nparmap,
+                            success: function (data) {
+                                console.log(data);
+                                // 파일이 존재하면 업로드 처리
+
+                                if (self.thumbnail || self.additionalPhotos.length > 0) {
+                                    var form = new FormData();
+                                    if (self.thumbnail) {
+                                        form.append("file1", self.thumbnail); // 썸네일 파일 추가
+                                    }
+                                    if (self.additionalPhotos.length > 0) {
+                                        self.additionalPhotos.forEach((photo, index) => {
+                                            form.append("file1", photo); // 추가 사진 파일 추가
+                                        });
+                                    }
+                                    form.append("itemNo", data.itemNo); // 상품 아이디
+                                    self.update(form); // 파일 업로드 함수 호출
+                                }
+                            }
+                        });
+                    }
                     this.showProductForm = false;
                 },
                 upload(form) {
@@ -222,6 +274,21 @@
                         , data: form
                         , success: function (response) {
                             alert("저장되었습니다!");
+                            this.showProductForm = false;
+                        }
+                    });
+                },
+                update(form) {
+                    var self = this;
+                    $.ajax({
+                        url: "/product/fileUpdate.dox"
+                        , type: "POST"
+                        , processData: false
+                        , contentType: false
+                        , data: form
+                        , success: function (response) {
+                            alert("저장되었습니다!");
+                            location.href = "/product/list.do";
                             this.showProductForm = false;
                         }
                     });
@@ -245,17 +312,16 @@
                         type: "POST",
                         data: nparmap,
                         success: function (data) {
-                            console.log(data);
                             self.item = data.info;
-                            console.log(self.item);
-
                             self.name = self.item.itemName;
                             self.price = self.item.price;
                             self.quantity = self.item.itemCount;
                             self.category = self.item.category;
                             self.info = self.item.itemInfo;
                             self.allergens = self.item.allergens;
-
+                            self.imgList = data.imgList;
+                            self.thumbnail = data.info.filePath;
+                            console.log(data);
                             self.showProductForm = true;
                             self.showTable = false;
 
@@ -264,6 +330,7 @@
                 },
                 itemList() {
                     var self = this;
+                    console.log("테스트");
                     var nparmap = {
                     };
                     $.ajax({
@@ -277,6 +344,40 @@
                         }
                     });
                 },
+                fnDelete(itemNo){
+                    var self = this;
+                    var nparmap = {
+                        itemNo : itemNo
+                    };
+                    $.ajax({
+                        url: "/product/delete.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: nparmap,
+                        success: function (data) {
+                            console.log(data);
+                            self.itemList();
+                            alert("삭제되었습니다.");
+                        }
+                    });
+                },
+                fnDeleteImg(fileName){
+                    var self = this;
+                    var nparmap = {
+                        fileName : fileName
+                    };
+                    $.ajax({
+                        url: "/product/deleteImg.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: nparmap,
+                        success: function (data) {
+                            console.log(data);
+                            alert("삭제되었습니다.");
+                        }
+                    });
+                }
+                
             },
             mounted() {
                 var self = this;

@@ -77,6 +77,15 @@ public class ProductController {
 		resultMap = productService.productAdd(map);
 		return new Gson().toJson(resultMap);
 	}
+	//상품 수정
+	@RequestMapping(value = "/product/update.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String update(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		resultMap = productService.productUpdate(map);
+		return new Gson().toJson(resultMap);
+	}
 	//파일 업로드
 	@RequestMapping("/product/fileUpload.dox")
 	public String result(@RequestParam("file1") List<MultipartFile> files, @RequestParam("itemNo") int itemNo,
@@ -94,13 +103,51 @@ public class ProductController {
 				long size = multi.getSize();
 				String saveFileName = Common.genSaveFileName(extName);
 
-				System.out.println("uploadpath : " + uploadpath);
-				System.out.println("originFilename : " + originFilename);
-				System.out.println("extensionName : " + extName);
-				System.out.println("size : " + size);
-				System.out.println("saveFileName : " + saveFileName);
 				String path2 = System.getProperty("user.dir");
-				System.out.println("Working Directory = " + path2 + "\\src\\webapp\\img");
+				if (!multi.isEmpty()) {
+					File file = new File(path2 + "\\src\\main\\webapp\\img", saveFileName);
+					multi.transferTo(file);
+
+					HashMap<String, Object> map = new HashMap<String, Object>();
+					map.put("filename", saveFileName);
+					map.put("path", "../img/" + saveFileName);
+
+					map.put("itemNo", itemNo);
+					String thumbNail = thumbFlg ? "Y" : "N";
+					map.put("thumbNail", thumbNail);
+					// insert 쿼리 실행
+					productService.addProductFile(map);
+					thumbFlg = false;
+
+
+				}
+			}
+
+			return "redirect:/product.do";
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return "redirect:/product.do";
+	}
+	
+	//상품 수정
+	@RequestMapping("/product/fileUpdate.dox")
+	public String update(@RequestParam("file1") List<MultipartFile> files, @RequestParam("itemNo") int itemNo,
+			HttpServletRequest request, HttpServletResponse response, Model model) {
+		
+		String url = null;
+		String path = "c:\\img";
+		boolean thumbFlg = true;	
+		try {
+			for (MultipartFile multi : files) {
+				// String uploadpath = request.getServletContext().getRealPath(path);
+				String uploadpath = path;
+				String originFilename = multi.getOriginalFilename();
+				String extName = originFilename.substring(originFilename.lastIndexOf("."), originFilename.length());
+				long size = multi.getSize();
+				String saveFileName = Common.genSaveFileName(extName);
+
+				String path2 = System.getProperty("user.dir");
 				if (!multi.isEmpty()) {
 					File file = new File(path2 + "\\src\\main\\webapp\\img", saveFileName);
 					multi.transferTo(file);
@@ -114,8 +161,8 @@ public class ProductController {
 					map.put("itemNo", itemNo);
 					String thumbNail = thumbFlg ? "Y" : "N";
 					map.put("thumbNail", thumbNail);
-					// insert 쿼리 실행
-					productService.addProductFile(map);
+					// update 쿼리 실행
+					productService.updateProductFile(map);
 					thumbFlg = false;
 
 
@@ -128,7 +175,21 @@ public class ProductController {
 		}
 		return "redirect:/member/admin.do";
 	}
-	
-	//상품 수정
+	@RequestMapping(value = "/product/delete.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String delete(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 
+		resultMap = productService.productDelete(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/product/deleteImg.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String deleteImg(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		resultMap = productService.productDeleteImg(map);
+		return new Gson().toJson(resultMap);
+	}
 }
