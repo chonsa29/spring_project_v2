@@ -83,8 +83,10 @@
                             <span>총 결제 금액:</span>
                             <span>{{ (totalAmount - 10000 + 3000).toLocaleString() }}원</span>
                         </div>
-                        <button class="order-button">주문하기</button>
-                        <button class="remove-button" @click="fnRemoveAll">삭제</button>
+                        <div class="orbutton">
+                            <button class="order-button">주문하기</button>
+                            <button class="remove-button" @click="fnRemoveAll">삭제</button>
+                        </div>
                     </div>
                 </div>
             </div>

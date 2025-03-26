@@ -152,7 +152,7 @@
   margin-top: 15px;
   margin-bottom: 20px;
   padding: 10px 20px;
-  background-color: #4CAF50;
+  background-color: rgb(240, 43, 48);
   color: white;
   border: none;
   border-radius: 5px;
@@ -161,9 +161,13 @@
 }
 
 .remove-button:hover {
-  background-color: #45a049;
+  background-color: rgb(216, 16, 21);
 }
 
+.orbutton {
+	display: flex;
+	gap: 10px;
+}
 
 /* 결제 금액 막대바 */
 .progress-container {
