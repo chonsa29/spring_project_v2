@@ -32,13 +32,21 @@
 		SELECT *
 		FROM PRODUCT P
 		INNER JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
-		WHERE P.ITEM_NO = #{itemNo}
+		WHERE P.ITEM_NO = #{itemNo} AND THUMBNAIL = 'Y'
+		
 	</select>
 	
-	<!-- product의 재고 가져오기 -->
+	<!-- product의 재고개수 가져오기 -->
 	<select id="SelectProductCount" parameterType="hashmap" resultType="int">
 		SELECT ITEM_COUNT
 		FROM PRODUCT
+		WHERE ITEM_NO = #{itemNo}
+	</select>
+	
+	<!-- product_img 리스트 가져오기 -->
+	<select id="SelectProductImgList" parameterType="hashmap" resultType="com.example.demo.model.Product">
+		SELECT *
+		FROM PRODUCT_IMG
 		WHERE ITEM_NO = #{itemNo}
 	</select>
 	

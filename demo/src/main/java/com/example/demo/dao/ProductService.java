@@ -14,6 +14,7 @@ public class ProductService {
 	@Autowired
 	ProductMapper productMapper;
 
+	// 리스트 가져오기
 	public HashMap<String, Object> productList(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
@@ -30,14 +31,17 @@ public class ProductService {
 		return resultMap;
 	}
 
+	// 상세정보 가져오기
 	public HashMap<String, Object> productInfo(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
 			Product info = productMapper.SelectProductInfo(map);
 			int count = productMapper.SelectProductCount(map);
+			List<Product> imgList = productMapper.SelectProductImgList(map);
 			resultMap.put("info", info);
 			resultMap.put("count", count);
+			resultMap.put("imgList", imgList);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -46,6 +50,7 @@ public class ProductService {
 		return resultMap;
 	}
 
+	// 상품 추가하기
 	public HashMap<String, Object> productAdd(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
@@ -59,6 +64,7 @@ public class ProductService {
 		return resultMap;
 	}
 
+	// 상품의 이미지 추가하기
 	public void addProductFile(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
 		try {

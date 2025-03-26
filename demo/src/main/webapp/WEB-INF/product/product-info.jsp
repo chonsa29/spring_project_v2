@@ -21,12 +21,11 @@
             </div>
             <div class="info-container">
                 <div id="product-box">
-                    <img :src="info.filePath" alt="info.itemName" class="product-mainimg">
+                    <img :src="info.filePath" class="product-mainimg" v-if="info.thumbNail == 'Y'" id="mainImage">
                 </div>
                 <div class="subimg-container">
-                    <div class="subimg"></div>
-                    <div class="subimg"></div>
-                    <div class="subimg"></div>
+                    <img v-for="(img, index) in imgList" :src="img.filePath" alt="제품 썸네일"
+                            @click="changeImage(img.filePath)" class="subimg">
                 </div>
                 <div id="product-Info">
                     <div id="item-Info">{{info.itemInfo}}</div>
@@ -87,9 +86,9 @@
                             </div>
                         </div>
                         <button class="buy">
-                            <a @click="fnPay(info.itemNo)">
+                            <div @click="fnPay(info.itemNo)">
                                 구매하기
-                            </a>
+                            </div>
                         </button>
                     </div>
                 </div>
@@ -132,6 +131,7 @@
                     count: 0,
                     price: 0,
                     showCartPopup: false, // 장바구니 추가 팝업
+                    imgList : [],
                 };
             },
 
@@ -151,6 +151,8 @@
                                 self.info = data.info;
                                 self.count = data.count;
                                 self.price = data.info.price;
+                                self.imgList = data.imgList;
+                                console.log(data.info);
 
                                 if (data.info.allergens != "없음") {
                                     self.allergensFlg = true;
@@ -179,24 +181,29 @@
                 },
 
                 addToCart(itemNo) {
-                    // itemNo를 기준으로 /cart.do에 보내주기 (ajax)
+                    // itemNo를 기준으로 cart에 추가하기 (ajax)
                     this.showCartPopup = true;
                 },
                 goToCart() {
-                    window.location.href = '/cart.do';
+                    window.location.href = '/cart.do'; // 장바구니로 이동
                 },
                 closeCartPopup() {
-                    this.showCartPopup = false;
+                    this.showCartPopup = false; // 쇼핑 계속하기
                 },
                 formatPrice(value) {
-                    return value ? parseInt(value).toLocaleString() : "0";
+                    return value ? parseInt(value).toLocaleString() : "0"; // 가격 타입 변환(콤마 추가) 
                 },
 
                 fnPay(itemNo) {
-                    pageChange("/pay.do", {itemNo : itemNo});
-                }
+                    pageChange("/pay.do", { itemNo: itemNo }); // 구매하기로 이동
+                },
+                
+                changeImage(filePath) {
+                    // 클릭된 이미지로 메인 이미지 변경
+                    document.getElementById('mainImage').src = filePath;
+                },
             },
-            computed: {
+            computed: { // 가격 타입 변환(콤마 추가)
                 formattedPrice() {
                     return parseInt(this.price).toLocaleString();
                 },
@@ -206,6 +213,7 @@
             },
             mounted() {
                 var self = this;
+                console.log(self.itemNo);
                 self.fngetInfo();
             }
         });
