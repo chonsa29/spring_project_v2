@@ -94,4 +94,15 @@ public class QuestionController {
 		
 		return new Gson().toJson(resultMap);
 	}
+	
+	@RequestMapping(value = "/inquire/updateStatus.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String updateStatus(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		
+		System.out.println("updateStatus 요청 도착, map: " + map);		
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = questionService.questionUpdateStatus(map);
+		
+		return new Gson().toJson(resultMap);
+	}
 }

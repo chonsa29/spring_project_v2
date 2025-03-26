@@ -44,6 +44,12 @@
 				</select>
 				<input type="text" v-model="searchKeyword" placeholder="검색어를 입력하세요">
 				<button @click="inquireList">검색</button>
+				<select v-model="pageSize" @change="inquireList">
+					<option value="5">5개씩</option>
+					<option value="10">10개씩</option>
+					<option value="15">15개씩</option>
+					<option value="20">20개씩</option>
+				</select>
 			</div>
 			<table class="inquiry-table">
 				<thead>
@@ -63,7 +69,12 @@
 						<td @click="fnView(inquiry.qsNo)"><span v-html="inquiry.qsContents"></span></td>
 						<td>{{ inquiry.cdatetime }}</td>
 						<td class="gray-text">{{ inquiry.viewCnt }}</td>
-						<td>
+						<td v-if="sessionStatus == 'A'">
+							<button class="statusChange" :class="getStatusClass(inquiry.qsStatus)" @click="updateStatus(inquiry)">
+								{{ getStatusText(inquiry.qsStatus) }}
+							</button>
+						</td>
+						<td v-else>
 							<button :class="getStatusClass(inquiry.qsStatus)">
 								{{ getStatusText(inquiry.qsStatus) }}
 							</button>
@@ -130,6 +141,7 @@ const app = Vue.createApp({
             searchKeyword: '',
             inquiryList: [],
 			sessionStatus: "${sessionStatus}",
+			qsNo : "${map.qsNo}",
 			pageSize: 5,
 			index: 0,
 			page: 1,
@@ -199,7 +211,6 @@ const app = Vue.createApp({
 		},
 
 		getStatusClass(status) {
-			console.log("qsStatus 값:", status);
 			if (status == 0) return 'status-gray';      // 확인 중 (회색)
 			if (status == 1) return 'status-lightgreen'; // 처리 중 (연두색)
 			if (status == 2) return 'status-green';     // 처리 완료 (초록색)
@@ -210,11 +221,54 @@ const app = Vue.createApp({
 			if (status == 1) return '처리 중';
 			if (status == 2) return '처리 완료';
 			return '';
-		}
+		},
+
+		updateStatus(status) {
+
+			console.log("기존 상태:", inquiry.qsStatus);
+
+			let newStatus = status;
+
+			if (status === 0) {
+				newStatus = 1; // 0이면 1로 변경
+			} else if (status === 1) {
+				newStatus = 2; // 1이면 2로 변경
+			} else {
+				console.log("⚠ 상태 변경 없음: 이미 처리 완료 상태입니다.");
+				return;
+			}
+
+			console.log("변경할 상태:", newStatus); // 변경된 값 확인
+
+            // 서버에 변경된 상태 업데이트 요청
+			var self = this;
+			var nparmap = {
+				qsNo: self.qsNo,
+				qsStatus: newStatus
+			};
+            $.ajax({
+                url: "/inquire/updateStatus.dox",
+                type: "POST",
+                dataType: "json",
+                data: nparmap,
+                success: function (data) {
+					console.log(data);
+                    if (data.result === "success") {
+						status = newStatus;
+                        alert("상태가 변경되었습니다.");
+                    } else {
+                        alert("상태 변경에 실패했습니다.");
+                    }
+                },
+                error: function () {
+                    alert("서버 오류가 발생했습니다.");
+                }
+            });
+        }
 
     },
     mounted() {
-		
+
 		// URL에서 'tab' 파라미터 가져오기
 		const urlParams = new URLSearchParams(window.location.search);
 		const tabParam = urlParams.get('tab');

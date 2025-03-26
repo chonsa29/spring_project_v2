@@ -69,6 +69,13 @@
 		WHERE QS_NO = #{qsNo}
 	</update>
 	
+	<update id="qnaStatusUpdate" parameterType="hashmap">
+		UPDATE QUESTION
+		SET
+			QS_STATUS = #{qsStatus}
+		WHERE QS_NO = #{qsNo}
+	</update>
+	
 </mapper>
 
 

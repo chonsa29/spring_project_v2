@@ -11,6 +11,7 @@
 <style>
 </style>
 <body>
+    <jsp:include page="/WEB-INF/common/header.jsp" />
 	<div id="app">
         <div>
             제목 : <input v-model="info.qsTitle">
@@ -20,6 +21,7 @@
         </div>
         <div><button @click="fnEdit">저장</button></div>
 	</div>
+    <jsp:include page="/WEB-INF/common/footer.jsp" />
 </body>
 </html>
 <script>

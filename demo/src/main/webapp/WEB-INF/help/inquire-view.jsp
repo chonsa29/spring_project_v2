@@ -15,22 +15,33 @@
 <body>
     <jsp:include page="/WEB-INF/common/header.jsp" />
 	<div id="app">
-        <h1 class="inquire-view">문의 상세보기</h1>
-        <div class="detail-container">
-            <div>{{ info.userId }}</div>
-            <div>{{ info.cdatetime }}</div>
-            <div>{{ info.viewCnt }}</div>
-            <div>{{ info.qsStatus }}</div>
-            <div><span>제목:</span>{{ info.qsTitle }}</div>
-            <div>내용:<span v-html="info.qsContents"></span></div>
-            <div><span>상품 번호:</span>{{ info.itemNo }}</div>
-        </div>
-        <div v-if="sessionId == info.userId || sessionStatus == 'A'">
-            <button @click="fnEdit">수정</button>
-            <button @click="fnRemove">삭제</button>
-        </div>
-        <div class="button-container">
-            <button @click="goBack">목록으로 돌아가기</button>
+        <div class="post-container">
+            <!-- 제목 -->
+            <div class="post-title">{{ info.qsTitle }}</div>
+
+            <!-- 작성자 정보 -->
+            <div class="post-meta">
+                <span class="post-user">{{ info.userId }}</span> ·
+                <span class="post-date">{{ info.cdatetime }}</span> ·
+                조회 {{ info.viewCnt }}
+            </div>
+
+            <!-- 본문 내용 -->
+            <div class="post-content" v-html="info.qsContents"></div>
+
+            <!-- 상품 정보 -->
+            <div v-if="info.itemNo" class="post-item">상품 번호: {{ info.itemNo }}</div>
+
+            <!-- 수정 / 삭제 버튼 (작성자 또는 관리자만) -->
+            <div v-if="sessionId == info.userId || sessionStatus == 'A'" class="button-group">
+                <button class="edit-btn" @click="fnEdit">수정</button>
+                <button class="delete-btn" @click="fnRemove">삭제</button>
+            </div>
+
+            <!-- 목록으로 돌아가기 버튼 -->
+            <div class="button-container">
+                <button @click="goBack">목록으로</button>
+            </div>
         </div>
     </div>
     <jsp:include page="/WEB-INF/common/footer.jsp" />

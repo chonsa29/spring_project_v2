@@ -25,4 +25,6 @@ public interface QuestionMapper {
 
 	void updateCnt(HashMap<String, Object> map);
 
+	int qnaStatusUpdate(HashMap<String, Object> map);
+
 }
