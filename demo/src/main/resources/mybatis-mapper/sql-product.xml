@@ -42,7 +42,7 @@
 	
 	<!--product 추가-->
 	<insert id="addProduct" parameterType="hashmap"  useGeneratedKeys="true" keyColumn="ITEM_NO" keyProperty="itemNo">
-		INSERT INTO PRODUCT 
+		INSERT INTO PRODUCT (ITEM_NO, PRICE, ITEM_NAME, ITEM_COUNT, CATEGORY, RDATE, ITEM_INFO, ALLERGENS)
 		VALUES (PRODUCT_SEQ.NEXTVAL, #{price}, #{name}, #{quantity}, #{category}, SYSDATE, #{info}, #{allergens})
 	</insert>
 	

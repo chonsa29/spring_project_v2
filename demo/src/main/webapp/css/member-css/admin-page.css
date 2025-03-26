@@ -168,3 +168,61 @@ textarea {
     min-height: 150px;
 }
 
+/* 테이블 스타일 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 테이블 헤더 스타일 */
+th {
+    background: #4CAF50;
+    color: white;
+    padding: 12px;
+    text-align: center;
+    font-size: 16px;
+}
+
+/* 테이블 바디 스타일 */
+td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+}
+
+/* 짝수 행 배경색 변경 */
+tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+/* 마우스 오버 효과 */
+tr:hover {
+    background: #e6f7e6;
+    transition: 0.3s;
+}
+
+/* 링크 스타일 */
+td a {
+    color: #4CAF50;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+td a:hover {
+    text-decoration: underline;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {	
+    table {
+        font-size: 12px;
+    }
+    th, td {
+        padding: 8px;
+    }
+}
