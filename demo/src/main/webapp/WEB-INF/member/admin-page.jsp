@@ -47,15 +47,14 @@
                         <h3>상품 관리</h3>
 
                         <!-- 상품 추가/수정 버튼 -->
-                        <button @click="showForm('add')">상품 추가</button>
-                        <button @click="showForm('edit')">상품 수정</button>
+                        <button @click="showForm('add')" @click="showForm(formType)">상품 추가</button>
+                        <button @click="showForm('edit')" @click="showForm(formType)">상품 수정</button>
 
                         <!-- 상품 추가/수정 폼 -->
-                        <div v-if="showProductForm" class="product-form">
-                            <h4 v-if="formType === 'add'" @click="showForm(formType)">상품 추가</h4>
-                            <h4 v-if="formType === 'edit'" @click="showForm(formType)">상품 수정</h4>
-
-                            <form @submit.prevent="submitForm">
+                        <div class="product-form">
+                            <h4 v-if="formType === 'add'">상품 추가</h4>
+                            <h4 v-if="formType === 'edit'">상품 수정</h4>
+                            <form @submit.prevent="submitForm" v-if="showProductForm" :key="showProductForm">
                                 <label for="name">상품 이름</label>
                                 <input type="text" id="name" v-model="name" required>
 
@@ -84,6 +83,25 @@
                                 <button type="submit">저장</button>
                                 <button type="button" @click="cancelForm">취소</button>
                             </form>
+                            <div v-if="showTable">
+                                <table>
+                                    <tr>
+                                        <th>상품 번호</th>
+                                        <th>상품 이름</th>
+                                        <th>가격</th>
+                                        <th>재고</th>
+                                        <th>등록일</th>
+                                    </tr>
+                                    <tr v-for="item in list">
+                                        <td>{{item.itemNo}}</td>
+                                        <td><a href="javascript:;" @click="fnEdit(item.itemNo)">{{item.itemName}}</a>
+                                        </td>
+                                        <td>{{item.price}}</td>
+                                        <td>{{item.itemCount}}</td>
+                                        <td>{{item.rDate}}</td>
+                                    </tr>
+                                </table>
+                            </div>
                         </div>
                     </div>
 
@@ -103,12 +121,16 @@
         </div>
         <jsp:include page="/WEB-INF/common/footer.jsp" />
     </body>
+
+    </html>
+
     <script>
         const app = Vue.createApp({
             data() {
                 return {
                     currentSection: 'dashboard',
                     showProductForm: false,
+                    showTable: false,
                     formType: '',
                     name: '',
                     price: '',
@@ -117,7 +139,10 @@
                     info: '',
                     allergens: '',
                     thumbnail: null,
-                    additionalPhotos: []
+                    additionalPhotos: [],
+                    list: [],
+                    item: {},
+                    itemNo: ""
                 };
             },
             methods: {
@@ -127,9 +152,18 @@
                 showForm(type) {
                     var self = this;
                     this.formType = type;
-                    this.showProductForm = true;
-                    console.log(self.formType);
-                    if (type === 'edit') {
+                    if (type == 'add') {
+                        this.showProductForm = true;
+                        this.showTable = false;
+                        self.name = "";
+                        self.price = "";
+                        self.quantity = "";
+                        self.category = "";
+                        self.info = "";
+                        self.allergens = "";
+                    } else {
+                        this.showProductForm = false;
+                        this.showTable = true;
                         self.itemList();
                     }
                 },
@@ -194,15 +228,37 @@
                 },
                 cancelForm() {
                     this.showProductForm = false;
+                    console.log(this.formType);
+                    if (this.formType == 'edit') {
+                        this.showTable = true;
+                    }
                 },
-                fnEdit() {
+                fnEdit(itemNo) {
                     var self = this;
-                    self.itemInfo();
+
+                    var nparmap = {
+                        itemNo: itemNo
+                    };
                     $.ajax({
-                        url: "/product/info.dox"
-                        , type: "POST"
-                        , success: function (data) {
+                        url: "/product/info.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: nparmap,
+                        success: function (data) {
                             console.log(data);
+                            self.item = data.info;
+                            console.log(self.item);
+
+                            self.name = self.item.itemName;
+                            self.price = self.item.price;
+                            self.quantity = self.item.itemCount;
+                            self.category = self.item.category;
+                            self.info = self.item.itemInfo;
+                            self.allergens = self.item.allergens;
+
+                            self.showProductForm = true;
+                            self.showTable = false;
+
                         }
                     });
                 },
@@ -217,20 +273,10 @@
                         data: nparmap,
                         success: function (data) {
                             console.log(data);
-
+                            self.list = data.list
                         }
                     });
                 },
-                itemInfo() {
-                    var self = this;
-                    $.ajax({
-                        url: "/product/info.dox"
-                        , type: "POST"
-                        , success: function (data) {
-                            console.log(data);
-                        }
-                    });
-                }
             },
             mounted() {
                 var self = this;
@@ -238,5 +284,3 @@
         });
         app.mount('#app');
     </script>
-
-    </html>
