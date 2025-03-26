@@ -40,7 +40,7 @@
 	<delete id="deleteCart" parameterType="hashmap">
 		DELETE
 		FROM CART
-		WHERE ITEM_NO = #{itemNo}
+		WHERE ITEM_NO = #{itemNo} AND USERID = #{userId}
 	</delete>
 
 	<delete id="deleteCartList" parameterType="hashmap">
@@ -50,6 +50,7 @@
 		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
 			#{item}
 		</foreach> 
+		AND USERID = #{userId}
 	</delete>
 	
 </mapper>
