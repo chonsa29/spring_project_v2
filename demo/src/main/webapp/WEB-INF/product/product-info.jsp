@@ -18,14 +18,18 @@
         <div id="app">
             <div id="root">
                 <a href="/home.do"> HOME </a> > <a href="/product.do"> PRODUCT </a> > {{info.itemName}}
+                <select name="category" id="selectMenu" v-model="info.itemName">
+                    <option value="info.itemName"></option>
+                </select>
             </div>
             <div class="info-container">
                 <div id="product-box">
-                    <img :src="info.filePath" class="product-mainimg" v-if="info.thumbNail == 'Y'" id="mainImage">
+                    <img v-if="info.thumbNail === 'Y'" :src="info.filePath" class="product-mainimg" id="mainImage">
                 </div>
+
                 <div class="subimg-container">
-                    <img v-for="(img, index) in imgList" :src="img.filePath" alt="제품 썸네일"
-                            @click="changeImage(img.filePath)" class="subimg">
+                    <img v-for="(img, index) in filteredImgList" :src="img.filePath" alt="제품 썸네일"
+                        @click="changeImage(img.filePath)" class="subimg">
                 </div>
                 <div id="product-Info">
                     <div id="item-Info">{{info.itemInfo}}</div>
@@ -131,7 +135,8 @@
                     count: 0,
                     price: 0,
                     showCartPopup: false, // 장바구니 추가 팝업
-                    imgList : [],
+                    imgList: [],
+                    sessionId: "${sessionId}",
                 };
             },
 
@@ -197,11 +202,17 @@
                 fnPay(itemNo) {
                     pageChange("/pay.do", { itemNo: itemNo }); // 구매하기로 이동
                 },
-                
+
                 changeImage(filePath) {
-                    // 클릭된 이미지로 메인 이미지 변경
-                    document.getElementById('mainImage').src = filePath;
-                },
+                    let mainImage = document.getElementById('mainImage').src; // 현재 메인 이미지
+                    let clickedIndex = this.imgList.findIndex(img => img.filePath === filePath); // 클릭한 이미지의 인덱스
+
+                    if (clickedIndex !== -1) {
+                        // 클릭한 이미지와 메인 이미지 교체
+                        this.imgList[clickedIndex].filePath = mainImage;
+                        document.getElementById('mainImage').src = filePath;
+                    }
+                }
             },
             computed: { // 가격 타입 변환(콤마 추가)
                 formattedPrice() {
@@ -210,6 +221,10 @@
                 formattedTotalPrice() {
                     return (this.price * this.quantity).toLocaleString();
                 },
+                filteredImgList() {
+                    return this.imgList.filter(img => img.thumbNail === 'N');
+                    // thumbNail이 'N'인 이미지들만 필터링해서 반환
+                }
             },
             mounted() {
                 var self = this;

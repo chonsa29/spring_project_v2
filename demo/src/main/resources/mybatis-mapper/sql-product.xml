@@ -8,7 +8,12 @@
 		SELECT *
 		FROM PRODUCT P
 		INNER JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
-		WHERE THUMBNAIL = 'Y' AND ITEM_NAME LIKE '%' || #{keyword} || '%' 
+		WHERE THUMBNAIL = 'Y'
+		<if test="searchOption == '전체메뉴'">
+			AND ITEM_NAME LIKE '%' || #{keyword} || '%' 
+		</if>
+		<if test="searchOption != '전체메뉴'">
+		</if>
 		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	</select>
 	
