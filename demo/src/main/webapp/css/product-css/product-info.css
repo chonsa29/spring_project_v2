@@ -56,7 +56,7 @@
 
 
 #product-Info {
-	margin-left: 100px;
+	margin-left: 80px;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -96,6 +96,12 @@
     font-weight: bold;
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+.product-discount-style {
+	color: #bbb;
+	text-decoration: line-through;
+	margin-top: 10px;
 }
 
 .delivery {
@@ -300,4 +306,111 @@ a {
 .Info:hover, .Review:hover, .Inquiry:hover, .Exchange-Return:hover {
 	font-weight: bold;
 	cursor: pointer;
+}
+
+/*.cart-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px 40px;
+    border-radius: 10px;
+    font-size: 18px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}*/
+
+.cart-popup-title {
+    font-weight: bold;
+    align-self: flex-start;
+    font-size: 18px;
+	margin-bottom: 10px;
+}
+
+.cart-popup-divider {
+    width: 100%;
+    border: none;
+	border-bottom : 1px solid black;
+    margin: 10px 0;
+}
+
+
+.cart-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* 배경을 더 어둡게 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+	z-index: 1000; /* 다른 요소보다 위에 표시 */
+}
+
+.cart-popup {
+    position: fixed;
+	width: 500px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    color: balck;
+	padding: 20px 40px;
+    border-radius: 10px;
+    font-size: 18px;
+    z-index: 1100; /* 팝업이 최상위 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+	box-shadow: 1 1 1 5px black;
+}
+
+
+
+.cart-popup-buttons {
+    margin-top: 10px;
+    display: flex;
+	white-space: nowrap;
+    gap: 30px;
+}
+
+.cart-popup-buttons .Cart {
+    font-size: 13px;
+    color: white;
+    background-color: #6EB98A;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.cart-popup-buttons .Cart:hover {
+    background-color: #5a9e75;
+}
+
+.cart-popup-buttons .Shopping {
+    font-size: 13px;
+    color: black;
+    border: 1px solid #6EB98A;
+    background-color: white;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.cart-popup-buttons .Shopping:hover {
+    background-color: #f0f0f0;
+}
+
+.cart-popup-buttons button {
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
 }
