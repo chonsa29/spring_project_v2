@@ -49,6 +49,19 @@
 		WHERE QS_NO = #{qsNo}
 	</select>
 	
+	<update id="qnaUpdate" parameterType="hashmap">
+		UPDATE QUESTION
+		SET
+			QS_TITLE = #{qsTitle},
+			QS_CONTENTS = #{qsContents}
+		WHERE QS_NO = #{qsNo}
+	</update>
+	
+	<delete id="qnaDelete" parameterType="hashmap">
+		DELETE FROM QUESTION
+		WHERE QS_NO = #{qsNo}
+	</delete>
+	
 </mapper>
 
 

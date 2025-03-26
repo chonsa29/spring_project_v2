@@ -38,6 +38,13 @@ public class QuestionController {
         return "/help/inquire-view";
     }
 	
+	@RequestMapping("/inquire/edit.do") 
+    public String edit(HttpServletRequest request,Model model, 
+    		@RequestParam HashMap<String, Object> map) throws Exception{
+		request.setAttribute("map", map);
+        return "/help/inquire-edit";
+    }
+	
 	@RequestMapping(value = "/inquire/qna.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String faq(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
@@ -68,4 +75,23 @@ public class QuestionController {
 		return new Gson().toJson(resultMap);
 	}
 	
+	@RequestMapping(value = "/inquire/edit.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String edit(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+				
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = questionService.questionEdit(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/inquire/remove.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String remove(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+				
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = questionService.questionRemove(map);
+		
+		return new Gson().toJson(resultMap);
+	}
 }
