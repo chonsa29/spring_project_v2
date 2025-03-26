@@ -15,5 +15,8 @@
 		WHERE USERID = #{userId} AND PASSWORD = #{password}
 	</select>
 	
-
+	<insert id="addMember" parameterType="hashmap">
+		INSERT INTO MEMBER(USERID, PASSWORD, USERNAME, ADDRESS, EMAIL, EMAIL_VER, BIRTH, GENDER, PHONE, STATUS, CDATETIME, IS_DELETED)
+		VALUES(#{userId},#{pwd},#{userName},#{address},#{email},#{emailVer},#{birth},#{gender},#{phoneNum},#{status},SYSDATE,'N')
+	</insert>
 </mapper>

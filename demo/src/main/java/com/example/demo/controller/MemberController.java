@@ -29,6 +29,7 @@ public class MemberController {
 		return "/member/login"; 
     }
 	
+	
 	@RequestMapping("/member/join.do") 
     public String join(Model model) throws Exception{
 
@@ -89,5 +90,13 @@ public class MemberController {
 	        HashMap<String, Object> resultMap = new HashMap<>();
 	        resultMap.put("result", "logout");
 	        return new Gson().toJson(resultMap);
-	    }
+	    }	 
+	    
+		@RequestMapping(value = "/member/join.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+		@ResponseBody
+		public String join(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+			HashMap<String, Object> resultMap = new HashMap<String, Object>();
+			resultMap = memberService.joinMember(map); 
+			return new Gson().toJson(resultMap);
+		}
 }
