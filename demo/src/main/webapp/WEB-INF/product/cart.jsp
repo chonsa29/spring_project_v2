@@ -58,6 +58,7 @@
                                 <span>수량</span>
                                 <input class="form-control" type="number" v-model="item.cartCount" max="50" min="1" />
                                 <button class="q-button" @click="fnCount(item)">변경</button>
+                                <button class="r-button" @click="fnRemove(item)">삭제</button>
                             </div>
                         </div>
                     </div>
@@ -83,6 +84,7 @@
                             <span>{{ (totalAmount - 10000 + 3000).toLocaleString() }}원</span>
                         </div>
                         <button class="order-button">주문하기</button>
+                        <button class="remove-button" @click="fnRemoveAll">삭제</button>
                     </div>
                 </div>
             </div>
@@ -102,7 +104,8 @@
                 totalAmount: 0, // 선택된 상품의 총 금액
                 isAllSelected: false, // 전체 선택 체크박스 상태
                 userId : "${sessionId}",
-                count : ""
+                count : "",
+                selectList : []
             };
         },
         computed: { // ✅ computed 속성 추가
@@ -162,6 +165,50 @@
                         console.log(data);
                         alert("수량이 변경되었습니다");
                         self.fnCartList(); 
+                    }
+                });
+            },
+            fnRemove(item) { 
+                var self = this;
+                var nparmap = {
+                    itemNo: item.itemNo 
+                };
+                $.ajax({
+                    url: "/cart/remove.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: nparmap,
+                    success: function (data) {
+                        console.log(data);
+                        alert("장바구니에서 제거되었습니다.");
+                        self.fnCartList(); 
+                    }
+                });
+            },
+            fnRemoveAll() {
+                var self = this;
+
+                // 체크된 상품들의 itemNo를 배열로 수집
+                var selectedItems = self.list
+                    .filter(item => item.checked)  // 체크된 상품만 필터링
+                    .map(item => item.itemNo);  // itemNo 값만 추출
+
+                if (selectedItems.length === 0) {
+                    alert("삭제할 상품을 선택하세요.");
+                    return;
+                }
+
+                var param = { selectList: JSON.stringify(selectedItems) };
+
+                $.ajax({
+                    url: "/cart/remove-list.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) {
+                        console.log(data);
+                        alert("선택한 상품이 장바구니에서 제거되었습니다.");
+                        self.fnCartList();  // 장바구니 목록 새로고침
                     }
                 });
             },

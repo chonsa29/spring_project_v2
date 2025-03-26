@@ -10,6 +10,11 @@
 		WHERE C.USERID = #{userId}
 	</select>
 	
+	<insert id="insertCart" parameterType="hashmap" useGeneratedKeys="true" keyColumn="ITEM_NO" keyProperty="itemNo">
+		INSERT INTO CART(CART_KEY, USERID, ITEM_NO, CART_COUNT)
+		VALUES(CART_SEQ.NEXTVAL, #{userId}, #{itemNo}, #{cartCount})
+	</insert>
+	
 	<update id="updateCount" parameterType="hashmap">
 		UPDATE CART
 		SET
@@ -17,6 +22,35 @@
 		WHERE ITEM_NO = #{itemNo}
 			AND USERID = #{userId}
 	</update>
+	
+	<select id="checkCart" parameterType="hashmap" resultType="hashmap">
+	    SELECT CART_COUNT 
+	    FROM CART 
+	    WHERE USERID = #{userId} 
+	      AND ITEM_NO = #{itemNo}
+	</select>
+	
+	<update id="updateCartQuantity" parameterType="hashmap">
+	    UPDATE CART 
+	    SET CART_COUNT = CART_COUNT + #{cartCount} 
+	    WHERE ITEM_NO = #{itemNo} 
+	      AND USERID = #{userId}
+	</update>
+	
+	<delete id="deleteCart" parameterType="hashmap">
+		DELETE
+		FROM CART
+		WHERE ITEM_NO = #{itemNo}
+	</delete>
+
+	<delete id="deleteCartList" parameterType="hashmap">
+		DELETE
+		FROM CART
+		WHERE ITEM_NO IN
+		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+			#{item}
+		</foreach> 
+	</delete>
 	
 </mapper>
 
