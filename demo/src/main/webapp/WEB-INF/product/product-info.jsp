@@ -132,6 +132,7 @@
                     count: 0,
                     price: 0,
                     showCartPopup: false, // 장바구니 추가 팝업
+                    userId : "${sessionId}"
                 };
             },
 
@@ -139,7 +140,7 @@
                 fngetInfo() {
                     var self = this;
                     var nparmap = {
-                        itemNo: self.itemNo
+                        itemNo: self.itemNo,
                     };
                     $.ajax({
                         url: "/product/info.dox",
@@ -179,8 +180,24 @@
                 },
 
                 addToCart(itemNo) {
-                    // itemNo를 기준으로 cart에 추가하기 (ajax)
-                    this.showCartPopup = true;
+                    let self = this;
+                    var nparmap = {
+                        itemNo : itemNo,
+                        cartCount : self.quantity,
+                        userId : self.userId
+                    };
+                    $.ajax({
+                        url: "/cart/add.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: nparmap,
+                        success: function (data) {
+                            if (data.result == "success") {
+                                self.showCartPopup = true;
+                            }
+                        },
+                    });
+                    
                 },
                 goToCart() {
                     window.location.href = '/cart.do'; // 장바구니로 이동
