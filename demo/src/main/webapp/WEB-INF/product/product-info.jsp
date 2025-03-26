@@ -10,32 +10,32 @@
         <link rel="stylesheet" href="/css/product-css/product-info.css">
     </head>
     <style>
-        
+
     </style>
 
-<body>
-    <jsp:include page="/WEB-INF/common/header.jsp" />
-    <div id="app">
-        <div id="root">
-            <a href="/home.do">HOME</a> > <a href="/product.do">PRODUCT</a> > {{info.itemName}}
-        </div>
-        <div class="info-container">
-            <div id="product-box">
-                <img :src="info.filePath" alt="info.itemName" class="product-mainimg">
+    <body>
+        <jsp:include page="/WEB-INF/common/header.jsp" />
+        <div id="app">
+            <div id="root">
+                <a href="/home.do"> HOME </a> > <a href="/product.do"> PRODUCT </a> > {{info.itemName}}
             </div>
-            <div class="subimg-container">
-                <div class="subimg"></div>
-                <div class="subimg"></div>
-                <div class="subimg"></div>
-            </div>
-            <div id="product-Info">
-                <div id="item-Info">{{info.itemInfo}}</div>
-                <div id="product-name">{{info.itemName}} <button class="like">❤</button></div>
+            <div class="info-container">
+                <div id="product-box">
+                    <img :src="info.filePath" class="product-mainimg" v-if="info.thumbNail == 'Y'" id="mainImage">
+                </div>
+                <div class="subimg-container">
+                    <img v-for="(img, index) in imgList" :src="img.filePath" alt="제품 썸네일"
+                            @click="changeImage(img.filePath)" class="subimg">
+                </div>
+                <div id="product-Info">
+                    <div id="item-Info">{{info.itemInfo}}</div>
+                    <div id="product-name">{{info.itemName}} <button class="like">❤</button></div>
                     <span v-if="allergensFlg" id="allergens-info">{{info.allergens}} 주의!</span>
                     <div id="review">
                         <span class="stars">★★★★★</span>
                         <span>4.3</span>
                     </div>
+                    <p class="product-discount-style">{{formatPrice(info.price * 3) }}</p>
                     <div class="price">{{formattedPrice}} 원</div>
                     <div class="delivery">
                         <span id="delivery-price">배송비</span>
@@ -73,11 +73,22 @@
 
                     <!-- 좋아요, 장바구니, 구매하기 박스-->
                     <div class="buttons">
-                        <button class="cart" >장바구니</button>
+                        <button class="cart" @click="addToCart(info.itemNo)">장바구니</button>
+                        <div v-if="showCartPopup" class="cart-popup-overlay">
+                            <div id="cart-popup" class="cart-popup">
+                                <p class="cart-popup-title">선택완료</p>
+                                <hr class="cart-popup-divider">
+                                <p>장바구니에 상품이 담겼습니다.</p>
+                                <div class="cart-popup-buttons">
+                                    <button @click="goToCart" class="Cart">장바구니로 이동</button>
+                                    <button @click="closeCartPopup" class="Shopping">쇼핑 계속하기</button>
+                                </div>
+                            </div>
+                        </div>
                         <button class="buy">
-                            <a href="#">
+                            <div @click="fnPay(info.itemNo)">
                                 구매하기
-                            </a>
+                            </div>
                         </button>
                     </div>
                 </div>
@@ -116,9 +127,11 @@
                     itemNo: "${map.itemNo}",
                     info: {},
                     quantity: 1,
-                    allergensFlg: false,
+                    allergensFlg: false, // 알레르기 여부
                     count: 0,
                     price: 0,
+                    showCartPopup: false, // 장바구니 추가 팝업
+                    imgList : [],
                 };
             },
 
@@ -126,7 +139,7 @@
                 fngetInfo() {
                     var self = this;
                     var nparmap = {
-                        itemNo: self.itemNo
+                        itemNo: self.itemNo,
                     };
                     $.ajax({
                         url: "/product/info.dox",
@@ -138,7 +151,9 @@
                                 self.info = data.info;
                                 self.count = data.count;
                                 self.price = data.info.price;
-                                
+                                self.imgList = data.imgList;
+                                console.log(data.info);
+
                                 if (data.info.allergens != "없음") {
                                     self.allergensFlg = true;
                                 }
@@ -147,6 +162,8 @@
                         },
                     });
                 },
+
+                // 수량 조절 메소드
                 fnquantity: function (action) {
                     var self = this;
                     console.log(self.count);
@@ -161,18 +178,42 @@
                         self.quantity--;
 
                     }
-                }
+                },
+
+                addToCart(itemNo) {
+                    // itemNo를 기준으로 cart에 추가하기 (ajax)
+                    this.showCartPopup = true;
+                },
+                goToCart() {
+                    window.location.href = '/cart.do'; // 장바구니로 이동
+                },
+                closeCartPopup() {
+                    this.showCartPopup = false; // 쇼핑 계속하기
+                },
+                formatPrice(value) {
+                    return value ? parseInt(value).toLocaleString() : "0"; // 가격 타입 변환(콤마 추가) 
+                },
+
+                fnPay(itemNo) {
+                    pageChange("/pay.do", { itemNo: itemNo }); // 구매하기로 이동
+                },
+                
+                changeImage(filePath) {
+                    // 클릭된 이미지로 메인 이미지 변경
+                    document.getElementById('mainImage').src = filePath;
+                },
             },
-            computed: {
+            computed: { // 가격 타입 변환(콤마 추가)
                 formattedPrice() {
                     return parseInt(this.price).toLocaleString();
                 },
                 formattedTotalPrice() {
                     return (this.price * this.quantity).toLocaleString();
-                }
+                },
             },
             mounted() {
                 var self = this;
+                console.log(self.itemNo);
                 self.fngetInfo();
             }
         });

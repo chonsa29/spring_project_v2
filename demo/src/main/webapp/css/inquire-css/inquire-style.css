@@ -13,6 +13,9 @@ body {
     margin: auto;
     padding: 20px;
     padding-bottom: 100px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ---------------------- */
@@ -263,7 +266,7 @@ body {
     color: #fff;
     border: none;
     padding: 10px 20px;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
     transition: background 0.3s;
   }
@@ -287,6 +290,14 @@ body {
     margin: 0 auto; /* 가운데 정렬 */
 }
 
+.inquiry-table button {
+    width: 69px;
+    height: 29px;
+    font-size: 11px;
+    border-radius: 5px;
+    text-align: center;
+}
+
 .inquiry-table th, .inquiry-table td {
     padding: 12px;
     text-align: center;
@@ -296,11 +307,51 @@ body {
 .inquiry-table th {
     background: #f4f4f4;
     font-weight: bold;
+    font-size: 16px;
+}
+
+.inquiry-table td {
+    font-size: 15px;
+}
+
+.gray-text {
+    color: #919191; 
 }
 
 .inquiry-table tbody tr:hover {
     background: #f0fdf4;
     cursor: pointer;
+}
+
+.inquiry-table th:nth-child(4),
+.inquiry-table td:nth-child(4) {
+    width: 140px; 
+    min-width: 130px;
+    text-align: center;
+}
+
+.status-gray {
+    background-color: #919191;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.status-lightgreen {
+    background-color: #6EB98A;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.status-green {
+    background-color: #0DA043;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
 }
 
 /* 공지 테이블 스타일 */
@@ -407,5 +458,9 @@ body {
     .inquiry-table th, .inquiry-table td,
     .notice-table th, .notice-table td {
         padding: 10px;
+    }
+
+    .writing {
+        justify-content: center; /* 작은 화면에서는 중앙 정렬 */
     }
 }

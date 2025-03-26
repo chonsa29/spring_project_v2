@@ -5,7 +5,7 @@
 <mapper namespace="com.example.demo.mapper.QuestionMapper">
 
 	<select id="qnaInquire" parameterType="hashmap" resultType="com.example.demo.model.Question">
-		SELECT QS_NO, QS_TITLE, QS_CONTENTS, TO_CHAR(CDATETIME, 'YYYY-MM-DD') AS CDATETIME
+		SELECT QS_NO, QS_TITLE, QS_CONTENTS, QS_STATUS, TO_CHAR(CDATETIME, 'YYYY-MM-DD') AS CDATETIME, VIEW_CNT
 		FROM QUESTION
 		WHERE 1=1
 		<if test="searchOption != null and searchOption == 'all'">
@@ -48,6 +48,26 @@
 		FROM QUESTION
 		WHERE QS_NO = #{qsNo}
 	</select>
+	
+	<update id="qnaUpdate" parameterType="hashmap">
+		UPDATE QUESTION
+		SET
+			QS_TITLE = #{qsTitle},
+			QS_CONTENTS = #{qsContents}
+		WHERE QS_NO = #{qsNo}
+	</update>
+	
+	<delete id="qnaDelete" parameterType="hashmap">
+		DELETE FROM QUESTION
+		WHERE QS_NO = #{qsNo}
+	</delete>
+	
+	<update id="updateCnt" parameterType="hashmap">
+		UPDATE QUESTION
+		SET
+			VIEW_CNT = VIEW_CNT + 1
+		WHERE QS_NO = #{qsNo}
+	</update>
 	
 </mapper>
 

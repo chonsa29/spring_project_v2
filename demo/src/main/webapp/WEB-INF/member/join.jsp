@@ -10,6 +10,7 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <!-- 카카오 주소검색 API -->
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    
     <title>회원가입</title>
     <style>
         * {
@@ -59,7 +60,7 @@
             margin-top: 5px;
             padding: 10px 15px;
             border: none;
-            background: #007bff;
+            background: #28a745;
             color: white;
             border-radius: 8px;
             cursor: pointer;
@@ -68,7 +69,7 @@
         }
 
         .input-box button:hover {
-            background: #0056b3;
+            background: #28a745;
         }
 
         .message {
@@ -119,8 +120,8 @@
         <div class="input-box">
             <select v-model="user.gender">
                 <option value="" disabled>성별</option>
-                <option value="남성">남성</option>
-                <option value="여성">여성</option>
+                <option value="M">남성</option>
+                <option value="F">여성</option>
             </select>
         </div>
         <div class="input-box">
@@ -140,7 +141,7 @@
             <input type="text" v-model="user.phoneNum" placeholder="휴대폰 번호">
             <button @click="fnSmsAuth">본인 인증</button>
         </div>
-        <button @click="fnJoin">가입하기</button>
+       <div class="input-box"> <button  @click="fnJoin">가입하기</button> </div>
     </div>
 
     <script>
@@ -155,9 +156,12 @@
                         userName: "",
                         gender: "",
                         address: "",
+                        emailVer: "N",
                         detailedAddress: "",
+                        status: "C",
                         birth: "",
-                        phoneNum: ""
+                        phoneNum: "",
+                        nickName: ""
                     },
                     idError: "",  // 아이디 검증 오류 메시지
                     pwdError: "",  // 비밀번호 검증 오류 메시지
@@ -229,6 +233,23 @@
                     alert("본인 인증 코드가 전송되었습니다!");
                 },
                 fnJoin() {
+                    var self = this;
+					var nparmap = { 
+                        userId :this.user.userId, 
+                        pwd : this.user.pwd,
+                        userName : this.user.userName,
+                        address : this.user.address,
+                        email : this.user.email,
+                        emailVer : this.user.emailVer,
+                        birth : this.user.birth,
+                        gender : this.user.gender,
+                        phoneNum : this.user.phoneNum,
+                        status : this.user.status,
+                        nickName : this.user.nickName   
+                    }
+
+                  
+                    console.log(this.user.birth);
                     if (this.idError && this.idError !== "사용 가능한 아이디입니다.") {
                         alert("아이디를 올바르게 입력해주세요.");
                         return;
@@ -244,8 +265,20 @@
                         return;
                     }
 
+                   
                     $.post('/signup', this.user, (response) => {
                         alert(response.message);
+                    });
+                    $.ajax({
+                        url: "/member/join.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: nparmap,
+                        success: function(data)  {
+                           if(data.result=="success"){
+                            alert ("등록되었습니다.");
+                           }
+                        }
                     });
                 }
             }
