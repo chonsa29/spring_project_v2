@@ -60,7 +60,7 @@
 						console.log(data);
                         if(data.result == "success") {
 							alert("수정되었습니다!");
-                            location.href="/inquire.do";
+                            location.href="/inquire/view.do";
 						} else {
                             alert("수정 실패")
                         }
