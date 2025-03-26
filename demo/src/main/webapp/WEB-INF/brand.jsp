@@ -9,32 +9,55 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="/css/brand.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8.4.7/swiper-bundle.min.css" />
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
         <title>MealPick - 밀키트 쇼핑몰</title>
     </head>
     <body>
         <jsp:include page="/WEB-INF/common/header.jsp" />
         <div id="app">
+
+            <div class="image-container">
+                <img src="/img/brand.jpg" alt="MealPick 로고">
+                <div class="logo-wrapper">
+                    <div class="logo3">
+                        <img src="/img/icon2.png" alt="MealPick 로고">
+                    </div>
+                    <div class="logo4">
+                        <img src="/img/MEALPICK.png" alt="MealPick 로고">
+                    </div>
+                </div>
+                <div class="text-overlay">건강한 한 끼, 젊음에 한 걸음</div>
+                <div class="text-overlay2">
+                    "슬로우에이징을 위한 건강한 한 끼, 웰에이징 밀키트"<br>
+                    ✨ 자연에서 온 건강한 식재료로 몸과 마음을 지키세요.
+                </div>
+            </div>
+
+            <div class="image-container2">
+                <div class="introimg">
+                    <img src="/img/brand2.jpg" alt="MealPick 로고">
+                </div>
+                <div class="intro">
+                    "건강한 식습관은 웰에이징의 시작입니다."<br>
+                    "신선한 재료와 균형 잡힌 영양 설계를 통해 바쁜 현대인을 위한 최적의 한 끼를 제공합니다."
+                </div>
+            </div>
+
+            <div class="image-container3">
+                <div class="intro2">
+                    균형 잡힌 영양식 → 단백질·비타민·미네랄 강화<br>
+                    연령별 맞춤식 → 30대/40대/50대 추천 메뉴<br>
+                    무첨가·유기농 원료 사용
+                </div>
+                <div class="introimg">
+                    <img src="/img/brand3.jpg" alt="MealPick 로고">
+                </div>
+            </div>
+
+            <div class="mychart">
+                <div id="chart"></div>
+            </div>
             
-            <div class="introduce">
-                <div class="logo3">
-                    <img src="/img/icon.png" alt="MealPick 로고">
-                </div>
-                <div class="logo4">
-                    <img src="/img/MEALPICK.png" alt="MealPick 로고">
-                </div>
-                <h2 style="margin-bottom: 20px;">건강한 한 끼, 젊음에 한 걸음</h2>
-                <span>- 밀픽은 저속노화 트렌드와 함께 건강한 식단에 대한 수요가 증가하는 시장 변화에 발맞춰, 
-                    개인의 건강 상태와 선호도에 맞춘 맞춤형 건강 밀키트를 제공하고 있습니다. 
-                    회원별 알레르기 및 비선호 식품을 고려한 식단 구성, 회원 등급 및 그룹 구매 혜택, 
-                    충전형 결제 시스템, 그리고 건강 커뮤니티 운영 등을 통해 소비자들에게 차별화된 가치를 제공합니다. 
-                    지속가능하고 건강한 삶을 지원하는 다양한 서비스를 개발하고 있습니다.</span>
-            </div>
-            <div>
-                <img src="/img/intro.jpg" alt="MealPick 로고">
-            </div>
-            <div>
-                <img src="/img/intro2.jpg" alt="MealPick 로고">
-            </div>
         </div>
         <jsp:include page="/WEB-INF/common/footer.jsp" />
     </body>
@@ -43,14 +66,33 @@
     const app = Vue.createApp({
         data() {
             return {
-                
+                options: {
+                    series: [67.2, 32.8],
+                    chart: {
+                        width: 380,
+                        type: 'pie',
+                    },
+                    labels: ['노화를 막을 수 있다면 시간과 비용을 투자할 의향이 있다.', 'X'],
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: {
+                                width: 200,
+                            },
+                            legend: {
+                                position: 'bottom',
+                            },
+                        },
+                    }],
+                },
             };
         },
         methods: {
             
         },
         mounted() {
-            
+            var chart = new ApexCharts(document.querySelector("#chart"), this.options);
+            chart.render();
         },
     });
 
