@@ -13,17 +13,11 @@
 
     </style>
 
-<body>
-    <jsp:include page="/WEB-INF/common/header.jsp" />
-    <jsp:include page="/WEB-INF/product/cart-popup.jsp" />
-
-    <div id="app">
-        <div id="root">
-            <a href="/home.do">HOME</a> > <a href="/product.do">PRODUCT</a> > {{info.itemName}}
-        </div>
-        <div class="info-container">
-            <div id="product-box">
-                <img :src="info.filePath" alt="info.itemName" class="product-mainimg">
+    <body>
+        <jsp:include page="/WEB-INF/common/header.jsp" />
+        <div id="app">
+            <div id="root">
+                <a href="/home.do"> HOME </a> > <a href="/product.do"> PRODUCT </a> > {{info.itemName}}
             </div>
             <div class="info-container">
                 <div id="product-box">
@@ -93,9 +87,9 @@
                             </div>
                         </div>
                         <button class="buy">
-                            <a @click="fnPay(info.itemNo)">
+                            <div @click="fnPay(info.itemNo)">
                                 구매하기
-                            </a>
+                            </div>
                         </button>
                     </div>
                 </div>
@@ -185,24 +179,24 @@
                 },
 
                 addToCart(itemNo) {
-                    // itemNo를 기준으로 /cart.do에 보내주기 (ajax)
+                    // itemNo를 기준으로 cart에 추가하기 (ajax)
                     this.showCartPopup = true;
                 },
                 goToCart() {
-                    window.location.href = '/cart.do';
+                    window.location.href = '/cart.do'; // 장바구니로 이동
                 },
                 closeCartPopup() {
-                    this.showCartPopup = false;
+                    this.showCartPopup = false; // 쇼핑 계속하기
                 },
                 formatPrice(value) {
-                    return value ? parseInt(value).toLocaleString() : "0";
+                    return value ? parseInt(value).toLocaleString() : "0"; // 가격 타입 변환(콤마 추가) 
                 },
 
                 fnPay(itemNo) {
-                    pageChange("/pay.do", {itemNo : itemNo});
+                    pageChange("/pay.do", {itemNo : itemNo}); // 구매하기로 이동
                 }
             },
-            computed: {
+            computed: { // 가격 타입 변환(콤마 추가)
                 formattedPrice() {
                     return parseInt(this.price).toLocaleString();
                 },
@@ -213,8 +207,6 @@
             mounted() {
                 var self = this;
                 self.fngetInfo();
-
-                document.querySelector('.cart').addEventListener('click', openPopup);
             }
         });
         app.mount('#app');
