@@ -25,4 +25,6 @@ public interface ProductMapper {
 
 	List<Product> SelectProduct2(HashMap<String, Object> map);
 
+	List<Product> SelectProductImgList(HashMap<String, Object> map);
+
 }

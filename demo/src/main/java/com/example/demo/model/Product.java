@@ -14,4 +14,6 @@ public class Product {
 	private String itemInfo;
 	private String allergens;
 	private String filePath;
+	private String fileName;
+	private String thumbNail;
 }
