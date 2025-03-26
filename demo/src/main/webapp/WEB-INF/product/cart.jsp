@@ -173,6 +173,7 @@
             fnRemove(item) { 
                 var self = this;
                 var nparmap = {
+                    userId: self.userId,
                     itemNo: item.itemNo 
                 };
                 $.ajax({
@@ -200,7 +201,9 @@
                     return;
                 }
 
-                var param = { selectList: JSON.stringify(selectedItems) };
+                var param = { selectList: JSON.stringify(selectedItems),
+                                userId: self.userId
+                 };
 
                 $.ajax({
                     url: "/cart/remove-list.dox",

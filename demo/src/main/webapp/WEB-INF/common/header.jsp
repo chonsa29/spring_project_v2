@@ -33,7 +33,7 @@
                         <a href="#">MENU1</a>
                         <a href="/product.do">PRODUCT</a>
                         <a href="/brand.do">BRAND</a>
-                        <a href="#">COMMUNITY</a>
+                        <a href="/recipe-main.do">COMMUNITY</a>
                         <a href="/inquire.do">HELP</a>
                     </nav>
 

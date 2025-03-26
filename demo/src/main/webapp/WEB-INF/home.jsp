@@ -44,11 +44,22 @@
 
         <!-- 새 상품 섹션 슬라이더 -->
         <div class="product-section">
-            <h2 class="product-title">NEW MEALPICK</h2>
+            <div class="title-container">
+                <h2 class="product-title">베스트 상품</h2>
+                <h4>한 주 동안 많이 팔린 제품</h4>
+            </div>
             <div class="swiper-container product-swiper">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide product-box" v-for="item in list">
                         <img :src="item.filePath" alt="상품">
+                        <div class="product-info">
+                            <span class="product-name">{{ item.itemName }}</span>
+                            <div class="product-discount-wrapper">
+                                <p class="product-discount-style">{{formatPrice(item.price * 3) }}</p>
+                                <p class="product-discount">30%</p>
+                            </div>
+                            <p class="product-price">{{formatPrice(item.price)}}원</p>
+                        </div>
                     </div>
                 </div>
                 <!-- 네비게이션 버튼 -->
@@ -57,20 +68,26 @@
             </div>
         </div>
 
-        <!-- 베스트 상품 섹션 슬라이더 -->
-        <div class="best-product-section">
-            <h2 class="product-title">BEST MEALPICK</h2>
-            <div class="swiper-container product-swiper">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide product-box" v-for="item in list">
-                        <img :src="item.filePath" alt="상품">
-                    </div>
-                </div>
-                <!-- 네비게이션 버튼 -->
-                <div class="swiper-button-prev product-prev"></div>
-                <div class="swiper-button-next product-next"></div>
+        <!-- 이번 달 추천 상품 섹션 -->
+        <div class="monthly-pick">
+            <div class="monthly-banner">
+                <img src="/img/main4.png" alt="추천 상품 배너">
             </div>
+            <div class="monthly-products">
+                <div class="product-box1" v-for="item in monthlyList.slice(0, 9)">
+                    <img :src="item.filePath" alt="상품 이미지">
+                    <p class="product-name">{{ item.itemName }}</p>
+                    <div class="product-discount-wrapper">
+                        <p class="product-discount-style">{{formatPrice(item.price * 3) }}</p>
+                        <p class="product-discount">30%</p>
+                    </div>
+                    <p class="product-price">{{formatPrice(item.price)}}원</p>
+                </div>
+            </div>
+            
         </div>
+
+         
 
     </div>
 
@@ -87,7 +104,8 @@ const app = Vue.createApp({
             productSwiper: null, // 상품 슬라이더 인스턴스
             list: [],
             sessionStatus: "${sessionStatus}",
-            userId: "${sessionId}"
+            userId: "${sessionId}",
+            monthlyList: []
         };
     },
     methods: {
@@ -125,6 +143,21 @@ const app = Vue.createApp({
                     });
                 },
             });
+        },
+        fnMonthlyPick() {
+            let self = this;
+            $.ajax({
+                url: "/main/list.dox",
+                dataType: "json",
+                type: "POST",
+                success: (data) => {
+                    console.log("이번 달 추천 상품:", data);
+                    self.monthlyList = data.list;
+                }
+            });
+        },
+        formatPrice(value) {
+            return value ? parseInt(value).toLocaleString() : "0";
         }
     },
     mounted() {
@@ -150,6 +183,7 @@ const app = Vue.createApp({
 
         // 상품 리스트 가져와서 Swiper 적용
         this.fnProductList();
+        this.fnMonthlyPick();
     },
 });
 
