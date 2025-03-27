@@ -6,63 +6,62 @@
 	<meta charset="UTF-8">
 	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link rel="stylesheet" href="/css/inquire-css/inquire-edit-style.css">
+    <link rel="stylesheet" href="/css/inquire-css/notice-edit-style.css">
     <script src="/js/pageChange.js"></script>
-	<title>문의 수정</title>
+	<title>공지 수정</title>
 </head>
 <style>
 </style>
 <body>
     <jsp:include page="/WEB-INF/common/header.jsp" />
 	<div id="app">
-        <h2 class="inquire">문의게시판</h2>
-            <!-- 제목 컨테이너 -->
+        <h2 class="notice">공지사항</h2>
+            <!-- 제목 -->
             <div class="title-container">
-                <img src="/images/profile.png" class="profile-img" alt="프로필">
-                <input class="post-title" v-model="info.qsTitle">
+                <input class="post-title" v-model="info.noticeTitle">
             </div>
 
-            <!-- 작성자 정보 -->
             <div class="post-meta">
-                <span class="post-user">{{ info.userId }}</span> ·
-                <span class="post-date">{{ info.cdatetime }}</span> ·
+                <span class="post-date">{{ info.noticeDate }}</span> ·
                 조회 {{ info.viewCnt }}
             </div>
 
             <!-- 본문 내용 -->
             <div class="post-content">
-                <input class="post-content" v-model="info.qsContents">
+                <input class="post-content" v-model="info.noticeContents">
             </div>
 
             <!-- 버튼들 -->
             <div class="button-group-container">
-                <div v-if="sessionId == info.userId || sessionStatus == 'A'" class="button-group">
+                <div>
                     <button class="edit-btn" @click="fnEdit">저장</button>
                 </div>
-                <button class="buttonGoBack" @click="goBack">목록으로</button>
+                <div>
+                    <button class="buttonGoBack" @click="goBack">목록으로</button>
+                </div>
             </div>
-	</div>
+            
+        </div>
+    </div>
     <jsp:include page="/WEB-INF/common/footer.jsp" />
-</body>
 </html>
 <script>
     const app = Vue.createApp({
         data() {
             return {
-                qsNo : "${map.qsNo}",
-                info : {},
-                sessionStatus: "${sessionStatus}",
+                noticeNo : "${map.noticeNo}",
+                info : {}
             };
         },
         methods: {
-            fnInquire(){
+            fnNotice(){
 				var self = this;
 				var nparmap = {
-                    qsNo : self.qsNo,
+                    noticeNo : self.noticeNo,
                     option : "UPDATE"
 				};
 				$.ajax({
-					url:"/inquire/view.dox",
+					url:"/notice/view.dox",
 					dataType:"json",	
 					type : "POST", 
 					data : nparmap,
@@ -76,7 +75,7 @@
                 var self = this;
 				var nparmap = self.info;
 				$.ajax({
-					url:"/inquire/edit.dox",
+					url:"/notice/edit.dox",
 					dataType:"json",	
 					type : "POST", 
 					data : nparmap,
@@ -84,7 +83,7 @@
 						console.log(data);
                         if(data.result == "success") {
 							alert("수정되었습니다!");
-                            location.href="/inquire.do?tab=qna";
+                            location.href="/inquire.do?tab=notice";
 						} else {
                             alert("수정 실패")
                         }
@@ -92,14 +91,14 @@
 				});
             },
             goBack() {
-                location.href = "/inquire.do?tab=qna";
+                location.href = "/inquire.do?tab=notice";
             },
         },
         mounted() {
             var self = this;
-            self.fnInquire();
+            self.fnNotice();
         }
     });
     app.mount('#app');
 </script>
-​
+​</body>

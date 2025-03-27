@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/css/inquire-css/inquire-add-style.css">
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
-	<title>문의게시판</title>
+	<title>문의 추가</title>
 </head>
 <style>
 </style>
