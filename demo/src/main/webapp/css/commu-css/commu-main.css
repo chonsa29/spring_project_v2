@@ -1,58 +1,476 @@
-.board-container {
-    display: flex; /* 게시판을 가로로 나열 */
-    justify-content: center; /* 가로 방향으로 중앙 정렬 */
-    align-items: flex-start; /* 상단 정렬 */
-    gap: 60px; /* 게시판 사이의 간격 */
-    margin: 50px auto; /* 화면 중앙 배치 */
-    padding: 20px;
-}
-
-.board {
-    background-color: #f9f9f9; /* 배경색 */
-    border: 1px solid #ccc; /* 테두리 */
-    border-radius: 8px; /* 모서리 둥글게 */
-    padding: 20px;
-    width: 600px; /* 각 게시판의 너비 */
-	height: 300px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
-    text-align: center;
-}
-
-.board h2 {
-    font-size: 20px; /* 제목 크기 */
-    margin-bottom: 10px;
-    color: #333;
-}
-
-.board ul {
-    list-style: none; /* 기본 리스트 스타일 제거 */
+/* ---------------------- */
+/* 전체 레이아웃 스타일 */
+/* ---------------------- */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
     padding: 0;
 }
 
-.board li {
-    margin-bottom: 10px;
-    color: #555;
+/* 컨테이너 */
+#app {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+    padding-bottom: 100px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---------------------- */
+/* 탭 메뉴 스타일 */
+/* ---------------------- */
+.tab-menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white; /* 배경 흰색 */
+    padding: 10px;
+    border-radius: 30px; /* 둥글게 */
+    border: 2px solid #F3F3F3; 
+    width: fit-content; /* 내용에 맞게 너비 조절 */
+    margin: 20px auto;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 탭 아이템 스타일 */
+.tab-item {
+    font-size: 17px;
+    font-weight: bold;
+    padding: 12px 73px;
+    cursor: pointer;
+    color: #919191;
+    border-radius: 20px; /* 둥근 버튼 형태 */
+    transition: 0.3s;
+    letter-spacing: 1.5px;
+}
+
+/* 선택된 탭 (활성화된 탭) */
+.tab-item.active {
+    color: #333; /* 활성화된 글자 색 (녹색) */
+    font-weight: bold;
+    background-color: white; /* 배경 흰색 유지 */
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+/* 탭 구분선 */
+.tab-separator {
+    color: #E9E9E9; 
     font-size: 16px;
-    text-align: left; /* 텍스트 왼쪽 정렬 */
+    padding: 0 25px; /* 구분선 간격 조절 */
 }
 
-.board1 > div {
-    display: flex; /* 가로로 정렬 */
-    justify-content: space-between; /* 요소 사이 간격을 일정하게 */
-    align-items: center; /* 수직 방향 중앙 정렬 */
-    padding: 10px; /* 여백 추가 */
+.tab-item:not(.active):hover {
+    color: #000;
 }
 
-.board1 h2 {
-    font-size: 20px; /* 제목 크기 */
-    margin: 0; /* 불필요한 여백 제거 */
-    color: #333;
+.tab-item.active:hover {
+    color: #919191;
 }
 
-.board1 a {
-    font-size: 16px; /* 링크 크기 */
-    text-decoration: none; /* 밑줄 제거 */
-    color: rgb(255, 197, 43); /* 링크 색상 */
+/* h2 스타일 수정 */
+.tab-content h2 {
+    max-width: 820px; 
+    margin: 0 auto;
+    margin-top: 50px;
+    margin-bottom: 80px; 
+    padding-bottom: 30px; /* 줄과의 간격 */
+    border-bottom: 2px solid #ddd; /* 아래 줄 추가 */
+    font-size: 22px; /* 글자 크기 조정 */
+    font-weight: bold; /* 글자 굵게 */
+}
+
+
+/* ---------------------- */
+/* FAQ 스타일 */
+/* ---------------------- */
+.faq-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    
+    border-bottom: 2px solid #ddd;
+}
+
+/* "자주 묻는 질문" */
+.faq-title {
+    font-size: 18px;
     font-weight: bold;
 }
 
+/* 필터 버튼 */
+.faq-filter {
+    display: flex;
+    justify-content: start;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.filter-btn {
+    border: 1px solid #ddd;
+    background-color: white;
+    padding: 8px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 20px;
+}
+
+.filter-btn.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+/* ---------------------- */
+/* FAQ 리스트 스타일 */
+/* ---------------------- */
+.faq-item {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    max-width: 820px; 
+    margin: 0 auto;
+}
+
+.faq-question {
+    font-weight: bold;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.faq-answer {
+    display: block;
+    padding: 10px;
+    color: #555;
+}
+
+/* Q 아이콘 */
+.faq-question::before {
+    content: "Q.";
+    font-weight: bold;
+    color: #333;
+    margin-right: 5px;
+}
+
+/* 펼침/닫힘 아이콘 */
+.faq-question::after {
+    content: "▼";
+    font-size: 12px;
+    margin-left: auto;
+}
+
+.faq-item.open .faq-answer {
+    display: block;
+}
+
+.faq-item.open .faq-question::after {
+    content: "▲";
+}
+
+/* 검색 바 스타일 */
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 820px; 
+    margin: 0 auto; /* 가운데 정렬 */
+    margin-bottom: 16px;
+}
+
+.search-bar select, 
+.search-bar input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+.search-bar select {
+    width: 120px;
+}
+
+.search-bar input {
+    flex: 1;
+}
+
+.search-bar button {
+    background: #0DA043;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.search-bar button:hover {
+    background: #0b7d36;
+}
+
+/* Q&A 섹션 하단 페이징 및 글쓰기 영역 */
+.qna-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    margin-top: 20px;
+    position: relative;
+    margin: 0 auto;
+  }
+  
+ /* 페이징 스타일 */
+.pagination {
+    display: flex;
+    justify-content: center; /* 중앙 정렬 */
+    gap: 10px;
+    margin: 30px auto;  /* Q&A 테이블과 적당한 여백 */
+  }
+  
+  .pagination a {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 20px;    /* 둥근 모서리 */
+    color: #333;
+    text-decoration: none;
+    transition: background 0.3s, color 0.3s;
+  }
+  
+  .pagination a:hover {
+    background-color: #f7f7f7;
+  }
+  
+  .pagination a.active {
+    background-color: #333;
+    border-color: #333;
+    color: #fff;
+  }
+  
+  /* 글쓰기 버튼: */
+  .writing {
+    width: 100%;
+    max-width: 790px;
+    display: flex;
+    justify-content: flex-end; /* 오른쪽 정렬 */
+    margin: 10px auto 0 auto;
+}
+  
+  .writing button {
+    background-color: #0DA043;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .writing button:hover {
+    background-color: #0b7d36;
+    transform: scale(1.01); 
+  }  
+
+/* 레시피 테이블 스타일 */
+.recipe-table {
+    width: 100%;
+    max-width: 600px;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 820px; 
+    margin: 0 auto; /* 가운데 정렬 */
+}
+
+.recipe-table button {
+    width: 69px;
+    height: 29px;
+    font-size: 11px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.recipe-table th, .recipe-table td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+.recipe-table th {
+    background: #f4f4f4;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.recipe-table td {
+    font-size: 15px;
+}
+
+.gray-text {
+    color: #919191; 
+}
+
+.recipe-table tbody tr:hover {
+    background: #f0fdf4;
+    cursor: pointer;
+}
+
+.statusChange {
+    cursor: pointer;
+}
+
+.recipe-table th:nth-child(1),
+.recipe-table td:nth-child(1) {
+    width: 60px; 
+    min-width: 40px;
+}
+
+.recipe-table th:nth-child(4),
+.recipe-table td:nth-child(4) {
+    width: 140px; 
+    min-width: 130px;
+    text-align: center;
+}
+
+.status-gray {
+    background-color: #919191;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.status-lightgreen {
+    background-color: #6EB98A;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.status-green {
+    background-color: #0DA043;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+/* 공지 테이블 스타일 */
+.notice-table {
+    width: 100%;
+    max-width: 600px;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 820px; 
+    margin: 0 auto; /* 가운데 정렬 */
+}
+
+.notice-table th, .notice-table td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+.notice-table th {
+    background: #f4f4f4;
+    font-weight: bold;
+}
+
+.notice-table tbody tr:hover {
+    background: #f0fdf4;
+    cursor: pointer;
+}
+
+@media screen and (max-width: 820px) {
+    /* 컨테이너 */
+    #app {
+        width: 90%;
+        padding: 10px;
+    }
+
+    /* 탭 메뉴 */
+    .tab-menu {
+        flex-direction: column;
+        padding: 8px;
+        gap: 10px;
+        width: 100%;
+        box-shadow: none;
+        border: none;
+    }
+
+    .tab-item {
+        padding: 10px 0;
+        width: 100%;
+        text-align: center;
+        border-radius: 10px;
+    }
+
+    .tab-separator {
+        display: none; /* 구분선 제거 */
+    }
+
+    /* h2 제목 */
+    .tab-content h2 {
+        font-size: 20px;
+        margin-top: 30px;
+        margin-bottom: 50px;
+        padding-bottom: 20px;
+    }
+
+    /* 검색 바 */
+    .search-bar {
+        flex-direction: column;
+        gap: 8px;
+        padding: 15px;
+    }
+
+    .search-bar select, 
+    .search-bar input,
+    .search-bar button {
+        width: 100%;
+    }
+
+    /* FAQ */
+    .faq-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .faq-title {
+        font-size: 16px;
+    }
+
+    .faq-filter {
+        flex-wrap: wrap;
+    }
+
+    /* 테이블 */
+    .recipe-table,
+    .notice-table {
+        max-width: 100%;
+        font-size: 14px;
+    }
+
+    .recipe-table th, .recipe-table td,
+    .notice-table th, .notice-table td {
+        padding: 10px;
+    }
+
+    .writing {
+        justify-content: center; /* 작은 화면에서는 중앙 정렬 */
+    }
+}
