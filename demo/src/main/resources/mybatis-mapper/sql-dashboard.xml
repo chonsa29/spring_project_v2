@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.DashboardMapper">
+
+    <!-- 오늘의 주문 수 -->
+    <select id="selectTodayOrderCount" resultType="int">
+        SELECT COUNT(*) FROM ORDER_LIST
+        WHERE TRUNC(ORDER_DATE) = TRUNC(SYSDATE)
+    </select>
+
+    <!-- 오늘의 취소 요청 수 -->
+    <select id="selectTodayCancelRequestCount" resultType="int">
+        SELECT COUNT(*) FROM ORDER_LIST
+        WHERE TRUNC(ORDER_DATE) = TRUNC(SYSDATE) AND ORDER_STATUS = 'D'
+    </select>
+
+    <!-- 오늘의 배송 관리 수 -->
+    <select id="selectTodayDeliveryCount" resultType="int">
+        SELECT COUNT(*) FROM ORDER_LIST 
+        WHERE TRUNC(ORDER_DATE) = TRUNC(SYSDATE) AND ORDER_STATUS IN ('P')
+    </select>
+
+    <!-- 답변 대기 중인 문의 수 -->
+    <select id="selectPendingInquiryCount" resultType="int">
+        SELECT COUNT(*) FROM QUESTION
+        WHERE QS_STATUS = '0'
+    </select>
+
+    <!-- 최근 7일 매출 추이 -->
+    <select id="selectWeeklySales" resultType="java.util.LinkedHashMap">
+        SELECT 
+            TO_CHAR(TRUNC(ORDER_DATE), 'YYYY-MM-DD') AS "date",
+            SUM(PRICE) AS "sales"
+        FROM ORDER_LIST
+        WHERE ORDER_DATE BETWEEN TRUNC(SYSDATE) - 6 AND TRUNC(SYSDATE) + 1
+        GROUP BY TO_CHAR(TRUNC(ORDER_DATE), 'YYYY-MM-DD')
+        ORDER BY "date" ASC
+    </select>
+
+    <!-- 최근 주문 목록 (최근 5건) -->
+    <select id="selectRecentOrders" resultType="java.util.LinkedHashMap">
+        SELECT * FROM (
+            SELECT 
+                O.ORDER_KEY AS "orderKey",
+                M.USERID AS "userId",
+                O.PRICE AS "price",
+                O.ORDER_STATUS AS "orderStatus"
+            FROM ORDER_LIST O
+            JOIN MEMBER M ON O.USERID = M.USERID
+            ORDER BY O.ORDER_DATE DESC
+        ) WHERE ROWNUM &lt;= 5
+    </select>
+
+    <!-- 인기 상품 TOP 3 -->
+    <select id="selectTopProducts" resultType="java.util.LinkedHashMap">
+        SELECT * FROM (
+            SELECT 
+                P.ITEM_NO AS "itemNo",
+                P.ITEM_NAME AS "itemName",
+                P.PRICE AS "price",
+                SUM(OD.COUNT) AS "totalCount",
+                I.FILEPATH AS "imageUrl"
+            FROM ORDER_DETAILS OD
+            JOIN PRODUCT P ON OD.ITEM_NO = P.ITEM_NO
+            JOIN PRODUCT_IMG I ON I.ITEM_NO = P.ITEM_NO
+            GROUP BY P.ITEM_NO, P.ITEM_NAME, P.PRICE, I.FILEPATH
+            ORDER BY "totalCount" DESC
+        ) WHERE ROWNUM &lt;= 3
+    </select>
+</mapper>

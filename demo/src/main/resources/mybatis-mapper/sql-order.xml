@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.OrderMapper">
+	<select id="getDailySales" resultType="hashmap">
+	    SELECT TO_CHAR(ORDER_DATE, 'YYYY-MM-DD') AS date, SUM(TOTAL_PRICE) AS sales
+	    FROM ORDERS
+	    WHERE ORDER_DATE >= TRUNC(SYSDATE) - 30
+	    GROUP BY TO_CHAR(ORDER_DATE, 'YYYY-MM-DD')
+	</select>
+</mapper>
+
+
+
+
