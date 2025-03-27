@@ -38,6 +38,20 @@
 		</if>
 	</select>
 	
+	<select id="selectRecipeView" parameterType="hashmap" resultType="com.example.demo.model.Recipe">
+		SELECT *
+		FROM RECIPE_POST
+		WHERE POST_ID = #{postId}
+	</select>
+	
+	<update id="updateCnt" parameterType="hashmap">
+		UPDATE RECIPE_POST
+		SET
+			CNT = CNT + 1
+		WHERE POST_ID = #{postId}
+	</update>
+	
+	
 </mapper>
 
 

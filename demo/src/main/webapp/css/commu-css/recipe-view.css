@@ -1,0 +1,166 @@
+#app {
+    flex-grow: 1;
+    width: 100%;
+    max-width: 820px; 
+    min-height: 70vh; /* 세로 길이 증가 */
+    display: flex;
+    flex-direction: column;
+    padding: 20px; 
+    align-items: center;
+    text-align: left; /* 전체 왼쪽 정렬 */
+    margin: 0 auto;
+    background: #fff;
+}
+
+.recipe {
+    width: 100%;
+    max-width: 820px;
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid #ddd;
+    font-size: 26px;
+    font-weight: bold; /* 글자 굵게 */
+}
+
+/* 제목 및 프로필 컨테이너 */
+.title-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+/* 프로필 이미지 스타일 */
+.profile-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: gray;
+    margin-right: 10px;
+}
+
+/* 제목 스타일 */
+.post-title {
+    font-size: 22px; /* 글씨 크기 조정 */
+    font-weight: bold;
+    color: #333;
+}
+
+/* 작성자 정보 */
+.post-meta {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+/* 본문 내용 */
+.post-content {
+    font-size: 16px; /* 글씨 크기 조정 */
+    line-height: 1.8;
+    color: #444;
+    padding-top: 12px;
+    border-top: 1px solid #ddd; /* 구분선 추가 */
+    background: none; /* 기존 박스 제거 */
+    width: 100%;
+}
+
+/* 버튼 그룹 */
+.button-group-container {
+    position: relative; /* 부모 요소 기준 */
+    width: 100%;
+    display: flex;
+    justify-content: flex-end; /* 오른쪽 정렬 */
+    align-items: center;
+    padding: 20px;
+    margin-top: 40px;
+}
+
+/* 개별 버튼 스타일 */
+.edit-btn, .delete-btn {
+    background-color: #0DA043;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-left: 10px; /* 버튼 간격 */
+}
+
+.edit-btn:hover, .delete-btn:hover {
+    background-color: #0b7d36;
+    transform: scale(1.01);
+}
+
+.buttonGoBack {
+    background-color: #919191;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-left: 10px;
+}
+
+.buttonGoBack:hover {
+    background-color: #808080;
+    transform: scale(1.01);
+}
+
+/* 요리 정보 컨테이너 */
+.recipe-info-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* 아이템 간 간격 */
+    margin-bottom: 20px;
+    padding: 15px;
+    width: 100%;
+    background: #f9f9f9; /* 배경색 */
+    border-radius: 10px; /* 둥근 테두리 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 그림자 */
+}
+
+/* 개별 정보 아이템 */
+.info-item {
+    flex: 1 1 45%; /* 화면 크기에 따라 조정 */
+    font-size: 14px;
+    color: #555;
+    display: flex;
+    align-items: center;
+}
+
+/* 정보 제목 스타일 */
+.info-title {
+    font-weight: bold;
+    margin-right: 8px; /* 제목과 내용 간격 */
+    color: #333;
+}
+
+/* 난이도 별 채우기 */
+.difficulty-stars {
+    display: flex;
+    gap: 3px; /* 별 간의 간격 */
+}
+
+.star {
+    font-size: 16px;
+    color: #ddd; /* 비어 있는 별의 색상 */
+}
+
+.star-filled {
+    color: #FFD700; /* 채워진 별의 색상 (금색) */
+}
+
+.star-empty {
+    color: #ddd; /* 비어 있는 별의 색상 (회색) */
+}
+
+/* 좋아요 아이콘 */
+.like {
+	width: 12px;
+	fill: red;
+}
+
