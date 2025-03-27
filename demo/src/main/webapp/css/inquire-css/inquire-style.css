@@ -155,18 +155,9 @@ body {
 }
 
 /* 펼침/닫힘 아이콘 */
-.faq-question::after {
-    content: "▼";
-    font-size: 12px;
+.faq-question .faq-icon {
     margin-left: auto;
-}
-
-.faq-item.open .faq-answer {
-    display: block;
-}
-
-.faq-item.open .faq-question::after {
-    content: "▲";
+    color: #555;
 }
 
 /* 검색 바 스타일 */

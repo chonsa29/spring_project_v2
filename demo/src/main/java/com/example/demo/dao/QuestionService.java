@@ -147,9 +147,9 @@ public class QuestionService {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
-			if(map.get("option").equals("SELECT")) {
-				noticeMapper.updateNoticeCnt(map);
-			}
+//			if(map.get("option").equals("SELECT")) {
+//				noticeMapper.updateNoticeCnt(map);
+//			}
 			Notice info = noticeMapper.noticeSelect(map);
 			resultMap.put("info", info);
 			resultMap.put("result", "success");
@@ -202,4 +202,5 @@ public class QuestionService {
 		
 		return resultMap;
 	}
+
 }

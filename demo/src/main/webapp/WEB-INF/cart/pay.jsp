@@ -78,7 +78,7 @@
                             <option value="card">신용카드</option>
                             <option value="bank">무통장입금</option>
                         </select>
-                        <button class="pay-btn" @click="processPayment">결제하기</button>
+                        <button class="pay-btn" @click="fnPayment">결제하기</button>
                     </section>
                 </section>
             </main>
@@ -88,9 +88,14 @@
 </body>
 </html>
 <script>
+    const userCode = "imp12222527"; 
+    IMP.init(userCode);
     const app = Vue.createApp({
         data() {
             return {
+                pNo: "${map.pNo}",
+                info: {},
+                sessionId : "${sessionId}"
             };
         },
         methods: {
@@ -107,6 +112,46 @@
 						console.log(data);
 					}
 				});
+            },
+            fnPayment(){
+                var self = this;
+                IMP.request_pay({
+                    pg: "html5_inicis",
+                    pay_method: "card",
+                    merchant_uid: "merchant_" + new Date().getTime(),
+                    name: "테스트 결제",
+                    amount: self.info.price,
+                    buyer_tel: "010-0000-0000",
+                    }	, function (rsp) { // callback
+                    if (rsp.success) {
+                        // 결제 성공 시
+                        alert("성공");
+                        console.log(rsp);
+                        self.fnSave(rsp.merchant_uid);
+                    } else {
+                        // 결제 실패 시
+                        alert("실패");
+                        console.log(rsp);
+                    }
+                });
+            },
+            fnSave(merchant_uid) {
+                var self = this;
+                var nparmap = { 
+                    pWay : merchant_uid,
+                    userId : self.sessionId,
+                    pPrice : self.info.pPrice,
+                    pNo : self.info.pNo
+                };
+                $.ajax({
+                    url: "/payment.dox",  
+                    dataType: "json",
+                    type: "POST",
+                    data: nparmap,
+                    success: function (data) {
+                        console.log(data);
+                    }
+                });
             }
         },
         mounted() {
