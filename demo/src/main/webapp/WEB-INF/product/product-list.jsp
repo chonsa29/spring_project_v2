@@ -16,15 +16,17 @@
 
         <div id="app">
             <div id="rootname">
-                <a href="/home.do">HOME</a> > <a href="/product.do">PRODUCT</a>
+                <a href="/home.do">HOME</a> > <a href="/product.do">PRODUCT</a> > {{ selectedCategory }}
             </div>
             <div id="name">
-                <select name="" id="selectMenu">
-                    <option value="전체메뉴" class="optionMenu"> 전체메뉴</option>
-                    <option value="" v-for="info in list" class="optionMenu">
-                        {{info.category}}
-                    </option>
-                </select>
+                <div class="custom-dropdown">
+                    <button class="dropdown-btn" @click="toggleDropdown">{{ selectedCategory }}</button>
+                    <ul class="dropdown-menu" v-show="isDropdownOpen">
+                        <li v-for="category in allCategory" @click="selectOption(category.category)">
+                            {{ category.category }}
+                        </li>
+                    </ul>
+                </div>
             </div>
             <div>
                 <input type="text" placeholder="검색하기" id="product-search" v-model="keyword"
@@ -104,6 +106,9 @@
                     likedItems: new Set(),
                     showLikePopup: false, // 좋아요 표시
                     showCartPopup: false, // 장바구니 표시
+                    selectedCategory: "전체메뉴", // 선택된 카테고리 기본값
+                    allCategory: [],
+                    isDropdownOpen: false, // 드롭다운 상태
                 };
             },
             methods: {
@@ -113,6 +118,7 @@
                         keyword: self.keyword,
                         pageSize: self.pageSize,
                         page: (self.page - 1) * self.pageSize,
+                        searchOption: self.selectedCategory, // 선택된 카테고리 추가
 
                     };
                     $.ajax({
@@ -125,12 +131,24 @@
                                 console.log(data);
                                 self.list = data.list;
                                 self.productcount = data.count;
+                                self.allCategory = data.category;
+                                console.log(self.allCategory);
                                 self.index = Math.ceil(data.count / self.pageSize);
                             } else {
                                 console.log("실패");
                             }
                         }
                     });
+                },
+
+                selectOption(category) {
+                    this.selectedCategory = category; // 버튼 텍스트 변경
+                    this.isDropdownOpen = false; // 드롭다운 닫기
+                    this.fnProductList();
+                },
+
+                toggleDropdown() {
+                    this.isDropdownOpen = !this.isDropdownOpen; // 드롭다운 상태 토글
                 },
 
                 fnInfo(itemNo) {
@@ -156,12 +174,6 @@
                 },
                 formatPrice(value) {
                     return value ? parseInt(value).toLocaleString() : "0";
-                },
-
-                fnLike(itemNo, sessionId) {
-                    // ajax로 보내주기
-                    // console.log(itemNo);
-                    // console.log(sessionId);
                 },
 
                 fnLike(itemNo, sessionId) {

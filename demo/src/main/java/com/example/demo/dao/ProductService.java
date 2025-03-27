@@ -21,8 +21,10 @@ public class ProductService {
 		try {
 			List<Product> list = productMapper.SelectProduct(map);
 			int count = productMapper.CountProduct(map);
+			List<Product> category = productMapper.SelectCategory(map);
 			resultMap.put("list", list);
 			resultMap.put("count", count);
+			resultMap.put("category", category);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -76,7 +78,8 @@ public class ProductService {
 		}
 		return resultMap;
 	}
-
+	
+	
 	// 상품의 이미지 추가하기
 	public void addProductFile(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
