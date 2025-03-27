@@ -27,7 +27,11 @@
 			<h2>자주 묻는 질문</h2>
 			<div class="faq-list">
 				<div v-for="faq in faqList" :key="faq.id" class="faq-item" @click="toggleFaq(faq)">
-					<div class="faq-question">{{ faq.question }}</div>
+					<div class="faq-question">
+						{{ faq.question }}
+						<span class="faq-icon" v-if="faq.open">▲</span>
+        				<span class="faq-icon" v-else>▼</span>
+					</div>
 					<div v-if="faq.open" class="faq-answer">{{ faq.answer }}</div>
 				</div>
 			</div>
@@ -324,7 +328,7 @@ const app = Vue.createApp({
             });
         },
 
-		fnNoticeList() {
+		fnNoticeList(noticeNo) {
 			let self = this;
 			let params = {
 				noticeSearchKeyword: self.noticeSearchKeyword,

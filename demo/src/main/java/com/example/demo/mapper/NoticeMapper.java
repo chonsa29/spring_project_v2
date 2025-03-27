@@ -20,7 +20,7 @@ public interface NoticeMapper {
 
 	void noticeDelete(HashMap<String, Object> map);
 
-	void updateNoticeCnt(HashMap<String, Object> map);
+	int updateNoticeCnt(HashMap<String, Object> map);
 
 	void noticeInsert(HashMap<String, Object> map);
 
