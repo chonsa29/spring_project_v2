@@ -46,8 +46,8 @@
 				<tbody>
 					<tr v-for="item in rList">
 						<td>{{ item.postId }}</td>
-						<td @click="fnView(item.postId)">{{ item.title }}</td>
-						<td @click="fnView(item.postId)"><span v-html="item.contents"></span></td>
+						<td @click="fnRecipeView(item.postId)">{{ item.title }}</td>
+						<td @click="fnRecipeView(item.postId)"><span v-html="item.contents"></span></td>
 						<td>{{ item.cdatetime.substring(0, 10) }}</td>
 						<td class="gray-text">{{ item.cnt }}</td>
 						<td class="gray-text">{{ item.likes }}</td>
@@ -66,7 +66,7 @@
 					</a>
 				</div>
 				<div class="writing">
-				    <button @click="fnWriting">글쓰기</button>
+				    <button @click="fnAddRecipe">글쓰기</button>
 				</div>
 		</section>
 
@@ -186,12 +186,13 @@ const app = Vue.createApp({
 			self.fnRecipeList();
 		},
 
-		fnWriting() {
-			location.href = "/inquire/add.do";
+		fnAddRecipe() {
+			location.href = "/recipe/add.do";
 		},
 
-		fnView(qsNo) {
-			pageChange("/inquire/view.do", { qsNo : qsNo });
+		fnRecipeView(postId) {
+			console.log('Post ID:', postId); 
+			pageChange("/recipe/view.do", { postId : postId });
 		}
 
     },
