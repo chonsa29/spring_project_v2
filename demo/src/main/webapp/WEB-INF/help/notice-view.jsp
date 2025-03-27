@@ -27,7 +27,7 @@
             </div>
 
             <!-- 본문 내용 -->
-            <div class="post-content">{{ info.noticeContents }}</div>
+            <div class="post-content"><span v-html="info.noticeContents"></span></div>
 
             <!-- 버튼들 -->
             <div class="button-group-container">

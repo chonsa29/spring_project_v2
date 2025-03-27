@@ -59,6 +59,11 @@ public class QuestionController {
         return "/help/notice-edit";
     }
 	
+	@RequestMapping("/notice/add.do")
+	public String noticeAdd(Model model) throws Exception{
+        return "/help/notice-add";
+    }
+	
 	@RequestMapping(value = "/inquire/qna.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String faq(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
@@ -157,6 +162,16 @@ public class QuestionController {
 				
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap = questionService.noticeRemove(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/notice/add.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String noticeAdd(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+				
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = questionService.noticeAdd(map);
 		
 		return new Gson().toJson(resultMap);
 	}
