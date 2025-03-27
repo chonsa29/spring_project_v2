@@ -9,14 +9,14 @@
     <link rel="stylesheet" href="/css/inquire-css/inquire-add-style.css">
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
-	<title>문의 추가</title>
+	<title>공지 추가</title>
 </head>
 <style>
 </style>
 <body>
     <jsp:include page="/WEB-INF/common/header.jsp" />
 	<div id="app">
-        <h1 class="inquire-input">문의게시판</h1>
+        <h1 class="inquire-input">공지사항</h1>
         <h2 class="inquire-write">글쓰기</h2>
         <div class="input-group">
             <input v-model="title" id="title" placeholder="제목">
@@ -37,30 +37,28 @@
             return {
                 title : "",
                 contents : "",
-                sessionId : "${sessionId}",
             };
         },
         methods: {
             fnSave(){
                 var self = this;
                 if(self.title == "" || self.contents == "") {
-                    alert("문의 내용을 입력해주세요");
+                    alert("공지사항을 입력해주세요");
                     return;
                 }
 				var nparmap = {
-                    qsTitle : self.title,
-                    qsContents : self.contents,
-                    userId : self.sessionId
+                    noticeTitle : self.title,
+                    noticeContents : self.contents
 				};
 				$.ajax({
-					url:"/inquire/add.dox",
+					url:"/notice/add.dox",
 					dataType:"json",	
 					type : "POST", 
 					data : nparmap,
 					success : function(data) { 
 						console.log(data);
                         alert("문의가 등록되었습니다.");
-                        location.href="/inquire.do?tab=qna";
+                        location.href="/inquire.do?tab=notice";
 					},
                     error: function(xhr, status, error) {
                         console.error("AJAX 요청 실패:", status, error);  // AJAX 요청 실패 확인

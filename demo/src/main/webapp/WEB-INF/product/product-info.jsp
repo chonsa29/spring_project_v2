@@ -135,6 +135,7 @@
                     count: 0,
                     price: 0,
                     showCartPopup: false, // 장바구니 추가 팝업
+                    imgList : [],
 
                 };
             },

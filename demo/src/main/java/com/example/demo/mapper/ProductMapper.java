@@ -40,5 +40,8 @@ public interface ProductMapper {
 	void updateThumbnail(HashMap<String, Object> map);
 
 	void insertAdditionalImage(HashMap<String, Object> map);
+  
+	List<Product> SelectCategory(HashMap<String, Object> map);
+
 
 }

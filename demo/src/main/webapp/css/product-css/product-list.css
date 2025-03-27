@@ -48,30 +48,65 @@ input:focus{
 
 #name {
     text-align: left;
-    margin-left:15vw;
+    margin-left: 15vw;
 }
 
 h2 {
 	display: inline;
 }
 
-#selectMenu, #selectMenu:focus {
-	outline: none;
-	border: none;
-	font-size: 25px;
-	font-weight: bold;
-	
+
+/* 드롭다운 스타일 */
+.custom-dropdown {
+	text-align: left;
+    position: relative;
+    display: inline-block;
 }
 
-.optionMenu {
-	font-size: 18px;
-	background-color: white;
+.dropdown-btn {
+	width: 180px;
+    font-size: 25px;
+    font-weight: bold;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: white;
+    cursor: pointer;
 }
 
-.optionMenu:hover {
-	color: #6EB98A !important;
-	background-color: white;
+
+.dropdown-menu {
+	width: 200px; /* 너비 조정 */
+	margin-left: 80px;
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    width: 100%;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
+
+
+.dropdown-menu li {
+    font-size: 14px; /* option 글자 크기 줄이기 */
+    padding: 10px;
+    cursor: pointer;
+}
+
+
+.dropdown-menu li:hover {
+    background-color: white;
+    color: #6EB98A;
+}
+
+
+.custom-dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+
 
 .product-image {
 	width: 100%;

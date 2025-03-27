@@ -6,7 +6,7 @@
 	<meta charset="UTF-8">
 	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link rel="stylesheet" href="/css/inquire-css/inquire-view-style.css">
+    <link rel="stylesheet" href="/css/inquire-css/notice-view-style.css">
     <script src="/js/pageChange.js"></script>
 	<title>상세보기</title>
 </head>
@@ -15,26 +15,23 @@
 <body>
     <jsp:include page="/WEB-INF/common/header.jsp" />
 	<div id="app">
-        <h2 class="inquire">문의게시판</h2>
-            <!-- 제목 & 프로필 컨테이너 -->
+        <h2 class="notice">공지사항</h2>
+            <!-- 제목 -->
             <div class="title-container">
-                <img src="/images/profile.png" class="profile-img" alt="프로필">
-                <div class="post-title">{{ info.qsTitle }}</div>
+                <div class="post-title">{{ info.noticeTitle }}</div>
             </div>
 
-            <!-- 작성자 정보 -->
             <div class="post-meta">
-                <span class="post-user">{{ info.userId }}</span> ·
-                <span class="post-date">{{ info.cdatetime }}</span> ·
+                <span class="post-date">{{ info.noticeDate }}</span> ·
                 조회 {{ info.viewCnt }}
             </div>
 
             <!-- 본문 내용 -->
-            <div class="post-content" v-html="info.qsContents"></div>
+            <div class="post-content"><span v-html="info.noticeContents"></span></div>
 
             <!-- 버튼들 -->
             <div class="button-group-container">
-                <div v-if="sessionId == info.userId || sessionStatus == 'A'" class="button-group">
+                <div v-if="sessionStatus == 'A'" class="button-group">
                     <button class="edit-btn" @click="fnEdit">수정</button>
                     <button class="delete-btn" @click="fnRemove">삭제</button>
                 </div>
@@ -48,21 +45,20 @@
     const app = Vue.createApp({
         data() {
             return {
-                qsNo : "${map.qsNo}",
+                noticeNo : "${map.noticeNo}",
                 info : {},
-                sessionId: "${sessionId}",
                 sessionStatus: "${sessionStatus}",
             };
         },
         methods: {
-            fnInquire(){
+            fnNotice(){
 				var self = this;
 				var nparmap = {
-                    qsNo : self.qsNo,
+                    noticeNo : self.noticeNo,
                     option: "SELECT"
 				};
 				$.ajax({
-					url:"/inquire/view.dox",
+					url:"/notice/view.dox",
 					dataType:"json",	
 					type : "POST", 
 					data : nparmap,
@@ -73,25 +69,25 @@
 				});
             },
             goBack() {
-                location.href = "/inquire.do?tab=qna";
+                location.href = "/inquire.do?tab=notice";
             },
-            fnEdit(qsNo) {
-                pageChange("/inquire/edit.do", { qsNo: this.qsNo });
+            fnEdit(noticeNo) {
+                pageChange("/notice/edit.do", { noticeNo: this.noticeNo });
             },
             fnRemove: function () {
                 var self = this;
                 var nparmap = {
-                    qsNo: self.qsNo
+                    noticeNo: self.noticeNo
                 };
                 $.ajax({
-                    url: "/inquire/remove.dox",
+                    url: "/notice/remove.dox",
                     dataType: "json",
                     type: "POST",
                     data: nparmap,
                     success: function (data) {
                         if(data.result == "success") {
 							alert("삭제되었습니다!");
-                            location.href="/inquire.do?tab=qna";
+                            location.href="/inquire.do?tab=notice";
 						} else {
                             alert("삭제 실패")
                         }
@@ -101,7 +97,7 @@
         },
         mounted() {
             var self = this;
-            self.fnInquire();
+            self.fnNotice();
         }
     });
     app.mount('#app');

@@ -70,7 +70,7 @@
 						<td>{{ inquiry.cdatetime }}</td>
 						<td class="gray-text">{{ inquiry.viewCnt }}</td>
 						<td v-if="sessionStatus == 'A'">
-							<button class="statusChange" :class="getStatusClass(inquiry.qsStatus)" @click="updateStatus(inquiry)">
+							<button class="statusChange" :class="getStatusClass(inquiry.qsStatus)" @click="updateStatus(qsNo, qsStatus)">
 								{{ getStatusText(inquiry.qsStatus) }}
 							</button>
 						</td>
@@ -87,7 +87,7 @@
 					<a v-if="page !=1" id="index" href="javascript:;"
 					@click="fnPageMove('prev')"> < </a>
 					<a href="javascript:;" v-for="num in index" @click="fnPage(num)" :class="{active: page === num}">
-						{{num}}
+						{{ num }}
 					</a>
 					<a v-if="page!=index" id="index" href="javascript:;"
 						@click="fnPageMove('next')"> >
@@ -102,13 +102,19 @@
 		<section id="notice" class="tab-content" v-show="activeTab === 'notice'">
 			<h2>공지사항</h2>
 			<div class="search-bar">
-				<select v-model="selectedCategory">
-					<option value="">제목</option>
-					<option value="">상품</option>
-					<option value="">배송</option>
+				<select v-model="noticeSearchOption">
+					<option value="nAll">:: 전체 ::</option>
+					<option value="nTitle">제목</option>
+					<option value="nContents">내용</option>
 				</select>
-				<input type="text" v-model="searchKeyword" placeholder="검색어를 입력하세요">
-				<button @click="searchNotice">검색</button>
+				<input type="text" v-model="noticeSearchKeyword" placeholder="검색어를 입력하세요">
+				<button @click="fnNoticeList">검색</button>
+				<select v-model="noticePageSize" @change="fnNoticeList">
+					<option value="5">5개씩</option>
+					<option value="10">10개씩</option>
+					<option value="15">15개씩</option>
+					<option value="20">20개씩</option>
+				</select>
 			</div>
 			<table class="notice-table">
 				<thead>
@@ -117,17 +123,33 @@
 						<th>제목</th>
 						<th>내용</th>
 						<th>날짜</th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="notice in noticeList" :key="notice.id">
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
+					<tr v-for="notice in noticeList">
+						<td @click="fnNoticeView(notice.noticeNo)">{{ notice.noticeNo }}</td>
+						<td @click="fnNoticeView(notice.noticeNo)">{{ notice.noticeTitle }}</td>
+						<td @click="fnNoticeView(notice.noticeNo)"><span v-html="notice.noticeContents"></span></td>
+						<td>{{ notice.noticeDate }}</td>
+						<td class="gray-text">{{ notice.viewCnt }}</td>
 					</tr>
 				</tbody>
 			</table>
+			<!-- 페이징 -->
+			<div class="pagination">
+				<a v-if="noticePage !=1" id="noticeIndex" href="javascript:;"
+				@click="fnNoticePageMove('prev')"> < </a>
+				<a href="javascript:;" v-for="number in noticeIndex" @click="fnNoticePage(number)" :class="{active: noticePage === number}">
+					{{ number }}
+				</a>
+				<a v-if="noticePage!=noticeIndex" id="noticeIndex" href="javascript:;"
+					@click="fnNoticePageMove('next')"> >
+				</a>
+			</div>
+			<div class="writing" v-if="sessionStatus == 'A'">
+				<button @click="fnNoticeWriting">글쓰기</button>
+			</div>
 		</section>
 	</div>
 	<jsp:include page="/WEB-INF/common/footer.jsp" />
@@ -138,13 +160,20 @@ const app = Vue.createApp({
         return {
             activeTab: 'faq', // 기본으로 '자주 묻는 질문' 탭 활성화
             searchOption: "all",
+			noticeSearchOption: "nAll",
             searchKeyword: '',
+			noticeSearchKeyword: '',
             inquiryList: [],
+			noticeList: [],
 			sessionStatus: "${sessionStatus}",
 			qsNo : "${map.qsNo}",
+			noticeNo : "${map.noticeNo}",
 			pageSize: 5,
 			index: 0,
 			page: 1,
+			noticePageSize: 5,
+			noticeIndex: 0,
+			noticePage: 1,
 			faqList: [
 				{ id: 1, question: '배송 기간은 얼마나 걸리나요?', answer: '보통 2~3일 소요됩니다.', open: false },
 				{ id: 2, question: '교환/환불은 어떻게 하나요?', answer: '고객센터를 통해 요청 가능합니다.', open: false },
@@ -173,9 +202,12 @@ const app = Vue.createApp({
 				data : nparmap,
                 success : function(data) { 
 					console.log(data);
-					self.inquiryList = data.inquiryList
-					self.index = Math.ceil(data.count / self.pageSize);
-                }
+					self.inquiryList = data.inquiryList;
+					self.index = Math.ceil(data.inquiryCount / self.pageSize);
+                },
+				error: function () {
+					console.error("Q&A 데이터를 불러오는 데 실패했습니다.");
+				}
             });
         },
 
@@ -183,6 +215,12 @@ const app = Vue.createApp({
 			let self = this;
 			self.page = num;
 			self.inquireList();
+		},
+
+		fnNoticePage: function (number) {
+			let self = this;
+			self.noticePage = number;
+			self.fnNoticeList();
 		},
 		
 		fnPageMove: function (direction) {
@@ -197,6 +235,18 @@ const app = Vue.createApp({
 			self.inquireList();
 		},
 
+		fnNoticePageMove: function (direction) {
+			let self = this;
+			let next = document.querySelector(".next");
+			let prev = document.querySelector(".prev");
+			if (direction == "next") {
+				self.noticePage++;
+			} else {
+				self.noticePage--;
+			}
+			self.fnNoticeList();
+		},
+
         // FAQ 질문 클릭 시 답변 토글
         toggleFaq(faq) {
 			faq.open = !faq.open;
@@ -206,8 +256,16 @@ const app = Vue.createApp({
 			location.href = "/inquire/add.do";
 		},
 
+		fnNoticeWriting() {
+			location.href = "/notice/add.do";
+		},
+
 		fnView(qsNo) {
 			pageChange("/inquire/view.do", { qsNo : qsNo });
+		},
+
+		fnNoticeView(noticeNo) {
+			pageChange("/notice/view.do", { noticeNo : noticeNo });
 		},
 
 		getStatusClass(status) {
@@ -223,16 +281,16 @@ const app = Vue.createApp({
 			return '';
 		},
 
-		updateStatus(status) {
+		updateStatus(qsNo, qsStatus) {
 
-			console.log("기존 상태:", inquiry.qsStatus);
+			console.log("updateStatus 실행됨!", qsNo, qsStatus); 
 
-			let newStatus = status;
+			let newStatus
 
-			if (status === 0) {
-				newStatus = 1; // 0이면 1로 변경
-			} else if (status === 1) {
-				newStatus = 2; // 1이면 2로 변경
+			if (inquiry.qsStatus === 0) {
+				newStatus = 1; // 0 → 1 (확인 중 → 처리 중)
+			} else if (inquiry.qsStatus === 1) {
+				newStatus = 2; // 1 → 2 (처리 중 → 처리 완료)
 			} else {
 				console.log("⚠ 상태 변경 없음: 이미 처리 완료 상태입니다.");
 				return;
@@ -243,7 +301,7 @@ const app = Vue.createApp({
             // 서버에 변경된 상태 업데이트 요청
 			var self = this;
 			var nparmap = {
-				qsNo: self.qsNo,
+				qsNo: inquiry.qsNo,
 				qsStatus: newStatus
 			};
             $.ajax({
@@ -254,7 +312,7 @@ const app = Vue.createApp({
                 success: function (data) {
 					console.log(data);
                     if (data.result === "success") {
-						status = newStatus;
+						inquiry.qsStatus = newStatus; 
                         alert("상태가 변경되었습니다.");
                     } else {
                         alert("상태 변경에 실패했습니다.");
@@ -264,7 +322,32 @@ const app = Vue.createApp({
                     alert("서버 오류가 발생했습니다.");
                 }
             });
-        }
+        },
+
+		fnNoticeList() {
+			let self = this;
+			let params = {
+				noticeSearchKeyword: self.noticeSearchKeyword,
+				noticeSearchOption: self.noticeSearchOption,
+				noticePageSize: self.noticePageSize,
+				noticePage: (self.noticePage - 1) * self.noticePageSize
+			};
+
+			$.ajax({
+				url: "/inquire/notice.dox", 
+				type: "POST",
+				dataType: "json",
+				data: params,
+				success: function (data) {
+					console.log("공지사항 데이터:", data);
+					self.noticeList = data.noticeList;
+					self.noticeIndex = Math.ceil(data.noticeCount / self.pageSize);
+				},
+				error: function () {
+					console.error("공지사항 데이터를 불러오는 데 실패했습니다.");
+				}
+			});
+    	},
 
     },
     mounted() {
@@ -279,6 +362,7 @@ const app = Vue.createApp({
 		}
 
         this.inquireList();
+		this.fnNoticeList();
     }
 });
 app.mount('#app');
