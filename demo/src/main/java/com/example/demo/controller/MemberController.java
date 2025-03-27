@@ -53,6 +53,16 @@ public class MemberController {
         return "/member/admin-page"; 
     }
 	
+	
+	@RequestMapping("/member/kakao.do") 
+    public String admin(Model model) throws Exception{
+
+        return "/member/admin-page"; 
+    }
+	
+	
+	
+	
 	@RequestMapping(value = "/member/check.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String check(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
