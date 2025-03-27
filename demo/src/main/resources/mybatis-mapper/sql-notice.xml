@@ -64,6 +64,11 @@
 		WHERE NOTICE_NO = #{noticeNo}
 	</update>
 	
+	<insert id="noticeInsert" parameterType="hashmap">
+		INSERT INTO NOTICE
+		VALUES(NOTICE_SEQ.NEXTVAL, #{noticeTitle}, #{noticeContents}, SYSDATE, 0)
+	</insert>
+	
 </mapper>
 
 

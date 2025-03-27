@@ -109,7 +109,7 @@
 				</select>
 				<input type="text" v-model="noticeSearchKeyword" placeholder="검색어를 입력하세요">
 				<button @click="fnNoticeList">검색</button>
-				<select v-model="pageSize" @change="fnNoticeList">
+				<select v-model="noticePageSize" @change="fnNoticeList">
 					<option value="5">5개씩</option>
 					<option value="10">10개씩</option>
 					<option value="15">15개씩</option>
@@ -130,7 +130,7 @@
 					<tr v-for="notice in noticeList">
 						<td @click="fnNoticeView(notice.noticeNo)">{{ notice.noticeNo }}</td>
 						<td @click="fnNoticeView(notice.noticeNo)">{{ notice.noticeTitle }}</td>
-						<td @click="fnNoticeView(notice.noticeNo)">{{ notice.noticeContents }}</td>
+						<td @click="fnNoticeView(notice.noticeNo)"><span v-html="notice.noticeContents"></span></td>
 						<td>{{ notice.noticeDate }}</td>
 						<td class="gray-text">{{ notice.viewCnt }}</td>
 					</tr>
@@ -140,12 +140,15 @@
 			<div class="pagination">
 				<a v-if="noticePage !=1" id="noticeIndex" href="javascript:;"
 				@click="fnNoticePageMove('prev')"> < </a>
-				<a href="javascript:;" v-for="num in noticeIndex" @click="fnNoticePage(num)" :class="{active: noticePage === num}">
-					{{ num }}
+				<a href="javascript:;" v-for="number in noticeIndex" @click="fnNoticePage(number)" :class="{active: noticePage === number}">
+					{{ number }}
 				</a>
 				<a v-if="noticePage!=noticeIndex" id="noticeIndex" href="javascript:;"
 					@click="fnNoticePageMove('next')"> >
 				</a>
+			</div>
+			<div class="writing" v-if="sessionStatus == 'A'">
+				<button @click="fnNoticeWriting">글쓰기</button>
 			</div>
 		</section>
 	</div>
@@ -214,9 +217,9 @@ const app = Vue.createApp({
 			self.inquireList();
 		},
 
-		fnNoticePage: function (num) {
+		fnNoticePage: function (number) {
 			let self = this;
-			self.noticePage = num;
+			self.noticePage = number;
 			self.fnNoticeList();
 		},
 		
@@ -251,6 +254,10 @@ const app = Vue.createApp({
 
 		fnWriting() {
 			location.href = "/inquire/add.do";
+		},
+
+		fnNoticeWriting() {
+			location.href = "/notice/add.do";
 		},
 
 		fnView(qsNo) {
@@ -334,13 +341,13 @@ const app = Vue.createApp({
 				success: function (data) {
 					console.log("공지사항 데이터:", data);
 					self.noticeList = data.noticeList;
-					self.index = Math.ceil(data.noticeCount / self.pageSize);
+					self.noticeIndex = Math.ceil(data.noticeCount / self.pageSize);
 				},
 				error: function () {
 					console.error("공지사항 데이터를 불러오는 데 실패했습니다.");
 				}
 			});
-    },
+    	},
 
     },
     mounted() {
