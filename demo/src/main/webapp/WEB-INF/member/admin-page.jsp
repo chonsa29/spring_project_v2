@@ -64,7 +64,7 @@
                             <!-- 매출 차트 -->
                             <div class="card sales-chart-container">
                                 <h4>최근 7일 매출 추이</h4>
-                                <canvas id="salesChart" height="300"></canvas>
+                                <canvas id="salesChart"></canvas>
                             </div>
 
                             <div class="dashboard-grid">
@@ -82,7 +82,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr v-for="order in recentOrders" :key="order.orderId">
+                                                <tr v-for="order in recentOrders" :key="order.ORDERKEY">
                                                     <td>{{ order.orderKey }}</td>
                                                     <td>{{ order.userId }}</td>
                                                     <td>{{ formatCurrency(order.price) }}</td>
@@ -199,22 +199,516 @@
                         <!-- 주문 관리 -->
                         <div v-if="currentSection === 'order-management'" class="section">
                             <h3>주문 관리</h3>
-                            <p>주문 관리 관련 콘텐츠</p>
-                        </div>
 
+                            <!-- 검색 필터 -->
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <label class="form-label">기간 검색</label>
+                                            <div class="input-group">
+                                                <input type="date" class="form-control" v-model="orderSearch.startDate">
+                                                <span class="input-group-text">~</span>
+                                                <input type="date" class="form-control" v-model="orderSearch.endDate">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">주문 상태</label>
+                                            <select class="form-select" v-model="orderSearch.status">
+                                                <option value="">전체</option>
+                                                <option value="PENDING">결제대기</option>
+                                                <option value="PAID">결제완료</option>
+                                                <option value="PREPARING">상품준비중</option>
+                                                <option value="SHIPPED">배송중</option>
+                                                <option value="DELIVERED">배송완료</option>
+                                                <option value="CANCELED">취소</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">검색 조건</label>
+                                            <div class="input-group">
+                                                <select class="form-select" v-model="orderSearch.searchType"
+                                                    style="max-width: 120px;">
+                                                    <option value="orderId">주문번호</option>
+                                                    <option value="userId">회원ID</option>
+                                                    <option value="userName">회원명</option>
+                                                </select>
+                                                <input type="text" class="form-control"
+                                                    v-model="orderSearch.searchValue" @keyup.enter="searchOrders">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-end">
+                                            <button class="btn btn-primary me-2" @click="searchOrders">검색</button>
+                                            <button class="btn btn-outline-secondary"
+                                                @click="resetOrderSearch">초기화</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 주문 목록 -->
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover order-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>주문번호</th>
+                                                    <th>주문일시</th>
+                                                    <th>회원명(ID)</th>
+                                                    <th>결제금액</th>
+                                                    <th>결제방법</th>
+                                                    <th>주문상태</th>
+                                                    <th>관리</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="order in orderList" :key="order.ORDERID">
+                                                    <td>{{ order.ORDERKEY }}</td>
+                                                    <td>{{ formatDate(order.ORDERDATE) }}</td>
+                                                    <td>{{ order.USERNAME }} ({{ order.USERID }})</td>
+                                                    <td>{{ formatCurrency(order.PRICE) }}</td>
+                                                    <td>{{ getPaymentMethod(order.PWAY) }}</td>
+                                                    <td>
+                                                        <span :class="'status-badge ' + getStatusClass(order.status)">
+                                                            {{ getStatusText(order.ORDERSTATUS) }}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary"
+                                                            @click="showOrderDetail(order.ORDERKEY)">
+                                                            상세
+                                                        </button>
+                                                        <button v-if="order.status !== 'CANCELED'"
+                                                            class="btn btn-sm btn-outline-danger ms-1"
+                                                            @click="showCancelModal(order.ORDERKEY)">
+                                                            취소
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                <tr v-if="orderList.length === 0">
+                                                    <td colspan="7" class="text-center">조회된 주문이 없습니다.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- 페이징 -->
+                                    <nav v-if="totalPages > 1">
+                                        <ul class="pagination">
+                                            <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                                                <a class="page-link" href="#"
+                                                    @click.prevent="changePage(currentPage - 1)">이전</a>
+                                            </li>
+                                            <li class="page-item" v-for="page in displayedPages" :key="page"
+                                                :class="{ active: page === currentPage }">
+                                                <a class="page-link" href="#" @click.prevent="changePage(page)">{{ page
+                                                    }}</a>
+                                            </li>
+                                            <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                                                <a class="page-link" href="#"
+                                                    @click.prevent="changePage(currentPage + 1)">다음</a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
                         <!-- 회원 관리 -->
+                        <!-- 회원 관리 섹션 -->
                         <div v-if="currentSection === 'member-management'" class="section">
                             <h3>회원 관리</h3>
-                            <p>회원 관리 관련 콘텐츠</p>
+
+                            <!-- 검색 필터 -->
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <label class="form-label">회원 상태</label>
+                                            <select class="form-select" v-model="memberSearch.status">
+                                                <option value="">전체</option>
+                                                <option value="ACTIVE">활성</option>
+                                                <option value="DORMANT">휴면</option>
+                                                <option value="BANNED">정지</option>
+                                                <option value="WITHDRAWN">탈퇴</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">검색 조건</label>
+                                            <div class="input-group">
+                                                <select class="form-select" v-model="memberSearch.searchType"
+                                                    style="max-width: 120px;">
+                                                    <option value="memberId">회원ID</option>
+                                                    <option value="userName">회원명</option>
+                                                    <option value="email">이메일</option>
+                                                </select>
+                                                <input type="text" class="form-control"
+                                                    v-model="memberSearch.searchValue" @keyup.enter="searchMembers">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-end">
+                                            <button class="btn btn-primary me-2" @click="searchMembers">검색</button>
+                                            <button class="btn btn-outline-secondary"
+                                                @click="resetMemberSearch">초기화</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 회원 목록 -->
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>회원ID</th>
+                                                    <th>회원명</th>
+                                                    <th>이메일</th>
+                                                    <th>연락처</th>
+                                                    <th>가입일</th>
+                                                    <th>주문건수</th>
+                                                    <th>상태</th>
+                                                    <th>관리</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="member in memberList" :key="member.memberId">
+                                                    <td>{{ member.USERID }}</td>
+                                                    <td>{{ member.USERNAME }}</td>
+                                                    <td>{{ member.EMAIL }}</td>
+                                                    <td>{{ member.PHONE }}</td>
+                                                    <td>{{ formatDate(member.CDATE) }}</td>
+                                                    <td>{{ member.ORDERCOUNT }}</td>
+                                                    <td>
+                                                        <span :class="'badge ' + getMemberStatusClass(member.status)">
+                                                            {{ getMemberStatusText(member.STATUS) }}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary"
+                                                            @click="showMemberDetail(member.USERID)">
+                                                            상세
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                <tr v-if="memberList.length === 0">
+                                                    <td colspan="8" class="text-center">조회된 회원이 없습니다.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- 페이징 -->
+                                    <nav v-if="memberTotalPages > 1">
+                                        <ul class="pagination justify-content-center mt-3">
+                                            <li class="page-item" :class="{ disabled: memberCurrentPage === 1 }">
+                                                <a class="page-link" href="#"
+                                                    @click.prevent="changeMemberPage(memberCurrentPage - 1)">이전</a>
+                                            </li>
+                                            <li class="page-item" v-for="page in memberDisplayedPages" :key="page"
+                                                :class="{ active: page === memberCurrentPage }">
+                                                <a class="page-link" href="#" @click.prevent="changeMemberPage(page)">{{
+                                                    page }}</a>
+                                            </li>
+                                            <li class="page-item"
+                                                :class="{ disabled: memberCurrentPage === memberTotalPages }">
+                                                <a class="page-link" href="#"
+                                                    @click.prevent="changeMemberPage(memberCurrentPage + 1)">다음</a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 회원 상세 모달 -->
+                        <div class="modal fade" id="memberDetailModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">회원 상세 정보 - {{ currentMember?.member?.memberId }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body" v-if="currentMember">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6>기본 정보</h6>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <th style="width: 30%">회원ID</th>
+                                                        <td>{{ currentMember.member.memberId }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>회원명</th>
+                                                        <td>{{ currentMember.member.userName }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>이메일</th>
+                                                        <td>{{ currentMember.member.email }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>연락처</th>
+                                                        <td>{{ currentMember.member.phone }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>가입일</th>
+                                                        <td>{{ formatDateTime(currentMember.member.regDate) }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>최근로그인</th>
+                                                        <td>{{ currentMember.member.lastLogin ?
+                                                            formatDateTime(currentMember.member.lastLogin) : '-' }}</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6>추가 정보</h6>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <th style="width: 30%">주소</th>
+                                                        <td>
+                                                            ({{ currentMember.member.zipcode }})<br>
+                                                            {{ currentMember.member.address }}<br>
+                                                            {{ currentMember.member.detailAddress }}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>상태</th>
+                                                        <td>
+                                                            <select class="form-select"
+                                                                v-model="currentMember.member.status">
+                                                                <option value="ACTIVE">활성</option>
+                                                                <option value="DORMANT">휴면</option>
+                                                                <option value="BANNED">정지</option>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>포인트</th>
+                                                        <td>{{ formatCurrency(currentMember.member.point) }}</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <h6 class="mt-4">최근 주문 내역 (최근 5건)</h6>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>주문번호</th>
+                                                        <th>주문일시</th>
+                                                        <th>금액</th>
+                                                        <th>상태</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="order in currentMember.orderHistory"
+                                                        :key="order.orderId">
+                                                        <td>{{ order.orderId }}</td>
+                                                        <td>{{ formatDateTime(order.orderDate) }}</td>
+                                                        <td>{{ formatCurrency(order.totalPrice) }}</td>
+                                                        <td>{{ getOrderStatusText(order.status) }}</td>
+                                                    </tr>
+                                                    <tr v-if="currentMember.orderHistory.length === 0">
+                                                        <td colspan="4" class="text-center">주문 내역이 없습니다.</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">닫기</button>
+                                        <button type="button" class="btn btn-primary" @click="updateMember">저장</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 주문 상세 모달 -->
+                        <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-hidden="true"
+                            style="display: none;">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">주문 상세 정보 - {{ currentOrder?.order?.ORDERKEY }}</h5>
+                                    </div>
+                                    <div class="modal-body" v-if="currentOrder">
+                                        <div class="row mb-4">
+                                            <div class="col-md-6">
+                                                <h6>주문 정보</h6>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <th style="width: 30%">주문번호</th>
+                                                        <td>{{ currentOrder.order.ORDERKEY }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>주문일시</th>
+                                                        <td>{{ formatDateTime(currentOrder.order.ORDERDATE) }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>주문상태</th>
+                                                        <td>
+                                                            <span
+                                                                :class="'status-badge ' + getStatusClass(currentOrder.order.ORDERSTATUS)">
+                                                                {{ getStatusText(currentOrder.order.ORDERSTATUS) }}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>결제금액</th>
+                                                        <td>{{ formatCurrency(currentOrder.order.PRICE) }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>결제방법</th>
+                                                        <td>{{ getPaymentMethod(currentOrder.order.PWAY) }}
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6>회원 정보</h6>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <th style="width: 30%">회원ID</th>
+                                                        <td>{{ currentOrder.order.USERID }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>회원명</th>
+                                                        <td>{{ currentOrder.order.USERNAME }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>연락처</th>
+                                                        <td>{{ currentOrder.order.PHONE || '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>이메일</th>
+                                                        <td>{{ currentOrder.order.EMAIL || '-' }}</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="card mb-4">
+                                            <div class="card-body">
+                                                <p class="text-muted mt-2" v-if="currentOrder.order.REQUEST">
+                                                    <strong>요청사항:</strong> {{ currentOrder.order.REQUEST }}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <h6 class="mb-3">주문 상품</h6>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>상품 이미지</th>
+                                                        <th>상품명</th>
+                                                        <th>상품번호</th>
+                                                        <th>수량</th>
+                                                        <th>단가</th>
+                                                        <th>금액</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="item in currentOrder.items" :key="item.itemNo">
+                                                        <td>
+                                                            <img :src="item.IMAGEURL" :alt="item.itemName"
+                                                                style="width: 60px; height: 60px; object-fit: cover;">
+                                                        </td>
+                                                        <td>{{ item.ITEMNAME }}</td>
+                                                        <td>{{ item.ITEMNO }}</td>
+                                                        <td>{{ item.ORDERCOUNT }}개</td>
+                                                        <td>{{ formatCurrency(item.PRICE) }}</td>
+                                                        <td>{{ formatCurrency(item.ORDERCOUNT * item.PRICE) }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="5" class="text-end"><strong>총 결제금액</strong></td>
+                                                        <td><strong>{{ formatCurrency(item.ORDERCOUNT *
+                                                                item.PRICE)}}</strong></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">닫기</button>
+                                        <button v-if="currentOrder?.order?.status !== 'CANCELED'" type="button"
+                                            class="btn btn-danger"
+                                            @click="showCancelModal(currentOrder.order.ORDERKEY)">
+                                            주문 취소
+                                        </button>
+                                        <button v-if="canUpdateStatus(currentOrder?.order?.status)" type="button"
+                                            class="btn btn-primary"
+                                            @click="showStatusModal(currentOrder.order.ORDERKEY)">
+                                            상태 변경
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 주문 상태 변경 모달 -->
+                        <div class="modal fade" id="statusModal" tabindex="-1" aria-hidden="true"
+                            style="display: none;">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">주문 상태 변경</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <select class="form-select" v-model="selectedStatus">
+                                            <option value="PAID">결제완료</option>
+                                            <option value="PREPARING">상품준비중</option>
+                                            <option value="SHIPPED">배송중</option>
+                                            <option value="DELIVERED">배송완료</option>
+                                        </select>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">취소</button>
+                                        <button type="button" class="btn btn-primary"
+                                            @click="updateOrderStatus">변경</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 주문 취소 모달 -->
+                        <div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true"
+                            style="display: none;">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">주문 취소</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label class="form-label">취소 사유</label>
+                                            <textarea class="form-control" v-model="cancelReason" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">닫기</button>
+                                        <button type="button" class="btn btn-danger" @click="cancelOrder">취소 처리</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </body>
 
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
         </html>
 
         <script>
+
             const app = Vue.createApp({
                 data() {
                     return {
@@ -247,10 +741,333 @@
                         item: {},
                         itemNo: "",
                         imgList: [],
-                        users: []
+                        users: [],
+
+                        //주문 관리 데이터
+                        orderSearch: {
+                            startDate: '',
+                            endDate: '',
+                            status: '',
+                            searchType: 'orderId',
+                            searchValue: ''
+                        },
+                        orderList: [],
+                        currentOrder: null,
+                        currentPage: 1,
+                        pageSize: 10,
+                        totalCount: 0,
+                        selectedOrderId: '',
+                        selectedStatus: 'PAID',
+                        cancelReason: '',
+
+                        // 회원 관리 관련 데이터
+                        memberSearch: {
+                            status: '',
+                            searchType: 'memberId',
+                            searchValue: ''
+                        },
+                        memberList: [],
+                        currentMember: null,
+                        memberCurrentPage: 1,
+                        memberPageSize: 10,
+                        memberTotalCount: 0
                     };
                 },
+                computed: {
+                    totalPages() {
+                        return Math.ceil(this.totalCount / this.pageSize);
+                    },
+                    displayedPages() {
+                        const pages = [];
+                        const startPage = Math.max(1, this.currentPage - 2);
+                        const endPage = Math.min(this.totalPages, startPage + 4);
+
+                        for (let i = startPage; i <= endPage; i++) {
+                            pages.push(i);
+                        }
+                        return pages;
+                    },
+                    memberTotalPages() {
+                        return Math.ceil(this.memberTotalCount / this.memberPageSize);
+                    },
+                    memberDisplayedPages() {
+                        const pages = [];
+                        const startPage = Math.max(1, this.memberCurrentPage - 2);
+                        const endPage = Math.min(this.memberTotalPages, startPage + 4);
+
+                        for (let i = startPage; i <= endPage; i++) {
+                            pages.push(i);
+                        }
+                        return pages;
+                    }
+                },
                 methods: {
+                    // 회원 관리 관련 메서드 추가
+                    searchMembers() {
+                        const params = {
+                            ...this.memberSearch,
+                            page: this.memberCurrentPage,
+                            size: this.memberPageSize
+                        };
+
+                        $.ajax({
+                            url: "/member/list.dox",
+                            type: "POST",
+                            dataType: "json",
+                            data: params,
+                            success: (response) => {
+                                this.memberList = response;
+                                // 실제 구현에서는 페이지네이션 정보도 함께 받아야 함
+                                // this.memberTotalCount = response.totalCount;
+                            }
+                        });
+                    },
+
+                    resetMemberSearch() {
+                        this.memberSearch = {
+                            status: '',
+                            searchType: 'memberId',
+                            searchValue: ''
+                        };
+                        this.memberCurrentPage = 1;
+                        this.searchMembers();
+                    },
+
+                    showMemberDetail(memberId) {
+                        $.ajax({
+                            url: "/member/detail.dox",
+                            type: "POST",
+                            dataType: "json",
+                            data: { memberId: memberId },
+                            success: (response) => {
+                                this.currentMember = response;
+                                const modal = new bootstrap.Modal(document.getElementById('memberDetailModal'));
+                                modal.show();
+                            }
+                        });
+                    },
+
+                    updateMember() {
+                        $.ajax({
+                            url: "/member/update.dox",
+                            type: "POST",
+                            dataType: "json",
+                            data: {
+                                memberId: this.currentMember.member.memberId,
+                                status: this.currentMember.member.status
+                            },
+                            success: (response) => {
+                                if (response.success) {
+                                    alert("회원 정보가 업데이트되었습니다.");
+                                    this.searchMembers();
+                                    bootstrap.Modal.getInstance(document.getElementById('memberDetailModal')).hide();
+                                }
+                            }
+                        });
+                    },
+
+                    getMemberStatusClass(status) {
+                        switch (status) {
+                            case 'ACTIVE': return 'bg-success';
+                            case 'DORMANT': return 'bg-warning';
+                            case 'BANNED': return 'bg-danger';
+                            case 'WITHDRAWN': return 'bg-secondary';
+                            default: return 'bg-info';
+                        }
+                    },
+
+                    getMemberStatusText(status) {
+                        switch (status) {
+                            case 'ACTIVE': return '활성';
+                            case 'DORMANT': return '휴면';
+                            case 'BANNED': return '정지';
+                            case 'WITHDRAWN': return '탈퇴';
+                            default: return status;
+                        }
+                    },
+
+                    changeMemberPage(page) {
+                        if (page < 1 || page > this.memberTotalPages) return;
+                        this.memberCurrentPage = page;
+                        this.searchMembers();
+                    },
+                    // 주문 관리 관련 메서드 추가
+                    searchOrders() {
+                        const params = {
+                            ...this.orderSearch,
+                            page: this.currentPage,
+                            size: this.pageSize
+                        };
+
+                        $.ajax({
+                            url: "/admin/order/list.dox",
+                            type: "POST",
+                            dataType: "json",
+                            data: params,
+                            success: (response) => {
+
+                                this.orderList = response;
+
+                                // 실제 구현에서는 페이지네이션 정보도 함께 받아야 함
+                                // this.totalCount = response.totalCount;
+                            },
+                            error: (xhr, status, error) => {
+                                console.error("주문 목록 조회 실패:", error);
+                            }
+                        });
+                    },
+
+                    resetOrderSearch() {
+                        this.orderSearch = {
+                            startDate: '',
+                            endDate: '',
+                            status: '',
+                            searchType: 'orderId',
+                            searchValue: ''
+                        };
+                        this.currentPage = 1;
+                        this.searchOrders();
+                    },
+
+                    showOrderDetail(orderId) {
+                        $.ajax({
+                            url: "/admin/order/detail.dox",
+                            type: "POST",
+                            dataType: "json",
+                            data: { orderId: orderId },
+                            success: (response) => {
+                                this.currentOrder = response;
+                                console.log(this.currentOrder);
+                                const modal = new bootstrap.Modal(document.getElementById('orderDetailModal'));
+                                modal.show();
+                            },
+                            error: (xhr, status, error) => {
+                                console.error("주문 상세 조회 실패:", error);
+                            }
+                        });
+                    },
+
+                    showStatusModal(orderId) {
+                        this.selectedOrderId = orderId;
+                        const modal = new bootstrap.Modal(document.getElementById('statusModal'));
+                        modal.show();
+                    },
+
+                    updateOrderStatus() {
+                        $.ajax({
+                            url: "/admin/order/updateStatus.dox",
+                            type: "POST",
+                            dataType: "json",
+                            data: {
+                                orderId: this.selectedOrderId,
+                                status: this.selectedStatus
+                            },
+                            success: (response) => {
+                                if (response.success) {
+                                    alert("주문 상태가 변경되었습니다.");
+                                    this.searchOrders();
+                                    bootstrap.Modal.getInstance(document.getElementById('statusModal')).hide();
+                                    bootstrap.Modal.getInstance(document.getElementById('orderDetailModal')).hide();
+                                }
+                            },
+                            error: (xhr, status, error) => {
+                                console.error("주문 상태 변경 실패:", error);
+                            }
+                        });
+                    },
+
+                    showCancelModal(orderId) {
+                        this.selectedOrderId = orderId;
+                        this.cancelReason = '';
+                        const modal = new bootstrap.Modal(document.getElementById('cancelModal'));
+                        modal.show();
+                    },
+
+                    cancelOrder() {
+                        if (!this.cancelReason) {
+                            alert("취소 사유를 입력해주세요.");
+                            return;
+                        }
+
+                        console.log(this.selectedOrderId);
+                        console.log(this.cancelReason);
+                        $.ajax({
+                            url: "/admin/order/cancel.dox",
+                            type: "POST",
+                            dataType: "json",
+                            data: {
+                                orderId: this.selectedOrderId,
+                                cancelReason: this.cancelReason
+                            },
+                            success: (response) => {
+                                if (response.success) {
+                                    alert("주문이 취소되었습니다.");
+                                    this.searchOrders();
+                                    bootstrap.Modal.getInstance(document.getElementById('cancelModal')).hide();
+                                    if (document.getElementById('orderDetailModal')) {
+                                        bootstrap.Modal.getInstance(document.getElementById('orderDetailModal')).hide();
+                                    }
+                                }
+                            },
+                            error: (xhr, status, error) => {
+                                console.error("주문 취소 실패:", error);
+                            }
+                        });
+                    },
+
+                    changePage(page) {
+                        if (page < 1 || page > this.totalPages) return;
+                        this.currentPage = page;
+                        this.searchOrders();
+                    },
+
+                    getStatusClass(status) {
+                        switch (status) {
+                            case 'PENDING': return 'status-pending';
+                            case 'PAID': return 'status-processing';
+                            case 'PREPARING': return 'status-processing';
+                            case 'SHIPPED': return 'status-processing';
+                            case 'DELIVERED': return 'status-completed';
+                            case 'CANCELED': return 'status-canceled';
+                            default: return '';
+                        }
+                    },
+
+                    getStatusText(status) {
+                        switch (status) {
+                            case 'PENDING': return '결제대기';
+                            case 'PAID': return '결제완료';
+                            case 'PREPARING': return '상품준비중';
+                            case 'SHIPPED': return '배송중';
+                            case 'DELIVERED': return '배송완료';
+                            case 'CANCELED': return '취소됨';
+                            default: return status;
+                        }
+                    },
+
+                    getPaymentMethod(method) {
+                        switch (method) {
+                            case 'CARD': return '카드결제';
+                            case 'BANK_TRANSFER': return '무통장입금';
+                            case 'MOBILE_PAYMENT': return '휴대폰결제';
+                            default: return method;
+                        }
+                    },
+
+                    canUpdateStatus(status) {
+                        return status && !['CANCELED', 'DELIVERED'].includes(status);
+                    },
+
+                    formatDate(dateString) {
+                        if (!dateString) return '';
+                        const date = new Date(dateString);
+                        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+                    },
+
+                    formatCurrency(value) {
+                        if (!value) return '0원';
+                        return new Intl.NumberFormat('ko-KR').format(value) + '원';
+                    },
                     showSection(section) {
                         this.currentSection = section;
                         if (section === 'dashboard') {
@@ -259,7 +1076,45 @@
                             this.itemList();
                         }
                     },
-
+                    formatDateTime(dateString) {
+                        if (!dateString) return '';
+                        const date = new Date(dateString);
+                        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+                    },
+                    formatCurrency(value) {
+                        if (!value) return '0원';
+                        return new Intl.NumberFormat('ko-KR').format(value) + '원';
+                    },
+                    getStatusClass(status) {
+                        switch (status) {
+                            case 'PENDING': return 'status-pending';
+                            case 'PAID': return 'status-processing';
+                            case 'PREPARING': return 'status-processing';
+                            case 'SHIPPED': return 'status-processing';
+                            case 'DELIVERED': return 'status-completed';
+                            case 'CANCELED': return 'status-canceled';
+                            default: return '';
+                        }
+                    },
+                    getStatusText(status) {
+                        switch (status) {
+                            case 'PENDING': return '결제대기';
+                            case 'PAID': return '결제완료';
+                            case 'PREPARING': return '상품준비중';
+                            case 'SHIPPED': return '배송중';
+                            case 'DELIVERED': return '배송완료';
+                            case 'CANCELED': return '취소됨';
+                            default: return status;
+                        }
+                    },
+                    getPaymentMethod(method) {
+                        switch (method) {
+                            case 'CARD': return '카드결제';
+                            case 'BANK_TRANSFER': return '무통장입금';
+                            case 'MOBILE_PAYMENT': return '휴대폰결제';
+                            default: return method;
+                        }
+                    },
                     // 대시보드 관련 메서드
                     loadDashboardData() {
                         this.fetchTodayStats();
@@ -289,7 +1144,7 @@
                             type: "POST",
                             success: (data) => {
                                 this.dashboard.weeklySales = data;
-                                this.renderSalesChart();
+                                this.renderSalesChart(data);
                             }
                         });
                     },
@@ -318,6 +1173,7 @@
 
                     renderSalesChart(data) {
                         // 차트가 이미 존재하면 제거
+                        console.log(data);
                         if (this.salesChart) {
                             this.salesChart.destroy();
                         }
@@ -332,7 +1188,7 @@
                                     data: data.map(item => item.sales),
                                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                                     borderColor: 'rgba(54, 162, 235, 1)',
-                                    borderWidth: 2,
+                                    borderWidth: 3,
                                     tension: 0.4
                                 }]
                             },
@@ -360,7 +1216,7 @@
                         }
                     },
 
-                    // 기존 상품 관리 메서드들 유지
+                    //상품 관리 메서드
                     showForm(type) {
                         var self = this;
                         this.formType = type;

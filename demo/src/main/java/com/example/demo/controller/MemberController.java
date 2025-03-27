@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -52,13 +54,7 @@ public class MemberController {
 
         return "/member/admin-page"; 
     }
-	
-	
-	@RequestMapping("/member/kakao.do") 
-    public String admin(Model model) throws Exception{
 
-        return "/member/admin-page"; 
-    }
 	
 	
 	
@@ -109,4 +105,31 @@ public class MemberController {
 			resultMap = memberService.joinMember(map); 
 			return new Gson().toJson(resultMap);
 		}
+		@RequestMapping(value = "/member/list.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	    @ResponseBody
+	    public List<Map<String, Object>> getMemberList(
+	            @RequestParam Map<String, Object> params) {
+	        return memberService.getMemberList(params);
+	    }
+
+	    @RequestMapping(value = "/member/detail.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	    @ResponseBody
+	    public Map<String, Object> getMemberDetail(
+	            @RequestParam("memberId") String memberId) {
+	        return memberService.getMemberDetail(memberId);
+	    }
+
+	    @RequestMapping(value = "/member/update.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	    @ResponseBody
+	    public Map<String, Object> updateMember(
+	            @RequestParam Map<String, Object> params) {
+	        return memberService.updateMember(params);
+	    }
+
+	    @RequestMapping(value = "/member/updateStatus.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	    @ResponseBody
+	    public Map<String, Object> updateMemberStatus(
+	            @RequestParam Map<String, Object> params) {
+	        return memberService.updateMemberStatus(params);
+	    }
 }
