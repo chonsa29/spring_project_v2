@@ -31,6 +31,19 @@ public class ProductService {
 		return resultMap;
 	}
 
+	public HashMap<String, Object> productList2(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			List<Product> list = productMapper.SelectProduct2(map);
+			resultMap.put("list", list);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			// TODO: handle exception
+			resultMap.put("result", "fail");
+		}
+		return resultMap;
+	}
 	// 상세정보 가져오기
 	public HashMap<String, Object> productInfo(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
@@ -75,34 +88,13 @@ public class ProductService {
 		}
 	}
 
-	public HashMap<String, Object> productList2(HashMap<String, Object> map) {
-		// TODO Auto-generated method stub
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		try {
-			List<Product> list = productMapper.SelectProduct2(map);
-			resultMap.put("list", list);
-			resultMap.put("result", "success");
-		} catch (Exception e) {
-			// TODO: handle exception
-			resultMap.put("result", "fail");
-		}
-		return resultMap;
-	}
-
 	public HashMap<String, Object> productUpdate(HashMap<String, Object> map) {
         HashMap<String, Object> resultMap = new HashMap<>();
 
         try {
-            // 1️⃣ 상품 정보 수정
             int num = productMapper.updateProduct(map);
             if (num > 0) {
-                // 2️⃣ 이미지 파일 업데이트 (한 번에 처리)
-                productMapper.updateProductFile(map);
-
-                // 3️⃣ 수정 후 최신 정보 가져오기
-                Product updatedInfo = productMapper.SelectProductInfo(map);
-
-                resultMap.put("info", updatedInfo);
+    			resultMap.put("itemNo", map.get("itemNo"));
                 resultMap.put("result", "success");
             } else {
                 resultMap.put("result", "fail");
@@ -118,7 +110,6 @@ public class ProductService {
 	public void updateProductFile(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
 		try {
-			productMapper.updateProductThumbnail(map);
 			productMapper.updateProductImage(map);
 		} catch (Exception e) {
 			// TODO: handle exception

@@ -40,7 +40,7 @@
                     <div class="right-container">
                         <div class="login-container">
                             <a href="/member/admin.do" v-if="sessionStatus=='A'">ADMIN</a>
-                            <a href="/member/mypage.do" v-if="sessionStatus">MYPAGE</a>
+                            <a href="/member/mypage.do" v-if="sessionStatus=='C'">MYPAGE</a>
                             <a href="/member/login.do" v-if="!sessionStatus">LOGIN</a>
                             <a href="/home.do" v-else @click="fnLogout">LOGOUT</a>
                             <a  href="javascript:;" @click="fnCart(sessionId)">CART</a>
