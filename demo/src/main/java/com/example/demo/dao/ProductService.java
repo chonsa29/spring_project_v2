@@ -110,16 +110,15 @@ public class ProductService {
         return resultMap;
     }
 	
-	public void updateProductFile(HashMap<String, Object> map) {
-		// TODO Auto-generated method stub
-		try {
-			productMapper.updateProductImage(map);
-		} catch (Exception e) {
-			// TODO: handle exception
-			System.out.println(e.getMessage());
-		}
-	}
-	
+	public void updateProductFile(HashMap<String, Object> map) {  
+	    if ("Y".equals(map.get("thumbNail"))) {  
+	        // 썸네일은 UPDATE  
+	        productMapper.updateThumbnail(map);  
+	    } else {  
+	        // 추가 이미지는 무조건 INSERT  
+	        productMapper.insertAdditionalImage(map);  
+	    }  
+	}  
 	public HashMap<String, Object> productDelete(HashMap<String, Object> map) {
 	    HashMap<String, Object> resultMap = new HashMap<>();
 	    try {

@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.example.demo.model.Notice;
-import com.example.demo.model.Question;
 
 @Mapper
 public interface NoticeMapper {
@@ -22,5 +21,7 @@ public interface NoticeMapper {
 	void noticeDelete(HashMap<String, Object> map);
 
 	void updateNoticeCnt(HashMap<String, Object> map);
+
+	void noticeInsert(HashMap<String, Object> map);
 
 }
