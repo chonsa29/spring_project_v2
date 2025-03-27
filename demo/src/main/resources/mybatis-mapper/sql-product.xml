@@ -77,17 +77,19 @@
 		WHERE ITEM_NO = #{itemNo}
 	</update>
 	
-	<update id="updateProductThumbnail" parameterType="hashmap">
-		UPDATE PRODUCT_IMG
-			SET FILENAME = #{filename},
-				FILEPATH = #{path}
-			WHERE ITEM_NO = #{itemNo} AND THUMBNAIL = 'Y'
-	</update>
-	
-	
 	<insert id="updateProductImage" parameterType="hashmap">
-				INSERT INTO PRODUCT_IMG
-				VALUES(#{itemNo}, #{filename},#{path}, #{thumbNail})
+		<choose>
+			<when test='thumbNail == "N"'>
+					INSERT INTO PRODUCT_IMG
+					VALUES(#{itemNo}, #{filename},#{path}, #{thumbNail})
+			</when>
+			<when test='thumbNail =="Y"'>
+				UPDATE PRODUCT_IMG
+				SET FILENAME = #{filename},
+					FILEPATH = #{path}
+				WHERE ITEM_NO = #{itemNo} AND THUMBNAIL = 'Y'
+			</when>
+		</choose>	
 	</insert>
 	
 	<delete id="deleteProduct" parameterType="hashmap">

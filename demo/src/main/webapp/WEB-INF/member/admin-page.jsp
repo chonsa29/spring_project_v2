@@ -182,6 +182,7 @@
                         self.category = "";
                         self.info = "";
                         self.allergens = "";
+                        self.itemNo = "",
                         self.item = {};
                         thumbnail = null;
                     } else {
@@ -217,17 +218,18 @@
                             type: "POST",
                             data: nparmap,
                             success: function (data) {
-                                console.log(data);
                                 // 파일이 존재하면 업로드 처리
 
                                 if (self.thumbnail || self.additionalPhotos.length > 0) {
                                     var form = new FormData();
                                     if (self.thumbnail) {
                                         form.append("file1", self.thumbnail); // 썸네일 파일 추가
+                                        form.append("isThumbnail","Y");
                                     }
                                     if (self.additionalPhotos.length > 0) {
                                         self.additionalPhotos.forEach((photo, index) => {
                                             form.append("file1", photo); // 추가 사진 파일 추가
+                                            form.append("isThumbnail","N");
                                         });
                                     }
                                     form.append("itemNo", data.itemNo); // 상품 아이디
@@ -236,25 +238,32 @@
                             }
                         });
                     } else {
+                        console.log(self.thumbnail);
                         $.ajax({
                             url: "/product/update.dox",
                             dataType: "json",
                             type: "POST",
                             data: nparmap,
                             success: function (data) {
-                                console.log(data);
                                 // 파일이 존재하면 업로드 처리
 
                                 if (self.thumbnail || self.additionalPhotos.length > 0) {
                                     var form = new FormData();
                                     if (self.thumbnail) {
                                         form.append("file1", self.thumbnail); // 썸네일 파일 추가
+                                        form.append("isThumbnail","Y");
                                     }
                                     if (self.additionalPhotos.length > 0) {
                                         self.additionalPhotos.forEach((photo, index) => {
                                             form.append("file1", photo); // 추가 사진 파일 추가
+                                            form.append("isThumbnail","N");
                                         });
                                     }
+
+                                    console.log(self.thumbnail);
+                                    console.log(self.additionalPhotos);
+                                    console.log(data.itemNo);
+                                    console.log(self.itemNo);
                                     form.append("itemNo", data.itemNo); // 상품 아이디
                                     self.update(form); // 파일 업로드 함수 호출
                                 }
@@ -273,10 +282,10 @@
                         data: form,
                         success: function (response) {
                             alert("저장되었습니다!");
-                        
+
                             location.href = "/product.do";
                             self.showProductForm = false;
-                            
+
                         }
                     });
                 },
@@ -289,8 +298,8 @@
                         contentType: false,
                         data: form,
                         success: function (response) {
-                            alert("저장되었습니다!");
-                            self.showProductForm = false;
+                            alert("수정되었습니다!");
+                            // location.reload(); // 페이지 새로고침
                         }
                     });
                 },
@@ -319,7 +328,7 @@
                             self.info = self.item.itemInfo;
                             self.allergens = self.item.allergens;
                             self.imgList = data.imgList;
-                            self.thumbnail = data.info.filePath;
+                            self.itemNo = self.item.itemNo;
                             self.showProductForm = true;
                             self.showTable = false;
 

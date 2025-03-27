@@ -94,6 +94,7 @@ public class ProductService {
         try {
             int num = productMapper.updateProduct(map);
             if (num > 0) {
+    			resultMap.put("itemNo", map.get("itemNo"));
                 resultMap.put("result", "success");
             } else {
                 resultMap.put("result", "fail");
@@ -109,7 +110,6 @@ public class ProductService {
 	public void updateProductFile(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
 		try {
-			productMapper.updateProductThumbnail(map);
 			productMapper.updateProductImage(map);
 		} catch (Exception e) {
 			// TODO: handle exception
