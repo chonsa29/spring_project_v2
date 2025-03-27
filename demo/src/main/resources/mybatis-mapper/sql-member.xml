@@ -12,6 +12,7 @@
 	<select id="loginMember" parameterType="hashmap" resultType="com.example.demo.model.Member">
 		SELECT *
 		FROM MEMBER
+		
 		WHERE USERID = #{userId} AND PASSWORD = #{password}
 	</select>
 	

@@ -30,7 +30,7 @@
         </div>
         <div class="bottom-links">
             <a href="#" @click="fnTermPg()">회원가입 </a> 
-            <a href="#">다른 계정 로그인 </a> 
+            <a href="#" @click="fnAnother">다른 계정 로그인 </a> 
             <a href="#">비밀번호 찾기</a>
         </div>
         <button class="login-btn" @click="fnLogin">로그인</button>
@@ -76,6 +76,9 @@ const app = Vue.createApp({
 					}
                     
 				});
+            },
+            fnAnother(){
+                location.href ="";
             }
     }
 });
