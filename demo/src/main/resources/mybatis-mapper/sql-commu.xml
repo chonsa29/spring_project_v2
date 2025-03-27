@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.CommunityMapper">
+	
+	<select id="selectRecipetList" parameterType="hashmap" resultType="com.example.demo.model.Recipe">
+		SELECT *
+		FROM RECIPE_POST
+		WHERE 1=1
+		<if test="searchOption != null and searchOption == 'all'">
+			AND (TITLE LIKE '%' || #{searchKeyword} || '%'
+			OR CONTENTS LIKE '%' || #{searchKeyword} || '%')
+		</if>
+		<if test="searchOption != null and searchOption == 'title'">
+			AND TITLE LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		<if test="searchOption != null and searchOption == 'contents'">
+			AND CONTENTS LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		ORDER BY CDATETIME DESC
+		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+	</select>
+	
+	<select id="selectRecipe" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*)
+		FROM RECIPE_POST
+		WHERE 1=1
+		<if test="searchOption != null and searchOption == 'all'">
+			AND (TITLE LIKE '%' || #{searchKeyword} || '%'
+			OR CONTENTS LIKE '%' || #{searchKeyword} || '%')
+		</if>
+		<if test="searchOption != null and searchOption == 'title'">
+			AND TITLE LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		<if test="searchOption != null and searchOption == 'contents'">
+			AND CONTENTS LIKE '%' || #{searchKeyword} || '%'
+		</if>
+	</select>
+	
+</mapper>
+
+
+
+

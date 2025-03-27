@@ -6,9 +6,9 @@
 	<meta charset="UTF-8">
 	<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-	<link rel="stylesheet" href="/css/inquire-css/inquire-style.css">
+	<link rel="stylesheet" href="/css/commu-css/commu-main.css">
 	<script src="/js/pageChange.js"></script>
-	<title>문의 페이지</title>
+	<title>커뮤니티</title>
 </head>
 <body>
 	<jsp:include page="/WEB-INF/common/header.jsp" />
@@ -29,32 +29,28 @@
 					<option value="title">제목</option>
 					<option value="contents">내용</option>
 				</select>
-				<input type="text" v-model="searchKeyword" placeholder="검색어를 입력하세요">
-				<button @click="inquireList">검색</button>
+				<input type="text" v-model="searchKeyword" @keyup.enter="fnRecipeList" placeholder="검색어를 입력하세요">
+				<button @click="fnRecipeList">검색</button>
 			</div>
-			<table class="inquiry-table">
+			<table class="recipe-table">
 				<thead>
 					<tr>
 						<th>번호</th>
 						<th>제목</th>
 						<th>내용</th>
 						<th>날짜</th>
-						<th></th>
-						<th></th>
+						<th>조회수</th>
+						<th>좋아요</th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="inquiry in inquiryList" :key="inquiry.userId">
-						<td @click="fnView(inquiry.qsNo)">{{ inquiry.qsNo }}</td>
-						<td @click="fnView(inquiry.qsNo)">{{ inquiry.qsTitle }}</td>
-						<td @click="fnView(inquiry.qsNo)"><span v-html="inquiry.qsContents"></span></td>
-						<td>{{ inquiry.cdatetime }}</td>
-						<td class="gray-text">{{ inquiry.viewCnt }}</td>
-						<td>
-							<button :class="getStatusClass(inquiry.qsStatus)">
-								{{ getStatusText(inquiry.qsStatus) }}
-							</button>
-						</td>
+					<tr v-for="item in rList">
+						<td>{{ item.postId }}</td>
+						<td @click="fnView(item.postId)">{{ item.title }}</td>
+						<td @click="fnView(item.postId)"><span v-html="item.contents"></span></td>
+						<td>{{ item.cdatetime.substring(0, 10) }}</td>
+						<td class="gray-text">{{ item.cnt }}</td>
+						<td class="gray-text">{{ item.likes }}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -83,10 +79,10 @@
 					<option value="title">제목</option>
 					<option value="contents">내용</option>
 				</select>
-				<input type="text" v-model="searchKeyword" placeholder="검색어를 입력하세요">
-				<button @click="inquireList">검색</button>
+				<input type="text" v-model="searchKeyword" @keyup.enter="fnRecipeList" placeholder="검색어를 입력하세요">
+				<button @click="fnGroupList">검색</button>
 			</div>
-			<table class="inquiry-table">
+			<table class="recipe-table">
 				<thead>
 					<tr>
 						<th>번호</th>
@@ -135,10 +131,10 @@
 const app = Vue.createApp({
     data() {
         return {
-            activeTab: 'faq', // 기본으로 '자주 묻는 질문' 탭 활성화
+            activeTab: 'recipe',
             searchOption: "all",
             searchKeyword: '',
-            inquiryList: [],
+            rList: [],
 			sessionStatus: "${sessionStatus}",
 			pageSize: 5,
 			index: 0,
@@ -151,7 +147,7 @@ const app = Vue.createApp({
             this.activeTab = tab;
         },
 
-        inquireList() {
+        fnRecipeList() {
 			var self = this;
 			var nparmap = {
 				searchKeyword: self.searchKeyword,
@@ -160,13 +156,13 @@ const app = Vue.createApp({
 				page: (self.page - 1) * self.pageSize
 			};
             $.ajax({
-                url: "/inquire/qna.dox",
+                url: "/commu/recipe.dox",
                 type: "POST",
                 dataType: "json",
 				data : nparmap,
                 success : function(data) { 
 					console.log(data);
-					self.inquiryList = data.inquiryList
+					self.rList = data.rList
 					self.index = Math.ceil(data.count / self.pageSize);
                 }
             });
@@ -175,7 +171,7 @@ const app = Vue.createApp({
 		fnPage: function (num) {
 			let self = this;
 			self.page = num;
-			self.inquireList();
+			self.fnRecipeList();
 		},
 		
 		fnPageMove: function (direction) {
@@ -187,13 +183,8 @@ const app = Vue.createApp({
 			} else {
 				self.page--;
 			}
-			self.inquireList();
+			self.fnRecipeList();
 		},
-
-        // FAQ 질문 클릭 시 답변 토글
-        toggleFaq(faq) {
-			faq.open = !faq.open;
-        },
 
 		fnWriting() {
 			location.href = "/inquire/add.do";
@@ -201,20 +192,6 @@ const app = Vue.createApp({
 
 		fnView(qsNo) {
 			pageChange("/inquire/view.do", { qsNo : qsNo });
-		},
-
-		getStatusClass(status) {
-			console.log("qsStatus 값:", status);
-			if (status == 0) return 'status-gray';      // 확인 중 (회색)
-			if (status == 1) return 'status-lightgreen'; // 처리 중 (연두색)
-			if (status == 2) return 'status-green';     // 처리 완료 (초록색)
-			return 'status-gray'; // 기본값
-		},
-		getStatusText(status) {
-			if (status == 0) return '확인 중';
-			if (status == 1) return '처리 중';
-			if (status == 2) return '처리 완료';
-			return '';
 		}
 
     },
@@ -225,11 +202,11 @@ const app = Vue.createApp({
 		const tabParam = urlParams.get('tab');
 
 		// 'tab' 파라미터 값이 있으면 해당 탭을 활성화
-		if (tabParam && ['faq', 'qna', 'notice'].includes(tabParam)) {
+		if (tabParam && ['recipe', 'group'].includes(tabParam)) {
 			this.activeTab = tabParam;
 		}
 
-        this.inquireList();
+        this.fnRecipeList();
     }
 });
 app.mount('#app');
