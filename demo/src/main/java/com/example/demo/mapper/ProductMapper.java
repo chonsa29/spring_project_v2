@@ -37,8 +37,6 @@ public interface ProductMapper {
 
 	int deleteProductImages(HashMap<String, Object> map);
 
-	void updateProductFile(HashMap<String, Object> map);
-
 	void deleteProductImg(HashMap<String, Object> map);
 
 }

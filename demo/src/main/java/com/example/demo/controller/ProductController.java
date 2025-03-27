@@ -109,7 +109,7 @@ public class ProductController {
 					multi.transferTo(file);
 
 					HashMap<String, Object> map = new HashMap<String, Object>();
-					map.put("filename", saveFileName);
+					map.put("filename", saveFileName);	
 					map.put("path", "../img/" + saveFileName);
 
 					map.put("itemNo", itemNo);
@@ -155,9 +155,6 @@ public class ProductController {
 					HashMap<String, Object> map = new HashMap<String, Object>();
 					map.put("filename", saveFileName);
 					map.put("path", "../img/" + saveFileName);
-//					map.put("originFilename", originFilename);
-//					map.put("extName", extName); // 확장자
-//					map.put("size", size);
 					map.put("itemNo", itemNo);
 					String thumbNail = thumbFlg ? "Y" : "N";
 					map.put("thumbNail", thumbNail);

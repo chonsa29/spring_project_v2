@@ -82,10 +82,9 @@
                                 <div class="product-image" v-if="formType=='edit'">
                                     <img class="product-image" :src="item.filePath" alt="item.itemName" />
                                 </div>
-                                <input v-if="formType='add'" type="file" id="thumbnail" @change="handleFileChange('thumbnail')" required>
-                                <inputtype="file" id="thumbnail" @change="handleFileChange('thumbnail')">
+                                <input type="file" id="thumbnail" @change="handleFileChange('thumbnail')">
                                 <label for="additionalPhotos">추가 이미지</label>
-                                <div class="subimg-container" v-if="formType=='edit'">
+                                <div class="subimg-container" v-if="formType=='edit' && imgList.length != 0">
                                     <table>
                                         <tr>
                                             <th>추가 이미지</th>
@@ -203,7 +202,7 @@
                 submitForm() {
                     var self = this;
                     var nparmap = {
-                        itemNo: self.item.itemNo,
+                        itemNo: self.itemNo,
                         name: self.name,
                         price: self.price,
                         quantity: self.quantity,
@@ -267,42 +266,42 @@
                 upload(form) {
                     var self = this;
                     $.ajax({
-                        url: "/product/fileUpload.dox"
-                        , type: "POST"
-                        , processData: false
-                        , contentType: false
-                        , data: form
-                        , success: function (response) {
+                        url: "/product/fileUpload.dox",
+                        type: "POST",
+                        processData: false,
+                        contentType: false,
+                        data: form,
+                        success: function (response) {
                             alert("저장되었습니다!");
-                            this.showProductForm = false;
+                        
+                            location.href = "/product.do";
+                            self.showProductForm = false;
+                            
                         }
                     });
                 },
                 update(form) {
                     var self = this;
                     $.ajax({
-                        url: "/product/fileUpdate.dox"
-                        , type: "POST"
-                        , processData: false
-                        , contentType: false
-                        , data: form
-                        , success: function (response) {
+                        url: "/product/fileUpdate.dox",
+                        type: "POST",
+                        processData: false,
+                        contentType: false,
+                        data: form,
+                        success: function (response) {
                             alert("저장되었습니다!");
-                            location.href = "/product/list.do";
-                            this.showProductForm = false;
+                            self.showProductForm = false;
                         }
                     });
                 },
                 cancelForm() {
                     this.showProductForm = false;
-                    console.log(this.formType);
                     if (this.formType == 'edit') {
                         this.showTable = true;
                     }
                 },
                 fnEdit(itemNo) {
                     var self = this;
-
                     var nparmap = {
                         itemNo: itemNo
                     };
@@ -321,16 +320,15 @@
                             self.allergens = self.item.allergens;
                             self.imgList = data.imgList;
                             self.thumbnail = data.info.filePath;
-                            console.log(data);
                             self.showProductForm = true;
                             self.showTable = false;
 
                         }
                     });
+
                 },
                 itemList() {
                     var self = this;
-                    console.log("테스트");
                     var nparmap = {
                     };
                     $.ajax({
@@ -344,10 +342,10 @@
                         }
                     });
                 },
-                fnDelete(itemNo){
+                fnDelete(itemNo) {
                     var self = this;
                     var nparmap = {
-                        itemNo : itemNo
+                        itemNo: itemNo
                     };
                     $.ajax({
                         url: "/product/delete.dox",
@@ -361,10 +359,10 @@
                         }
                     });
                 },
-                fnDeleteImg(fileName){
+                fnDeleteImg(fileName) {
                     var self = this;
                     var nparmap = {
-                        fileName : fileName
+                        fileName: fileName
                     };
                     $.ajax({
                         url: "/product/deleteImg.dox",
@@ -377,7 +375,7 @@
                         }
                     });
                 }
-                
+
             },
             mounted() {
                 var self = this;
