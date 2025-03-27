@@ -37,6 +37,11 @@ public interface ProductMapper {
 
 	void deleteProductImg(HashMap<String, Object> map);
 
+	void updateThumbnail(HashMap<String, Object> map);
+
+	void insertAdditionalImage(HashMap<String, Object> map);
+  
 	List<Product> SelectCategory(HashMap<String, Object> map);
+
 
 }

@@ -163,7 +163,14 @@
                     list: [],
                     item: {},
                     itemNo: "",
-                    imgList: []
+                    imgList: [],
+                    dashboard: {
+                        visitors: 0,
+                        sales: 0,
+                        inquiries: 0,
+                    },
+                    orders: [],
+                    users: []
                 };
             },
             methods: {
@@ -183,7 +190,7 @@
                         self.info = "";
                         self.allergens = "";
                         self.itemNo = "",
-                        self.item = {};
+                            self.item = {};
                         thumbnail = null;
                     } else {
                         this.showProductForm = false;
@@ -224,12 +231,12 @@
                                     var form = new FormData();
                                     if (self.thumbnail) {
                                         form.append("file1", self.thumbnail); // 썸네일 파일 추가
-                                        form.append("isThumbnail","Y");
+                                        form.append("isThumbnail", "Y");
                                     }
                                     if (self.additionalPhotos.length > 0) {
                                         self.additionalPhotos.forEach((photo, index) => {
                                             form.append("file1", photo); // 추가 사진 파일 추가
-                                            form.append("isThumbnail","N");
+                                            form.append("isThumbnail", "N");
                                         });
                                     }
                                     form.append("itemNo", data.itemNo); // 상품 아이디
@@ -251,12 +258,12 @@
                                     var form = new FormData();
                                     if (self.thumbnail) {
                                         form.append("file1", self.thumbnail); // 썸네일 파일 추가
-                                        form.append("isThumbnail","Y");
+                                        form.append("isThumbnail", "Y");
                                     }
                                     if (self.additionalPhotos.length > 0) {
                                         self.additionalPhotos.forEach((photo, index) => {
                                             form.append("file1", photo); // 추가 사진 파일 추가
-                                            form.append("isThumbnail","N");
+                                            form.append("isThumbnail", "N");
                                         });
                                     }
 
@@ -299,7 +306,7 @@
                         data: form,
                         success: function (response) {
                             alert("수정되었습니다!");
-                            // location.reload(); // 페이지 새로고침
+                            location.reload(); // 페이지 새로고침
                         }
                     });
                 },
