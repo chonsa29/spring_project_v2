@@ -12,7 +12,7 @@
     background: #fff;
 }
 
-.inquire {
+.notice {
     width: 100%;
     max-width: 820px;
     text-align: center;
@@ -23,21 +23,12 @@
     font-weight: bold; /* 글자 굵게 */
 }
 
-/* 제목 및 프로필 컨테이너 */
+/* 제목 컨테이너 */
 .title-container {
     display: flex;
     align-items: center;
     width: 100%;
     margin-bottom: 15px;
-}
-
-/* 프로필 이미지 스타일 */
-.profile-img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: gray;
-    margin-right: 10px;
 }
 
 /* 제목 스타일 */
