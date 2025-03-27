@@ -13,9 +13,16 @@
 			AND ITEM_NAME LIKE '%' || #{keyword} || '%' 
 		</if>
 		<if test="searchOption != '전체메뉴'">
-		</if>
+        	AND CATEGORY = #{searchOption} <!-- 카테고리 필터링 -->
+    	</if>
 		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	</select>
+	
+	<select id="SelectCategory" parameterType="hashmap" resultType="com.example.demo.model.Product">
+		SELECT DISTINCT CATEGORY
+		FROM PRODUCT
+	</select>
+	
 	
 	<!-- product 리스트 가져오기 -->
 	<select id="SelectProduct2" parameterType="hashmap" resultType="com.example.demo.model.Product">
@@ -77,21 +84,20 @@
 		WHERE ITEM_NO = #{itemNo}
 	</update>
 	
-	<update id="updateProductThumbnail" parameterType="hashmap">
-		UPDATE PRODUCT_IMG
-			SET FILENAME = #{filename},
-				FILEPATH = #{path}
-			WHERE ITEM_NO = #{itemNo} AND THUMBNAIL = 'Y'
-	</update>
-	
-	
-	<update id="updateProductImage" parameterType="hashmap">
-		UPDATE PRODUCT_IMG
-			SET FILENAME = #{filename},
-				FILEPATH = #{path},
-				THUMBNAIL = #{thumbnail}
-			WHERE ITEM_NO = #{itemNo} AND THUMBNAIL = 'N'
-	</update>
+	<insert id="updateProductImage" parameterType="hashmap">
+		<choose>
+			<when test='thumbNail == "N"'>
+					INSERT INTO PRODUCT_IMG
+					VALUES(#{itemNo}, #{filename},#{path}, #{thumbNail})
+			</when>
+			<when test='thumbNail =="Y"'>
+				UPDATE PRODUCT_IMG
+				SET FILENAME = #{filename},
+					FILEPATH = #{path}
+				WHERE ITEM_NO = #{itemNo} AND THUMBNAIL = 'Y'
+			</when>
+		</choose>	
+	</insert>
 	
 	<delete id="deleteProduct" parameterType="hashmap">
 	    DELETE FROM PRODUCT
@@ -102,17 +108,6 @@
 	    DELETE FROM PRODUCT_IMG
 	    WHERE ITEM_NO = #{itemNo}
 	</delete>
-	
-	<update id="updateProductFile" parameterType="hashmap">
-	    UPDATE PRODUCT_IMG
-	    SET FILENAME = #{filename},
-	        FILEPATH = #{path},
-	        THUMBNAIL = CASE 
-	                      WHEN #{thumbnail} = 'Y' THEN 'Y' 
-	                      ELSE 'N' 
-	                   END
-		WHERE ITEM_NO = #{itemNo}
-	</update>
 	
 	<delete id="deleteProductImg" parameterType="hashmap">
 		DELETE FROM PRODUCT_IMG

@@ -108,13 +108,20 @@ public class ProductController {
 					File file = new File(path2 + "\\src\\main\\webapp\\img", saveFileName);
 					multi.transferTo(file);
 
+
+					System.out.println(uploadpath);
+					System.out.println(originFilename);
+					System.out.println(extName);
+					System.out.println(size);
+					System.out.println(saveFileName);
 					HashMap<String, Object> map = new HashMap<String, Object>();
-					map.put("filename", saveFileName);
+					map.put("filename", saveFileName);	
 					map.put("path", "../img/" + saveFileName);
 
 					map.put("itemNo", itemNo);
 					String thumbNail = thumbFlg ? "Y" : "N";
 					map.put("thumbNail", thumbNail);
+
 					// insert 쿼리 실행
 					productService.addProductFile(map);
 					thumbFlg = false;
@@ -132,7 +139,7 @@ public class ProductController {
 	
 	//상품 수정
 	@RequestMapping("/product/fileUpdate.dox")
-	public String update(@RequestParam("file1") List<MultipartFile> files, @RequestParam("itemNo") int itemNo,
+	public String update(@RequestParam("file1") List<MultipartFile> files, @RequestParam("itemNo") int itemNo, @RequestParam("isThumbnail") String isThumbnail,
 			HttpServletRequest request, HttpServletResponse response, Model model) {
 		
 		String url = null;
@@ -153,14 +160,12 @@ public class ProductController {
 					multi.transferTo(file);
 
 					HashMap<String, Object> map = new HashMap<String, Object>();
+
+					System.out.println(isThumbnail);
 					map.put("filename", saveFileName);
 					map.put("path", "../img/" + saveFileName);
-//					map.put("originFilename", originFilename);
-//					map.put("extName", extName); // 확장자
-//					map.put("size", size);
 					map.put("itemNo", itemNo);
-					String thumbNail = thumbFlg ? "Y" : "N";
-					map.put("thumbNail", thumbNail);
+					map.put("thumbNail", isThumbnail);
 					// update 쿼리 실행
 					productService.updateProductFile(map);
 					thumbFlg = false;

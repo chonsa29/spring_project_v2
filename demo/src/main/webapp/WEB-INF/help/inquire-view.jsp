@@ -15,9 +15,12 @@
 <body>
     <jsp:include page="/WEB-INF/common/header.jsp" />
 	<div id="app">
-        <div class="post-container">
-            <!-- 제목 -->
-            <div class="post-title">{{ info.qsTitle }}</div>
+        <h2 class="inquire">문의게시판</h2>
+            <!-- 제목 & 프로필 컨테이너 -->
+            <div class="title-container">
+                <img src="/images/profile.png" class="profile-img" alt="프로필">
+                <div class="post-title">{{ info.qsTitle }}</div>
+            </div>
 
             <!-- 작성자 정보 -->
             <div class="post-meta">
@@ -29,18 +32,13 @@
             <!-- 본문 내용 -->
             <div class="post-content" v-html="info.qsContents"></div>
 
-            <!-- 상품 정보 -->
-            <div v-if="info.itemNo" class="post-item">상품 번호: {{ info.itemNo }}</div>
-
-            <!-- 수정 / 삭제 버튼 (작성자 또는 관리자만) -->
-            <div v-if="sessionId == info.userId || sessionStatus == 'A'" class="button-group">
-                <button class="edit-btn" @click="fnEdit">수정</button>
-                <button class="delete-btn" @click="fnRemove">삭제</button>
-            </div>
-
-            <!-- 목록으로 돌아가기 버튼 -->
-            <div class="button-container">
-                <button @click="goBack">목록으로</button>
+            <!-- 버튼들 -->
+            <div class="button-group-container">
+                <div v-if="sessionId == info.userId || sessionStatus == 'A'" class="button-group">
+                    <button class="edit-btn" @click="fnEdit">수정</button>
+                    <button class="delete-btn" @click="fnRemove">삭제</button>
+                </div>
+                <button class="buttonGoBack" @click="goBack">목록으로</button>
             </div>
         </div>
     </div>
