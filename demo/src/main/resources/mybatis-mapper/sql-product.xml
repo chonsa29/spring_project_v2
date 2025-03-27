@@ -77,20 +77,18 @@
 		WHERE ITEM_NO = #{itemNo}
 	</update>
 	
-	<insert id="updateProductImage" parameterType="hashmap">
-		<choose>
-			<when test='thumbNail == "N"'>
-					INSERT INTO PRODUCT_IMG
-					VALUES(#{itemNo}, #{filename},#{path}, #{thumbNail})
-			</when>
-			<when test='thumbNail =="Y"'>
-				UPDATE PRODUCT_IMG
-				SET FILENAME = #{filename},
-					FILEPATH = #{path}
-				WHERE ITEM_NO = #{itemNo} AND THUMBNAIL = 'Y'
-			</when>
-		</choose>	
-	</insert>
+	<!-- 추가 이미지 전용 쿼리 -->  
+	<insert id="insertAdditionalImage">  
+	  INSERT INTO PRODUCT_IMG  
+	  VALUES(#{itemNo}, #{filename}, #{path}, 'N')  
+	</insert>  
+	
+	<!-- 썸네일 수정 전용 쿼리 -->  
+	<update id="updateThumbnail">  
+	  UPDATE PRODUCT_IMG  
+	  SET FILENAME=#{filename}, FILEPATH=#{path}  
+	  WHERE ITEM_NO=#{itemNo} AND THUMBNAIL='Y'  
+	</update>  
 	
 	<delete id="deleteProduct" parameterType="hashmap">
 	    DELETE FROM PRODUCT
