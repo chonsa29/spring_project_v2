@@ -70,11 +70,10 @@
             ORDER_KEY AS orderKey,
             ORDER_DATE AS orderDate,
             PRICE AS price,
-            STATUS AS status
+            ORDER_STATUS AS orderStatus
         FROM ORDER_LIST
         WHERE USERID = #{memberId}
         ORDER BY ORDER_DATE DESC
-        LIMIT 5
     </select>
 
     <!-- 회원 정보 수정 -->
