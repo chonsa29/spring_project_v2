@@ -34,7 +34,7 @@ body {
 	color: white;
 	padding: 20px;
 	min-height: 100vh;
-	max-height: 200vh;
+	max-height: 500vh;
 }
 
 .sidebar h2 {
@@ -372,11 +372,72 @@ img {
 }
 
 .sales-chart-container {
-	margin-top: 20px;
-	height: 300px;
+	height: 500px;
+	padding-bottom: 100px;
+	padding-left: 50px;
 }
-.recent-orders th{
-	color:black;
-	
-	
+
+.recent-orders th {
+	color: black;
+
+
+}
+
+/* 주문 관리 추가 스타일 */
+.order-table {
+	font-size: 14px;
+}
+
+.status-badge {
+	padding: 5px 10px;
+	border-radius: 10px;
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.status-pending {
+	background-color: #fff3cd;
+	color: #856404;
+}
+
+.status-processing {
+	background-color: #cce5ff;
+	color: #004085;
+}
+
+.status-completed {
+	background-color: #d4edda;
+	color: #155724;
+}
+
+.status-canceled {
+	background-color: #f8d7da;
+	color: #721c24;
+}
+
+.detail-modal img {
+	max-width: 80px;
+}
+
+.pagination {
+	justify-content: center;
+	margin-top: 20px;
+}
+
+.modal:not(.show) {
+    display: none !important;
+}
+
+/* 모달 백드롭 숨김 */
+.modal-backdrop:not(.show) {
+    display: none !important;
+}
+/* 부트스트랩 스타일 재정의 */
+body.modal-open {
+  overflow: auto !important;
+  padding-right: 0 !important;
+}
+
+.modal {
+  overflow-y: auto;
 }

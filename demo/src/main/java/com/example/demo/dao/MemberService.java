@@ -1,14 +1,14 @@
 package com.example.demo.dao;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.mapper.MemberMapper;
 import com.example.demo.model.Member;
-
-import jakarta.servlet.http.HttpSession;
 
 @Service
 public class MemberService {
@@ -69,5 +69,41 @@ public class MemberService {
 		return resultMap;
 		
 	}
+	
+	 public List<Map<String, Object>> getMemberList(Map<String, Object> params) {
+	        Map<String, Object> searchParams = new HashMap<>();
+	        
+	        if (params.containsKey("searchType") && params.containsKey("searchValue")) {
+	            searchParams.put("searchType", params.get("searchType"));
+	            searchParams.put("searchValue", params.get("searchValue"));
+	        }
+	        
+	        if (params.containsKey("status")) {
+	            searchParams.put("status", params.get("status"));
+	        }
+	        
+	        return memberMapper.selectMemberList(searchParams);
+	    }
+
+	    public Map<String, Object> getMemberDetail(String memberId) {
+	        Map<String, Object> result = new HashMap<>();
+	        result.put("member", memberMapper.selectMemberDetail(memberId));
+	        result.put("orderHistory", memberMapper.selectMemberOrderHistory(memberId));
+	        return result;
+	    }
+
+	    public Map<String, Object> updateMember(Map<String, Object> params) {
+	        Map<String, Object> result = new HashMap<>();
+	        int affectedRows = memberMapper.updateMember(params);
+	        result.put("success", affectedRows > 0);
+	        return result;
+	    }
+
+	    public Map<String, Object> updateMemberStatus(Map<String, Object> params) {
+	        Map<String, Object> result = new HashMap<>();
+	        int affectedRows = memberMapper.updateMemberStatus(params);
+	        result.put("success", affectedRows > 0);
+	        return result;
+	    }
 }
 
