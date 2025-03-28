@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.example.demo.model.Product;
+import com.example.demo.model.Review;
 
 @Mapper
 public interface ProductMapper {
@@ -42,6 +43,8 @@ public interface ProductMapper {
 	void insertAdditionalImage(HashMap<String, Object> map);
   
 	List<Product> SelectCategory(HashMap<String, Object> map);
+
+	List<Review> SelectProductReview(HashMap<String, Object> map);
 
 
 }
