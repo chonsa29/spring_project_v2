@@ -149,7 +149,7 @@
 				</tbody>
 			</table>
 			<!-- 페이징 -->
-			<div class="pagination">
+			<div class="pagination" v-if="noticeList.length > 0">
 				<a v-if="noticePage !=1" id="noticeIndex" href="javascript:;"
 				@click="fnNoticePageMove('prev')"> < </a>
 				<a href="javascript:;" v-for="number in noticeIndex" @click="fnNoticePage(number)" :class="{active: noticePage === number}">
