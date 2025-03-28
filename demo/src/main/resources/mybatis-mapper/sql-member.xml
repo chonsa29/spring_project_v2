@@ -93,4 +93,72 @@
         SET STATUS = #{status}
         WHERE USERID = #{memberId}
     </update>
+    
+<select id="selectMemberInfo" parameterType="String" resultType="Member">
+        SELECT 
+            USERID as userId,
+            GROUP_ID as groupId,
+            USERNAME as userName,
+            ADDRESS,
+            EMAIL,
+            BIRTH,
+            GENDER,
+            PHONE,
+            STATUS,
+            NICKNAME,
+            GRADE,
+            ALLERGY,
+            POINT,
+            CDATETIME as regDate
+        FROM 
+            MEMBER
+        WHERE 
+            USERID = #{userId}
+            AND IS_DELETED = 'N'
+    </select>
+    
+    <!-- 회원 등급 정보 조회 -->
+    <select id="selectMemberGradeInfo" parameterType="String" resultType="Member">
+        SELECT 
+            m.GRADE,
+            m.GROUP_ID as groupId,
+            m.POINT
+        FROM 
+            MEMBER m
+        WHERE 
+            m.USERID = #{userId}
+    </select>
+    
+    <!-- 최근 주문 정보 조회 -->
+    <select id="selectRecentOrderInfo" parameterType="String" resultType="Member">
+        SELECT 
+            ORDER_NO as recentOrderNo,
+            ORDER_STATUS as orderStatus,
+            TO_CHAR(ORDER_DATE, 'YYYY.MM.DD') as orderDate
+        FROM (
+            SELECT 
+                ORDER_NO,
+                ORDER_STATUS,
+                ORDER_DATE
+            FROM 
+                ORDERS
+            WHERE 
+                USER_ID = #{userId}
+            ORDER BY 
+                ORDER_DATE DESC
+        ) WHERE ROWNUM = 1
+    </select>
+    
+    <!-- 찜한 상품 정보 조회 -->
+    <select id="selectWishListInfo" parameterType="String" resultType="Member">
+        SELECT 
+            COUNT(*) as wishCount,
+            MAX(p.PRODUCT_NAME) as recentWishProduct
+        FROM 
+            WISH_LIST w
+            JOIN PRODUCT p ON w.PRODUCT_CODE = p.PRODUCT_CODE
+        WHERE 
+            w.USER_ID = #{userId}
+            AND ROWNUM = 1
+    </select>
 </mapper>

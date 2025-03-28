@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,7 +47,6 @@ public class MemberController {
     }
 	@RequestMapping("/member/mypage.do") 
     public String mypage(Model model) throws Exception{
-
         return "/member/mypage"; 
     }
 	
@@ -131,5 +132,33 @@ public class MemberController {
 	    public Map<String, Object> updateMemberStatus(
 	            @RequestParam Map<String, Object> params) {
 	        return memberService.updateMemberStatus(params);
+	    }	
+	    
+	    @RequestMapping(value = "/member/myPage/info/{userId}.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	    @ResponseBody
+	    public ResponseEntity<Member> getMemberInfo(@PathVariable String userId) {
+	        Member memberInfo = memberService.getMemberInfo(userId);
+	        return ResponseEntity.ok(memberInfo);
+	    }
+	    
+	    @RequestMapping(value = "/member/myPage/grade/{userId}.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	    @ResponseBody
+	    public ResponseEntity<Member> getMemberGradeInfo(@PathVariable String userId) {
+	        Member gradeInfo = memberService.getMemberGradeInfo(userId);
+	        return ResponseEntity.ok(gradeInfo);
+	    }
+	    
+	    @RequestMapping(value = "/member/myPage/orders/{userId}.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	    @ResponseBody
+	    public ResponseEntity<Member> getRecentOrderInfo(@PathVariable String userId) {
+	        Member orderInfo = memberService.getRecentOrderInfo(userId);
+	        return ResponseEntity.ok(orderInfo);
+	    }
+	    
+	    @RequestMapping(value = "/member/myPage/wishList/{userId}.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	    @ResponseBody
+	    public ResponseEntity<Member> getWishListInfo(@PathVariable String userId) {
+	        Member wishInfo = memberService.getWishListInfo(userId);
+	        return ResponseEntity.ok(wishInfo);
 	    }
 }

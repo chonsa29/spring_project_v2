@@ -105,5 +105,74 @@ public class MemberService {
 	        result.put("success", affectedRows > 0);
 	        return result;
 	    }
+	    
+	    public Member getMemberInfo(String userId) {
+	        Member member = memberMapper.selectMemberInfo(userId);
+	        if (member != null) {
+	            setGradeAndGroupNames(member);
+	            calculateRemainPoint(member);
+	        }
+	        return member;
+	    }
+
+	    public Member getMemberGradeInfo(String userId) {
+	        Member member = memberMapper.selectMemberGradeInfo(userId);
+	        if (member != null) {
+	            setGradeAndGroupNames(member);
+	            calculateRemainPoint(member);
+	        }
+	        return member;
+	    }
+
+	    public Member getRecentOrderInfo(String userId) {
+	        return memberMapper.selectRecentOrderInfo(userId);
+	    }
+
+	    public Member getWishListInfo(String userId) {
+	        return memberMapper.selectWishListInfo(userId);
+	    }
+
+	    // 등급명과 그룹명 설정
+	    private void setGradeAndGroupNames(Member member) {
+	        if (member == null) return;
+
+	        // 등급명 설정 (1: 일반, 2: VIP, 3: VVIP)
+	        if (member.getGrade() != null) {
+	            switch (member.getGrade()) {
+	                case 1: member.setGradeName("일반 회원"); break;
+	                case 2: member.setGradeName("VIP 회원"); break;
+	                case 3: member.setGradeName("VVIP 회원"); break;
+	                default: member.setGradeName("기본 회원");
+	            }
+	        }
+
+	        // 그룹명 설정 (1: 일반, 2: 프리미엄)
+	        if (member.getGroupId() != null) {
+	            switch (member.getGroupId()) {
+	                case 1: member.setGroupName("일반 그룹"); break;
+	                case 2: member.setGroupName("프리미엄 그룹"); break;
+	                default: member.setGroupName("기본 그룹");
+	            }
+	        }
+	    }
+
+	    // 다음 등급까지 남은 포인트 계산
+	    private void calculateRemainPoint(Member member) {
+	        if (member == null || member.getGrade() == null || member.getPoint() == null) {
+	            if (member != null) {
+	                member.setRemainPoint(0);
+	            }
+	            return;
+	        }
+
+	        int requiredPoint;
+	        switch (member.getGrade()) {
+	            case 1: requiredPoint = 2000; break; // 일반->VIP
+	            case 2: requiredPoint = 5000; break; // VIP->VVIP
+	            default: requiredPoint = 0;
+	        }
+
+	        member.setRemainPoint(Math.max(0, requiredPoint - member.getPoint()));
+	    }
 }
 

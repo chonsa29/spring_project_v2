@@ -103,6 +103,8 @@
                 },
             },
             mounted() {
+                console.log(this.sessionStatus);
+                console.log(this.sessionId);
                 const floatingIcon = document.querySelector(".floating-icon img");
                 if (floatingIcon && floatingIcon.parentElement) { // 요소가 있는지 확인
                     floatingIcon.parentElement.addEventListener("mouseover", function () {
