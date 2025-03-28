@@ -23,6 +23,12 @@ public interface CommunityMapper {
 
 	void insertCommuFile(HashMap<String, Object> map);
 
-	String selectSavedContents(Object postId);
+	int checkLike(String postId, String userId);
+
+	void deleteLike(String postId, String userId);
+
+	void insertLike(String postId, String userId);
+
+	int selectLikes(String postId);
 
 }

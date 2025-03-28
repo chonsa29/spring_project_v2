@@ -10,8 +10,9 @@
 
 	
 	<select id="selectRecipetList" parameterType="hashmap" resultType="com.example.demo.model.Recipe">
-		SELECT *
-		FROM RECIPE_POST
+		SELECT RP.POST_ID, RP.TITLE, RP.CDATETIME, RP.CNT, COUNT(RL.USER_ID) AS LIKES
+		FROM RECIPE_POST RP
+		LEFT JOIN RECIPE_LIKES RL ON RP.POST_ID = RL.POST_ID
 		WHERE 1=1
 		<if test="searchOption != null and searchOption == 'all'">
 			AND (TITLE LIKE '%' || #{searchKeyword} || '%'
@@ -23,6 +24,7 @@
 		<if test="searchOption != null and searchOption == 'contents'">
 			AND CONTENTS LIKE '%' || #{searchKeyword} || '%'
 		</if>
+		GROUP BY RP.POST_ID, RP.TITLE, RP.CDATETIME, RP.CNT
 		ORDER BY CDATETIME DESC
 		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	</select>
@@ -44,9 +46,27 @@
 	</select>
 	
 	<select id="selectRecipeView" parameterType="hashmap" resultType="com.example.demo.model.Recipe">
-		SELECT *
-		FROM RECIPE_POST
-		WHERE POST_ID = #{postId}
+		SELECT MAIN.*, (SELECT CONTENTS 
+		                FROM RECIPE_POST 
+		                WHERE POST_ID = MAIN.POST_ID) AS CONTENTS
+		FROM (
+		    SELECT 
+		        RP.POST_ID, 
+		        RP.TITLE, 
+		        RP.COOKING_TIME, 
+		        RP.SERVINGS, 
+		        RP.DIFFICULTY, 
+		        RP.INSTRUCTIONS, 
+		        RP.CNT,
+		        RP.CDATETIME,
+		        RP.USERID,
+		        COUNT(RL.USER_ID) AS LIKES
+		    FROM RECIPE_POST RP
+		    LEFT JOIN RECIPE_LIKES RL ON RP.POST_ID = RL.POST_ID
+		    WHERE RP.POST_ID = #{postId}
+		    GROUP BY RP.POST_ID, RP.TITLE, RP.COOKING_TIME, RP.SERVINGS, RP.DIFFICULTY, RP.INSTRUCTIONS, 
+		    					RP.CNT, RP.CDATETIME, RP.USERID
+		) MAIN
 	</select>
 	
 	<update id="updateCnt" parameterType="hashmap">
@@ -61,6 +81,29 @@
         VALUES (RECIPE_SEQ.NEXTVAL, #{instructions}, #{cookingTime}, #{servings}, 
         		#{difficulty}, #{title}, #{userId}, 0, SYSDATE, 0, 1, #{contents, jdbcType=CLOB})
     </insert>
+    
+    <select id="checkLike" parameterType="hashmap" resultType="int">
+	    SELECT COUNT(*)
+	    FROM RECIPE_LIKES
+	    WHERE POST_ID = #{postId} AND USER_ID = #{userId}
+	</select>
+	
+	<insert id="insertLike" parameterType="hashmap">
+	    INSERT INTO RECIPE_LIKES (POST_ID, USER_ID)
+	    VALUES (#{postId}, #{userId})
+	</insert>
+	
+	<delete id="deleteLike" parameterType="hashmap">
+	    DELETE FROM RECIPE_LIKES
+	    WHERE POST_ID = #{postId} AND USER_ID = #{userId}
+	</delete>
+	
+	<select id="selectLikes" parameterType="string" resultType="int">
+	    SELECT COUNT(*)
+	    FROM RECIPE_LIKES
+	    WHERE POST_ID = #{postId}
+	</select>
+
 
 </mapper>
 

@@ -28,11 +28,19 @@
             <div class="post-meta">
                 <span class="post-user">{{ info.userId }}</span> ·
                 <span class="post-date">{{ info.cdatetime }}</span> ·
-                조회 {{ info.cnt }} · <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="like">
-                <path d="M47.6 300.4L228.3 469.1c7.5 7 17.4 10.9 27.7 10.9s20.2-3.9 27.7-10.9L464.4 
-                300.4c30.4-28.3 47.6-68 47.6-109.5v-5.8c0-69.9-50.5-129.5-119.4-141C347 36.5 300.6 
-                51.4 268 84L256 96 244 84c-32.6-32.6-79-47.5-124.6-39.9C50.5 55.6 0 115.2 0 
-                185.1v5.8c0 41.5 17.2 81.2 47.6 109.5z"/></svg> {{ info.likes }}
+                조회 {{ info.cnt }} · 
+                <!-- 좋아요 버튼 -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" 
+                    id="like-btn-{{ info.postId }}" @click="fnLike" class="like"
+                    :class="{ 'liked': info.isLiked }" :fill="info.isLiked ? 'red' : 'gray'">
+                    <path d="M47.6 300.4L228.3 469.1c7.5 7 17.4 10.9 27.7 10.9s20.2-3.9 27.7-10.9L464.4 
+                    300.4c30.4-28.3 47.6-68 47.6-109.5v-5.8c0-69.9-50.5-129.5-119.4-141C347 36.5 300.6 
+                    51.4 268 84L256 96 244 84c-32.6-32.6-79-47.5-124.6-39.9C50.5 55.6 0 115.2 0 
+                    185.1v5.8c0 41.5 17.2 81.2 47.6 109.5z"/>
+                </svg>
+
+                <!-- 좋아요 숫자 -->
+                <span v-show="info.likes !== null">{{ info.likes }}</span>
             </div>
 
             <!-- 요리 정보 컨테이너 -->
@@ -91,6 +99,7 @@
 				var self = this;
 				var nparmap = {
                     postId : self.postId,
+                    userId: self.sessionId,
                     option: "SELECT"
 				};
 				$.ajax({
@@ -103,6 +112,11 @@
                         self.info = data.info;
                         console.log('Post ID:', self.postId);
 
+                        // 좋아요 상태를 제대로 받아오지 못했을 경우 기본값 설정
+                    if (self.info.isLiked === undefined) {
+                        self.info.isLiked = false;
+                    }
+
 					}
 				});
             },
@@ -111,6 +125,45 @@
             },
             fnEdit(postId) {
                 pageChange("/recipe/edit.do", { postId : this.postId });
+            },
+            fnLike() {
+                var self = this;
+
+                // 서버로 좋아요 요청
+                $.ajax({
+                    url: "/recipe/like.dox",
+                    type: "POST",
+                    data: {
+                        postId: self.postId,
+                        userId: self.sessionId // 로그인한 유저 ID
+                    },
+                    success: function(response) {
+                        let jsonResponse = typeof response === "string" ? JSON.parse(response) : response;
+                        console.log("서버 응답:", jsonResponse); // ✅ 응답 확인
+
+                        if (jsonResponse.result === "success") {
+                            self.info.isLiked = jsonResponse.isLiked;
+                            self.info.likes = jsonResponse.likes;
+
+                            // 좋아요 상태와 숫자 업데이트
+                            let likeButton = $("#like-btn-" + self.postId);
+                            let likeCount = $("#like-count-" + self.postId);
+
+                            // 좋아요 버튼 색 변경
+                            if (jsonResponse.isLiked) {
+                                likeButton.addClass("liked");
+                            } else {
+                                likeButton.removeClass("liked");
+                            }
+
+                            // 좋아요 개수 업데이트
+                            likeCount.text(jsonResponse.likes);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Failed to toggle like:", error);
+                    }
+                });
             },
             fnRemove: function () {
                 var self = this;
@@ -136,6 +189,7 @@
         mounted() {
             var self = this;
             self.fnRecipe();
+            
         }
     });
     app.mount('#app');
