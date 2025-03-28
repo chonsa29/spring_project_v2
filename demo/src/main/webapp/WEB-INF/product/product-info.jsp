@@ -261,7 +261,7 @@
                     selectedTab: 'info', // 기본값은 "상품 정보"
                     review : [], // 리뷰 리스트 가져오기
                     reviewFlg : false,
-
+                    userId : "${sessionId}"
                 };
             },
 
