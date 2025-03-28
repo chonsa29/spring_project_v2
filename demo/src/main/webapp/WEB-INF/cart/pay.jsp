@@ -6,8 +6,9 @@
 	<meta charset="UTF-8">
 	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link rel="stylesheet" href="/css/payment-style.css">
-	<title>첫번째 페이지</title>
+    <link rel="stylesheet" href="/css/pay.css">
+    <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+	<title>결제 페이지</title>
 </head>
 <style>
 </style>
@@ -18,27 +19,26 @@
             <main>
                 <section class="order-section">
                     <section class="order-info">
-                        <h2>주문 상품 정보</h2>
+                        <h2 class="text">주문 상품 정보</h2>
                         <div class="product">
                             <img src="/images/product.jpg" alt="상품 이미지">
                             <div class="product-details">
                                 <p class="product-name">앤더슨 블랙 보드 텀블러(2가지)</p>
-                                <p class="product-price">₩ {{ info.pPrice }}</p>
+                                <p class="product-price">₩ {{ list.pPrice }}</p>
                                 <p class="product-quantity">수량: 1개</p>
                             </div>
                         </div>
                     </section>
-
-                   
+                    
                     <section class="shipping">
-                        <h2>배송 정보</h2>
+                        <h2 class="text">배송 정보</h2>
                         <input type="text" v-model="shippingAddress" placeholder="배송 주소">
                         <input type="text" v-model="shippingMessage" placeholder="배송 요청 사항">
                     </section>  
                     
                     <section class="coupon">
                         <div>
-                            <h2>쿠폰</h2>
+                            <h2 class="text">쿠폰</h2>
                         </div>
                         <input type="text" v-model="coupon" placeholder="쿠폰 입력">
                         <div>
@@ -48,7 +48,7 @@
 
                    <section class="point">
                         <div>
-                           <h2>포인트</h2> 
+                           <h2 class="text">포인트</h2> 
                         </div>
                         <input type="text" v-model="point" placeholder="">
                         <div>
@@ -56,9 +56,8 @@
                         </div>
                     </section>
 
-
                     <section class="order-details">
-                        <h2>주문자 정보</h2>
+                        <h2 class="text">주문자 정보</h2>
                         <input type="text" v-model="ordererName" placeholder="이름">
                         <input type="text" v-model="ordererPhone" placeholder="연락처">
                     </section>
@@ -66,18 +65,18 @@
                 
                 <section class="payment-section"> 
                     <section class="order-summary">
-                        <h2>주문 요약</h2>
+                        <h2 class="text">주문 요약</h2>
                         <div class="summary-details">
-                            <p>상품 가격 <span>{{ info.pPrice }}</span></p>
+                            <p>상품 가격 <span>{{ list.pPrice }}</span></p>
                             <p>배송비 <span>+ 3,000원</span></p>
                             <p class="total-price">총 주문금액 <span>15,900원</span></p>
                         </div>
                     </section>
                   
                     <section class="payment">
-                        <h2>결제 수단</h2>
+                        <h2 class="text">결제 수단</h2>
                         <select v-model="paymentMethod">
-                            <option value="card">{{ info.pWay }}</option>
+                            <option value="card">{{ list.pWay }}</option>
                         </select>
                         <button class="pay-btn" @click="fnPayment">결제하기</button>
                     </section>
@@ -95,21 +94,21 @@
         data() {
             return {
                 pNo: "${map.pNo}",
-                info: {},
+                list: [],
                 sessionId : "${sessionId}"
             };
         },
         methods: {
-            fnLogin(){
+            fnPay(){
 				var self = this;
-				var nparmap = {
-				};
+				var nparmap = { pNo: self.pNo };
 				$.ajax({
-					url:"login.dox",
+					url:"/pay.dox",
 					dataType:"json",	
 					type : "POST", 
 					data : nparmap,
 					success : function(data) { 
+                        self.list = data.list; 
 						console.log(data);
 					}
 				});
@@ -121,7 +120,7 @@
                     pay_method: "card",
                     merchant_uid: "merchant_" + new Date().getTime(),
                     name: "테스트 결제",
-                    amount: self.info.price,
+                    amount: self.info.pPrice,
                     buyer_tel: "010-0000-0000",
                     }	, function (rsp) { // callback
                     if (rsp.success) {
@@ -140,7 +139,7 @@
                 var self = this;
                 var nparmap = { 
                     pWay : merchant_uid,
-                    userId : self.sessionId,
+                    pUid : self.sessionId,
                     pPrice : self.info.pPrice,
                     pNo : self.info.pNo
                 };
@@ -157,6 +156,7 @@
         },
         mounted() {
             var self = this;
+            self.fnPay();
         }
     });
     app.mount('#app');
