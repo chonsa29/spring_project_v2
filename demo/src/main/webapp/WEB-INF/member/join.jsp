@@ -13,118 +13,136 @@
 
         <title>회원가입</title>
         <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Noto Sans KR', sans-serif;
-        }
-        
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: #f6fcf7;
-        }
-        
-        .signup-container {
-            background: white;
-            width: 450px;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        }
-        
-        h2 {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        
-        .input-box {
-            position: relative;
-            margin-bottom: 12px;
-        }
-        
-        .input-box input,
-        .input-box select {
-            width: 100%;
-            height: 42px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        
-        .input-box input:focus,
-        .input-box select:focus {
-            border-color: #5cb85c;
-            outline: none;
-        }
-        
-        .input-box button {
-            position: absolute;
-            right: 0;
-            top: 0;
-            height: 100%;
-            border: none;
-            background: #5cb85c;
-            color: white;
-            padding: 0 15px;
-            font-size: 14px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        
-        .input-box button:hover {
-            background: #4cae4c;
-        }
-        
-        .message {
-            font-size: 12px;
-            margin-top: 5px;
-        }
-        
-        .message.success {
-            color: blue;
-        }
-        
-        .message.error {
-            color: red;
-        }
-        
-        .address-container {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .address-container input {
-            flex: 1;
-        }
-        
-        .address-container button {
-            flex: none;
-            padding: 10px 12px;
-            white-space: nowrap;
-        }
-        
-        .signup-button {
-            width: 100%;
-            background: #5cb85c;
-            color: white;
-            font-size: 16px;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        
-        .signup-button:hover {
-            background: #4cae4c;
-        }
-    </style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+                font-family: 'Noto Sans KR', sans-serif;
+            }
+
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                background: #f6fcf7;
+            }
+
+            .signup-container {
+                background: white;
+                width: 450px;
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            }
+
+            h2 {
+                font-size: 20px;
+                font-weight: bold;
+                margin-bottom: 20px;
+            }
+
+            .input-box {
+                position: relative;
+                margin-bottom: 12px;
+            }
+
+            .input-box input,
+            .input-box select {
+                width: 100%;
+                height: 42px;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+                font-size: 14px;
+            }
+
+            .input-box input:focus,
+            .input-box select:focus {
+                border-color: #5cb85c;
+                outline: none;
+            }
+
+            .input-box button {
+                position: absolute;
+                right: 0;
+                top: 0;
+                height: 100%;
+                border: none;
+                background: #5cb85c;
+                color: white;
+                padding: 0 15px;
+                font-size: 14px;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+
+            #register {
+                width: 30%;
+                display: flex;
+                justify-self: center;
+                justify-content: center;
+                margin-top: 20px;
+            }
+            #register button{
+                color:white;
+                padding: 10px 25px;
+                background:  #5cb85c;
+                border:none;
+                border-radius: 6px;
+            }
+            #register button:hover{
+                background:#4cae4c;
+            }
+
+            .input-box button:hover {
+                background: #4cae4c;
+            }
+
+            .message {
+                font-size: 12px;
+                margin-top: 5px;
+            }
+
+            .message.success {
+                color: blue;
+            }
+
+            .message.error {
+                color: red;
+            }
+
+            .address-container {
+                display: flex;
+                gap: 5px;
+            }
+
+            .address-container input {
+                flex: 1;
+            }
+
+            .address-container button {
+                flex: none;
+                padding: 10px 12px;
+                white-space: nowrap;
+            }
+
+            .signup-button {
+                width: 100%;
+                background: #5cb85c;
+                color: white;
+                font-size: 16px;
+                padding: 12px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                margin-top: 10px;
+            }
+
+            .signup-button:hover {
+                background: #4cae4c;
+            }
+        </style>
     </head>
 
     <body>
@@ -170,13 +188,13 @@
                 <input type="text" v-model="user.detailedAddress" placeholder="상세주소">
             </div>
             <div class="input-box">생년월일
-                <input type="date"   v-model="user.birth">
+                <input type="date" v-model="user.birth">
             </div>
             <div class="input-box">
                 <input type="text" v-model="user.phoneNum" placeholder="휴대폰 번호">
                 <button @click="fnSmsAuth">본인 인증</button>
             </div>
-            <div class="input-box"> <button @click="fnJoin">가입하기</button> </div>
+            <div id="register"><button  @click="fnJoin">가입하기</button></div>
         </div>
 
         <script>
@@ -268,55 +286,93 @@
                         alert("본인 인증 코드가 전송되었습니다!");
                     },
                     fnJoin() {
-                        var self = this;
-                        var nparmap = {
-                            userId: this.user.userId,
-                            pwd: this.user.pwd,
-                            userName: this.user.userName,
-                            address: this.user.address,
-                            email: this.user.email,
-                            emailVer: this.user.emailVer,
-                            birth: this.user.birth,
-                            gender: this.user.gender,
-                            phoneNum: this.user.phoneNum,
-                            status: this.user.status,
-                            nickName: this.user.nickName
-                        }
+    console.log("회원가입 시도");
 
+    // 필수 입력 필드 검사
+    if (!this.user.userId) {
+        alert("아이디를 입력하지 않았습니다.");
+        return;
+    }
+    if (this.idError && this.idError !== "사용 가능한 아이디입니다.") {
+        alert("아이디를 올바르게 입력해주세요.");
+        return;
+    }
+    if (!this.user.pwd) {
+        alert("비밀번호를 입력하지 않았습니다.");
+        return;
+    }
+    if (this.pwdError) {
+        alert("비밀번호는 영문, 숫자, 특수문자를 포함한 10자 이상이어야 합니다.");
+        return;
+    }
+    if (!this.user.confirmPwd) {
+        alert("비밀번호 확인을 입력하지 않았습니다.");
+        return;
+    }
+    if (this.confirmPwdError) {
+        alert("비밀번호가 일치하지 않습니다.");
+        return;
+    }
+    if (!this.user.email) {
+        alert("이메일을 입력하지 않았습니다.");
+        return;
+    }
+    if (!this.user.userName) {
+        alert("이름을 입력하지 않았습니다.");
+        return;
+    }
+    if (!this.user.gender) {
+        alert("성별을 선택해 주세요.");
+        return;
+    }
+    if (!this.user.address) {
+        alert("주소를 입력하지 않았습니다.");
+        return;
+    }
+    if (!this.user.phoneNum) {
+        alert("휴대폰 번호를 입력하지 않았습니다.");
+        return;
+    }
+    if (!this.user.birth) {
+        alert("생년월일을 입력하지 않았습니다.");
+        return;
+    }
 
-                        console.log(this.user.birth);
-                        if (this.idError && this.idError !== "사용 가능한 아이디입니다.") {
-                            alert("아이디를 올바르게 입력해주세요.");
-                            return;
-                        }
+    // 모든 필드가 올바르게 입력되었을 경우 회원가입 진행
+    var self = this;
+    var nparmap = {
+        userId: this.user.userId,
+        pwd: this.user.pwd,
+        userName: this.user.userName,
+        address: this.user.address,
+        email: this.user.email,
+        emailVer: this.user.emailVer,
+        birth: this.user.birth,
+        gender: this.user.gender,
+        phoneNum: this.user.phoneNum,
+        status: this.user.status,
+        nickName: this.user.nickName
+    };
 
-                        if (this.pwdError) {
-                            alert("비밀번호를 올바르게 입력해주세요.");
-                            return;
-                        }
+    $.post('/signup', this.user, (response) => {
+        alert(response.message);
+    });
 
-                        if (this.confirmPwdError) {
-                            alert("비밀번호 확인을 올바르게 입력해주세요.");
-                            return;
-                        }
-
-
-                        $.post('/signup', this.user, (response) => {
-                            alert(response.message);
-                        });
-                        $.ajax({
-                            url: "/member/join.dox",
-                            dataType: "json",
-                            type: "POST",
-                            data: nparmap,
-                            success: function (data) {
-                                if (data.result == "success") {
-                                    alert("등록되었습니다.");
-                                }
-                            }
-                        });
+    $.ajax({
+        url: "/member/join.dox",
+        dataType: "json",
+        type: "POST",
+        data: nparmap,
+        success: function (data) {
+            if (data.result == "success") {
+                alert("회원가입이 완료되었습니다.");
+            } else {
+                alert("회원가입에 실패하였습니다.");
+            }
+        }
+    });
+}
                     }
-                }
             });
             app.mount('#app');
         </script>
