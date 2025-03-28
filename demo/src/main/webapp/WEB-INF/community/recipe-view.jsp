@@ -47,11 +47,11 @@
             <div class="recipe-info-container">
                 <div class="info-item">
                     <span class="info-title">요리 시간:</span>
-                    <span>{{ info.cookingTime }}</span>
+                    <span>{{ info.cookingTime }}분</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-title">인분:</span>
-                    <span>{{ info.servings }}</span>
+                    <span class="info-title">양:</span>
+                    <span>{{ info.servings }}인분</span>
                 </div>
                 <div class="info-item">
                     <span class="info-title">난이도:</span>
@@ -168,17 +168,17 @@
             fnRemove: function () {
                 var self = this;
                 var nparmap = {
-                    qsNo: self.qsNo
+                    postId: self.postId
                 };
                 $.ajax({
-                    url: "/inquire/remove.dox",
+                    url: "/recipe/remove.dox",
                     dataType: "json",
                     type: "POST",
                     data: nparmap,
                     success: function (data) {
                         if(data.result == "success") {
 							alert("삭제되었습니다!");
-                            location.href="/inquire.do?tab=qna";
+                            location.href="/commu-main.do?tab=recipe";
 						} else {
                             alert("삭제 실패")
                         }

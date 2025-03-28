@@ -133,5 +133,22 @@ public class CommunityService {
 	    return communityMapper.selectLikes(postId);
 	}
 
+	public HashMap<String, Object> removeRecipe(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+			communityMapper.deleteRecipe(map);
+
+	        resultMap.put("result", "success");
+	            
+	    } catch (Exception e) {
+	    	
+	        System.out.println(e.getMessage());
+	        resultMap.put("result", "fail");
+	        
+	    }
+		return resultMap;
+	}
+
 
 }
