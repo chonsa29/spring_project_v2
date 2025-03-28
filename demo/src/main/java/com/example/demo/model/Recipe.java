@@ -14,5 +14,14 @@ public class Recipe {
     private String cdatetime;
     private String likes;
     private String postCategory;
+    
+    // Getter and Setter for Contents
+    public String getContents() {
+        return contents;
+    }
+
+    public void setContents(String contents) {
+        this.contents = contents;
+    }
 
 }

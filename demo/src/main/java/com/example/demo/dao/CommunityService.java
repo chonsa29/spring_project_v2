@@ -67,4 +67,34 @@ public class CommunityService {
 		communityMapper.insertCommuFile(map);
 		
 	}
+	
+	// 게시글 수정
+	public HashMap<String, Object> recipeEdit(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			if(map.get("option").equals("SELECT")) {
+				communityMapper.updateCnt(map);
+			}
+			Recipe info = communityMapper.selectRecipeView(map);
+			resultMap.put("info", info);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+		}
+		
+		return resultMap;
+	}
+
+	public Recipe getRecipeById(Object postId) {
+	    try {
+	        HashMap<String, Object> paramMap = new HashMap<>();
+	        paramMap.put("postId", postId);
+	        return communityMapper.selectRecipeView(paramMap);
+	    } catch (Exception e) {
+	        System.out.println("Error fetching recipe: " + e.getMessage());
+	        throw e;
+	    }
+	}
+
 }

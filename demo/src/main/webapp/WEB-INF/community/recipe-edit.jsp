@@ -3,34 +3,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link rel="stylesheet" href="/css/commu-css/recipe-add.css">
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
-	<title>커뮤니티</title>
+    <title>커뮤니티</title>
 </head>
 <body>
     <jsp:include page="/WEB-INF/common/header.jsp" />
-	<div id="app">
+    <div id="app"
+        data-post-id="${map.postId}" 
+        data-saved-contents="${savedContents}">
         <h1 class="inquire-input">레시피 공유</h1>
-        <h2 class="inquire-write">글쓰기</h2>
+        <h2 class="inquire-write">수정하기</h2>
 
         <!-- 제목 입력 -->
         <div class="input-group">
-            <input v-model="title" id="title" placeholder="제목">
+            <input v-model="info.title" id="title" placeholder="제목">
         </div>
 
         <!-- 요리 정보 입력 -->
         <div class="recipe-info">
             <div class="info-item">
                 <label for="cookingTime">요리 시간 (분):</label>
-                <input type="number" id="cookingTime" v-model="cookingTime" min="1">
+                <input type="number" id="cookingTime" v-model="info.cookingTime" min="1">
             </div>
             <div class="info-item">
                 <label for="servings">몇 인분:</label>
-                <input type="number" id="servings" v-model="servings" min="1">
+                <input type="number" id="servings" v-model="info.servings" min="1">
             </div>
             <div class="info-item">
                 <label>난이도:</label>
@@ -46,7 +48,7 @@
 
         <!-- 간략한 요리 설명 -->
         <div class="input-group">
-            <textarea v-model="description" id="description" placeholder="간략한 요리 설명을 입력하세요"></textarea>
+            <textarea v-model="info.instructions" id="description" placeholder="간략한 요리 설명을 입력하세요"></textarea>
         </div>
 
         <!-- 본문 에디터 -->
@@ -58,7 +60,7 @@
         <div class="writing">
             <button @click="fnSave">작성</button>
         </div>        
-	</div>
+    </div>
     <jsp:include page="/WEB-INF/common/footer.jsp" />
 </body>
 </html>
@@ -67,18 +69,42 @@
     const app = Vue.createApp({
         data() {
             return {
+                postId: "", // 초기화
+                info: {}, // 레시피 정보
                 title: "",
                 cookingTime: "",
                 servings: "",
                 difficulty: 1,
                 description: "",
                 contents: "",
-                sessionId: "${sessionId}",
+                sessionId: "${sessionId}", // 사용자 세션 ID
             };
         },
         methods: {
             setDifficulty(level) {
                 this.difficulty = level;  // 난이도 변경
+            },
+            fnRecipe() {
+                var self = this;
+                var nparmap = {
+                    postId: self.postId,
+                    option: "SELECT"
+                };
+                $.ajax({
+                    url: "/recipe/view.dox",
+                    dataType: "json",   
+                    type: "POST", 
+                    data: nparmap,
+                    success: function(data) { 
+                        console.log(data);
+                        self.info = data.info;
+                        self.difficulty = data.info.difficulty || 1; // 난이도 초기화
+                        self.contents = data.info.contents || ''; // contents 값만 로드
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("데이터 로드 실패:", error);
+                    }
+                });
             },
             fnSave() {
                 var self = this;
@@ -107,18 +133,27 @@
                     data: nparmap,
                     success: function (data) {
                         console.log(data);
-                        alert("레시피가 등록되었습니다.");
+                        alert("수정되었습니다.");
                         location.href = "/commu-main.do?tab=recipe";
                     },
                     error: function (xhr, status, error) {
                         console.error("AJAX 요청 실패:", status, error);
-                        alert("등록에 실패했습니다.");
+                        alert("수정에 실패했습니다.");
                     }
                 });
             }
         },
         mounted() {
             var self = this;
+
+            // HTML 데이터 가져오기
+            const appElement = document.getElementById('app');
+            this.postId = appElement.getAttribute('data-post-id'); // JSP에서 전달된 postId
+            const savedContents = appElement.getAttribute('data-saved-contents'); // JSP에서 전달된 HTML 내용
+
+            self.fnRecipe(); // 레시피 정보 로드
+
+            // Quill 에디터 초기화
             var quill = new Quill('#editor', {
                 theme: 'snow',
                 modules: {
@@ -133,13 +168,20 @@
                 }
             });
 
-            quill.on('text-change', function () {
-                self.contents = JSON.stringify(quill.getContents());  // Delta 형식 저장
-            });
-
-            self.quill = quill;  // 나중에 접근할 수 있도록 저장
+            if (savedContents) {
+                try {
+                    // Quill 에디터에 콘텐츠 로드
+                    quill.clipboard.dangerouslyPasteHTML(savedContents);
+                    console.log("Editor Content Loaded Successfully!");
+                } catch (e) {
+                    console.error("HTML 데이터 로드 실패:", e);
                 }
-            });
+            }
+
+            self.quill = quill; // Quill 인스턴스 저장
+        }
+
+    });
 
     app.mount('#app');
 </script>

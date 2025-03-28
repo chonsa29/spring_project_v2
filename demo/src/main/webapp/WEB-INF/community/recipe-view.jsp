@@ -109,8 +109,8 @@
             goBack() {
                 location.href = "/commu-main.do?tab=qna";
             },
-            fnEdit(qsNo) {
-                pageChange("/inquire/edit.do", { qsNo: this.qsNo });
+            fnEdit(postId) {
+                pageChange("/recipe/edit.do", { postId : this.postId });
             },
             fnRemove: function () {
                 var self = this;
