@@ -90,7 +90,7 @@
                             </div>
                         </div>
                         <button class="buy">
-                            <div @click="fnPay(info.itemNo)">
+                            <div @click="fnPay(info.itemNo, userId)">
                                 구매하기
                             </div>
                         </button>
@@ -261,6 +261,8 @@
                     selectedTab: 'info', // 기본값은 "상품 정보"
                     review : [], // 리뷰 리스트 가져오기
                     reviewFlg : false,
+                    userId : "${sessionId}",
+                    
 
                 };
             },
@@ -334,11 +336,11 @@
                 },
 
                 // 장바구니에 담기
-                addToCart(itemNo) {
+                addToCart(itemNo, sessionId) {
                     var self = this;
                     var nparmap = {
                         cartCount: self.quantity,
-                        userId: self.userId,
+                        userId: self.sessionId,
                         itemNo: itemNo
                     };
                     $.ajax({
@@ -363,8 +365,9 @@
                     return value ? parseInt(value).toLocaleString() : "0"; // 가격 타입 변환(콤마 추가) 
                 },
 
-                fnPay(itemNo) {
-                    pageChange("/pay.do", { itemNo: itemNo }); // 구매하기로 이동
+                fnPay(itemNo, userId) {
+                    console.log(itemNo, userId);
+                    // pageChange("/pay.do", { itemNo: itemNo, sessionId: sessionId }); // 구매하기로 이동
                 },
 
                 changeImage(filePath) {
