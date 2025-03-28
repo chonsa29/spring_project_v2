@@ -24,6 +24,10 @@ public class QuestionService {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
+			if (!map.containsKey("category") || map.get("category") == null) {
+	            map.put("category", "all"); 
+	        } 
+			
 			List<Question> inquiryList = questionMapper.qnaInquire(map);
 			resultMap.put("inquiryList", inquiryList);
 			

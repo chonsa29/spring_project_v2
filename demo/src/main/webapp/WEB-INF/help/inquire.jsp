@@ -40,13 +40,21 @@
 		<!-- Q&A -->
 		<section id="qna" class="tab-content" v-show="activeTab === 'qna'">
 			<h2>문의게시판</h2>
+			<div class="qna-category">
+				<button class="category-btn" :class="{ active: selectedCategory === 'all' }" @click="changeCategory('all')">전체</button>
+				<button class="category-btn" :class="{ active: selectedCategory === 'delivery' }" @click="changeCategory('delivery')">배송</button>
+				<button class="category-btn" :class="{ active: selectedCategory === 'payment' }" @click="changeCategory('payment')">결제</button>
+				<button class="category-btn" :class="{ active: selectedCategory === 'member' }" @click="changeCategory('member')">회원</button>
+				<button class="category-btn" :class="{ active: selectedCategory === 'product' }" @click="changeCategory('product')">제품</button>
+				<button class="category-btn" :class="{ active: selectedCategory === 'etc' }" @click="changeCategory('etc')">기타</button>
+			</div>
 			<div class="search-bar">
 				<select v-model="searchOption">
 					<option value="all">:: 전체 ::</option>
 					<option value="title">제목</option>
 					<option value="contents">내용</option>
 				</select>
-				<input type="text" v-model="searchKeyword" placeholder="검색어를 입력하세요">
+				<input type="text" v-model="searchKeyword" placeholder="검색어를 입력하세요" @keyup.enter="inquireList">
 				<button @click="inquireList">검색</button>
 				<select v-model="pageSize" @change="inquireList">
 					<option value="5">5개씩</option>
@@ -111,7 +119,7 @@
 					<option value="nTitle">제목</option>
 					<option value="nContents">내용</option>
 				</select>
-				<input type="text" v-model="noticeSearchKeyword" placeholder="검색어를 입력하세요">
+				<input type="text" v-model="noticeSearchKeyword" placeholder="검색어를 입력하세요" @keyup.enter="fnNoticeList">
 				<button @click="fnNoticeList">검색</button>
 				<select v-model="noticePageSize" @change="fnNoticeList">
 					<option value="5">5개씩</option>
@@ -182,7 +190,8 @@ const app = Vue.createApp({
 				{ id: 1, question: '배송 기간은 얼마나 걸리나요?', answer: '보통 2~3일 소요됩니다.', open: false },
 				{ id: 2, question: '교환/환불은 어떻게 하나요?', answer: '고객센터를 통해 요청 가능합니다.', open: false },
 				{ id: 3, question: '회원 탈퇴는 어디서 하나요?', answer: '마이페이지에서 탈퇴 가능합니다.', open: false }
-            ]
+            ],
+			selectedCategory: 'all'
         };
     },
     methods: {
@@ -191,13 +200,19 @@ const app = Vue.createApp({
             this.activeTab = tab;
         },
 
+		changeCategory(category) {
+			this.selectedCategory = category;  // 선택한 카테고리 설정
+			this.inquireList(); // 선택된 카테고리에 맞게 Q&A 목록 다시 불러오기
+		},
+
         inquireList() {
 			var self = this;
 			var nparmap = {
 				searchKeyword: self.searchKeyword,
 				searchOption: self.searchOption,
 				pageSize: self.pageSize,
-				page: (self.page - 1) * self.pageSize
+				page: (self.page - 1) * self.pageSize,
+				category: self.selectedCategory
 			};
             $.ajax({
                 url: "/inquire/qna.dox",
