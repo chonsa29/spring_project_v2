@@ -35,7 +35,7 @@ public class MemberController {
 	
 	
 	@RequestMapping("/member/join.do") 
-    public String join(Model model) throws Exception{
+    public String join(Model model) throws Exception{	
 
         return "/member/join"; 
     }
