@@ -75,9 +75,12 @@ public class CommunityController {
 	// 레시피 게시글 상세보기
 	@RequestMapping(value = "/recipe/view.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
-	public String view(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
-				
+	public String view(Model model, @RequestParam HashMap<String, Object> map) throws Exception {			
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		String postId = (String) map.get("postId");
+	    String userId = (String) map.get("userId");  // 로그인한 유저 ID
+		
 		resultMap = communityService.recipeView(map);
 		return new Gson().toJson(resultMap);
 	}
@@ -105,6 +108,33 @@ public class CommunityController {
 	    // JSON 변환 후 반환
 	    return new Gson().toJson(resultMap);
 	}
+	
+	// 좋아요 기능
+	@RequestMapping(value = "/recipe/like.dox", method = RequestMethod.POST)
+	@ResponseBody
+	public String likeRecipe(@RequestParam HashMap<String, Object> map) throws Exception {
+	    HashMap<String, Object> resultMap = new HashMap<>();
+	    String postId = (String) map.get("postId");
+	    String userId = (String) map.get("userId");
+	    
+	    System.out.println("postId: " + postId + ", userId: " + userId);
 
+	    try {
+	        // 좋아요 상태 변경
+	        boolean isLiked = communityService.toggleLike(postId, userId);
+	        int updatedLikes = communityService.getLikes(postId); // 좋아요 수 가져오기
+
+	        resultMap.put("result", "success");
+	        resultMap.put("isLiked", isLiked); // 좋아요 상태 (true: 좋아요 추가, false: 좋아요 취소)
+	        resultMap.put("likes", updatedLikes); // 좋아요 총 개수
+	        System.out.println("isLiked: " + isLiked + ", likes: " + updatedLikes); // 로그 추가
+	        System.out.println("서버 응답 JSON: " + new Gson().toJson(resultMap));
+	    } catch (Exception e) {
+	        System.out.println("Error toggling like: " + e.getMessage());
+	        resultMap.put("result", "fail");
+	    }
+
+	    return new Gson().toJson(resultMap);
+	}
 	
 }

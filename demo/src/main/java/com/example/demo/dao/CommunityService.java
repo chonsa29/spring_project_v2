@@ -35,10 +35,23 @@ public class CommunityService {
 	public HashMap<String, Object> recipeView(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
+			
+			String postId = (String) map.get("postId");  // map에서 postId 추출
+	        String userId = (String) map.get("userId");  // map에서 userId 추출
+			
 			if(map.get("option").equals("SELECT")) {
 				communityMapper.updateCnt(map);
 			}
 			Recipe info = communityMapper.selectRecipeView(map);
+			
+			// 해당 유저가 좋아요를 눌렀는지 여부 확인
+		    int likeCount = communityMapper.checkLike(postId, userId);  // 유저의 좋아요 상태 확인
+		    info.setIsLiked(likeCount > 0);  // 유저가 좋아요를 눌렀으면 true, 아니면 false
+		    
+		    // 총 좋아요 개수 가져오기
+		    int totalLikes = communityMapper.selectLikes(postId);
+		    info.setLikes(totalLikes);  // 좋아요 개수 설정
+			
 			resultMap.put("info", info);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
@@ -96,5 +109,29 @@ public class CommunityService {
 	        throw e;
 	    }
 	}
+	
+	// 좋아요 기능
+	public boolean toggleLike(String postId, String userId) throws Exception {
+	    try {
+	    	int count = communityMapper.checkLike(postId, userId);
+	    	System.out.println("현재 좋아요 상태 count: " + count);
+	        if (count > 0) {
+	            // 좋아요를 이미 눌렀으므로 취소
+	            communityMapper.deleteLike(postId, userId);
+	            return false;
+	        } else {
+	            // 좋아요 추가
+	            communityMapper.insertLike(postId, userId);
+	            return true;
+	        }
+	    } catch (Exception e) {
+	        throw e;
+	    }
+	}
+
+	public int getLikes(String postId) throws Exception {
+	    return communityMapper.selectLikes(postId);
+	}
+
 
 }
