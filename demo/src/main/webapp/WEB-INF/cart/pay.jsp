@@ -21,28 +21,47 @@
                     <section class="order-info">
                         <h2 class="text">주문 상품 정보</h2>
                         <div class="product">
-                            <img src="/images/product.jpg" alt="상품 이미지">
+                            <img :src="info.filePath">
                             <div class="product-details">
-                                <p class="product-name">앤더슨 블랙 보드 텀블러(2가지)</p>
-                                <p class="product-price">₩ {{ list.pPrice }}</p>
-                                <p class="product-quantity">수량: 1개</p>
+                                <p class="product-name">{{ info.itemName }}</p>
+                                <p class="product-price">₩ {{ info.Price }}</p>
+                                <p class="product-quantity">수량: {{ info.itemCount }}</p>
                             </div>
                         </div>
                     </section>
                     
                     <section class="shipping">
                         <h2 class="text">배송 정보</h2>
-                        <input type="text" v-model="shippingAddress" placeholder="배송 주소">
-                        <input type="text" v-model="shippingMessage" placeholder="배송 요청 사항">
+                        <input type="checkbox"> 주문자 정보와 동일
+                        <input type="text" v-model="" placeholder="주소">
+                        <input type="text" v-model="" placeholder="상세 주소">
+                        <div>
+                            <h2 class="text">배송 메모</h2>
+                        </div>
+                        <div>
+                            <select v-model="paymentMethod">
+                                <option value="one">배송 메모를 선택해 주세요.</option>
+                                <option value="two">배송 전에 미리 연락 바랍니다.</option>
+                                <option value="three">부재 시 경비실에 맡겨 주세요.</option>
+                                <option value="four">부재 시 전화나 문자 남겨 주세요.</option>
+                                <option value="five">직접 입력</option>
+                            </select>
+                            <input type="text"
+                                v-if="paymentMethod === 'five'" 
+                                ref="shippingInput" 
+                                v-model="shippingMessage" 
+                                placeholder="배송 메모를 입력해 주세요.">
+                        </div>
+                        
                     </section>  
                     
                     <section class="coupon">
                         <div>
                             <h2 class="text">쿠폰</h2>
                         </div>
-                        <input type="text" v-model="coupon" placeholder="쿠폰 입력">
+                        <input type="text" v-model="coupon" placeholder="쿠폰 코드를 입력해 주세요">
                         <div>
-                            <button @click="applyCoupon">쿠폰 적용</button>
+                            <button @click="applyCoupon">코드 확인</button>
                         </div>
                     </section>
 
@@ -50,9 +69,12 @@
                         <div>
                            <h2 class="text">포인트</h2> 
                         </div>
-                        <input type="text" v-model="point" placeholder="">
+                        <input type="text" v-model="point" placeholder="0">
                         <div>
                             <button @click="applyPoint">전액 사용</button>
+                        </div>
+                        <div>
+                            사용 가능 포인트 1000 / 보유 포인트 1000
                         </div>
                     </section>
 
@@ -67,7 +89,7 @@
                     <section class="order-summary">
                         <h2 class="text">주문 요약</h2>
                         <div class="summary-details">
-                            <p>상품 가격 <span>{{ list.pPrice }}</span></p>
+                            <p>상품 가격 <span>{{ info.pPrice }}</span></p>
                             <p>배송비 <span>+ 3,000원</span></p>
                             <p class="total-price">총 주문금액 <span>15,900원</span></p>
                         </div>
@@ -76,7 +98,7 @@
                     <section class="payment">
                         <h2 class="text">결제 수단</h2>
                         <select v-model="paymentMethod">
-                            <option value="card">{{ list.pWay }}</option>
+                            <option value="card">{{ info.pWay }}</option>
                         </select>
                         <button class="pay-btn" @click="fnPayment">결제하기</button>
                     </section>
@@ -93,22 +115,24 @@
     const app = Vue.createApp({
         data() {
             return {
-                pNo: "${map.pNo}",
-                list: [],
-                sessionId : "${sessionId}"
+                itemNo: "${map.itemNo}",
+                info: {},
+                sessionId : "${sessionId}",
+                paymentMethod: "one", 
+                shippingMessage: ""
             };
         },
         methods: {
             fnPay(){
 				var self = this;
-				var nparmap = { pNo: self.pNo };
+				var nparmap = { itemNo: self.itemNo };
 				$.ajax({
 					url:"/pay.dox",
 					dataType:"json",	
 					type : "POST", 
 					data : nparmap,
 					success : function(data) { 
-                        self.list = data.list; 
+                        self.info = data.info;
 						console.log(data);
 					}
 				});
@@ -152,6 +176,15 @@
                         console.log(data);
                     }
                 });
+            },
+        },
+        watch: {
+            paymentMethod(newVal) {
+                if (newVal === "five") {
+                    this.$nextTick(() => {
+                        this.$refs.shippingInput?.focus();
+                    });
+                }
             }
         },
         mounted() {

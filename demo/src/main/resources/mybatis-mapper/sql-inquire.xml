@@ -52,7 +52,7 @@
 			AND QS_CONTENTS LIKE '%' || #{searchKeyword} || '%'
 		</if>
 		ORDER BY CDATETIME DESC
-		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+		OFFSET (#{page} - 1) * #{pageSize} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	</select>
 	
 	<select id="selectQna" parameterType="hashmap" resultType="int">
