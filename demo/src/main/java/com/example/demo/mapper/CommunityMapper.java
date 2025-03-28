@@ -23,4 +23,6 @@ public interface CommunityMapper {
 
 	void insertCommuFile(HashMap<String, Object> map);
 
+	String selectSavedContents(Object postId);
+
 }

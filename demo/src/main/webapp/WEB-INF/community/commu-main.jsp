@@ -37,7 +37,7 @@
 					<tr>
 						<th>번호</th>
 						<th>제목</th>
-						<th>내용</th>
+						<!-- <th>내용</th> -->
 						<th>날짜</th>
 						<th>조회수</th>
 						<th>좋아요</th>
@@ -47,7 +47,7 @@
 					<tr v-for="item in rList">
 						<td>{{ item.postId }}</td>
 						<td @click="fnRecipeView(item.postId)">{{ item.title }}</td>
-						<td @click="fnRecipeView(item.postId)"><span v-html="item.contents"></span></td>
+						<!-- <td @click="fnRecipeView(item.postId)"><span v-html="item.contents"></span></td> -->
 						<td>{{ item.cdatetime.substring(0, 10) }}</td>
 						<td class="gray-text">{{ item.cnt }}</td>
 						<td class="gray-text">{{ item.likes }}</td>

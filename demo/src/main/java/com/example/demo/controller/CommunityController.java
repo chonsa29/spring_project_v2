@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.common.Common;
 import com.example.demo.dao.CommunityService;
+import com.example.demo.model.Recipe;
 import com.google.gson.Gson;
 
 @Controller
@@ -44,6 +45,22 @@ public class CommunityController {
         return "/community/recipe-add"; 
     }
 	
+	@RequestMapping("/recipe/edit.do")
+	public String recipeEdit(HttpServletRequest request,Model model, @RequestParam HashMap<String, Object> map) throws Exception{
+		// POST_ID 기반으로 데이터 조회
+	    Recipe recipe = communityService.getRecipeById(map.get("postId"));
+	    
+	    System.out.println("Contents from DB: " + recipe.getContents());
+	    
+	    // JSP에 전달할 데이터 설정
+	    model.addAttribute("map", map);
+	    model.addAttribute("recipe", recipe); // 조회된 데이터
+	    model.addAttribute("savedContents", recipe.getContents()); // HTML 콘텐츠
+	    
+
+	    return "/community/recipe-edit"; // JSP 경로
+    }
+	
 	// 레시피 리스트
 	@RequestMapping(value = "/commu/recipe.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
@@ -68,68 +85,26 @@ public class CommunityController {
 	// 레시피 게시글 추가
 	@RequestMapping(value = "/recipe/add.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
-	public String recipeAdd(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		
-		resultMap = communityService.addRecipe(map);
-		return new Gson().toJson(resultMap);
+	public String recipeAdd(@RequestParam HashMap<String, Object> map) {
+	    HashMap<String, Object> resultMap = new HashMap<>();
+
+	    try {
+	        // 서비스 호출하여 레시피 추가 처리
+	        resultMap = communityService.addRecipe(map);
+
+	        // 성공 메시지 추가
+	        resultMap.put("status", "success");
+	        resultMap.put("message", "레시피가 성공적으로 등록되었습니다.");
+	    } catch (Exception e) {
+	        // 예외 발생 시 오류 메시지 반환
+	        resultMap.put("status", "error");
+	        resultMap.put("message", "레시피 등록 중 오류가 발생했습니다.");
+	        resultMap.put("error", e.getMessage());
+	    }
+
+	    // JSON 변환 후 반환
+	    return new Gson().toJson(resultMap);
 	}
+
 	
-	// 파일 업로드
-		@RequestMapping("/fileUpload.dox")
-		public String result(@RequestParam("file1") List<MultipartFile> files, 
-		                     @RequestParam("postId") int boardNo, 
-		                     HttpServletRequest request, HttpServletResponse response, 
-		                     Model model) {
-			String url = null;
-		    String path = "c:\\img";
-
-		    try {
-		        String uploadpath = path;
-
-		        for (MultipartFile multi : files) {
-		            if (!multi.isEmpty()) {
-		                String originFilename = multi.getOriginalFilename();
-		                String extName = originFilename.substring(originFilename.lastIndexOf("."), originFilename.length());
-		                long size = multi.getSize();
-		                String saveFileName = Common.genSaveFileName(extName);
-
-		                System.out.println("uploadpath : " + uploadpath);
-		                System.out.println("originFilename : " + originFilename);
-		                System.out.println("extensionName : " + extName);
-		                System.out.println("size : " + size);
-		                System.out.println("saveFileName : " + saveFileName);
-
-		                // 현재 디렉토리 경로 가져오기
-		                String path2 = System.getProperty("user.dir");
-		                System.out.println("Working Directory = " + path2 + "\\src\\webapp\\img");
-
-		                // 파일 저장 경로 설정
-		                File saveFile = new File(path2 + "\\src\\main\\webapp\\img", saveFileName);
-		                multi.transferTo(saveFile);
-
-		                // 데이터 저장 준비
-		                HashMap<String, Object> map = new HashMap<>();
-		                map.put("filename", saveFileName);
-		                map.put("path", "../img/" + saveFileName);
-		                map.put("originFilename", originFilename);
-		                map.put("extName", extName);
-		                map.put("size", size);
-		                map.put("boardNo", boardNo);
-
-		                // 서비스 호출
-		                communityService.addCommuFile(map);
-
-		                // 모델에 데이터 추가
-		                model.addAttribute("filename", originFilename);
-		                model.addAttribute("uploadPath", saveFile.getAbsolutePath());
-		            }
-		        }
-		        return "redirect:board/list.do";
-		    } catch (Exception e) {
-		        e.printStackTrace();
-		        model.addAttribute("errorMessage", "파일 업로드 중 에러가 발생했습니다.");
-		        return "errorPage"; // 에러 페이지로 리다이렉트하도록 변경
-		    }
-		}
 }

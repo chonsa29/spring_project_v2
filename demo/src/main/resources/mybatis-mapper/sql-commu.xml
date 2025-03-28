@@ -3,6 +3,11 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.demo.mapper.CommunityMapper">
+
+	<resultMap id="recipeResultMap" type="map">
+	    <result property="contents" column="contents" jdbcType="CLOB"/>
+	</resultMap>
+
 	
 	<select id="selectRecipetList" parameterType="hashmap" resultType="com.example.demo.model.Recipe">
 		SELECT *
@@ -51,7 +56,12 @@
 		WHERE POST_ID = #{postId}
 	</update>
 	
-	
+	<insert id="insertRecipe" parameterType="hashmap">
+        INSERT INTO RECIPE_POST
+        VALUES (RECIPE_SEQ.NEXTVAL, #{instructions}, #{cookingTime}, #{servings}, 
+        		#{difficulty}, #{title}, #{userId}, 0, SYSDATE, 0, 1, #{contents, jdbcType=CLOB})
+    </insert>
+
 </mapper>
 
 
