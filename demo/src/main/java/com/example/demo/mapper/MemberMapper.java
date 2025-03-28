@@ -26,4 +26,12 @@ public interface MemberMapper {
     int updateMember(Map<String, Object> params);
     
     int updateMemberStatus(Map<String, Object> params);
+
+    Member selectMemberInfo(String userId);
+    
+    Member selectMemberGradeInfo(String userId);
+    
+    Member selectRecentOrderInfo(String userId);
+    
+    Member selectWishListInfo(String userId);
 }
