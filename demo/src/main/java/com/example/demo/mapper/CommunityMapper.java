@@ -31,4 +31,6 @@ public interface CommunityMapper {
 
 	int selectLikes(String postId);
 
+	void deleteRecipe(HashMap<String, Object> map);
+
 }

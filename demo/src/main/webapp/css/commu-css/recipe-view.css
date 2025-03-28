@@ -64,6 +64,13 @@
     border-top: 1px solid #ddd; /* 구분선 추가 */
     background: none; /* 기존 박스 제거 */
     width: 100%;
+	text-align: center;
+}
+
+.post-content img {
+    width: 400px; /* 이미지가 부모 요소의 너비를 넘지 않도록 설정 */
+	display: block;  /* 이미지가 블록처럼 동작 */
+	margin: 0 auto;  /* 좌우 자동 마진으로 중앙 정렬 */
 }
 
 /* 버튼 그룹 */

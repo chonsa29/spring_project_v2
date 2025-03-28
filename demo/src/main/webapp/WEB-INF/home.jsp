@@ -51,7 +51,7 @@
             <div class="swiper-container product-swiper">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide product-box" v-for="item in list">
-                        <img :src="item.filePath" alt="상품">
+                        <img :src="item.filePath" alt="상품" :data-item-no="item.itemNo" @click="fnInfo(item.itemNo)">
                         <div class="product-info">
                             <span class="product-name">{{ item.itemName }}</span>
                             <div class="product-discount-wrapper">
@@ -67,6 +67,10 @@
                 <div class="swiper-button-next product-next"></div>
             </div>
         </div>
+        <!-- 상품 목록 페이지로 가는 버튼 -->
+        <div class="product-list-btn-container">
+            <button class="product-list-btn" @click="goToProductList">전체 보기</button>
+        </div>
 
         <!-- 이번 달 추천 상품 섹션 -->
         <div class="monthly-pick">
@@ -75,7 +79,7 @@
             </div>
             <div class="monthly-products">
                 <div class="product-box1" v-for="item in monthlyList.slice(0, 9)">
-                    <img :src="item.filePath" alt="상품 이미지">
+                    <img :src="item.filePath" alt="상품 이미지" @click="fnInfo(item.itemNo)">
                     <p class="product-name">{{ item.itemName }}</p>
                     <div class="product-discount-wrapper">
                         <p class="product-discount-style">{{formatPrice(item.price * 3) }}</p>
@@ -87,6 +91,10 @@
             
         </div>
 
+        <!-- 커뮤니티 이동 사진 -->
+         <div class="commu">
+            <img src="/img/main5.png" alt="커뮤니티 배너" @click="fnCommu">
+         </div>
          
 
     </div>
@@ -116,7 +124,6 @@ const app = Vue.createApp({
                 dataType: "json",
                 type: "POST",
                 success: (data) => {
-                    console.log(data);
                     self.list = data.list;
 
                     // 데이터가 반영된 후 Swiper 초기화
@@ -140,9 +147,24 @@ const app = Vue.createApp({
                         });
 
                         console.log('상품 슬라이더 초기화 완료:', self.productSwiper);
+                        // 슬라이더 초기화 후 클릭 이벤트 바인딩
+                        self.bindClickEventToSlider(); // 이미지 클릭 이벤트 추가
                     });
                 },
             });
+        },
+        // 슬라이더의 이미지를 클릭했을 때 페이지 변경
+        bindClickEventToSlider() {
+            const swiperSlides = document.querySelectorAll('.product-swiper .swiper-slide img');
+            swiperSlides.forEach((img) => {
+                img.addEventListener('click', (e) => {
+                    const itemNo = e.target.getAttribute('data-item-no'); // 이미지를 클릭했을 때 해당 상품의 ID 가져오기
+                    this.fnInfo(itemNo); // 상품 페이지로 이동
+                });
+            });
+        },
+        fnInfo(itemNo) {
+            pageChange("/product/info.do", { itemNo: itemNo });
         },
         fnMonthlyPick() {
             let self = this;
@@ -158,6 +180,12 @@ const app = Vue.createApp({
         },
         formatPrice(value) {
             return value ? parseInt(value).toLocaleString() : "0";
+        },
+        goToProductList() {
+            location.href = "/product.do";
+        },
+        fnCommu() {
+            location.href = "/commu-main.do"
         }
     },
     mounted() {

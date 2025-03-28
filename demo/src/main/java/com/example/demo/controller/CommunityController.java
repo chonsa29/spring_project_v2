@@ -137,4 +137,14 @@ public class CommunityController {
 	    return new Gson().toJson(resultMap);
 	}
 	
+	// 레시피 삭제
+	@RequestMapping(value = "/recipe/remove.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String recipeRemove(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		resultMap = communityService.removeRecipe(map);
+		return new Gson().toJson(resultMap);
+	}
+	
 }

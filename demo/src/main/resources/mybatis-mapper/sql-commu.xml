@@ -103,6 +103,12 @@
 	    FROM RECIPE_LIKES
 	    WHERE POST_ID = #{postId}
 	</select>
+	
+	<delete id="deleteRecipe" parameterType="hashmap">
+		DELETE
+		FROM RECIPE_POST
+		WHERE POST_ID = #{postId}
+	</delete>
 
 
 </mapper>
