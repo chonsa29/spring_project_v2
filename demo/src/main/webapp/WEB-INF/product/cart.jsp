@@ -110,7 +110,7 @@
                 selectList : []
             };
         },
-        computed: { // ✅ computed 속성 추가
+        computed: { // computed 속성 추가
             progressBarStyle() {
                 const maxAmount = 30000;
                 const percentage = Math.min((this.totalAmount / maxAmount) * 100, 100);
