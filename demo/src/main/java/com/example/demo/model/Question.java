@@ -13,5 +13,6 @@ public class Question {
 	private String itemNo;
 	private String cdatetime;
 	private String viewCnt;
+	private String qsCategory;
 
 }
