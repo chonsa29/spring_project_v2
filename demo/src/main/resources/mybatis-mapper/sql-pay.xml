@@ -3,6 +3,12 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.demo.mapper.PayMapper">
+
+	<select id="paySell" parameterType="hashmap" resultType="com.example.demo.model.Pay">
+		SELECT * 
+		FROM PAY
+	</select>
+	
 	
 	<insert id="productSell" parameterType="hashmap">
 		INSERT INTO PAY

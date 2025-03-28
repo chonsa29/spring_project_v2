@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.mapper.ProductMapper;
 import com.example.demo.model.Product;
+import com.example.demo.model.Review;
 
 @Service
 public class ProductService {
@@ -33,6 +34,7 @@ public class ProductService {
 		return resultMap;
 	}
 
+	// (페이징 제외) 리스트 가져오기
 	public HashMap<String, Object> productList2(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
@@ -46,6 +48,7 @@ public class ProductService {
 		}
 		return resultMap;
 	}
+	
 	// 상세정보 가져오기
 	public HashMap<String, Object> productInfo(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
@@ -54,9 +57,11 @@ public class ProductService {
 			Product info = productMapper.SelectProductInfo(map);
 			int count = productMapper.SelectProductCount(map);
 			List<Product> imgList = productMapper.SelectProductImgList(map);
-			resultMap.put("info", info);
-			resultMap.put("count", count);
-			resultMap.put("imgList", imgList);
+			
+			resultMap.put("imgList", imgList); 
+			resultMap.put("count", count); 
+			resultMap.put("info", info); 
+			
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -145,5 +150,20 @@ public class ProductService {
 	        System.out.println(e.getMessage());
 	    }
 	    return resultMap;
+	}
+
+	public HashMap<String, Object> productReview(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			List<Review> review = productMapper.SelectProductReview(map);
+			resultMap.put("review", review);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+		}
+		return resultMap;
 	}
 }

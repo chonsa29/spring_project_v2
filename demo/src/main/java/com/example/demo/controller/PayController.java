@@ -24,12 +24,22 @@ public class PayController {
         return "/cart/pay";
     }
 	
+	@RequestMapping(value = "/pay.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String pay(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+				
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = payService.payProduct(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
 	@RequestMapping(value = "/payment.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String payment(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 				
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		resultMap = payService.payProduct(map);
+		resultMap = payService.paymentProduct(map);
 		
 		return new Gson().toJson(resultMap);
 	}

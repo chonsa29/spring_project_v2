@@ -7,7 +7,7 @@
 	<select id="SelectProduct" parameterType="hashmap" resultType="com.example.demo.model.Product">
 		SELECT *
 		FROM PRODUCT P
-		INNER JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
+		LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
 		WHERE THUMBNAIL = 'Y'
 		<if test="searchOption == '전체메뉴'">
 			AND ITEM_NAME LIKE '%' || #{keyword} || '%' 
@@ -28,7 +28,7 @@
 	<select id="SelectProduct2" parameterType="hashmap" resultType="com.example.demo.model.Product">
 		SELECT *
 		FROM PRODUCT P
-		INNER JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
+		LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
 		WHERE THUMBNAIL = 'Y'
 	</select>
 	
@@ -43,7 +43,7 @@
 	<select id="SelectProductInfo" parameterType="hashmap" resultType="com.example.demo.model.Product">
 		SELECT *
 		FROM PRODUCT P
-		INNER JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
+		LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
 		WHERE P.ITEM_NO = #{itemNo} AND THUMBNAIL = 'Y'
 		
 	</select>
@@ -60,6 +60,15 @@
 		SELECT *
 		FROM PRODUCT_IMG
 		WHERE ITEM_NO = #{itemNo} AND THUMBNAIL ='N'
+	</select>
+	
+	<!-- product review 가져오기 -->
+	<select id="SelectProductReview" parameterType="hashmap" resultType="com.example.demo.model.Review">
+		SELECT *
+		FROM REVIEW R
+		INNER JOIN PRODUCT P ON P.ITEM_NO = R.ITEM_NO
+		INNER JOIN MEMBER M ON R.USERID = M.USERID
+		WHERE P.ITEM_NO = #{itemNo}
 	</select>
 	
 	<!--product 추가-->
