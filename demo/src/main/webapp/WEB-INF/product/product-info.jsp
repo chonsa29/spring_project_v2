@@ -106,23 +106,40 @@
                 </div>
 
                 <div id="product-view">
+                    <!-- 상세정보 -->
                     <div v-show="selectedTab === 'info'">
                         <p>📦 상품의 상세 정보를 확인하세요!</p>
                     </div>
-                    <div v-show="selectedTab === 'review'" >
-                        <div v-if="review.length === 0">
+
+                    <!-- 상품 리뷰 -->
+                    <div v-show="selectedTab === 'review'" class="review-container">
+                        <div v-if="review.length === 0" class="review-none">
                             <p>리뷰가 없습니다.</p>
                         </div>
-                        <div v-else v-for="review in review">
-                            {{review.userName}}
-                            {{review.reviewTitle}}
-                            {{review.reviewContents}}
-                            {{review.cDatetime}}
+                        <div v-else v-for="review in review" class="review-item">
+                            <div class="review-header">
+                                <img :src="review.userProfileImage" alt="프로필 이미지" class="review-profile-img" />
+                                <div class="review-user">{{review.userName}}</div>
+                                <div class="review-stars">★★★★★</div>
+                                <div class="review-date">{{review.cDatetime}}</div>
+                            </div>
+                            <div class="review-title">{{review.reviewTitle}}</div>
+                            <div class="review-content">{{review.reviewContents}}</div>
+                            <div class="review-images">
+                                <img v-for="image in review.images" :key="image" :src="image" alt="리뷰 이미지" />
+                            </div>
+                            <div class="review-helpful">
+                                👍 이 리뷰가 도움이 돼요!
+                            </div>
                         </div>
                     </div>
+
+                    <!-- 상품 문의 -->
                     <div v-show="selectedTab === 'inquiry'">
                         <p>❓ 상품 문의 내용을 확인하고 작성할 수 있습니다.</p>
                     </div>
+
+                    <!-- 교환/환불 내용 -->
                     <div v-show="selectedTab === 'exchange'" class="exchange">
                         <div>
                             <h3>주문 취소</h3>
