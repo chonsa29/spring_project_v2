@@ -120,7 +120,12 @@
                             <div class="review-header">
                                 <img :src="review.userProfileImage" alt="프로필 이미지" class="review-profile-img" />
                                 <div class="review-user">{{review.userName}}</div>
-                                <div class="review-stars">★★★★★</div>
+                                <div v-for="(r, index) in review" :key="index">
+                                    <div class="review-header">
+                                        <span v-for="star in maxStars" :key="star" :class="getStarClass(star)"></span>
+                                        <span>{{ r.reviewScore }}</span> <!-- 리뷰 별점 -->
+                                    </div>
+                                </div>
                                 <div class="review-date">{{review.cDatetime}}</div>
                             </div>
                             <div class="review-title">{{review.reviewTitle}}</div>
@@ -259,9 +264,11 @@
                     showCartPopup: false, // 장바구니 추가 팝업
                     imgList: [], // 썸네일, 서브 이미지 리스트 가져오기
                     selectedTab: 'info', // 기본값은 "상품 정보"
-                    review : [], // 리뷰 리스트 가져오기
-                    reviewFlg : false,
-                    userId : "${sessionId}"
+                    review: [], // 리뷰 리스트 가져오기
+                    reviewFlg: false,
+                    userId: "${sessionId}",
+                    reviewScore: 0, // 리뷰 스코어
+                    maxStars: 5, // 최대 별점
                 };
             },
 
@@ -306,10 +313,7 @@
                         success: function (data) {
                             if (data.result == "success") {
                                 self.review = data.review;
-                                console.log(data.review);
-                                if(data.review.reviewNo != '') {
-                                    reviewFlg = true;
-                                }
+                                self.reviewScore = data.review.reviewScore;
 
                             }
                         },
@@ -380,6 +384,17 @@
 
                 changeTab(tab) {
                     this.selectedTab = tab; // 선택한 탭으로 변경
+                },
+
+                getStarClass(star) {
+                    // 별점 0 ~ 1 사이로 표시되게끔 함수 추가
+                    if (star <= this.reviewScore) {
+                        return 'filled-star'; // 꽉 찬 별
+                    } else if (star - 1 < this.reviewScore) {
+                        return 'half-star'; // 반 반 별
+                    } else {
+                        return 'empty-star'; // 빈 별
+                    }
                 }
             },
             computed: { // 가격 타입 변환(콤마 추가)

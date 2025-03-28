@@ -378,10 +378,19 @@ a {
     color: #333;
 }
 
-/* 별점 스타일 */
-.review-stars {
-	color: 272727;
-    font-size: 18px;
+.filled-star::before {
+    content: '★';  /* 꽉 찬 별 */
+    color: gold;
+}
+
+.half-star::before {
+    content: '☆';  /* 반 별 */
+    color: gray;
+}
+
+.empty-star::before {
+    content: '☆';  /* 빈 별 */
+    color: lightgray;
 }
 
 /* 작성일 */
