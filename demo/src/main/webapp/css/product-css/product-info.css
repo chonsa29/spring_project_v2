@@ -314,6 +314,19 @@ a {
 	cursor: pointer;
 }
 
+.exchange {
+	text-align: left;
+}
+.exchange > div {
+	margin-bottom: 30px;
+}
+
+.exchange > div > h4 {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+
 
 .cart-popup-title {
     font-weight: bold;
