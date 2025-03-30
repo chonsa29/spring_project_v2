@@ -11,6 +11,7 @@
             <link rel="stylesheet" href="/css/member-css/admin-page.css">
             <title>상품 관리</title>
             <style>
+                /* 추가적인 인라인 스타일이 필요한 경우 여기에 작성 */
             </style>
         </head>
 
@@ -20,6 +21,7 @@
                     <h2>MEALPICK</h2>
                     <a href="/home.do"><button class="button" @click="">나가기</button></a>
                 </div>
+
                 <!-- 관리자 페이지 전체 구조 -->
                 <div class="admin-container">
                     <!-- 사이드바 -->
@@ -82,7 +84,11 @@
                                             </thead>
                                             <tbody>
                                                 <tr v-for="order in recentOrders" :key="order.ORDERKEY">
-                                                    <td>{{ order.orderKey }}</td>
+                                                    <td>
+                                                        <a href="javascript:;" @click="showOrderDetail(order.orderKey)">
+                                                            {{ order.orderKey }}
+                                                        </a>
+                                                    </td>
                                                     <td>{{ order.userId }}</td>
                                                     <td>{{ formatCurrency(order.price) }}</td>
                                                     <td>
@@ -119,14 +125,108 @@
                         <div v-if="currentSection === 'product-management'" class="section">
                             <h3>상품 관리</h3>
 
-                            <!-- 상품 추가/수정 버튼 -->
-                            <button @click="showForm('add')" @click="showForm(formType)">상품 추가</button>
-                            <button @click="showForm('edit')" @click="showForm(formType)">상품 수정</button>
+                            <!-- 검색 필터 추가 -->
+                            <div class="card mb-4" v-if="showTable">
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label">상품명 검색</label>
+                                            <input type="text" class="form-control" v-model="productSearch.keyword"
+                                                @keyup.enter="searchProducts">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">카테고리</label>
+                                            <select class="form-select" v-model="productSearch.category">
+                                                <option value="">전체 카테고리</option>
+                                                <option v-for="cat in categories" :value="cat">{{ cat }}</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">상품 상태</label>
+                                            <select class="form-select" v-model="productSearch.status">
+                                                <option value="">전체 상태</option>
+                                                <option value="Y">판매중</option>
+                                                <option value="N">판매중지</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-end">
+                                            <button class="btn btn-primary me-2" @click="searchProducts">검색</button>
+                                            <button class="btn btn-outline-secondary"
+                                                @click="resetProductSearch">초기화</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
+                            <!-- 상품 추가/수정 버튼 -->
+                            <button @click="showForm('add')" class="btn btn-success mb-3">상품 추가</button>
+                            <button @click="showForm('edit')" class="btn btn-primary mb-3">상품 수정</button>
+
+                            <!-- 상품 테이블 -->
+                            <div v-if="showTable">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>상품 번호</th>
+                                            <th>상품 이름</th>
+                                            <th>가격</th>
+                                            <th>재고</th>
+                                            <th>카테고리</th>
+                                            <th>상태</th>
+                                            <th>등록일</th>
+                                            <th>관리</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="item in productList" :key="item.itemNo">
+                                            <td>{{ item.itemNo }}</td>
+                                            <td>
+                                                <a href="javascript:;" @click="fnEdit(item.itemNo)">{{ item.itemName
+                                                    }}</a>
+                                            </td>
+                                            <td>{{ formatCurrency(item.price) }}</td>
+                                            <td>{{ item.itemCount }}</td>
+                                            <td>{{ item.category }}</td>
+                                            <td>
+                                                <span
+                                                    :class="'badge ' + (item.status === 'Y' ? 'badge-success' : 'badge-secondary')">
+                                                    {{ item.status === 'Y' ? '판매중' : '판매중지' }}
+                                                </span>
+                                            </td>
+                                            <td>{{ formatDate(item.rDate) }}</td>
+                                            <td>
+                                                <button @click="fnDelete(item.itemNo)"
+                                                    class="btn btn-sm btn-danger">삭제</button>
+                                            </td>
+                                        </tr>
+                                        <tr v-if="productList.length === 0">
+                                            <td colspan="8" class="text-center">조회된 상품이 없습니다.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <!-- 페이징 추가 -->
+                                <nav v-if="productTotalPages > 1">
+                                    <ul class="pagination justify-content-center">
+                                        <li class="page-item" :class="{ disabled: productCurrentPage === 1 }">
+                                            <a class="page-link" href="#"
+                                                @click.prevent="changeProductPage(productCurrentPage - 1)">이전</a>
+                                        </li>
+                                        <li class="page-item" v-for="page in productDisplayedPages" :key="page"
+                                            :class="{ active: page === productCurrentPage }">
+                                            <a class="page-link" href="#" @click.prevent="changeProductPage(page)">{{
+                                                page }}</a>
+                                        </li>
+                                        <li class="page-item"
+                                            :class="{ disabled: productCurrentPage === productTotalPages }">
+                                            <a class="page-link" href="#"
+                                                @click.prevent="changeProductPage(productCurrentPage + 1)">다음</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
                             <!-- 상품 추가/수정 폼 -->
                             <div class="product-form">
-                                <h4 v-if="formType === 'add'">상품 추가</h4>
-                                <h4 v-if="formType === 'edit'">상품 수정</h4>
                                 <form @submit.prevent="submitForm" v-if="showProductForm" :key="showProductForm">
                                     <label for="name">상품 이름</label>
                                     <input type="text" id="name" v-model="name" required>
@@ -170,28 +270,7 @@
                                     <button type="submit">저장</button>
                                     <button type="button" @click="cancelForm">취소</button>
                                 </form>
-                                <div v-if="showTable">
-                                    <table>
-                                        <tr>
-                                            <th>상품 번호</th>
-                                            <th>상품 이름</th>
-                                            <th>가격</th>
-                                            <th>재고</th>
-                                            <th>등록일</th>
-                                            <th>삭제</th>
-                                        </tr>
-                                        <tr v-for="item in list">
-                                            <td>{{item.itemNo}}</td>
-                                            <td><a href="javascript:;"
-                                                    @click="fnEdit(item.itemNo)">{{item.itemName}}</a>
-                                            </td>
-                                            <td>{{item.price}}</td>
-                                            <td>{{item.itemCount}}</td>
-                                            <td>{{item.rDate}}</td>
-                                            <td><button @click="fnDelete(item.itemNo)">삭제</button></td>
-                                        </tr>
-                                    </table>
-                                </div>
+
                             </div>
                         </div>
 
@@ -313,8 +392,8 @@
                                 </div>
                             </div>
                         </div>
+
                         <!-- 회원 관리 -->
-                        <!-- 회원 관리 섹션 -->
                         <div v-if="currentSection === 'member-management'" class="section">
                             <h3>회원 관리</h3>
 
@@ -420,289 +499,282 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <!-- 회원 상세 모달 -->
-                        <div class="modal fade" id="memberDetailModal" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">회원 상세 정보 - {{ currentMember?.member?.memberId }}</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
+                <!-- 모달 영역 -->
+                <!-- 회원 상세 모달 -->
+                <div class="modal" id="memberDetailModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">회원 상세 정보 - {{ currentMember?.member?.memberId }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" v-if="currentMember">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>기본 정보</h6>
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <th style="width: 30%">회원ID</th>
+                                                <td>{{ currentMember.member.userId }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>회원명</th>
+                                                <td>{{ currentMember.member.userName }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>이메일</th>
+                                                <td>{{ currentMember.member.email }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>연락처</th>
+                                                <td>{{ currentMember.member.phone }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>가입일</th>
+                                                <td>{{ currentMember.member.cDateTime }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>최근로그인</th>
+                                                <td>{{ currentMember.member.lastLogin ?
+                                                    formatDateTime(currentMember.member.lastLogin) : '-' }}</td>
+                                            </tr>
+                                        </table>
                                     </div>
-                                    <div class="modal-body" v-if="currentMember">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <h6>기본 정보</h6>
-                                                <table class="table table-bordered">
-                                                    <tr>
-                                                        <th style="width: 30%">회원ID</th>
-                                                        <td>{{ currentMember.member.memberId }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>회원명</th>
-                                                        <td>{{ currentMember.member.userName }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>이메일</th>
-                                                        <td>{{ currentMember.member.email }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>연락처</th>
-                                                        <td>{{ currentMember.member.phone }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>가입일</th>
-                                                        <td>{{ formatDateTime(currentMember.member.regDate) }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>최근로그인</th>
-                                                        <td>{{ currentMember.member.lastLogin ?
-                                                            formatDateTime(currentMember.member.lastLogin) : '-' }}</td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <h6>추가 정보</h6>
-                                                <table class="table table-bordered">
-                                                    <tr>
-                                                        <th style="width: 30%">주소</th>
-                                                        <td>
-                                                            ({{ currentMember.member.zipcode }})<br>
-                                                            {{ currentMember.member.address }}<br>
-                                                            {{ currentMember.member.detailAddress }}
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>상태</th>
-                                                        <td>
-                                                            <select class="form-select"
-                                                                v-model="currentMember.member.status">
-                                                                <option value="ACTIVE">활성</option>
-                                                                <option value="DORMANT">휴면</option>
-                                                                <option value="BANNED">정지</option>
-                                                            </select>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>포인트</th>
-                                                        <td>{{ formatCurrency(currentMember.member.point) }}</td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                        </div>
+                                    <div class="col-md-6">
+                                        <h6>추가 정보</h6>
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <th style="width: 30%">주소</th>
+                                                <td>
+                                                    {{ currentMember.member.address }}<br>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>상태</th>
+                                                <td>
+                                                    <select class="form-select" v-model="currentMember.member.status">
+                                                        <option value="ACTIVE">활성</option>
+                                                        <option value="DORMANT">휴면</option>
+                                                        <option value="BANNED">정지</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>포인트</th>
+                                                <td>{{ formatCurrency(currentMember.member.point) }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
 
-                                        <h6 class="mt-4">최근 주문 내역 (최근 5건)</h6>
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered">
-                                                <thead>
-                                                    <tr>
-                                                        <th>주문번호</th>
-                                                        <th>주문일시</th>
-                                                        <th>금액</th>
-                                                        <th>상태</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr v-for="order in currentMember.orderHistory"
-                                                        :key="order.orderId">
-                                                        <td>{{ order.orderId }}</td>
-                                                        <td>{{ formatDateTime(order.orderDate) }}</td>
-                                                        <td>{{ formatCurrency(order.totalPrice) }}</td>
-                                                        <td>{{ getOrderStatusText(order.status) }}</td>
-                                                    </tr>
-                                                    <tr v-if="currentMember.orderHistory.length === 0">
-                                                        <td colspan="4" class="text-center">주문 내역이 없습니다.</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">닫기</button>
-                                        <button type="button" class="btn btn-primary" @click="updateMember">저장</button>
-                                    </div>
+                                <h6 class="mt-4">최근 주문 내역 (최근 5건)</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>주문번호</th>
+                                                <th>주문일시</th>
+                                                <th>금액</th>
+                                                <th>상태</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="order in currentMember.orderHistory" :key="order.orderId">
+                                                <td>{{ order.ORDERKEY }}</td>
+                                                <td>{{ order.ORDERDATE }}</td>
+                                                <td>{{ order.PRICE }}</td>
+                                                <td>{{ getOrderStatusText(order.status) }}</td>
+                                            </tr>
+                                            <tr v-if="currentMember.orderHistory.length === 0">
+                                                <td colspan="4" class="text-center">주문 내역이 없습니다.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                        </div>
-                        <!-- 주문 상세 모달 -->
-                        <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-hidden="true"
-                            style="display: none;">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">주문 상세 정보 - {{ currentOrder?.order?.ORDERKEY }}</h5>
-                                    </div>
-                                    <div class="modal-body" v-if="currentOrder">
-                                        <div class="row mb-4">
-                                            <div class="col-md-6">
-                                                <h6>주문 정보</h6>
-                                                <table class="table table-bordered">
-                                                    <tr>
-                                                        <th style="width: 30%">주문번호</th>
-                                                        <td>{{ currentOrder.order.ORDERKEY }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>주문일시</th>
-                                                        <td>{{ formatDateTime(currentOrder.order.ORDERDATE) }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>주문상태</th>
-                                                        <td>
-                                                            <span
-                                                                :class="'status-badge ' + getStatusClass(currentOrder.order.ORDERSTATUS)">
-                                                                {{ getStatusText(currentOrder.order.ORDERSTATUS) }}
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>결제금액</th>
-                                                        <td>{{ formatCurrency(currentOrder.order.PRICE) }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>결제방법</th>
-                                                        <td>{{ getPaymentMethod(currentOrder.order.PWAY) }}
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <h6>회원 정보</h6>
-                                                <table class="table table-bordered">
-                                                    <tr>
-                                                        <th style="width: 30%">회원ID</th>
-                                                        <td>{{ currentOrder.order.USERID }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>회원명</th>
-                                                        <td>{{ currentOrder.order.USERNAME }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>연락처</th>
-                                                        <td>{{ currentOrder.order.PHONE || '-' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>이메일</th>
-                                                        <td>{{ currentOrder.order.EMAIL || '-' }}</td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                        </div>
-                                        <div class="card mb-4">
-                                            <div class="card-body">
-                                                <p class="text-muted mt-2" v-if="currentOrder.order.REQUEST">
-                                                    <strong>요청사항:</strong> {{ currentOrder.order.REQUEST }}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <h6 class="mb-3">주문 상품</h6>
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered">
-                                                <thead>
-                                                    <tr>
-                                                        <th>상품 이미지</th>
-                                                        <th>상품명</th>
-                                                        <th>상품번호</th>
-                                                        <th>수량</th>
-                                                        <th>단가</th>
-                                                        <th>금액</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr v-for="item in currentOrder.items" :key="item.itemNo">
-                                                        <td>
-                                                            <img :src="item.IMAGEURL" :alt="item.itemName"
-                                                                style="width: 60px; height: 60px; object-fit: cover;">
-                                                        </td>
-                                                        <td>{{ item.ITEMNAME }}</td>
-                                                        <td>{{ item.ITEMNO }}</td>
-                                                        <td>{{ item.ORDERCOUNT }}개</td>
-                                                        <td>{{ formatCurrency(item.PRICE) }}</td>
-                                                        <td>{{ formatCurrency(item.ORDERCOUNT * item.PRICE) }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="5" class="text-end"><strong>총 결제금액</strong></td>
-                                                        <td><strong>{{ formatCurrency(item.ORDERCOUNT *
-                                                                item.PRICE)}}</strong></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">닫기</button>
-                                        <button v-if="currentOrder?.order?.status !== 'CANCELED'" type="button"
-                                            class="btn btn-danger"
-                                            @click="showCancelModal(currentOrder.order.ORDERKEY)">
-                                            주문 취소
-                                        </button>
-                                        <button v-if="canUpdateStatus(currentOrder?.order?.status)" type="button"
-                                            class="btn btn-primary"
-                                            @click="showStatusModal(currentOrder.order.ORDERKEY)">
-                                            상태 변경
-                                        </button>
-                                    </div>
-                                </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                                <button type="button" class="btn btn-primary" @click="updateMember">저장</button>
                             </div>
                         </div>
-                        <!-- 주문 상태 변경 모달 -->
-                        <div class="modal fade" id="statusModal" tabindex="-1" aria-hidden="true"
-                            style="display: none;">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">주문 상태 변경</h5>
+                    </div>
+                </div>
+
+                <!-- 주문 상세 모달 -->
+                <div class="modal" id="orderDetailModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">주문 상세 정보 - {{ currentOrder?.order?.ORDERKEY }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" v-if="currentOrder">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <h6>주문 정보</h6>
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <th style="width: 30%">주문번호</th>
+                                                <td>{{ currentOrder.order.ORDERKEY }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>주문일시</th>
+                                                <td>{{ formatDateTime(currentOrder.order.ORDERDATE) }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>주문상태</th>
+                                                <td>
+                                                    <span
+                                                        :class="'status-badge ' + getStatusClass(currentOrder.order.ORDERSTATUS)">
+                                                        {{ getStatusText(currentOrder.order.ORDERSTATUS) }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>결제금액</th>
+                                                <td>{{ formatCurrency(currentOrder.order.PRICE) }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>결제방법</th>
+                                                <td>{{ getPaymentMethod(currentOrder.order.PWAY) }}
+                                                </td>
+                                            </tr>
+                                        </table>
                                     </div>
-                                    <div class="modal-body">
-                                        <select class="form-select" v-model="selectedStatus">
-                                            <option value="PAID">결제완료</option>
-                                            <option value="PREPARING">상품준비중</option>
-                                            <option value="SHIPPED">배송중</option>
-                                            <option value="DELIVERED">배송완료</option>
-                                        </select>
+                                    <div class="col-md-6">
+                                        <h6>회원 정보</h6>
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <th style="width: 30%">회원ID</th>
+                                                <td>{{ currentOrder.order.USERID }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>회원명</th>
+                                                <td>{{ currentOrder.order.USERNAME }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>연락처</th>
+                                                <td>{{ currentOrder.order.PHONE || '-' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>이메일</th>
+                                                <td>{{ currentOrder.order.EMAIL || '-' }}</td>
+                                            </tr>
+                                        </table>
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">취소</button>
-                                        <button type="button" class="btn btn-primary"
-                                            @click="updateOrderStatus">변경</button>
+                                </div>
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <p class="text-muted mt-2" v-if="currentOrder.order.REQUEST">
+                                            <strong>요청사항:</strong> {{ currentOrder.order.REQUEST }}
+                                        </p>
                                     </div>
+                                </div>
+
+                                <h6 class="mb-3">주문 상품</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>상품 이미지</th>
+                                                <th>상품명</th>
+                                                <th>상품번호</th>
+                                                <th>수량</th>
+                                                <th>단가</th>
+                                                <th>금액</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="item in currentOrder.items" :key="item.itemNo">
+                                                <td>
+                                                    <img :src="item.IMAGEURL" :alt="item.itemName"
+                                                        style="width: 60px; height: 60px; object-fit: cover;">
+                                                </td>
+                                                <td>{{ item.ITEMNAME }}</td>
+                                                <td>{{ item.ITEMNO }}</td>
+                                                <td>{{ item.ORDERCOUNT }}개</td>
+                                                <td>{{ formatCurrency(item.PRICE) }}</td>
+                                                <td>{{ formatCurrency(item.ORDERCOUNT * item.PRICE) }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="5" class="text-end"><strong>총 결제금액</strong></td>
+                                                <td><strong>{{ formatCurrency(currentOrder.order.PRICE) }}</strong></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                                <button v-if="currentOrder?.order?.status !== 'CANCELED'" type="button"
+                                    class="btn btn-danger" @click="showCancelModal(currentOrder.order.ORDERKEY)">
+                                    주문 취소
+                                </button>
+                                <button v-if="canUpdateStatus(currentOrder?.order?.status)" type="button"
+                                    class="btn btn-primary" @click="showStatusModal(currentOrder.order.ORDERKEY)">
+                                    상태 변경
+                                </button>
+                            </div>
                         </div>
+                    </div>
+                </div>
 
-                        <!-- 주문 취소 모달 -->
-                        <div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true"
-                            style="display: none;">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">주문 취소</h5>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="mb-3">
-                                            <label class="form-label">취소 사유</label>
-                                            <textarea class="form-control" v-model="cancelReason" rows="3"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">닫기</button>
-                                        <button type="button" class="btn btn-danger" @click="cancelOrder">취소 처리</button>
-                                    </div>
+                <!-- 주문 상태 변경 모달 -->
+                <div class="modal" id="statusModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">주문 상태 변경</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <select class="form-select" v-model="selectedStatus">
+                                    <option value="PAID">결제완료</option>
+                                    <option value="PREPARING">상품준비중</option>
+                                    <option value="SHIPPED">배송중</option>
+                                    <option value="DELIVERED">배송완료</option>
+                                </select>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                                <button type="button" class="btn btn-primary" @click="updateOrderStatus">변경</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 주문 취소 모달 -->
+                <div class="modal" id="cancelModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">주문 취소</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">취소 사유</label>
+                                    <textarea class="form-control" v-model="cancelReason" rows="3"></textarea>
                                 </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                                <button type="button" class="btn btn-danger" @click="cancelOrder">취소 처리</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </body>
 
-        <!-- Bootstrap JS -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+            <!-- Bootstrap JS -->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
         </html>
 
@@ -736,7 +808,19 @@
                         allergens: '',
                         thumbnail: null,
                         additionalPhotos: [],
-                        list: [],
+                        // 상품 검색 및 페이징 관련 데이터
+                        productSearch: {
+                            keyword: '',
+                            category: '',
+                            status: '',
+                            page: 1,
+                            size: 10
+                        },
+                        productList: [],
+                        productCurrentPage: 1,
+                        productPageSize: 10,
+                        productTotalCount: 0,
+                        categories: [], // 카테고리 목록
                         item: {},
                         itemNo: "",
                         imgList: [],
@@ -798,6 +882,19 @@
                             pages.push(i);
                         }
                         return pages;
+                    },
+                    productTotalPages() {
+                        return Math.ceil(this.productTotalCount / this.productPageSize);
+                    },
+                    productDisplayedPages() {
+                        const pages = [];
+                        const startPage = Math.max(1, this.productCurrentPage - 2);
+                        const endPage = Math.min(this.productTotalPages, startPage + 4);
+
+                        for (let i = startPage; i <= endPage; i++) {
+                            pages.push(i);
+                        }
+                        return pages;
                     }
                 },
                 methods: {
@@ -815,7 +912,9 @@
                             dataType: "json",
                             data: params,
                             success: (response) => {
-                                this.memberList = response;
+                                console.log(response);
+                                this.memberList = response.member;
+                                console.log(this.memberList);
                                 // 실제 구현에서는 페이지네이션 정보도 함께 받아야 함
                                 // this.memberTotalCount = response.totalCount;
                             }
@@ -839,6 +938,7 @@
                             dataType: "json",
                             data: { memberId: memberId },
                             success: (response) => {
+                                console.log(response);
                                 this.currentMember = response;
                                 const modal = new bootstrap.Modal(document.getElementById('memberDetailModal'));
                                 modal.show();
@@ -1072,7 +1172,7 @@
                         if (section === 'dashboard') {
                             this.loadDashboardData();
                         } else if (section === 'product-management') {
-                            this.itemList();
+                            this.fetchProducts();
                         }
                     },
                     formatDateTime(dateString) {
@@ -1234,7 +1334,7 @@
                         } else {
                             this.showProductForm = false;
                             this.showTable = true;
-                            self.itemList();
+                            self.fetchProducts();
                         }
                     },
                     handleFileChange(field) {
@@ -1366,16 +1466,51 @@
                             }
                         });
                     },
-                    itemList() {
-                        var self = this;
+                    // 상품 검색
+                    searchProducts() {
+                        this.productSearch.page = 1;
+                        this.productCurrentPage = 1;
+                        this.fetchProducts();
+                    },
+                    // 검색 조건 초기화
+                    resetProductSearch() {
+                        this.productSearch = {
+                            keyword: '',
+                            category: '',
+                            status: '',
+                            page: 1,
+                            size: 10
+                        };
+                        this.fetchProducts();
+                    },
+
+                    // 상품 목록 가져오기
+                    fetchProducts() {
                         $.ajax({
                             url: "/product/list2.dox",
-                            dataType: "json",
                             type: "POST",
-                            success: function (data) {
-                                self.list = data.list
+                            dataType: "json",
+                            data: this.productSearch,
+                            success: (response) => {
+                                this.productList = response.list;
+                                this.productTotalCount = response.totalCount;
+                                this.categories = response.categories || [];
                             }
                         });
+                    },
+
+                    // 페이지 변경
+                    changeProductPage(page) {
+                        if (page < 1 || page > this.productTotalPages) return;
+                        this.productCurrentPage = page;
+                        this.productSearch.page = page;
+                        this.fetchProducts();
+                    },
+
+                    // 날짜 포맷팅
+                    formatDate(dateString) {
+                        if (!dateString) return '';
+                        return dateString.split(' ')[0]; // 시간 부분 제거
                     },
                     fnDelete(itemNo) {
                         var self = this;
@@ -1386,7 +1521,7 @@
                             type: "POST",
                             data: nparmap,
                             success: function (data) {
-                                self.itemList();
+                                self.fetchProducts();
                                 alert("삭제되었습니다.");
                             }
                         });
@@ -1403,10 +1538,24 @@
                                 alert("삭제되었습니다.");
                             }
                         });
-                    }
+                    },
+                    getOrderStatusText(status) {
+                        switch (status) {
+                            case 'PENDING': return '결제대기';
+                            case 'PAID': return '결제완료';
+                            case 'PREPARING': return '상품준비중';
+                            case 'SHIPPED': return '배송중';
+                            case 'DELIVERED': return '배송완료';
+                            case 'CANCELED': return '취소됨';
+                            case 'REFUNDED': return '환불완료';
+                            case 'FAILED': return '결제실패';
+                            default: return status || '알 수 없음';
+                        }
+                    },
                 },
                 mounted() {
                     this.loadDashboardData();
+                    this.fetchProducts();
                 }
             });
             app.mount('#app');

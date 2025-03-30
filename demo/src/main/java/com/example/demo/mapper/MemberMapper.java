@@ -17,21 +17,25 @@ public interface MemberMapper {
 
 	int addMember(HashMap<String, Object> map);
 
-    List<Map<String, Object>> selectMemberList(Map<String, Object> params);
+    List<Member> selectMemberList(Map<String, Object> map);
     
-    Map<String, Object> selectMemberDetail(String memberId);
+    Member selectMemberInfo(HashMap<String, Object> map);
     
-    List<Map<String, Object>> selectMemberOrderHistory(String memberId);
+    Member selectMemberDetail(HashMap<String, Object> map);
     
-    int updateMember(Map<String, Object> params);
-    
-    int updateMemberStatus(Map<String, Object> params);
+    List<HashMap<String, Object>> selectMemberOrderHistory(HashMap<String, Object> map);
+        
+    int updateMember(HashMap<String, Object> map);
+        
+    int updateMemberStatus(HashMap<String, Object> map);
 
-    Member selectMemberInfo(String userId);
+    Member selectMemberGradeInfo(HashMap<String, Object> map);
+        
+    Member selectRecentOrderInfo(HashMap<String, Object> map);
+        
+    Member selectWishListInfo(HashMap<String, Object> map);
+
+    List<HashMap<String, Object>> selectCouponList(HashMap<String, Object> map);
     
-    Member selectMemberGradeInfo(String userId);
-    
-    Member selectRecentOrderInfo(String userId);
-    
-    Member selectWishListInfo(String userId);
+    List<HashMap<String, Object>> selectInquiryList(HashMap<String, Object> map);
 }
