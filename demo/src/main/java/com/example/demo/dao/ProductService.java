@@ -166,4 +166,43 @@ public class ProductService {
 		}
 		return resultMap;
 	}
+
+	public HashMap<String, Object> productlikeToggle(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+	        String userId = (String) map.get("userId");
+	        String itemNo = (String) map.get("itemNo");
+
+	        // 1. 사용자와 상품 번호로 좋아요 상태 확인
+	        int likeCount = productMapper.checkIfLiked(map);
+	        
+	        if (likeCount > 0) {
+	            // 좋아요 취소
+	            productMapper.removeLike(userId, itemNo);
+	            resultMap.put("result", "c");  // "c"는 좋아요 취소
+	            resultMap.put("message", "좋아요 취소되었습니다.");
+	        } else {
+	            // 좋아요 추가
+	            productMapper.addLike(userId, itemNo);
+	            resultMap.put("result", "a");  // "a"는 좋아요 추가
+	            resultMap.put("message", "좋아요 추가되었습니다.");
+	        }
+	    } catch (Exception e) {
+	        System.out.println(e.getMessage());
+	        resultMap.put("result", "fail");
+	        resultMap.put("message", "좋아요 처리 중 오류가 발생했습니다.");
+	    }
+	    return resultMap;
+	}
+
+	public HashMap<String, Object> productgetLikedItems(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		try {
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return null;
+	}
 }

@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.min.js"></script>
     <link rel="stylesheet" href="/css/pay.css">
     <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+    <script src="/js/pageChange.js"></script>
 	<title>결제 페이지</title>
 </head>
 <style>
@@ -15,13 +16,13 @@
 <body>
     <jsp:include page="/WEB-INF/common/header.jsp" />
 	<div id="app">
-        <h1>결제하기</h1>
+        <h1 class="pay-text">결제하기</h1>
             <main>
                 <section class="order-section">
                     <section class="order-info">
                         <h2 class="text">주문 상품 정보</h2>
                         <div class="product">
-                            <img :src="info.filePath">
+                            <img :src="info?.filePath">
                             <div class="product-details">
                                 <p class="product-name">{{ info.itemName }}</p>
                                 <p class="product-price">₩ {{ info.Price }}</p>
