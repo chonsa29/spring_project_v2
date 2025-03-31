@@ -46,5 +46,11 @@ public interface ProductMapper {
 
 	List<Review> SelectProductReview(HashMap<String, Object> map);
 
+	void removeLike(String userId, String itemNo);
+
+	void addLike(String userId, String itemNo);
+
+	int checkIfLiked(HashMap<String, Object> map);
+
 
 }

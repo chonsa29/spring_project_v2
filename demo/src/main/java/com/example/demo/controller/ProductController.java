@@ -211,4 +211,27 @@ public class ProductController {
 		resultMap = productService.productDeleteImg(map);
 		return new Gson().toJson(resultMap);
 	}
+	
+	// 좋아요 처리
+	@RequestMapping(value = "/product/likeToggle.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String likeToggle(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		resultMap = productService.productlikeToggle(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	// 좋아요 처리
+	@RequestMapping(value = "/product/getLikedItems.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String getLikedItems(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		resultMap = productService.productgetLikedItems(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	
+	
 }

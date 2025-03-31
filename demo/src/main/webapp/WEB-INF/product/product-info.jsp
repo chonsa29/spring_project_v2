@@ -33,8 +33,9 @@
                 </div>
                 <div id="product-Info">
                     <div id="item-Info">{{info.itemInfo}}</div>
-                    <div id="product-name">{{info.itemName}} 
-                        <button class="product-like" :class="{ active: likedItems.has(info.itemNo) }" @click="fnLike(info.itemNo)">❤</button>
+                    <div id="product-name">{{info.itemName}}
+                        <button class="product-like" :class="{ active: likedItems.has(info.itemNo) }"
+                            @click="fnLike(info.itemNo)">❤</button>
                     </div>
                     <div v-if="showLikePopup" class="like-popup-overlay">
                         <div class="like-popup">좋아요 항목에 추가되었습니다</div>
@@ -395,17 +396,61 @@
                     this.selectedTab = tab; // 선택한 탭으로 변경
                 },
 
-                fnLike(itemNo, userId) {
-                    if (this.likedItems.has(itemNo)) {
-                        this.likedItems.delete(itemNo);
-                    } else {
-                        this.likedItems.add(itemNo);
-                        this.showLikePopup = true;
-                        setTimeout(() => {
-                            this.showLikePopup = false;
-                        }, 2000);
-                    }
+                fnLike(itemNo) {
+                    var self = this;
+                    var nparmap = {
+                        itemNo: itemNo,
+                        userId: self.userId
+                    };
+                    // 서버에 요청 보내기 (좋아요 추가 또는 취소)
+                    $.ajax({
+                        url: "/product/likeToggle.dox",  // 서버의 엔드포인트 (좋아요 추가/취소 처리)
+                        dataType: "json",
+                        type: "POST",
+                        data: nparmap,
+                        success: function (data) {
+                            if (data.result == "a") {  // 좋아요 추가
+                                if (!self.likedItems.has(itemNo)) {
+                                    self.likedItems.add(itemNo);  // 좋아요 추가
+                                    self.showLikePopup = true;
+                                    setTimeout(() => {
+                                        self.showLikePopup = false;
+                                    }, 2000);
+                                }
+                            } else if (data.result == "c") {  // 좋아요 취소
+                                if (self.likedItems.has(itemNo)) {
+                                    self.likedItems.delete(itemNo);  // 좋아요 취소
+                                    self.showLikePopup = false;
+                                }
+                            } else {
+                                console.error("좋아요 처리 실패", data.message);
+                            }
+                        },
+                        error: function () {
+                            console.error("AJAX 요청 실패");
+                        }
+                    });
                 },
+
+                // getLikedItems() {
+                //     var self = this;
+                //     var nparmap = {
+                //         userId: self.userId
+                //     };
+                //     $.ajax({
+                //         url: "/product/getLikedItems.dox",  // 서버에서 좋아요 목록을 불러오는 API
+                //         dataType: "json",
+                //         type: "POST",
+                //         data: nparmap,
+                //         success: function (data) {
+                //             if (data.result === "success") {
+                //                 self.likedItems = new Set(data.likedItems);  // 서버에서 가져온 좋아요 상품 ID로 초기화
+                //             }
+                //         }
+                //     });
+                // },
+
+
             },
             computed: { // 가격 타입 변환(콤마 추가)
                 formattedPrice() {
@@ -426,6 +471,9 @@
                 console.log(self.itemNo);
                 self.fngetInfo();
                 self.fnGetReview();
+                // if (self.userId) {
+                //     self.getLikedItems();  // 로그인된 사용자라면 좋아요 상태를 초기화
+                // }
             }
         });
         app.mount('#app');
