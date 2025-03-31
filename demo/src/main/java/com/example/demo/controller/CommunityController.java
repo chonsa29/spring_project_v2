@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,12 +46,11 @@ public class CommunityController {
         return "/community/recipe-add"; 
     }
 	
+	// 레시피 수정 페이지
 	@RequestMapping("/recipe/edit.do")
 	public String recipeEdit(HttpServletRequest request,Model model, @RequestParam HashMap<String, Object> map) throws Exception{
 		// POST_ID 기반으로 데이터 조회
 	    Recipe recipe = communityService.getRecipeById(map.get("postId"));
-	    
-	    System.out.println("Contents from DB: " + recipe.getContents());
 	    
 	    // JSP에 전달할 데이터 설정
 	    model.addAttribute("map", map);
@@ -85,6 +85,17 @@ public class CommunityController {
 		return new Gson().toJson(resultMap);
 	}
 	
+	// 레시피 게시글 수정 화면 페이지
+	@RequestMapping(value = "/recipe/editView.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String editView(Model model, @RequestParam HashMap<String, Object> map) throws Exception {			
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		resultMap = communityService.recipeEditView(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
 	// 레시피 게시글 추가
 	@RequestMapping(value = "/recipe/add.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
@@ -108,6 +119,33 @@ public class CommunityController {
 	    // JSON 변환 후 반환
 	    return new Gson().toJson(resultMap);
 	}
+	
+	// 게시글 수정
+	@RequestMapping(value = "/recipe/edit.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String recipeEdit(@RequestParam HashMap<String, Object> map) {
+	    HashMap<String, Object> resultMap = new HashMap<>();
+
+	    try {
+	        // 서비스 호출하여 레시피 추가 처리
+	        resultMap = communityService.editRecipe(map);
+
+	        // 성공 메시지 추가
+	        resultMap.put("status", "success");
+	        resultMap.put("message", "레시피가 성공적으로 등록되었습니다.");
+	    } catch (Exception e) {
+	        // 예외 발생 시 오류 메시지 반환
+	        resultMap.put("status", "error");
+	        resultMap.put("message", "레시피 등록 중 오류가 발생했습니다.");
+	        resultMap.put("error", e.getMessage());
+	    }
+
+	    // JSON 변환 후 반환
+	    return new Gson().toJson(resultMap);
+	}
+	
+
+	
 	
 	// 좋아요 기능
 	@RequestMapping(value = "/recipe/like.dox", method = RequestMethod.POST)
