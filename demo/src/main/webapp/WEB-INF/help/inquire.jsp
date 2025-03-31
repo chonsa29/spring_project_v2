@@ -191,7 +191,8 @@ const app = Vue.createApp({
 				{ id: 2, question: '교환/환불은 어떻게 하나요?', answer: '고객센터를 통해 요청 가능합니다.', open: false },
 				{ id: 3, question: '회원 탈퇴는 어디서 하나요?', answer: '마이페이지에서 탈퇴 가능합니다.', open: false }
             ],
-			selectedCategory: 'all'
+			selectedCategory: 'all',
+			inquiry: {}
         };
     },
     methods: {
@@ -304,12 +305,13 @@ const app = Vue.createApp({
 
 			console.log("updateStatus 실행됨!", qsNo, qsStatus); 
 
-			let newStatus
+			let targetInquiry = this.inquiryList.find(inquiry => inquiry.qsNo === qsNo);
 
-			if (inquiry.qsStatus === 0) {
-				newStatus = 1; // 0 → 1 (확인 중 → 처리 중)
-			} else if (inquiry.qsStatus === 1) {
-				newStatus = 2; // 1 → 2 (처리 중 → 처리 완료)
+			let newStatus;
+			if (qsStatus === 0) { 
+				newStatus = 1; 
+			} else if (qsStatus === 1) {
+				newStatus = 2; 
 			} else {
 				console.log("⚠ 상태 변경 없음: 이미 처리 완료 상태입니다.");
 				return;
@@ -330,8 +332,8 @@ const app = Vue.createApp({
                 data: nparmap,
                 success: function (data) {
 					console.log(data);
-                    if (data.result === "success") {
-						inquiry.qsStatus = newStatus; 
+					if (data.result === "success") {
+						targetInquiry.qsStatus = newStatus;
                         alert("상태가 변경되었습니다.");
                     } else {
                         alert("상태 변경에 실패했습니다.");

@@ -33,16 +33,20 @@
             <div class="post-content" v-html="info.qsContents"></div>
 
             <!-- 관리자 답변 -->
-            <div v-if="info.adminReply" class="admin-reply">
+            <div v-if="info.qsCategory" class="admin-reply">
                 <h3>관리자 답변</h3>
-                <div class="reply-content" v-html="info.adminReply"></div>
+                <div class="reply-content" v-html="info.qsCategory"></div>
             </div>
 
             <!-- 관리자 답변 작성 -->
             <div v-if="sessionStatus == 'A'" class="admin-reply-form">
                 <h3>관리자 답변 작성</h3>
-                <textarea v-model="adminReplyText" placeholder="답변을 입력하세요."></textarea>
-                <button @click="fnSaveReply">답변 저장</button>
+                <div class="reply-container">
+                    <textarea class="replyform" v-model="qsCategory" placeholder="답변을 입력하세요."></textarea>
+                    <div class="button-container">
+                        <button @click="fnSaveReply">답변 저장</button>
+                    </div>
+                </div>
             </div>
 
             <!-- 버튼들 -->
@@ -116,7 +120,7 @@
                 var self = this;
                 var nparmap = {
                     qsNo: self.qsNo,
-                    adminReply: self.adminReplyText
+                    qsCategory: self.qsCategory
                 };
                 $.ajax({
                     url: "/inquire/replySave.dox",
