@@ -234,19 +234,36 @@
 }
 
 
-.like {
-	position: absolute;
-	right: 0;
-    top: 0;
+.product-like {
+	margin-left: auto;
 	background: none;
 	border : none;
 	color: #bbb;
-	text-align: right;
 	font-size: 20px;
-	margin-right: 20px;
+	cursor: pointer;
+	justify-content: flex-end;
 }
 
-.like:active {
+.like-popup-overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 1001;
+    animation: fadeOut 2s forwards;
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.product-like.active {
     color: red;
 }
 
@@ -314,16 +331,74 @@ a {
 	cursor: pointer;
 }
 
-.exchange {
+#product-view .exchange {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
 	text-align: left;
-}
-.exchange > div {
 	margin-bottom: 30px;
 }
 
-.exchange > div > h4 {
-	margin-top: 10px;
-	margin-bottom: 10px;
+#product-view .exchange h3 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+#product-view .exchange ul {
+    list-style-type: none;
+    padding-left: 20px;
+    margin-top: 10px;
+}
+
+#product-view .exchange ul li {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+#product-view .exchange ol {
+    padding-left: 20px;
+    margin-top: 10px;
+}
+
+#product-view .exchange ol li {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+#product-view .exchange ol div {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+#product-view .exchange h4 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+    color: #333;
+}
+
+#product-view .exchange .exchange-info {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #666;
+}
+
+#product-view .exchange .exchange-info ul li {
+    margin-bottom: 5px;
+}
+
+#product-view .exchange h3, #product-view .exchange h4 {
+    color: black;
 }
 
 /* 리뷰 전체 스타일 */

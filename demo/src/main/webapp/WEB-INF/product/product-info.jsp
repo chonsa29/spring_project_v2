@@ -33,7 +33,12 @@
                 </div>
                 <div id="product-Info">
                     <div id="item-Info">{{info.itemInfo}}</div>
-                    <div id="product-name">{{info.itemName}} <button class="like">❤</button></div>
+                    <div id="product-name">{{info.itemName}} 
+                        <button class="product-like" :class="{ active: likedItems.has(info.itemNo) }" @click="fnLike(info.itemNo)">❤</button>
+                    </div>
+                    <div v-if="showLikePopup" class="like-popup-overlay">
+                        <div class="like-popup">좋아요 항목에 추가되었습니다</div>
+                    </div>
                     <span v-if="allergensFlg" id="allergens-info">{{info.allergens}} 주의!</span>
                     <div id="review">
                         <span class="stars">★★★★★</span>
@@ -118,14 +123,14 @@
                         </div>
                         <div class="review-item" v-for="review in review" :key="review.reviewId">
                             <div class="review-header">
-                                <img :src="review.userProfileImage" alt="프로필 이미지" class="review-profile-img" />
+                                <img src="../img/profil.png" alt="프로필 이미지" class="review-profile-img" />
                                 <div class="review-user">{{ review.userName }}</div>
                                 <div class="review-star">
                                     <span v-for="n in 5" :key="n">
                                         <span v-if="n <= Math.round(review.reviewScore)" class="filled-star">★</span>
                                         <span v-else class="empty-star">★</span>
                                     </span>
-                                    <span class="reviewScore">{{ review.reviewScore }}</span> <!-- 숫자 별점 표시 -->
+                                    <span class="reviewScore`">{{ review.reviewScore }}</span> <!-- 숫자 별점 표시 -->
                                 </div>
                                 <div class="review-date">{{ review.cDatetime }}</div>
                             </div>
@@ -174,8 +179,8 @@
                             <ol TYPE="1">
                                 <li>다음과 같은 경우 문제가 발생했다면, 상품의 상태를 확인할 수 있는 사진과 함께 1:1문의, 카카오톡 상담, 유선접수(1800-1234) 문자접수를
                                     남겨주세요.</li>
-                                - 상품을 받은 날로부터 3개월 이내 문제가 발생한 경우 <br>
-                                - 상품에 문제가 있다는 사실을 알았거나 알 수 있었던 날로부터 30일 이내인 경우
+                                <div>- 상품을 받은 날로부터 3개월 이내 문제가 발생한 경우</div>
+                                <div>- 상품에 문제가 있다는 사실을 알았거나 알 수 있었던 날로부터 30일 이내인 경우</div>
                                 <li>단순 변심, 주문실수에 의한 교환/반품 신청의 경우, 배송비(상품별 배송비 정책에 따라 상이)는 고객님 본인이 부담하게 됩니다.</li>
                                 <li>배송비 추가결제가 완료되면 해당 상품을 회수하여 상태를 확인할 수 교환/반품 절차가 진행됩니다.</li>
                                 <li>고객님의 사정으로 회수가 지연될 경우, 교환/반품이 제한 또는 지연될 수 있습니다.</li>
@@ -243,12 +248,15 @@
 
         // 배송날짜
         setInterval(() => {
-            let NowDate = new Date();
-            let month = NowDate.getMonth() + 1;  // 월
-            let date = NowDate.getDate() + 3;  // 날짜
+            let nowDate = new Date();
+            nowDate.setDate(nowDate.getDate() + 3);  // 현재 날짜에서 +3일 추가
+
+            let month = nowDate.getMonth() + 1;  // 월 (0부터 시작하므로 +1)
+            let date = nowDate.getDate();  // 날짜
             let day = month + "월 " + date + "일";
+
             let obj = document.getElementById("day");
-            obj.innerHTML = day;
+            if (obj) obj.innerHTML = day;
         }, 1000);
 
         const app = Vue.createApp({
@@ -268,6 +276,8 @@
                     userId: "${sessionId}",
                     reviewScore: 0, // 리뷰 스코어
                     maxStars: 5, // 최대 별점
+                    likedItems: new Set(),
+                    showLikePopup: false, // 좋아요 표시
                 };
             },
 
@@ -385,16 +395,17 @@
                     this.selectedTab = tab; // 선택한 탭으로 변경
                 },
 
-                getStarClass(star) {
-                    // 별점 0 ~ 1 사이로 표시되게끔 함수 추가
-                    if (star <= this.reviewScore) {
-                        return 'filled-star'; // 꽉 찬 별
-                    } else if (star - 1 < this.reviewScore) {
-                        return 'half-star'; // 반 반 별
+                fnLike(itemNo, userId) {
+                    if (this.likedItems.has(itemNo)) {
+                        this.likedItems.delete(itemNo);
                     } else {
-                        return 'empty-star'; // 빈 별
+                        this.likedItems.add(itemNo);
+                        this.showLikePopup = true;
+                        setTimeout(() => {
+                            this.showLikePopup = false;
+                        }, 2000);
                     }
-                }
+                },
             },
             computed: { // 가격 타입 변환(콤마 추가)
                 formattedPrice() {
