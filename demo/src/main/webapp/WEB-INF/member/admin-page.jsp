@@ -6,13 +6,13 @@
         <head>
             <meta charset="UTF-8">
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-            <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.min.js"></script>
             <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
             <link rel="stylesheet" href="/css/member-css/admin-page.css">
             <title>상품 관리</title>
             <style>
                 /* 추가적인 인라인 스타일이 필요한 경우 여기에 작성 */
-            </style>
+            </style>    
         </head>
 
         <body>
