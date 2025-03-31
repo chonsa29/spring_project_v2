@@ -110,7 +110,6 @@
 		WHERE POST_ID = #{postId}
 	</delete>
 
-
 </mapper>
 
 
