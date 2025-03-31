@@ -106,26 +106,28 @@ public class QuestionService {
 	}
 
 	public HashMap<String, Object> questionUpdateStatus(HashMap<String, Object> map) {
-		// TODO Auto-generated method stub
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		try {
-			System.out.println("questionUpdateStatus 실행, map: " + map);
-			int updatedRows = questionMapper.qnaStatusUpdate(map);
-			System.out.println("변경된 행 개수: " + updatedRows);
-			map.put("qsStatus", Integer.parseInt(map.get("qsStatus").toString()));
-			if (updatedRows > 0) {
+	    HashMap<String, Object> resultMap = new HashMap<>();
+	    try {
+	        System.out.println("questionUpdateStatus 실행, map: " + map);
+
+	        int qsStatus = Integer.parseInt(map.get("qsStatus").toString());
+	        map.put("qsStatus", qsStatus);
+
+	        int updatedRows = questionMapper.qnaStatusUpdate(map);
+	        System.out.println("변경된 행 개수: " + updatedRows);
+
+	        if (updatedRows > 0) {
 	            resultMap.put("result", "success");
 	        } else {
 	            resultMap.put("result", "fail");
 	            resultMap.put("message", "업데이트된 행이 없습니다.");
 	        }
-			resultMap.put("result", "success");
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			resultMap.put("result", "fail");
-		}
-		
-		return resultMap;
+	    } catch (Exception e) {
+	        System.out.println("❌ 오류 발생: " + e.getMessage());
+	        resultMap.put("result", "fail");
+	    }
+	    
+	    return resultMap;
 	}
 
 	public HashMap<String, Object> questionNotice(HashMap<String, Object> map) {
@@ -211,7 +213,7 @@ public class QuestionService {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
-			noticeMapper.noticeInsert(map);
+			questionMapper.qnaSaveReply(map);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

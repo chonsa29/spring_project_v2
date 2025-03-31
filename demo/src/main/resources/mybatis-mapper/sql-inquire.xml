@@ -109,7 +109,12 @@
 		WHERE QS_NO = #{qsNo}
 	</update>
 	
-
+	<update id="qnaSaveReply" parameterType="hashmap">
+		UPDATE QUESTION
+		SET
+			QS_CATEGORY = #{qsCategory}
+		WHERE QS_NO = #{qsNo}
+	</update>
 	
 </mapper>
 

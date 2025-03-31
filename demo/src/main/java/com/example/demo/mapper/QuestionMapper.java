@@ -28,4 +28,6 @@ public interface QuestionMapper {
 
 	int qnaStatusUpdate(HashMap<String, Object> map);
 
+	void qnaSaveReply(HashMap<String, Object> map);
+
 }
