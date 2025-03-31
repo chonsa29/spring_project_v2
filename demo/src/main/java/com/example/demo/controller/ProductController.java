@@ -222,7 +222,7 @@ public class ProductController {
 		return new Gson().toJson(resultMap);
 	}
 	
-	// 좋아요 처리
+	// 좋아요 조회
 	@RequestMapping(value = "/product/getLikedItems.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String getLikedItems(Model model, @RequestParam HashMap<String, Object> map) throws Exception {

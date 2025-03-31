@@ -131,7 +131,7 @@
     
     <!-- 좋아요 추가 -->
     <insert id="addLike" parameterType="hashmap">
-        INSERT INTO WISH (WISH_KEY, USERID, ITEM_NO)
+        INSERT INTO WISH
         VALUES (WISH_SEQ.NEXTVAL, #{userId}, #{itemNo})
     </insert>
     
@@ -140,6 +140,12 @@
         DELETE FROM WISH
         WHERE USERID = #{userId} AND ITEM_NO = #{itemNo}
     </delete>
+    
+    <select id="SelectproductWish" parameterType="hashmap" resultType="com.example.demo.model.Wish">
+    	SELECT ITEM_NO
+    	FROM WISH
+    	WHERE USERID = #{userId}
+    </select>
 </mapper>
 
 

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.example.demo.mapper.ProductMapper;
 import com.example.demo.model.Product;
 import com.example.demo.model.Review;
+import com.example.demo.model.Wish;
 
 @Service
 public class ProductService {
@@ -176,15 +177,16 @@ public class ProductService {
 
 	        // 1. 사용자와 상품 번호로 좋아요 상태 확인
 	        int likeCount = productMapper.checkIfLiked(map);
+	        System.out.println(likeCount);
 	        
 	        if (likeCount > 0) {
 	            // 좋아요 취소
-	            productMapper.removeLike(userId, itemNo);
+	            productMapper.removeLike(map);
 	            resultMap.put("result", "c");  // "c"는 좋아요 취소
 	            resultMap.put("message", "좋아요 취소되었습니다.");
 	        } else {
 	            // 좋아요 추가
-	            productMapper.addLike(userId, itemNo);
+	            productMapper.addLike(map);
 	            resultMap.put("result", "a");  // "a"는 좋아요 추가
 	            resultMap.put("message", "좋아요 추가되었습니다.");
 	        }
@@ -198,11 +200,16 @@ public class ProductService {
 
 	public HashMap<String, Object> productgetLikedItems(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
-			
+			List<Wish> wish = productMapper.SelectproductWish(map);
+			resultMap.put("result", "success");
+			resultMap.put("wish", wish);
 		} catch (Exception e) {
 			// TODO: handle exception
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage());
 		}
-		return null;
+		return resultMap;
 	}
 }
