@@ -30,10 +30,17 @@
         </div>
         <div class="bottom-links">
             <a href="#" @click="fnTermPg()">회원가입 </a> 
-            <a href="#" @click="fnAnother">다른 계정 로그인 </a> 
+        
             <a href="#">비밀번호 찾기</a>
         </div>
-        <button class="login-btn" @click="fnLogin">로그인</button>
+        
+        <div style="margin-top: 10px; text-align: center;">
+            <a href="javascript:kakaoLogin();">
+                <img src=../img/kakao.png  style="width: 150px; height: auto; margin: 10px 0;"></a>
+            <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+
+        </div>
+        <button class="login-btn" @click="fnLogin"  style="margin-top: 15px;">로그인</button>
         <div class="logo">
             @MEALPICK
         </div>
@@ -41,7 +48,23 @@
     </div>
 </body>
 </html>
-<script>
+<script>  window.Kakao.init("1e578d25bde3efa2ad35b138518feb97");
+
+    function kakaoLogin(){
+        window.Kakao.Auth.login({
+            scope:'profile',
+            success: function(authObj){
+                console.log(authObj);
+                window.Kakao.API.request({
+                    url:'/v2/user/me',
+                    success: res =>{
+                        const kakao_account = res.kakao_account;
+                        console.log(kakao_account);
+                    }
+                });
+            }
+        });
+    }
 const app = Vue.createApp({
     data() {
         return {

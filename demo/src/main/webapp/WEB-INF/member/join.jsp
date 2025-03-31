@@ -146,6 +146,7 @@
     </head>
 
     <body>
+        <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
         <div id="app" class="signup-container">
             <h2>회원가입</h2>
             <div class="input-box">
@@ -198,6 +199,7 @@
         </div>
 
         <script>
+            // 1e578d25bde3efa2ad35b138518feb97
             const app = Vue.createApp({
                 data() {
                     return {
