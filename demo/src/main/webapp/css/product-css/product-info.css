@@ -378,19 +378,16 @@ a {
     color: #333;
 }
 
-.filled-star::before {
-    content: '★';  /* 꽉 찬 별 */
+.filled-star {
     color: gold;
 }
 
-.half-star::before {
-    content: '☆';  /* 반 별 */
-    color: gray;
+.empty-star {
+    color: lightgray;
 }
 
-.empty-star::before {
-    content: '☆';  /* 빈 별 */
-    color: lightgray;
+.reviewScore {
+	margin-left: 10px;
 }
 
 /* 작성일 */
