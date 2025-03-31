@@ -69,6 +69,11 @@
 		) MAIN
 	</select>
 	
+	<select id="recipeEditView" parameterType="hashmap" resultType="com.example.demo.model.Recipe">
+		SELECT * FROM RECIPE_POST
+		WHERE POST_ID = #{postId}
+	</select>
+	
 	<update id="updateCnt" parameterType="hashmap">
 		UPDATE RECIPE_POST
 		SET
@@ -109,6 +114,19 @@
 		FROM RECIPE_POST
 		WHERE POST_ID = #{postId}
 	</delete>
+	
+	<update id="updateRecipe" parameterType="com.example.demo.model.Recipe">
+	    UPDATE RECIPE_POST
+	    SET 
+	        INSTRUCTIONS = #{instructions}, 
+	        COOKING_TIME = #{cookingTime}, 
+	        SERVINGS = #{servings}, 
+	        DIFFICULTY = #{difficulty}, 
+	        TITLE = #{title},  
+	        CONTENTS = #{contents, jdbcType=CLOB}, 
+	    WHERE POST_ID = #{postId} <!-- 수정할 레시피를 식별하는 postId -->
+	</update>
+
 
 </mapper>
 

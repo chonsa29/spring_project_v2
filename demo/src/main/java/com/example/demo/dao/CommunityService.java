@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.mapper.CommunityMapper;
+import com.example.demo.model.Question;
 import com.example.demo.model.Recipe;
 
 @Service
@@ -82,6 +83,32 @@ public class CommunityService {
 	}
 	
 	// 게시글 수정
+	public Recipe getRecipeById(Object postId) {
+	    try {
+	        HashMap<String, Object> paramMap = new HashMap<>();
+	        paramMap.put("postId", postId);
+	        return communityMapper.recipeEditView(paramMap);
+	    } catch (Exception e) {
+	        System.out.println("Error fetching recipe: " + e.getMessage());
+	        throw e;
+	    }
+	}
+	
+	public HashMap<String, Object> recipeEditView(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			Recipe info = communityMapper.recipeEditView(map);
+			resultMap.put("info", info);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+		}
+		
+		return resultMap;
+	}
+	
 	public HashMap<String, Object> recipeEdit(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
@@ -97,17 +124,6 @@ public class CommunityService {
 		}
 		
 		return resultMap;
-	}
-
-	public Recipe getRecipeById(Object postId) {
-	    try {
-	        HashMap<String, Object> paramMap = new HashMap<>();
-	        paramMap.put("postId", postId);
-	        return communityMapper.selectRecipeView(paramMap);
-	    } catch (Exception e) {
-	        System.out.println("Error fetching recipe: " + e.getMessage());
-	        throw e;
-	    }
 	}
 	
 	// 좋아요 기능
@@ -149,6 +165,26 @@ public class CommunityService {
 	    }
 		return resultMap;
 	}
+
+	// 레시피 수정
+	public HashMap<String, Object> editRecipe(HashMap<String, Object> map) {
+	    HashMap<String, Object> resultMap = new HashMap<>();
+
+	    // map에서 Recipe 객체 추출
+	    Recipe recipe = (Recipe) map.get("recipe");
+
+	    try {
+	        communityMapper.updateRecipe(recipe);  // Recipe 객체를 넘기도록 수정
+	        resultMap.put("result", "success");
+	    } catch (Exception e) {
+	        System.out.println(e.getMessage());
+	        resultMap.put("result", "fail");
+	    }
+	    return resultMap;
+	}
+	
+
+
 
 
 }

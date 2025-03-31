@@ -33,4 +33,10 @@ public interface CommunityMapper {
 
 	void deleteRecipe(HashMap<String, Object> map);
 
+	Recipe recipeEditView(HashMap<String, Object> paramMap);
+
+	void updateRecipe(HashMap<String, Object> map);
+
+	void updateRecipe(Recipe recipe);
+
 }
