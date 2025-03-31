@@ -109,3 +109,30 @@
     background-color: #808080;
     transform: scale(1.01);
 }
+
+.admin-reply {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+}
+
+.admin-reply-form {
+    margin-top: 20px;
+}
+
+.admin-reply-form textarea {
+    width: 100%;
+    height: 100px;
+    padding: 5px;
+}
+
+.admin-reply-form button {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+

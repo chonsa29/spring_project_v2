@@ -176,5 +176,14 @@ public class QuestionController {
 		return new Gson().toJson(resultMap);
 	}
 	
+	@RequestMapping(value = "/inquire/replySave.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String replySave(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+				
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = questionService.questionReplySave(map);
+		
+		return new Gson().toJson(resultMap);
+	}
 	
 }

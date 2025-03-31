@@ -52,7 +52,7 @@
 			AND QS_CONTENTS LIKE '%' || #{searchKeyword} || '%'
 		</if>
 		ORDER BY CDATETIME DESC
-		OFFSET (#{page} - 1) * #{pageSize} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	</select>
 	
 	<select id="selectQna" parameterType="hashmap" resultType="int">
@@ -108,6 +108,8 @@
 			QS_STATUS = #{qsStatus}
 		WHERE QS_NO = #{qsNo}
 	</update>
+	
+
 	
 </mapper>
 
