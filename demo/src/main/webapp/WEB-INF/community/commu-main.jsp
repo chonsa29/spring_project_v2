@@ -37,7 +37,6 @@
 					<tr>
 						<th>번호</th>
 						<th>제목</th>
-						<!-- <th>내용</th> -->
 						<th>날짜</th>
 						<th>조회수</th>
 						<th>좋아요</th>
@@ -47,30 +46,24 @@
 					<tr v-for="item in rList">
 						<td>{{ item.postId }}</td>
 						<td @click="fnRecipeView(item.postId)">{{ item.title }}</td>
-						<!-- <td @click="fnRecipeView(item.postId)"><span v-html="item.contents"></span></td> -->
 						<td>{{ item.cdatetime.substring(0, 10) }}</td>
 						<td class="gray-text">{{ item.cnt }}</td>
 						<td class="gray-text">{{ item.likes }}</td>
 					</tr>
 				</tbody>
 			</table>
-				 <!-- 페이징 -->
-				 <div class="pagination">
-					<a v-if="page !=1" id="index" href="javascript:;"
-					@click="fnPageMove('prev')"> < </a>
-					<a href="javascript:;" v-for="num in index" @click="fnPage(num)" :class="{active: page === num}">
-						{{num}}
-					</a>
-					<a v-if="page!=index" id="index" href="javascript:;"
-						@click="fnPageMove('next')"> >
-					</a>
-				</div>
+			<!-- 레시피 페이징 -->
+			<div class="pagination">
+				<a v-if="page != 1" id="index" href="javascript:;" @click="fnPageMove('prev')"> < </a>
+				<a href="javascript:;" v-for="num in index" @click="fnRecipePage(num)" :class="{active: page === num}">{{ num }}</a>
+				<a v-if="page != index" id="index" href="javascript:;" @click="fnPageMove('next')"> > </a>
+			</div>
 				<div class="writing">
 				    <button @click="fnAddRecipe">글쓰기</button>
 				</div>
 		</section>
 
-		<!-- Q&A -->
+		<!-- group -->
 		<section id="group" class="tab-content" v-show="activeTab === 'group'">
 			<h2>구하면 등급 UP 그룹 구합니다</h2>
 			<div class="search-bar">
@@ -87,38 +80,28 @@
 					<tr>
 						<th>번호</th>
 						<th>제목</th>
-						<th>내용</th>
 						<th>날짜</th>
-						<th></th>
-						<th></th>
+						<th>조회수</th>
+						<th>좋아요</th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="inquiry in inquiryList" :key="inquiry.userId">
-						<td @click="fnView(inquiry.qsNo)">{{ inquiry.qsNo }}</td>
-						<td @click="fnView(inquiry.qsNo)">{{ inquiry.qsTitle }}</td>
-						<td @click="fnView(inquiry.qsNo)"><span v-html="inquiry.qsContents"></span></td>
-						<td>{{ inquiry.cdatetime }}</td>
-						<td class="gray-text">{{ inquiry.viewCnt }}</td>
-						<td>
-							<button :class="getStatusClass(inquiry.qsStatus)">
-								{{ getStatusText(inquiry.qsStatus) }}
-							</button>
-						</td>
+					<tr v-for="item in gList">
+						<td>{{ item.postId }}</td>
+						<td @click="fnRecipeView(item.postId)">{{ item.title }}</td>
+						<td>{{ item.cdatetime.substring(0, 10) }}</td>
+						<td class="gray-text">{{ item.cnt }}</td>
+						<td class="gray-text">{{ item.likes }}</td>
 					</tr>
 				</tbody>
 			</table>
-				 <!-- 페이징 -->
-				 <div class="pagination">
-					<a v-if="page !=1" id="index" href="javascript:;"
-					@click="fnPageMove('prev')"> < </a>
-					<a href="javascript:;" v-for="num in index" @click="fnPage(num)" :class="{active: page === num}">
-						{{num}}
-					</a>
-					<a v-if="page!=index" id="index" href="javascript:;"
-						@click="fnPageMove('next')"> >
-					</a>
-				</div>
+			<!-- 그룹 페이징 -->
+			<div class="pagination">
+				<a v-if="groupPage != 1" id="index" href="javascript:;" @click="fnPageMove('prev')"> < </a>
+				<a href="javascript:;" v-for="num in groupIndex" @click="fnGroupPage(num)" :class="{ active: groupPage === num }">{{ num }}</a>
+				<a v-if="groupPage != groupIndex" id="index" href="javascript:;" @click="fnPageMove('next')"> > </a>
+			</div>
+				
 				<div class="writing">
 				    <button @click="fnWriting">글쓰기</button>
 				</div>
@@ -127,27 +110,41 @@
 	</div>
 	<jsp:include page="/WEB-INF/common/footer.jsp" />
 </html>
+</body>
 <script>
 const app = Vue.createApp({
-    data() {
-        return {
-            activeTab: 'recipe',
-            searchOption: "all",
-            searchKeyword: '',
-            rList: [],
+	data() {
+		return {
+			activeTab: 'recipe',
+			searchOption: "all",
+			searchKeyword: '',
+			rList: [],
+			gList: [],
 			sessionStatus: "${sessionStatus}",
+
 			pageSize: 5,
 			index: 0,
-			page: 1
-        };
-    },
-    methods: {
-        // 탭 변경
-        showSection(tab) {
-            this.activeTab = tab;
-        },
+			page: 1,
 
-        fnRecipeList() {
+			groupPage: 1,
+			groupIndex: 0,
+			groupPageSize: 5
+		};
+	},
+	methods: {
+		// 탭 변경
+		showSection(tab) {
+			this.activeTab = tab;
+
+			// 탭이 변경될 때 해당 탭의 데이터 불러오기
+			if (tab === "recipe") {
+				this.fnRecipeList();
+			} else if (tab === "group") {
+				this.fnGroupList();
+			}
+		},
+
+		fnRecipeList() {
 			var self = this;
 			var nparmap = {
 				searchKeyword: self.searchKeyword,
@@ -155,36 +152,75 @@ const app = Vue.createApp({
 				pageSize: self.pageSize,
 				page: (self.page - 1) * self.pageSize
 			};
-            $.ajax({
-                url: "/commu/recipe.dox",
-                type: "POST",
-                dataType: "json",
-				data : nparmap,
-                success : function(data) { 
+			$.ajax({
+				url: "/commu/recipe.dox",
+				type: "POST",
+				dataType: "json",
+				data: nparmap,
+				success: function(data) { 
 					console.log(data);
-					self.rList = data.rList
+					self.rList = data.rList;
 					self.index = Math.ceil(data.count / self.pageSize);
-                }
-            });
-        },
-
-		fnPage: function (num) {
-			let self = this;
-			self.page = num;
-			self.fnRecipeList();
+				}
+			});
 		},
 		
-		fnPageMove: function (direction) {
+		fnGroupList() {
 			let self = this;
-			let next = document.querySelector(".next");
-			let prev = document.querySelector(".prev");
-			if (direction == "next") {
+			let nparmap = {
+				searchKeyword: self.searchKeyword,
+				searchOption: self.searchOption,
+				pageSize: self.groupPageSize,
+				page: (self.groupPage - 1) * self.groupPageSize
+			};
+			$.ajax({
+				url: "/commu/group.dox",
+				type: "POST",
+				dataType: "json",
+				data: nparmap,
+				success: function(data) { 
+					console.log(data);
+					self.gList = data.gList;
+					self.groupIndex = Math.ceil(data.count / self.groupPageSize);
+				}
+			});
+		},
+
+		// 레시피 페이지 이동
+		fnRecipePageMove(direction) {
+			let self = this;
+			if (direction === "next") {
 				self.page++;
-			} else {
+			} else if (direction === "prev") {
 				self.page--;
 			}
 			self.fnRecipeList();
 		},
+
+		// 그룹 페이지 이동
+		fnGroupPageMove(direction) {
+			let self = this;
+			if (direction === "next") {
+				self.groupPage++;
+			} else if (direction === "prev") {
+				self.groupPage--;
+			}
+			self.fnGroupList();
+		},
+
+		// 레시피 페이지 이동
+        fnRecipePage(num) {
+            let self = this;
+            self.page = num;
+            self.fnRecipeList();
+        },
+
+        // 그룹 페이지 이동
+        fnGroupPage(num) {
+            let self = this;
+            self.groupPage = num;
+            self.fnGroupList();
+        },
 
 		fnAddRecipe() {
 			location.href = "/recipe/add.do";
@@ -194,10 +230,8 @@ const app = Vue.createApp({
 			console.log('Post ID:', postId); 
 			pageChange("/recipe/view.do", { postId : postId });
 		}
-
-    },
-    mounted() {
-		
+	},
+	mounted() {
 		// URL에서 'tab' 파라미터 가져오기
 		const urlParams = new URLSearchParams(window.location.search);
 		const tabParam = urlParams.get('tab');
@@ -207,9 +241,9 @@ const app = Vue.createApp({
 			this.activeTab = tabParam;
 		}
 
-        this.fnRecipeList();
-    }
+		this.fnRecipeList();
+	}
 });
 app.mount('#app');
 </script>
-</body>
+	

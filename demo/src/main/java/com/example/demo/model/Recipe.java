@@ -42,4 +42,89 @@ public class Recipe {
         this.isLiked = isLiked;
     }
 
+	public String getPostId() {
+		return postId;
+	}
+
+	public void setPostId(String postId) {
+		this.postId = postId;
+	}
+
+	public String getInstructions() {
+		return instructions;
+	}
+
+	public void setInstructions(String instructions) {
+		this.instructions = instructions;
+	}
+
+	public String getCookingTime() {
+		return cookingTime;
+	}
+
+	public void setCookingTime(String cookingTime) {
+		this.cookingTime = cookingTime;
+	}
+
+	public String getServings() {
+		return servings;
+	}
+
+	public void setServings(String servings) {
+		this.servings = servings;
+	}
+
+	public String getDifficulty() {
+		return difficulty;
+	}
+
+	public void setDifficulty(String difficulty) {
+		this.difficulty = difficulty;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getCnt() {
+		return cnt;
+	}
+
+	public void setCnt(String cnt) {
+		this.cnt = cnt;
+	}
+
+	public String getCdatetime() {
+		return cdatetime;
+	}
+
+	public void setCdatetime(String cdatetime) {
+		this.cdatetime = cdatetime;
+	}
+
+	public String getPostCategory() {
+		return postCategory;
+	}
+
+	public void setPostCategory(String postCategory) {
+		this.postCategory = postCategory;
+	}
+
+	public void setLiked(boolean isLiked) {
+		this.isLiked = isLiked;
+	}
+
+    
 }

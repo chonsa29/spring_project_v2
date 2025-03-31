@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.example.demo.mapper.CommunityMapper;
 import com.example.demo.model.Question;
 import com.example.demo.model.Recipe;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class CommunityService {
@@ -168,13 +169,14 @@ public class CommunityService {
 
 	// 레시피 수정
 	public HashMap<String, Object> editRecipe(HashMap<String, Object> map) {
-	    HashMap<String, Object> resultMap = new HashMap<>();
-
-	    // map에서 Recipe 객체 추출
-	    Recipe recipe = (Recipe) map.get("recipe");
+		HashMap<String, Object> resultMap = new HashMap<>();
+	    ObjectMapper objectMapper = new ObjectMapper();
 
 	    try {
-	        communityMapper.updateRecipe(recipe);  // Recipe 객체를 넘기도록 수정
+	        // HashMap -> Recipe 객체 변환
+	        Recipe recipe = objectMapper.convertValue(map, Recipe.class);
+
+	        communityMapper.updateRecipe(recipe);
 	        resultMap.put("result", "success");
 	    } catch (Exception e) {
 	        System.out.println(e.getMessage());
@@ -183,8 +185,29 @@ public class CommunityService {
 	    return resultMap;
 	}
 	
-
-
+	// // 그룹 부분 // //
+	
+	// 그룹 리스트
+	public HashMap<String, Object> getGroupList(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			List<Recipe> gList =  communityMapper.selectGroupList(map);
+			int count = communityMapper.selectGroup(map);
+			
+			// gList나 count가 제대로 반환되는지 확인
+	        System.out.println("gList size: " + (gList != null ? gList.size() : "null"));
+	        System.out.println("count: " + count);
+			
+			resultMap.put("count", count);
+			resultMap.put("gList", gList); 
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+		}
+		return resultMap;
+	}
 
 
 }

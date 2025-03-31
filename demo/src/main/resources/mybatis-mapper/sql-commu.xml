@@ -4,6 +4,7 @@
 
 <mapper namespace="com.example.demo.mapper.CommunityMapper">
 
+	<!-- recipe 부분 -->
 	<resultMap id="recipeResultMap" type="map">
 	    <result property="contents" column="contents" jdbcType="CLOB"/>
 	</resultMap>
@@ -123,9 +124,44 @@
 	        SERVINGS = #{servings}, 
 	        DIFFICULTY = #{difficulty}, 
 	        TITLE = #{title},  
-	        CONTENTS = #{contents, jdbcType=CLOB}, 
+	        CONTENTS = #{contents, jdbcType=CLOB} 
 	    WHERE POST_ID = #{postId} <!-- 수정할 레시피를 식별하는 postId -->
 	</update>
+	
+	<!-- group 부분 -->
+	<select id="selectGroupList" parameterType="hashmap" resultType="com.example.demo.model.Group">
+		SELECT *
+		FROM GROUP_POST
+		WHERE 1=1
+		<if test="searchOption != null and searchOption == 'all'">
+			AND (TITLE LIKE '%' || #{searchKeyword} || '%'
+			OR CONTENTS LIKE '%' || #{searchKeyword} || '%')
+		</if>
+		<if test="searchOption != null and searchOption == 'title'">
+			AND TITLE LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		<if test="searchOption != null and searchOption == 'contents'">
+			AND CONTENTS LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		ORDER BY CDATETIME DESC
+		OFFSET #{groupPage} ROWS FETCH NEXT #{groupPageSize} ROWS ONLY
+	</select>
+	
+	<select id="selectGroup" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*)
+		FROM GROUP_POST
+		WHERE 1=1
+		<if test="searchOption != null and searchOption == 'all'">
+			AND (TITLE LIKE '%' || #{searchKeyword} || '%'
+			OR CONTENTS LIKE '%' || #{searchKeyword} || '%')
+		</if>
+		<if test="searchOption != null and searchOption == 'title'">
+			AND TITLE LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		<if test="searchOption != null and searchOption == 'contents'">
+			AND CONTENTS LIKE '%' || #{searchKeyword} || '%'
+		</if>
+	</select>
 
 
 </mapper>
