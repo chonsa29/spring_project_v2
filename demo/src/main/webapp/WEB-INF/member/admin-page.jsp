@@ -181,8 +181,7 @@
                                         <tr v-for="item in productList" :key="item.itemNo">
                                             <td>{{ item.itemNo }}</td>
                                             <td>
-                                                <a href="javascript:;" @click="fnEdit(item.itemNo)">{{ item.itemName
-                                                    }}</a>
+                                                <a href="javascript:;" @click="fnEdit(item.itemNo)">{{ item.itemName }}</a>
                                             </td>
                                             <td>{{ formatCurrency(item.price) }}</td>
                                             <td>{{ item.itemCount }}</td>
@@ -1452,6 +1451,7 @@
                             type: "POST",
                             data: nparmap,
                             success: function (data) {
+                                console.log(data);
                                 self.item = data.info;
                                 self.name = self.item.itemName;
                                 self.price = self.item.price;
@@ -1492,6 +1492,7 @@
                             dataType: "json",
                             data: this.productSearch,
                             success: (response) => {
+                                console.log(response);
                                 this.productList = response.list;
                                 this.productTotalCount = response.totalCount;
                                 this.categories = response.categories || [];
