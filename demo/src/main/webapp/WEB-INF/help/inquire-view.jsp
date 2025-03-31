@@ -32,6 +32,19 @@
             <!-- 본문 내용 -->
             <div class="post-content" v-html="info.qsContents"></div>
 
+            <!-- 관리자 답변 -->
+            <div v-if="info.adminReply" class="admin-reply">
+                <h3>관리자 답변</h3>
+                <div class="reply-content" v-html="info.adminReply"></div>
+            </div>
+
+            <!-- 관리자 답변 작성 -->
+            <div v-if="sessionStatus == 'A'" class="admin-reply-form">
+                <h3>관리자 답변 작성</h3>
+                <textarea v-model="adminReplyText" placeholder="답변을 입력하세요."></textarea>
+                <button @click="fnSaveReply">답변 저장</button>
+            </div>
+
             <!-- 버튼들 -->
             <div class="button-group-container">
                 <div v-if="sessionId == info.userId || sessionStatus == 'A'" class="button-group">
@@ -52,6 +65,7 @@
                 info : {},
                 sessionId: "${sessionId}",
                 sessionStatus: "${sessionStatus}",
+                adminReplyText: ""
             };
         },
         methods: {
@@ -98,6 +112,28 @@
                     }
                 });
             },
+            fnSaveReply() {
+                var self = this;
+                var nparmap = {
+                    qsNo: self.qsNo,
+                    adminReply: self.adminReplyText
+                };
+                $.ajax({
+                    url: "/inquire/replySave.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: nparmap,
+                    success: function (data) {
+                        if (data.result == "success") {
+                            alert("답변이 저장되었습니다!");
+                            self.info.adminReply = self.adminReplyText;  // UI 업데이트
+                            self.adminReplyText = "";  // 입력창 초기화
+                        } else {
+                            alert("답변 저장 실패");
+                        }
+                    }
+                });
+            }
         },
         mounted() {
             var self = this;

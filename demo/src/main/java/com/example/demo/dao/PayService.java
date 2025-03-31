@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.mapper.PayMapper;
 import com.example.demo.model.Pay;
+import com.example.demo.model.PayProduct;
 
 @Service
 public class PayService {
@@ -18,8 +19,8 @@ public class PayService {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
-			List<Pay> list = payMapper.paySell(map);
-			resultMap.put("list", list);
+			PayProduct info = payMapper.paySell(map);
+			resultMap.put("info", info);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
