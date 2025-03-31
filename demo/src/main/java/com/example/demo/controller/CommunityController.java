@@ -123,7 +123,7 @@ public class CommunityController {
 	// 게시글 수정
 	@RequestMapping(value = "/recipe/edit.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
-	public String recipeEdit(@RequestParam HashMap<String, Object> map) {
+	public String recipeEdit(@RequestBody HashMap<String, Object> map) {
 	    HashMap<String, Object> resultMap = new HashMap<>();
 
 	    try {
@@ -184,5 +184,18 @@ public class CommunityController {
 		resultMap = communityService.removeRecipe(map);
 		return new Gson().toJson(resultMap);
 	}
+	
+	// // 그룹 부분 // //
+	
+	// 그룹 리스트
+	@RequestMapping(value = "/commu/group.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String groupList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = communityService.getGroupList(map);
+		System.out.println(resultMap);
+		return new Gson().toJson(resultMap);
+	}
+	
 	
 }

@@ -35,8 +35,10 @@ public interface CommunityMapper {
 
 	Recipe recipeEditView(HashMap<String, Object> paramMap);
 
-	void updateRecipe(HashMap<String, Object> map);
-
 	void updateRecipe(Recipe recipe);
+
+	List<Recipe> selectGroupList(HashMap<String, Object> map);
+
+	int selectGroup(HashMap<String, Object> map);
 
 }

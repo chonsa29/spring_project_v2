@@ -3,8 +3,8 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link rel="stylesheet" href="/css/commu-css/recipe-add.css">
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
@@ -149,7 +149,8 @@
                     difficulty: self.info.difficulty,
                     instructions: self.info.instructions,
                     contents: quillContentHtml,
-                    userId: self.sessionId
+                    userId: self.sessionId,
+                    postId : self.postId
                 };
 
 
@@ -157,11 +158,12 @@
                     url: "/recipe/edit.dox",
                     dataType: "json",
                     type: "POST",
-                    data: nparmap,
+                    contentType: "application/json",  // JSON 형식 명시
+                    data: JSON.stringify(nparmap),  // JSON 문자열로 변환
                     success: function (data) {
                         console.log(data);
                         alert("수정되었습니다.");
-                        location.href = "/commu-main.do?tab=recipe";
+                        pageChange("/recipe/view.do", { postId : self.postId });
                     },
                     error: function (xhr, status, error) {
                         console.error("AJAX 요청 실패:", status, error);
