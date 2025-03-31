@@ -120,6 +120,26 @@
 		DELETE FROM PRODUCT_IMG
 		WHERE FILENAME = #{fileName}
 	</delete>
+	
+	
+	<!-- 좋아요 상태 확인 -->
+    <select id="checkIfLiked" parameterType="hashmap" resultType="int">
+        SELECT COUNT(*)
+        FROM WISH
+        WHERE USERID = #{userId} AND ITEM_NO = #{itemNo}
+    </select>
+    
+    <!-- 좋아요 추가 -->
+    <insert id="addLike" parameterType="hashmap">
+        INSERT INTO WISH (WISH_KEY, USERID, ITEM_NO)
+        VALUES (WISH_SEQ.NEXTVAL, #{userId}, #{itemNo})
+    </insert>
+    
+    <!-- 좋아요 취소 -->
+    <delete id="removeLike" parameterType="hashmap">
+        DELETE FROM WISH
+        WHERE USERID = #{userId} AND ITEM_NO = #{itemNo}
+    </delete>
 </mapper>
 
 
