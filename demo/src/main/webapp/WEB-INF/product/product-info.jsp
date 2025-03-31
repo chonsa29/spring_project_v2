@@ -116,26 +116,25 @@
                         <div v-if="review.length === 0" class="review-none">
                             <p>리뷰가 없습니다.</p>
                         </div>
-                        <div v-else v-for="review in review" class="review-item">
+                        <div class="review-item" v-for="review in review" :key="review.reviewId">
                             <div class="review-header">
                                 <img :src="review.userProfileImage" alt="프로필 이미지" class="review-profile-img" />
-                                <div class="review-user">{{review.userName}}</div>
-                                <div v-for="(r, index) in review" :key="index">
-                                    <div class="review-header">
-                                        <span v-for="star in maxStars" :key="star" :class="getStarClass(star)"></span>
-                                        <span>{{ r.reviewScore }}</span> <!-- 리뷰 별점 -->
-                                    </div>
+                                <div class="review-user">{{ review.userName }}</div>
+                                <div class="review-star">
+                                    <span v-for="n in 5" :key="n">
+                                        <span v-if="n <= Math.round(review.reviewScore)" class="filled-star">★</span>
+                                        <span v-else class="empty-star">★</span>
+                                    </span>
+                                    <span class="reviewScore">{{ review.reviewScore }}</span> <!-- 숫자 별점 표시 -->
                                 </div>
-                                <div class="review-date">{{review.cDatetime}}</div>
+                                <div class="review-date">{{ review.cDatetime }}</div>
                             </div>
-                            <div class="review-title">{{review.reviewTitle}}</div>
-                            <div class="review-content">{{review.reviewContents}}</div>
+                            <div class="review-title">{{ review.reviewTitle }}</div>
+                            <div class="review-content">{{ review.reviewContents }}</div>
                             <div class="review-images">
                                 <img v-for="image in review.images" :key="image" :src="image" alt="리뷰 이미지" />
                             </div>
-                            <div class="review-helpful">
-                                👍 이 리뷰가 도움이 돼요!
-                            </div>
+                            <div class="review-helpful">👍 이 리뷰가 도움이 돼요!</div>
                         </div>
                     </div>
 
