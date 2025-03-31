@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.example.demo.model.Product;
 import com.example.demo.model.Review;
+import com.example.demo.model.Wish;
 
 @Mapper
 public interface ProductMapper {
@@ -46,11 +47,13 @@ public interface ProductMapper {
 
 	List<Review> SelectProductReview(HashMap<String, Object> map);
 
-	void removeLike(String userId, String itemNo);
-
-	void addLike(String userId, String itemNo);
-
 	int checkIfLiked(HashMap<String, Object> map);
+
+	void removeLike(HashMap<String, Object> map);
+
+	void addLike(HashMap<String, Object> map);
+
+	List<Wish> SelectproductWish(HashMap<String, Object> map);
 
 
 }
