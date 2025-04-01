@@ -218,6 +218,9 @@ public class CommunityService {
 			
 			Group info = communityMapper.selectGroupView(map);
 			
+			List<GroupUser> members =  communityMapper.selectMembers(map);			
+			resultMap.put("members", members); 
+			
 			resultMap.put("info", info);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
@@ -228,6 +231,7 @@ public class CommunityService {
 		return resultMap;
 	}
 
+	// 그룹 멤버 리스트
 	public HashMap<String, Object> getGroupMembers(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
@@ -241,6 +245,23 @@ public class CommunityService {
 		}
 		return resultMap;
 	}
+
+	// 그룹 체크
+	public HashMap<String, Object> groupMemberCheck(HashMap<String, Object> map) {
+		HashMap<String, Object> result = new HashMap<>();
+
+        // 사용자의 그룹 상태 조회 (예: 이미 그룹에 속해있는지 확인)
+        String groupStatus = communityMapper.groupMemberCkeck(map);
+
+        if (groupStatus != null) {
+            result.put("groupStatus", "joined");  // 이미 그룹에 속해 있음
+        } else {
+            result.put("groupStatus", "not_joined");  // 그룹에 속하지 않음
+        }
+
+        return result;
+    }
+	
 
 
 }

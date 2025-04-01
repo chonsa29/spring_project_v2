@@ -7,6 +7,7 @@
 	<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.min.js"></script>
 	<link rel="stylesheet" href="/css/commu-css/commu-main.css">
+	<link rel="stylesheet" href="/css/commu-css/group-add.css">
 	<script src="/js/pageChange.js"></script>
 	<title>커뮤니티</title>
 </head>
@@ -103,7 +104,19 @@
 			</div>
 				
 				<div class="writing">
-				    <button @click="fnWriting">글쓰기</button>
+				    
+					<button @click="fnAddGroup">그룹 만들기</button>
+				</div>
+				<!-- 그룹 만들기 팝업 -->
+				<div class="popup-overlay" :class="{ show: showGroupPopup }">
+					<div class="popup">
+						<h3>새 그룹 만들기</h3>
+						<input type="text" v-model="newGroupName" placeholder="그룹 이름을 입력하세요">
+						<div class="popup-buttons">
+							<button class="create-btn" @click="createGroup">생성</button>
+							<button class="close-btn" @click="closeGroupPopup">닫기</button>
+						</div>
+					</div>
 				</div>
 		</section>
 
@@ -121,6 +134,10 @@ const app = Vue.createApp({
 			rList: [],
 			gList: [],
 			sessionStatus: "${sessionStatus}",
+			userId : "${sessionId}",
+
+			showGroupPopup: false, // 팝업 여부 추가
+            newGroupName: "", // 그룹명 입력 필드
 
 			pageSize: 5,
 			index: 0,
@@ -233,7 +250,106 @@ const app = Vue.createApp({
 		fnGroupView(postId) {
 			console.log('Post ID:', postId); 
 			pageChange("/group/view.do", { postId : postId });
-		}
+		},
+		 // 그룹 만들기 버튼 클릭
+		 fnAddGroup() {
+            let self = this;
+
+            // 1. 현재 탭이 'group'이 아니면 변경 후 종료
+            if (self.activeTab !== "group") {
+                self.activeTab = "group";
+                return;
+            }
+
+            // 2. 그룹 가입 여부 체크 (일단 바로 팝업 띄우기 테스트)
+            console.log("그룹 상태 체크 시작");
+            $.ajax({
+                url: "/group/memberCheck.dox",
+                type: "POST",
+                dataType: "json",
+                data: { userId: self.userId }, // 사용자 ID 전달
+                success: function(response) {
+                    console.log("서버 응답:", response); //  응답 확인
+
+                    if (response.status === "success") {
+                        if (response.groupStatus === "joined") {
+                            alert("이미 그룹에 참가 중이십니다.");
+                            
+                        } else {
+                            self.showGroupPopup = true; // 팝업 띄우기
+                            console.log("팝업 활성화:", self.showGroupPopup);
+                        }
+                    } else {
+                        alert(response.message || "사용자 그룹 상태를 확인할 수 없습니다.");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("AJAX 오류:", error);
+                    alert("서버와의 통신 중 오류가 발생했습니다.");
+                }
+            });
+        },
+
+        // 그룹 생성하기
+        createGroup() {
+            if (!this.newGroupName.trim()) {
+                alert("그룹 이름을 입력하세요.");
+                return;
+            }
+
+            let self = this;
+            $.ajax({
+                url: "/group/create.dox",
+                type: "POST",
+                dataType: "json",
+                data: { groupName: self.newGroupName },
+                success: function(response) {
+                    if (response.success) {
+                        alert("그룹이 성공적으로 생성되었습니다!");
+                        self.showGroupPopup = false;
+                        self.newGroupName = '';
+                        self.isMemberOfGroup = true; // 그룹 생성 후, 상태 업데이트
+                        self.fnGroupList(); // 그룹 목록 다시 불러오기
+                    } else {
+                        alert(response.message || "그룹 생성에 실패했습니다.");
+                    }
+                },
+                error: function() {
+                    alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
+                }
+            });
+        },
+
+        // 팝업 닫기
+        closeGroupPopup() {
+            this.showGroupPopup = false;
+            this.newGroupName = '';
+        },
+
+        // 사용자가 그룹에 속해 있는지 체크
+        // checkUserGroupStatus() {
+		// 	let self = this;
+		// 	$.ajax({
+		// 		url: "/group/memberCheck.dox",
+		// 		type: "POST",
+		// 		dataType: "json",
+		// 		data: { userId: self.userId }, // 사용자 ID 전달
+		// 		success: function(response) {
+		// 			if (response.status === "success") {
+		// 				if (response.groupStatus === "joined") {
+		// 					alert("이미 그룹에 참가 중이십니다.");
+		// 				} else {
+		// 					self.showGroupCreationPopup = true; // 그룹 만들기 팝업 표시
+		// 				}
+		// 			} else {
+		// 				alert(response.message || "사용자 그룹 상태를 확인할 수 없습니다.");
+		// 			}
+		// 		},
+		// 		error: function() {
+		// 			alert("서버와의 통신 중 오류가 발생했습니다.");
+		// 		}
+		// 	});
+		// }
 	},
 	mounted() {
 		// URL에서 'tab' 파라미터 가져오기
@@ -246,6 +362,7 @@ const app = Vue.createApp({
 		}
 
 		this.fnRecipeList();
+
 	}
 });
 app.mount('#app');

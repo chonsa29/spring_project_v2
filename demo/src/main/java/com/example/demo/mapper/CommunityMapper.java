@@ -49,4 +49,6 @@ public interface CommunityMapper {
 
 	List<GroupUser> selectMembers(HashMap<String, Object> map);
 
+	String groupMemberCkeck(HashMap<String, Object> map);
+
 }

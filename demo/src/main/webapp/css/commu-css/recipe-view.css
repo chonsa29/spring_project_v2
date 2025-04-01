@@ -284,34 +284,27 @@
     align-items: center;
 }
 
+/* 리더 표시 스타일 */
+.leader-label {
+    font-weight: bold;
+    color: blue;
+    margin-left: 10px;
+}
+
 /* 버튼 스타일 */
-.accept-btn {
-    background: green;
+.accept-btn, .reject-btn, .cancel-btn {
     color: white;
     border: none;
     padding: 5px 10px;
-    margin-left: 5px;
+	margin-left: 10px;
     cursor: pointer;
     border-radius: 5px;
+    font-size: 14px;
 }
-.reject-btn {
-    background: red;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    margin-left: 5px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-.cancel-btn {
-    background: gray;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    margin-left: 5px;
-    cursor: pointer;
-    border-radius: 5px;
-}
+
+.accept-btn { background: green; margin-left: 35px;}
+.reject-btn { background: red; }
+.cancel-btn { background: gray; }
 
 /* 닫기 버튼 */
 .close-btn {

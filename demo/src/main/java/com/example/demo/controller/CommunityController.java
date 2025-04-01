@@ -223,4 +223,23 @@ public class CommunityController {
 		
 		return new Gson().toJson(resultMap);
 	}
+	
+	// 그룹 참가 확인
+	@RequestMapping(value = "/group/memberCheck.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String groupMemberChek(Model model, @RequestParam HashMap<String, Object> map) {
+	    HashMap<String, Object> resultMap = new HashMap<>();
+	    
+	    try {
+	        resultMap = communityService.groupMemberCheck(map); // 멤버 목록 조회
+	        resultMap.put("status", "success"); // 성공 상태 추가
+	    } catch (Exception e) {
+	        resultMap.put("status", "error");
+	        resultMap.put("message", "그룹 멤버 정보를 불러오는 중 오류가 발생했습니다.");
+	        e.printStackTrace();
+	    }
+	    
+	    return new Gson().toJson(resultMap);
+	}
+
 }
