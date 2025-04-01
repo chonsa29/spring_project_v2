@@ -82,16 +82,16 @@
 						<th>제목</th>
 						<th>날짜</th>
 						<th>조회수</th>
-						<th>좋아요</th>
+						<!-- <th>좋아요</th> -->
 					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="item in gList">
 						<td>{{ item.postId }}</td>
-						<td @click="fnRecipeView(item.postId)">{{ item.title }}</td>
+						<td @click="fnGroupView(item.postId)">{{ item.title }}</td>
 						<td>{{ item.cdatetime.substring(0, 10) }}</td>
-						<td class="gray-text">{{ item.cnt }}</td>
-						<td class="gray-text">{{ item.likes }}</td>
+						<td class="gray-text">{{ item.viewCnt }}</td>
+						<!-- <td class="gray-text">{{ item.likes }}</td> -->
 					</tr>
 				</tbody>
 			</table>
@@ -170,8 +170,8 @@ const app = Vue.createApp({
 			let nparmap = {
 				searchKeyword: self.searchKeyword,
 				searchOption: self.searchOption,
-				pageSize: self.groupPageSize,
-				page: (self.groupPage - 1) * self.groupPageSize
+				groupPageSize: self.groupPageSize,
+				groupPage: (self.groupPage - 1) * self.groupPageSize
 			};
 			$.ajax({
 				url: "/commu/group.dox",
@@ -229,6 +229,10 @@ const app = Vue.createApp({
 		fnRecipeView(postId) {
 			console.log('Post ID:', postId); 
 			pageChange("/recipe/view.do", { postId : postId });
+		},
+		fnGroupView(postId) {
+			console.log('Post ID:', postId); 
+			pageChange("/group/view.do", { postId : postId });
 		}
 	},
 	mounted() {

@@ -193,9 +193,34 @@ public class CommunityController {
 	public String groupList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap = communityService.getGroupList(map);
-		System.out.println(resultMap);
+		
 		return new Gson().toJson(resultMap);
 	}
 	
+	// 그룹 페이지 자세히 보기
+	@RequestMapping("/group/view.do")
+	public String groupView(HttpServletRequest request,Model model, @RequestParam HashMap<String, Object> map) throws Exception{
+		request.setAttribute("map", map);
+        return "/community/group-view"; 
+    }
 	
+	// 그룹 게시글 상세보기
+	@RequestMapping(value = "/group/view.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String groupView(Model model, @RequestParam HashMap<String, Object> map) throws Exception {			
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		resultMap = communityService.groupView(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	// 그룹 신청자 보기
+	@RequestMapping(value = "/group/members.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String groupMembers(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = communityService.getGroupMembers(map);
+		
+		return new Gson().toJson(resultMap);
+	}
 }

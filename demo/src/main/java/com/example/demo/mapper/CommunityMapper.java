@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.example.demo.model.Group;
+import com.example.demo.model.GroupUser;
 import com.example.demo.model.Question;
 import com.example.demo.model.Recipe;
 
@@ -37,8 +39,14 @@ public interface CommunityMapper {
 
 	void updateRecipe(Recipe recipe);
 
-	List<Recipe> selectGroupList(HashMap<String, Object> map);
+	List<Group> selectGroupList(HashMap<String, Object> map);
 
 	int selectGroup(HashMap<String, Object> map);
+
+	Group selectGroupView(HashMap<String, Object> map);
+
+	void updateGroupCnt(HashMap<String, Object> map);
+
+	List<GroupUser> selectMembers(HashMap<String, Object> map);
 
 }
