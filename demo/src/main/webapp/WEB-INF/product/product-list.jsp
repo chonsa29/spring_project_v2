@@ -39,12 +39,15 @@
             </div>
             <div id="product-menu">
                 <div id="sort-menu" class="sort-custom-dropdown">
-                    <button class="sort-dropdown-btn" @click="toggleDropdown">{{ sortOption }}</button>
+                    <button class="sort-dropdown-btn" @click="toggleSortDropdown">
+                        <!-- sortOption에 맞는 텍스트를 매핑 객체에서 가져와서 버튼에 표시 -->
+                        {{ sortLabel[sortOption] }}
+                    </button>
                     <ul class="sort-dropdown-menu" v-show="isSortDropdownOpen">
                         <li @click="changeSortOption('newest')">최신순</li>
                         <li @click="changeSortOption('popularity')">인기순</li>
-                        <li @click="changeSortOption('priceLowToHigh')">낮은가격순</li>
-                        <li @click="changeSortOption('priceHighToLow')">높은가격순</li>
+                        <li @click="changeSortOption('lowPrice')">낮은가격순</li>
+                        <li @click="changeSortOption('highPrice')">높은가격순</li>
                     </ul>
                 </div>
             </div>
@@ -125,7 +128,13 @@
                     isDropdownOpen: false, // 카테고리 드롭다운 상태
 
 
-                    sortOption: "인기순", // 기본 정렬 기준
+                    sortOption: 'popularity',  // 기본값 설정
+                    sortLabel: {
+                        newest: '최신순',
+                        popularity: '인기순',
+                        lowPrice: '낮은가격순',
+                        highPrice: '높은가격순',
+                    },
                     isSortDropdownOpen: false, // 정렬기준 드롭다운 상태
 
                 };
@@ -173,7 +182,7 @@
                 },
 
                 changeSortOption(option) {
-                    this.sortOption = option;
+                    this.sortOption = option;  // 선택된 정렬 기준으로 변경
                     this.isSortDropdownOpen = false; // 드롭다운 닫기
                     this.fnProductList(); // 정렬 기준 변경 후 상품 목록 갱신
                 },
