@@ -21,11 +21,11 @@
                 <section class="order-section">
                     <section class="order-info">
                         <h2 class="text">주문 상품 정보</h2>
-                        <div class="product">
-                            <img :src="info?.filePath">
+                        <div class="product" v-if="info && info.filePath">
+                            <img :src="info.filePath">
                             <div class="product-details">
                                 <p class="product-name">{{ info.itemName }}</p>
-                                <p class="product-price">₩ {{ info.Price }}</p>
+                                <p class="product-price">₩ {{ info.price }}</p>
                                 <p class="product-quantity">수량: {{ info.itemCount }}</p>
                             </div>
                         </div>
@@ -119,22 +119,26 @@
                 itemNo: "${map.itemNo}",
                 info: {},
                 sessionId : "${sessionId}",
-                paymentMethod: "one", 
-                shippingMessage: ""
             };
         },
         methods: {
             fnPay(){
 				var self = this;
 				var nparmap = { itemNo: self.itemNo };
+                console.log("보내는 데이터:", nparmap);
 				$.ajax({
 					url:"/pay.dox",
 					dataType:"json",	
 					type : "POST", 
 					data : nparmap,
 					success : function(data) { 
-                        self.info = data.info;
+                        // self.info = data.info;
 						console.log(data);
+                        if (data.info) {
+                            self.info = data.info;
+                        } else {
+                            console.error("서버 응답에 info 없음:", data);
+                        }
 					}
 				});
             },
