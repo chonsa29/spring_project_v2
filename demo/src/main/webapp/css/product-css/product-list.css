@@ -132,15 +132,46 @@ h2 {
     text-align: left;
 }
 
-#product-menu {
-	text-align: right;
+
+
+.sort-dropdown-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-#selectProductMenu, #selectProductMenu:focus {
-    margin-right: 20vw;
-	outline: none;
-	border: none;
+.sort-dropdown-menu li {
+    padding: 10px;
+    cursor: pointer;
 }
+
+.sort-dropdown-menu li:hover {
+    background-color: #f1f1f1;
+}
+
+.sort-custom-dropdown {
+    position: relative;
+}
+
+.sort-dropdown-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.sort-dropdown-btn:hover {
+    background-color: #45a049;
+}
+
+
+
 
 
 

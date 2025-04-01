@@ -13,14 +13,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.example.demo.dao.PayService;
 import com.google.gson.Gson;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 public class PayController {
 	
 	@Autowired
 	PayService payService;
 	
-	@RequestMapping("/pay.do")
-	public String home(Model model) throws Exception{
+	@RequestMapping("/pay.do") 
+    public String noticeEdit(HttpServletRequest request,Model model, 
+    		@RequestParam HashMap<String, Object> map) throws Exception{
+		request.setAttribute("map", map);
         return "/cart/pay";
     }
 	

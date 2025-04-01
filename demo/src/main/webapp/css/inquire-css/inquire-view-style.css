@@ -110,9 +110,19 @@
     transform: scale(1.01);
 }
 
+.admin-reply, .admin-reply-form {
+    background-color: #fff;
+    padding: 15px;
+    margin-top: 30px;
+    border-radius: 8px;
+    width: 100%; /* 부모 크기에 맞게 확장 */
+    max-width: 500px; /* 최대 너비 설정 */
+    align-self: flex-start; /* 왼쪽 정렬 */
+}
+
 /* 관리자 답변 스타일 */
 .admin-reply {
-    background-color: #f8f9fa;
+    background-color: #fff;
     padding: 15px;
     margin-top: 50px;
     border-radius: 8px;
@@ -136,7 +146,7 @@
 
 /* 관리자 답변 입력 스타일 */
 .admin-reply-form {
-    background-color: #f8f9fa;
+    background-color: #fff;
     padding: 15px;
     margin-top: 30px;
     border-radius: 8px;

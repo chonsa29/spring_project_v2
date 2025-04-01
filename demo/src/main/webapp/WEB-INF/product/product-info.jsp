@@ -100,10 +100,8 @@
                                 </div>
                             </div>
                         </div>
-                        <button class="buy">
-                            <div @click="fnPay(info.itemNo)">
-                                구매하기
-                            </div>
+                        <button class="buy" @click="fnPay(info.itemNo)">
+                            구매하기
                         </button>
                     </div>
                 </div>
@@ -404,6 +402,7 @@
                 },
 
                 fnPay(itemNo) {
+                    console.log(itemNo)
                     pageChange("/pay.do", { itemNo: itemNo }); // 구매하기로 이동
                 },
 

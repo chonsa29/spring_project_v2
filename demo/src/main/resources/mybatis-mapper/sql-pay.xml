@@ -4,21 +4,25 @@
 
 <mapper namespace="com.example.demo.mapper.PayMapper">
 
-	<select id="paySell" parameterType="hashmap" resultType="com.example.demo.model.PayProduct">
+	<select id="paySell" parameterType="hashmap" resultType="com.example.demo.model.Pay">
 		SELECT 
-		    PA.P_NO, PA.P_UID, PA.P_DATE, PA.P_WAY,
-		    PRODUCT_WITH_IMG.PRODUCT_ITEM_NO, PRODUCT_WITH_IMG.ITEM_NAME, 
-		    PRODUCT_WITH_IMG.PRICE, PRODUCT_WITH_IMG.FILEPATH
-		FROM PAY PA
-		INNER JOIN (
-		    SELECT 
-		        P.ITEM_NO AS PRODUCT_ITEM_NO, P.ITEM_NAME, P.PRICE, 
-		        I.FILEPATH
-		    FROM PRODUCT P
-		    INNER JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
-		    WHERE P.ITEM_NO = #{itemNo}
-		) PRODUCT_WITH_IMG
-		ON 1=1
+        P.ITEM_NO, P.ITEM_NAME, P.PRICE, P.ITEM_COUNT, IMG.FILEPATH,
+
+        M.USERID, M.USERNAME AS ORDERER_NAME, M.PHONE AS ORDERER_PHONE, M.ADDRESS, M.POINT,
+
+        C.COUPON_NAME, C.DISCOUNT_AMOUNT,
+
+        PA.P_NO, PA.P_PRICE, PA.P_WAY,
+
+        D.DELIVERY_FEE
+
+	    FROM PAY PA
+	    INNER  JOIN PRODUCT P ON PA.ITEM_NO = P.ITEM_NO
+	    INNER  JOIN PRODUCT_IMG IMG ON P.ITEM_NO = IMG.ITEM_NO
+	    INNER  JOIN MEMBER M ON PA.P_UID = M.USERID
+	    LEFT JOIN COUPON C ON C.USERID = M.USERID AND C.IS_USED = 'N' 
+	    LEFT JOIN DELIVERY D ON P.ITEM_NO = D.ITEM_NO
+	    WHERE P.ITEM_NO = #{itemNo}
 	</select>
 	
 	<insert id="productSell" parameterType="hashmap">

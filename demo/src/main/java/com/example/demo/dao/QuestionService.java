@@ -110,9 +110,6 @@ public class QuestionService {
 	    try {
 	        System.out.println("questionUpdateStatus 실행, map: " + map);
 
-	        int qsStatus = Integer.parseInt(map.get("qsStatus").toString());
-	        map.put("qsStatus", qsStatus);
-
 	        int updatedRows = questionMapper.qnaStatusUpdate(map);
 	        System.out.println("변경된 행 개수: " + updatedRows);
 
