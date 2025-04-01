@@ -26,6 +26,8 @@ public class Pay {
     private String pNo;
     private int pPrice;
     private String pWay;
+    private String pDate;
+    private String pUid;
 
     // 배송비
     private int deliveryFee;

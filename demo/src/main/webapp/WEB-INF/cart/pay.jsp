@@ -68,7 +68,9 @@
                         <div>
                            <h2 class="text">포인트</h2> 
                         </div>
-                        <input type="text" v-model="info.point" placeholder="0">
+                        <div>
+                            <input type="text" v-model="info.point" placeholder="0">
+                        </div>
                         <div>
                             <button @click="applyPoint">전액 사용</button>
                         </div>
@@ -90,14 +92,14 @@
                         <div class="summary-details">
                             <p>상품 가격 <span>{{ info.pPrice }}</span></p>
                             <p>배송비 <span>+ {{ info.deliveryFee }}</span></p>
-                            <p class="total-price">총 주문금액 <span>{{ info.pPrice + info.deliveryFee }}원</span></p>
+                            <p class="total-price">총 주문금액 <span>{{ info.pPrice + info.deliveryFee }} 원</span></p>
                         </div>
                     </section>
                   
                     <section class="payment">
                         <h2 class="text">결제 수단</h2>
-                        <select v-model="paymentMethod">
-                            <option value="card">{{ info.pWay }}</option>
+                        <select>
+                            <option>{{ info.pWay }}</option>
                         </select>
                         <button class="pay-btn" @click="fnPayment">결제하기</button>
                     </section>
@@ -142,12 +144,13 @@
             },
             fnPayment(){
                 var self = this;
+                const totalPrice = self.info.pPrice + self.info.deliveryFee;
                 IMP.request_pay({
                     pg: "html5_inicis",
                     pay_method: "card",
                     merchant_uid: "merchant_" + new Date().getTime(),
                     name: "테스트 결제",
-                    amount: self.info.pPrice,
+                    amount: totalPrice,
                     buyer_tel: "010-0000-0000",
                     }	, function (rsp) { // callback
                     if (rsp.success) {
