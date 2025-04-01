@@ -38,10 +38,17 @@
                 <span>{{productcount}}개</span>
             </div>
             <div id="product-menu">
-                <select name="" id="selectProductMenu">
-                    <option value=""></option>
-                </select>
+                <div id="sort-menu" class="sort-custom-dropdown">
+                    <button class="sort-dropdown-btn" @click="toggleDropdown">{{ sortOption }}</button>
+                    <ul class="sort-dropdown-menu" v-show="isSortDropdownOpen">
+                        <li @click="changeSortOption('newest')">최신순</li>
+                        <li @click="changeSortOption('popularity')">인기순</li>
+                        <li @click="changeSortOption('priceLowToHigh')">낮은가격순</li>
+                        <li @click="changeSortOption('priceHighToLow')">높은가격순</li>
+                    </ul>
+                </div>
             </div>
+
             <div class="product-list">
                 <div class="product" v-for="item in list">
                     <div class="product-image" @click="fnInfo(item.itemNo)">
@@ -110,10 +117,17 @@
                     userId: "${sessionId}",
                     likedItems: new Set(),
                     showLikePopup: false, // 좋아요 표시
+
                     showCartPopup: false, // 장바구니 표시
+
                     selectedCategory: "전체메뉴", // 선택된 카테고리 기본값
                     allCategory: [],
-                    isDropdownOpen: false, // 드롭다운 상태
+                    isDropdownOpen: false, // 카테고리 드롭다운 상태
+
+
+                    sortOption: "인기순", // 기본 정렬 기준
+                    isSortDropdownOpen: false, // 정렬기준 드롭다운 상태
+
                 };
             },
             methods: {
@@ -124,6 +138,7 @@
                         pageSize: self.pageSize,
                         page: (self.page - 1) * self.pageSize,
                         searchOption: self.selectedCategory, // 선택된 카테고리 추가
+                        sortOption: self.sortOption, // 선택된 정렬 기준 추가
 
                     };
                     $.ajax({
@@ -136,7 +151,8 @@
                                 console.log(data);
                                 self.list = data.list;
                                 self.productcount = data.count;
-                                self.allCategory = data.category;
+
+                                self.allCategory = [{ category: "전체메뉴" }, ...data.category];
                                 console.log(self.allCategory);
                                 self.index = Math.ceil(data.count / self.pageSize);
                             } else {
@@ -154,6 +170,17 @@
 
                 toggleDropdown() {
                     this.isDropdownOpen = !this.isDropdownOpen; // 드롭다운 상태 토글
+                },
+
+                changeSortOption(option) {
+                    this.sortOption = option;
+                    this.isSortDropdownOpen = false; // 드롭다운 닫기
+                    this.fnProductList(); // 정렬 기준 변경 후 상품 목록 갱신
+                },
+
+                // 정렬기준 드롭다운 토글
+                toggleSortDropdown() {
+                    this.isSortDropdownOpen = !this.isSortDropdownOpen;
                 },
 
                 fnInfo(itemNo) {
