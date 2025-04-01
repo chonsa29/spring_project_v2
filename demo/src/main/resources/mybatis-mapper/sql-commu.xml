@@ -184,7 +184,13 @@
 		INNER JOIN GROUP_INFO GI ON GU.GROUP_ID = GI.GROUP_ID
 		WHERE POST_ID = #{postId}
 	</select>
-
+	
+	<!-- 그룹 속한 거 확인 -->
+	<select id="groupMemberCkeck" parameterType="hashmap" resultType="string">
+		SELECT GROUP_ID
+		FROM GROUP_USER
+		WHERE USERID = #{userId}
+	</select>
 
 </mapper>
 

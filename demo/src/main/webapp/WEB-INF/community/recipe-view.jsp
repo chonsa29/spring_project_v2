@@ -121,7 +121,7 @@
 				});
             },
             goBack() {
-                location.href = "/commu-main.do?tab=qna";
+                location.href = "/commu-main.do?tab=recipe";
             },
             fnEdit(postId) {
                 pageChange("/recipe/edit.do", { postId : this.postId });

@@ -244,8 +244,8 @@
     padding: 50px;
     border-radius: 10px;
     text-align: center;
-    width: 300px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 그림자 크기 조정 */
     position: relative;
     z-index: 1001;
 
@@ -284,40 +284,62 @@
     align-items: center;
 }
 
+/* 리더 표시 스타일 */
+.leader-label {
+    font-weight: bold;
+    color: blue;
+    margin-left: 10px;
+}
+
 /* 버튼 스타일 */
-.accept-btn {
-    background: green;
+.button-group {
+    display: flex; /* 버튼들이 가로로 정렬되도록 설정 */
+    justify-content: space-between; /* 버튼들을 양쪽으로 정렬 */
+    gap: 10px; /* 버튼 간 간격 */
+}
+
+.accept-btn, .accept-btn2, .reject-btn, .cancel-btn {
     color: white;
     border: none;
     padding: 5px 10px;
-    margin-left: 5px;
     cursor: pointer;
     border-radius: 5px;
+    font-size: 14px;
 }
-.reject-btn {
+
+.accept-btn { 
+    background: rgb(192, 192, 192);
+}
+.accept-btn2 {
+	background: green;
+}
+
+.reject-btn { 
     background: red;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    margin-left: 5px;
-    cursor: pointer;
-    border-radius: 5px;
 }
-.cancel-btn {
+
+.cancel-btn { 
     background: gray;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    margin-left: 5px;
-    cursor: pointer;
-    border-radius: 5px;
 }
 
 /* 닫기 버튼 */
 .close-btn {
-    margin-top: 10px;
+
     padding: 8px 12px;
     background: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+	flex-shrink: 0; /* 버튼 크기 유지 */
+	height: 35px;
+	
+}
+
+/* 마감 버튼 */
+.end-btn {
+	background: #808080;
+    padding: 8px 12px;
     color: white;
     border: none;
     cursor: pointer;

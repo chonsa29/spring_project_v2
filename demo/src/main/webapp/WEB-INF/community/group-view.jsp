@@ -35,39 +35,61 @@
             <div class="recipe-info-container">
                 <div class="info-item">
                     <span class="info-title">현재 신청자</span>
-                    <span>1/3</span>
+                    <span>{{ members.length }}/3</span>
                 </div>
-                <div class="button-container" v-if="sessionId == info.userId || sessionStatus == 'A'">
+
+                <!-- sessionId가 members 배열에 포함되어 있으면 신청자 보기 버튼 -->
+                <div class="button-container" v-if="isMember">
                     <button class="edit-btn" @click="fnMemberView">신청자 보기</button>
                 </div>
-                <!-- 신청자 보기 버튼 클릭 시 팝업 -->
+
+                <!-- 신청자 보기 팝업 -->
                 <div v-if="isPopupVisible" class="popup-overlay">
                     <div class="popup">
                         <h3>신청자 목록</h3>
                         <ul>
                             <li v-for="member in members" :key="member.id">
                                 <span>{{ member.userId }}</span>
-                
-                                <!-- 리더(방장)일 경우: 수락/거절 버튼 -->
-                                <span v-if="sessionId === leaderId">
-                                    <button class="accept-btn" @click="fnAccept(member.id)">수락</button>
-                                    <button class="reject-btn" @click="fnReject(member.id)">거절</button>
-                                </span>
-                
-                                <!-- 신청한 멤버일 경우: 참가 상태 + 취소 버튼 -->
-                                <span v-else-if="sessionId === member.id">
-                                    <span> ({{ member.status }}) </span>
-                                    <button class="cancel-btn" @click="fnCancel">취소</button>
-                                </span>
+
+                                <!-- 리더 표시 -->
+                                <span v-if="member.userId === member.leaderId" class="leader-label">리더</span>
+                            
+                                    <template v-else>
+                                        <!-- 리더(방장)일 경우 -->
+                                        <template v-if="sessionId === member.leaderId">
+                                            <div class="button-group">
+                                                <button v-if="member.status === 'ACTIVE'" class="accept-btn" disabled>수락 완료</button>
+                                                <button v-if="member.status === 'ACTIVE'" class="reject-btn" @click="removeMember(member.userId)">삭제</button>
+                                                <button v-if="member.status === 'PENDING'" class="accept-btn2" @click="acceptMember(member.userId)">수락</button>
+                                                <button v-if="member.status === 'PENDING'" class="reject-btn" @click="rejectMember(member.userId)">거절</button>
+                                            </div>
+                                        </template>
+
+                                        <!-- 멤버(신청자)일 경우 -->
+                                        <template v-else-if="sessionId === member.userId">
+                                            <div class="button-group">
+                                                <button v-if="member.status === 'ACTIVE'" class="accept-btn" disabled>수락 완료</button>
+                                                <button v-if="member.status === 'ACTIVE'" class="cancel-btn" @click="cancelApplication(member.userId)">취소</button>
+                                                <button v-if="member.status === 'PENDING'" class="pending-btn" disabled>수락 대기</button>
+                                                <button v-if="member.status === 'PENDING'" class="cancel-btn" @click="cancelApplication(member.userId)">취소</button>
+                                            </div>
+                                        </template>
+                                    </template>
+                           
                             </li>
                         </ul>
-                        <button class="close-btn" @click="closePopup">닫기</button>
+
+                        <!-- 리더일 때만 마감 버튼을 팝업 하단에 추가 -->
+                        <div v-if="isLeader" class="button-group">
+                            <button class="end-btn">마감하기</button>
+                        
+                        <button class="close-btn" @click="closePopup">닫기</button></div>
                     </div>
                 </div>
-                
 
-                <div class="button-container" v-if="sessionId != info.userId">
-                    <button class="edit-btn" @click="fnMember">신청하기</button>
+                <!-- sessionId가 members 배열에 없으면 신청하기 버튼 -->
+                <div class="button-container" v-if="!isMember">
+                    <button class="edit-btn" @click="fnMemberJoin">신청하기</button>
                 </div>
             </div>
 
@@ -96,7 +118,9 @@
                 sessionId: "${sessionId}",
                 sessionStatus: "${sessionStatus}",
                 isPopupVisible: false, // 팝업 표시 여부
-                members: []
+                members: [],
+                isMember: false, // sessionId가 members 배열에 포함되었는지 여부
+                isLeader: false, // 현재 사용자가 리더인지 여부
             };
         },
         methods: {
@@ -112,13 +136,24 @@
 					dataType:"json",	
 					type : "POST", 
 					data : nparmap,
-					success : function(data) { 
+					success : function(data) {
 						console.log(data);
                         self.info = data.info;
-                        console.log('Post ID:', self.postId);
+                        self.members = data.members;
+                        self.checkIfMember(); // sessionId가 members에 포함되었는지 확인
+                        self.checkIfLeader(); // 리더인지 확인
 					}
 				});
             },
+            // sessionId가 members 배열에 포함되었는지 확인
+            checkIfMember() {
+                this.isMember = this.members.some(member => member.userId === this.sessionId);
+            },
+            // 현재 사용자가 리더인지 확인
+            checkIfLeader() {
+                this.isLeader = this.members.some(member => member.userId === this.sessionId && member.userId === member.leaderId);
+            },
+            // 게시글에 포함된 사람들 리스트 함수
             fnMemberView() {
                 var self = this;
                 var nparmap = {
@@ -154,7 +189,7 @@
                 }
             },
             goBack() {
-                location.href = "/commu-main.do?tab=qna";
+                location.href = "/commu-main.do?tab=group";
             },
             fnEdit(postId) {
                 pageChange("/recipe/edit.do", { postId : this.postId });
@@ -179,10 +214,34 @@
                     }
                 });
             },
+
+            // 가입 신청
+            fnMemberJoin: function () {
+                var self = this;
+                var nparmap = {
+                    userId : self.sessionId
+                };
+                $.ajax({
+                    url: "/group/join.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: nparmap,
+                    success: function (data) {
+                        if(data.result == "success") {
+							alert("삭제되었습니다!");
+                            location.href="/commu-main.do?tab=recipe";
+						} else {
+                            alert("삭제 실패")
+                        }
+                    }
+                });
+            }
         },
         mounted() {
             var self = this;
             self.fnGroup();
+
+            console.log('members:', this.members);
             
         }
     });
