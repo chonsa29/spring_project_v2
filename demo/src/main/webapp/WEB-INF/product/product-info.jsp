@@ -403,7 +403,7 @@
 
                 fnPay(itemNo) {
                     console.log(itemNo)
-                    // pageChange("/pay.do", { itemNo: itemNo }); // 구매하기로 이동
+                    pageChange("/pay.do", { itemNo: itemNo }); // 구매하기로 이동
                 },
 
                 changeImage(filePath) {
