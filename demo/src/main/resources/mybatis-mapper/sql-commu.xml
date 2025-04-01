@@ -162,6 +162,28 @@
 			AND CONTENTS LIKE '%' || #{searchKeyword} || '%'
 		</if>
 	</select>
+	
+	<select id="selectGroupView" parameterType="hashmap" resultType="com.example.demo.model.Group">
+		SELECT * 
+		FROM GROUP_POST GP
+		INNER JOIN GROUP_INFO GI ON GP.POST_ID = GI.POST_ID
+		WHERE GP.POST_ID = #{postId}
+	</select>
+	
+	<update id="updateGroupCnt" parameterType="hashmap">
+		UPDATE GROUP_POST
+		SET
+			VIEW_CNT = VIEW_CNT + 1
+		WHERE POST_ID = #{postId}
+	</update>
+	
+	<!-- 그룹 신청자 리스트-->
+	<select id="selectMembers" parameterType="hashmap" resultType="com.example.demo.model.Group">
+		SELECT *
+		FROM GROUP_USER GU
+		INNER JOIN GROUP_INFO GI ON GU.GROUP_ID = GI.GROUP_ID
+		WHERE POST_ID = #{postId}
+	</select>
 
 
 </mapper>

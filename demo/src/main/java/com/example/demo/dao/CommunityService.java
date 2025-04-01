@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.mapper.CommunityMapper;
+import com.example.demo.model.Group;
+import com.example.demo.model.GroupUser;
 import com.example.demo.model.Question;
 import com.example.demo.model.Recipe;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -191,15 +193,46 @@ public class CommunityService {
 	public HashMap<String, Object> getGroupList(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
-			List<Recipe> gList =  communityMapper.selectGroupList(map);
+			List<Group> gList =  communityMapper.selectGroupList(map);
 			int count = communityMapper.selectGroup(map);
-			
-			// gList나 count가 제대로 반환되는지 확인
-	        System.out.println("gList size: " + (gList != null ? gList.size() : "null"));
-	        System.out.println("count: " + count);
 			
 			resultMap.put("count", count);
 			resultMap.put("gList", gList); 
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+		}
+		return resultMap;
+	}
+	
+	// 게시글 자세히 보기
+	public HashMap<String, Object> groupView(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			
+			if(map.get("option").equals("SELECT")) {
+				communityMapper.updateGroupCnt(map);
+			}
+			
+			Group info = communityMapper.selectGroupView(map);
+			
+			resultMap.put("info", info);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+		}
+		
+		return resultMap;
+	}
+
+	public HashMap<String, Object> getGroupMembers(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			List<GroupUser> members =  communityMapper.selectMembers(map);			
+			resultMap.put("members", members); 
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			// TODO: handle exception
