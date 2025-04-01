@@ -6,7 +6,7 @@
 
 	<select id="paySell" parameterType="hashmap" resultType="com.example.demo.model.Pay">
 		SELECT 
-        P.ITEM_NO, P.ITEM_NAME, P.PRICE, IMG.FILEPATH,
+        P.ITEM_NO, P.ITEM_NAME, P.PRICE, P.ITEM_COUNT, IMG.FILEPATH,
 
         M.USERID, M.USERNAME AS ORDERER_NAME, M.PHONE AS ORDERER_PHONE, M.ADDRESS, M.POINT,
 

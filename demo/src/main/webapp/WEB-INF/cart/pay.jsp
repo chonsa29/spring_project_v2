@@ -33,8 +33,7 @@
                     
                     <section class="shipping">
                         <h2 class="text">배송 정보</h2>
-                        <input type="checkbox"> 주문자 정보와 동일
-                        <input type="text" v-model="" placeholder="주소">
+                        <input type="text" v-model="info.address" placeholder="주소">
                         <input type="text" v-model="" placeholder="상세 주소">
                         <div>
                             <h2 class="text">배송 메모</h2>
@@ -60,29 +59,28 @@
                         <div>
                             <h2 class="text">쿠폰</h2>
                         </div>
-                        <input type="text" v-model="coupon" placeholder="쿠폰 코드를 입력해 주세요">
-                        <div>
-                            <button @click="applyCoupon">코드 확인</button>
-                        </div>
+                        <select>
+                            <option>{{ info.couponName }}</option>
+                        </select>
                     </section>
 
                    <section class="point">
                         <div>
                            <h2 class="text">포인트</h2> 
                         </div>
-                        <input type="text" v-model="point" placeholder="0">
+                        <input type="text" v-model="info.point" placeholder="0">
                         <div>
                             <button @click="applyPoint">전액 사용</button>
                         </div>
                         <div>
-                            사용 가능 포인트 1000 / 보유 포인트 1000
+                            사용 가능 포인트 {{ info.point }} / 보유 포인트 {{ info.point }}
                         </div>
                     </section>
 
                     <section class="order-details">
                         <h2 class="text">주문자 정보</h2>
-                        <input type="text" v-model="ordererName" placeholder="이름">
-                        <input type="text" v-model="ordererPhone" placeholder="연락처">
+                        <input type="text" v-model="info.ordererName" placeholder="이름">
+                        <input type="text" v-model="info.ordererPhone" placeholder="연락처">
                     </section>
                 </section>
                 
@@ -91,8 +89,8 @@
                         <h2 class="text">주문 요약</h2>
                         <div class="summary-details">
                             <p>상품 가격 <span>{{ info.pPrice }}</span></p>
-                            <p>배송비 <span>+ 3,000원</span></p>
-                            <p class="total-price">총 주문금액 <span>15,900원</span></p>
+                            <p>배송비 <span>+ {{ info.deliveryFee }}</span></p>
+                            <p class="total-price">총 주문금액 <span>{{ info.pPrice + info.deliveryFee }}원</span></p>
                         </div>
                     </section>
                   
