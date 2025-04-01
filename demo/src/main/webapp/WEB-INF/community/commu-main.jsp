@@ -326,30 +326,6 @@ const app = Vue.createApp({
             this.newGroupName = '';
         },
 
-        // 사용자가 그룹에 속해 있는지 체크
-        // checkUserGroupStatus() {
-		// 	let self = this;
-		// 	$.ajax({
-		// 		url: "/group/memberCheck.dox",
-		// 		type: "POST",
-		// 		dataType: "json",
-		// 		data: { userId: self.userId }, // 사용자 ID 전달
-		// 		success: function(response) {
-		// 			if (response.status === "success") {
-		// 				if (response.groupStatus === "joined") {
-		// 					alert("이미 그룹에 참가 중이십니다.");
-		// 				} else {
-		// 					self.showGroupCreationPopup = true; // 그룹 만들기 팝업 표시
-		// 				}
-		// 			} else {
-		// 				alert(response.message || "사용자 그룹 상태를 확인할 수 없습니다.");
-		// 			}
-		// 		},
-		// 		error: function() {
-		// 			alert("서버와의 통신 중 오류가 발생했습니다.");
-		// 		}
-		// 	});
-		// }
 	},
 	mounted() {
 		// URL에서 'tab' 파라미터 가져오기
