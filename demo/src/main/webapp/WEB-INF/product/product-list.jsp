@@ -61,9 +61,12 @@
                         <div v-if="showLikePopup" class="like-popup-overlay">
                             <div class="like-popup">좋아요 항목에 추가되었습니다</div>
                         </div>
+                        <div v-if="!showLikePopup" class="like-popup-overlay">
+                            <div class="like-popup">좋아요 항목에서 취소되었습니다.</div>
+                        </div>
 
                         <!-- 장바구니 -->
-                        <button class="product-cart" @click="fnCart(item.itemNo, sessionId)">🛒</button>
+                        <button class="product-cart" @click="fnCart(item.itemNo, userId)">🛒</button>
                         <div v-if="showCartPopup" class="popup-overlay">
                             <div class="popup">장바구니에 추가되었습니다</div>
                         </div>
@@ -88,7 +91,7 @@
         </div>
         </div>
         <jsp:include page="/WEB-INF/common/footer.jsp" />
-        
+
     </body>
 
     </html>
@@ -104,7 +107,7 @@
                     page: 1,
                     price: 0,
                     keyword: "",
-                    sessionId: "${sessionId}",
+                    userId: "${sessionId}",
                     likedItems: new Set(),
                     showLikePopup: false, // 좋아요 표시
                     showCartPopup: false, // 장바구니 표시
@@ -178,22 +181,73 @@
                     return value ? parseInt(value).toLocaleString() : "0";
                 },
 
-                fnLike(itemNo, sessionId) {
-                    if (this.likedItems.has(itemNo)) {
-                        this.likedItems.delete(itemNo);
-                    } else {
-                        this.likedItems.add(itemNo);
-                        this.showLikePopup = true;
-                        setTimeout(() => {
-                            this.showLikePopup = false;
-                        }, 2000);
-                    }
+                // 좋아요 버튼 활성화/비활성화
+                fnLike(itemNo) {
+                    var self = this;
+                    var nparmap = {
+                        itemNo: itemNo,
+                        userId: self.userId
+                    };
+                    console.log(itemNo);
+                    console.log(self.userId);
+
+                    // 서버에 요청 보내기 (좋아요 추가 또는 취소)
+                    $.ajax({
+                        url: "/product/likeToggle.dox",  // 서버의 엔드포인트 (좋아요 추가/취소 처리)
+                        dataType: "json",
+                        type: "POST",
+                        data: nparmap,
+                        success: function (data) {
+                            if (data.result == "a") {  // 좋아요 추가
+                                if (!self.likedItems.has(itemNo)) {
+                                    self.likedItems.add(itemNo);  // 좋아요 추가
+                                    self.showLikePopup = true;
+                                    setTimeout(() => {
+                                        self.showLikePopup = false;
+                                    }, 2000);
+                                }
+                            } else if (data.result == "c") {  // 좋아요 취소
+                                if (self.likedItems.has(itemNo)) {
+                                    self.likedItems.delete(itemNo);  // 좋아요 취소
+                                    self.showLikePopup = false;
+                                }
+                            } else {
+                                console.error("좋아요 처리 실패", data.message);
+                            }
+                        },
+                        error: function () {
+                            console.error("AJAX 요청 실패");
+                        }
+                    });
                 },
 
-                fnCart(itemNo, sessionId) {
+                fetchLikedItems() {
+                    var self = this;
+                    var nparmap = {
+                        userId: self.userId
+                    };
+                    console.log("fetchLikedItems: " + self.userId);
+                    $.ajax({
+                        url: "/product/getLikedItems.dox", // userId별 좋아요한 상품을 가져오는 API
+                        dataType: "json",
+                        type: "POST",
+                        data: nparmap,
+                        success: function (data) {
+                            if (data.result == "success") {
+                                console.log("좋아요 목록 (Wish 객체): ", data.wish);
+
+                                // Wish 객체 리스트에서 itemNo만 추출하여 Set으로 변환
+                                self.likedItems = new Set(data.wish.map(wish => wish.itemNo));
+                            }
+                        }
+                    });
+                },
+
+
+                fnCart(itemNo, userId) {
                     //ajax로 보내주기
                     // console.log(itemNo);
-                    // console.log(sessionId);
+                    // console.log(userId);
                     this.showCartPopup = true;
                     setTimeout(() => {
                         this.showCartPopup = false;
@@ -204,6 +258,7 @@
             mounted() {
                 var self = this;
                 self.fnProductList();
+                self.fetchLikedItems();
             }
         });
         app.mount('#app');

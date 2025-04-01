@@ -172,12 +172,9 @@ public class ProductService {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
-	        String userId = (String) map.get("userId");
-	        String itemNo = (String) map.get("itemNo");
 
 	        // 1. 사용자와 상품 번호로 좋아요 상태 확인
 	        int likeCount = productMapper.checkIfLiked(map);
-	        System.out.println(likeCount);
 	        
 	        if (likeCount > 0) {
 	            // 좋아요 취소

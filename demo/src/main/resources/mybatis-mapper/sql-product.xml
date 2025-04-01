@@ -35,8 +35,15 @@
 	<!-- product 전체 개수 구하기 -->
 	<select id="CountProduct" parameterType="hashmap" resultType="int">
 		SELECT COUNT(*)
-		FROM PRODUCT
-		WHERE ITEM_NAME LIKE '%' || #{keyword} || '%' 
+		FROM PRODUCT P
+		LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
+		WHERE THUMBNAIL = 'Y'
+		<if test="searchOption == '전체메뉴'">
+			AND ITEM_NAME LIKE '%' || #{keyword} || '%' 
+		</if>
+		<if test="searchOption != '전체메뉴'">
+        	AND CATEGORY = #{searchOption} <!-- 카테고리 필터링 -->
+    	</if>
 	</select>
 	
 	<!-- product 상세정보 가져오기 -->
@@ -142,7 +149,7 @@
     </delete>
     
     <select id="SelectproductWish" parameterType="hashmap" resultType="com.example.demo.model.Wish">
-    	SELECT ITEM_NO
+    	SELECT *
     	FROM WISH
     	WHERE USERID = #{userId}
     </select>
