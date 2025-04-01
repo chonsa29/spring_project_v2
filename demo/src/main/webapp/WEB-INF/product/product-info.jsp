@@ -18,10 +18,8 @@
         <jsp:include page="/WEB-INF/common/header.jsp" />
         <div id="app">
             <div id="root">
-                <a href="/home.do"> HOME </a> > <a href="/product.do"> PRODUCT </a> > {{info.itemName}}
-                <select name="category" id="selectMenu" v-model="info.itemName">
-                    <option value="info.itemName"></option>
-                </select>
+                <a href="/home.do"> HOME </a> > <a href="/product.do"> PRODUCT </a> > {{info.category}} >
+                {{info.itemName}}
             </div>
             <div class="info-container">
                 <div id="product-box">
@@ -158,10 +156,12 @@
 
                     <!-- 교환/환불 내용 -->
                     <div v-show="selectedTab === 'exchange'" class="exchange">
+                        
+                        <!-- 1 -->
                         <div>
                             <h3>주문 취소</h3>
                             <ul>
-                                <li>입금확인 단계 : 마이페이지 > 주문/배송 조회.변경에서 직접 변경 및 취소하실 수 있습니다.</li>
+                                <li>입금확인 단계 : 마이페이지 > 주문/배송 조회·변경에서 직접 변경 및 취소하실 수 있습니다.</li>
                                 <li>상품 준비중 단계부터는 주문 취소/변경이 제한됩니다.</li>
                                 <li>카드 환불은 카드사 정책에 따르며, 운영일 기준으로 3~5일 정도 소요됩니다.</li>
                                 <li>결제 취소시, 사용기한이 남은 적립금과 쿠폰은 다시 사용하실 수 있습니다.</li>
@@ -169,11 +169,14 @@
                                 <li>기타 이상이 있는 경우 고객지원센터(1800-1234)로 문의 부탁드립니다.</li>
                             </ul>
                         </div>
+
+                        <!-- 2 -->
                         <div>
                             <h3>교환/반품</h3>
                             <ul>
                                 <li>상품이 고시된 내용 및 광고와 다를 때, 그 정도에 따라 재배송, 일부 환불, 전액 환불 처리가 진행됩니다.</li>
                             </ul>
+
                             <h4>신선/냉장/냉동 식품</h4>
                             <ol type="1">
                                 <li>상품을 받은 날로부터 7일 이내에 상품의 상태를 확인할 수 있는 사진을 첨부해 1:1문의, 카카오톡 상담 및 고객지원센터(1800-1234)에
@@ -183,6 +186,7 @@
                                 </li>
                                 <li>단순변심, 주문실수에 의한 교환/반품 처리는 어렵습니다.</li>
                             </ol>
+
                             <h4>상온식품 및 기타상품</h4>
                             <ol TYPE="1">
                                 <li>다음과 같은 경우 문제가 발생했다면, 상품의 상태를 확인할 수 있는 사진과 함께 1:1문의, 카카오톡 상담, 유선접수(1800-1234) 문자접수를
@@ -193,6 +197,7 @@
                                 <li>배송비 추가결제가 완료되면 해당 상품을 회수하여 상태를 확인할 수 교환/반품 절차가 진행됩니다.</li>
                                 <li>고객님의 사정으로 회수가 지연될 경우, 교환/반품이 제한 또는 지연될 수 있습니다.</li>
                             </ol>
+
                             <h4>교환/반품 불가</h4>
                             <ol type="1">
                                 <li>신선/냉장/냉동 식품의 주관적인 맛에 대한 불만</li>
@@ -207,6 +212,8 @@
                                 <li>설치 또는 사용하여 재판매가 어려운 경우, 액정이 있는 상품의 전원을 켠 경우</li>
                             </ol>
                         </div>
+
+                        <!-- 3 -->
                         <div>
                             <h3>후환불 제도</h3>
                             <ul>
@@ -216,12 +223,16 @@
                                 </li>
                             </ul>
                         </div>
+
+                        <!-- 4 -->
                         <div>
                             <h3>미성년자 권리 보호</h3>
                             <ul>
                                 <li>구매자가 미성년자일 경우, 법정대리인이 그 계약에 동의하지 아니하면 미성년자 본인 또는 법정대리인이 그 계약을 취소할 수 있습니다.</li>
                             </ul>
                         </div>
+
+                        <!-- 5 -->
                         <div>
                             <h3>소비자 피해 보상,재화 등에 대한 불만 및 소비자와 사업자의 분쟁 처리에 관한 사항</h3>
                             <ul>
@@ -230,6 +241,8 @@
                                 <li>고객님께서 제기하는 정당한 의견이나 불만을 반영하고 그 피해를 보상처리하기 위해서 피해보상처리 기구를 설치, 운영합니다.</li>
                             </ul>
                         </div>
+
+                        <!-- 6 -->
                         <div>
                             <h3>구매안전서비스 설명</h3>
                             <ul>
@@ -239,9 +252,6 @@
                                     서비스 제공자: 나이스페이먼즈 서비스등록번호 제 A07-20200629-0023호
                                 </li>
                             </ul>
-                        </div>
-                        <div>
-
                         </div>
                     </div>
                 </div>
@@ -286,7 +296,7 @@
                     maxStars: 5, // 최대 별점
                     likedItems: new Set(),
                     showLikePopup: false, // 좋아요 표시
-                    wish : [],
+                    wish: [],
                 };
             },
 
@@ -303,10 +313,18 @@
                         data: nparmap,
                         success: function (data) {
                             if (data.result == "success") {
+                                // 단일 상세 정보
                                 self.info = data.info;
+
+                                // 재고
                                 self.count = data.count;
+
+                                // 가격
                                 self.price = data.info.price;
+
+                                // 이미지들
                                 self.imgList = data.imgList;
+
                                 console.log(data.info);
 
                                 if (data.info.allergens != "없음") {
@@ -442,25 +460,28 @@
                     });
                 },
 
-                getLikedItems() {
+                fetchLikedItems() {
                     var self = this;
                     var nparmap = {
                         userId: self.userId
                     };
+                    console.log("fetchLikedItems: " + self.userId);
                     $.ajax({
-                        url: "/product/getLikedItems.dox",  // 서버에서 좋아요 목록을 불러오는 API
+                        url: "/product/getLikedItems.dox", // userId별 좋아요한 상품을 가져오는 API
                         dataType: "json",
                         type: "POST",
                         data: nparmap,
                         success: function (data) {
                             if (data.result == "success") {
-                                self.likedItems = new Set(data.likedItems);  // 서버에서 가져온 좋아요 상품 ID로 초기화
-                                self.wish = data.wish;
-                                console.log(self.wish);
+                                console.log("좋아요 목록 (Wish 객체): ", data.wish);
+
+                                // Wish 객체 리스트에서 itemNo만 추출하여 Set으로 변환
+                                self.likedItems = new Set(data.wish.map(wish => wish.itemNo));
                             }
                         }
                     });
                 },
+
 
 
             },
@@ -483,9 +504,7 @@
                 console.log(self.itemNo);
                 self.fngetInfo();
                 self.fnGetReview();
-                if (self.userId) {
-                    self.getLikedItems();  // 로그인된 사용자라면 좋아요 상태를 초기화
-                }
+                self.fetchLikedItems();
             }
         });
         app.mount('#app');
