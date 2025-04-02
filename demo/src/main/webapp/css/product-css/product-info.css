@@ -429,19 +429,16 @@ a {
     font-size: 14px;
 }
 .bar {
-    flex: 1;
+    width: 100px; /* 막대 길이 */
     height: 10px;
-    background: #ddd;
+    background-color: #e0e0e0; /* 배경색 (연한 회색) */
     border-radius: 5px;
-    position: relative;
     overflow: hidden;
 }
 .filled-bar {
     height: 100%;
-    background: #ff5a5a;
-    position: absolute;
-    top: 0;
-    left: 0;
+    background-color: #ffcc00; /* 별점 색 (노란색) */
+    transition: width 0.3s ease-in-out;
 }
 .review-bar-percent {
     font-size: 14px;
