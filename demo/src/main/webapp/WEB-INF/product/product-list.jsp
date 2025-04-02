@@ -39,12 +39,15 @@
             </div>
             <div id="product-menu">
                 <div id="sort-menu" class="sort-custom-dropdown">
-                    <button class="sort-dropdown-btn" @click="toggleDropdown">{{ sortOption }}</button>
+                    <button class="sort-dropdown-btn" @click="toggleSortDropdown">
+                        <!-- sortOption에 맞는 텍스트를 매핑 객체에서 가져와서 버튼에 표시 -->
+                        {{ sortLabel[sortOption] }}
+                    </button>
                     <ul class="sort-dropdown-menu" v-show="isSortDropdownOpen">
                         <li @click="changeSortOption('newest')">최신순</li>
                         <li @click="changeSortOption('popularity')">인기순</li>
-                        <li @click="changeSortOption('priceLowToHigh')">낮은가격순</li>
-                        <li @click="changeSortOption('priceHighToLow')">높은가격순</li>
+                        <li @click="changeSortOption('lowPrice')">낮은가격순</li>
+                        <li @click="changeSortOption('highPrice')">높은가격순</li>
                     </ul>
                 </div>
             </div>
@@ -57,7 +60,7 @@
                     <div @click="fnInfo(item.itemNo)">
                         <p class="product-info">{{item.itemInfo}}</p>
                         <h4 class="product-name">{{item.itemName}}</h4>
-                        <p class="product-discount-style">{{formatPrice(item.price * 3) }}</p>
+                        <p class="product-discount-style">{{formatPrice(item.price * 3) }}원</p>
                         <p class="product-discount">30%</p>
                         <p class="product-price">{{formatPrice(item.price)}}원</p>
                     </div>
@@ -125,7 +128,13 @@
                     isDropdownOpen: false, // 카테고리 드롭다운 상태
 
 
-                    sortOption: "인기순", // 기본 정렬 기준
+                    sortOption: 'popularity',  // 기본값 설정
+                    sortLabel: {
+                        newest: '최신순',
+                        popularity: '인기순',
+                        lowPrice: '낮은가격순',
+                        highPrice: '높은가격순',
+                    },
                     isSortDropdownOpen: false, // 정렬기준 드롭다운 상태
 
                 };
@@ -163,24 +172,28 @@
                 },
 
                 selectOption(category) {
-                    this.selectedCategory = category; // 버튼 텍스트 변경
-                    this.isDropdownOpen = false; // 드롭다운 닫기
-                    this.fnProductList();
+                    var self = this;
+                    self.selectedCategory = category; // 버튼 텍스트 변경
+                    self.isDropdownOpen = false; // 드롭다운 닫기
+                    self.fnProductList();
                 },
 
                 toggleDropdown() {
-                    this.isDropdownOpen = !this.isDropdownOpen; // 드롭다운 상태 토글
+                    var self = this;
+                    self.isDropdownOpen = !self.isDropdownOpen; // 드롭다운 상태 토글
                 },
 
                 changeSortOption(option) {
-                    this.sortOption = option;
-                    this.isSortDropdownOpen = false; // 드롭다운 닫기
-                    this.fnProductList(); // 정렬 기준 변경 후 상품 목록 갱신
+                    var self = this;
+                    self.sortOption = option;  // 선택된 정렬 기준으로 변경
+                    self.isSortDropdownOpen = false; // 드롭다운 닫기
+                    self.fnProductList(); // 정렬 기준 변경 후 상품 목록 갱신
                 },
 
                 // 정렬기준 드롭다운 토글
                 toggleSortDropdown() {
-                    this.isSortDropdownOpen = !this.isSortDropdownOpen;
+                    var self = this;
+                    self.isSortDropdownOpen = !self.isSortDropdownOpen;
                 },
 
                 fnInfo(itemNo) {
@@ -211,6 +224,12 @@
                 // 좋아요 버튼 활성화/비활성화
                 fnLike(itemNo) {
                     var self = this;
+
+                    if (!self.userId) {
+                        // 로그인 페이지로 리디렉션
+                        location.href = "/member/login.do"; // 로그인 페이지 경로
+                        return; // 이후 코드 실행 방지
+                    }
                     var nparmap = {
                         itemNo: itemNo,
                         userId: self.userId
@@ -272,13 +291,32 @@
 
 
                 fnCart(itemNo, userId) {
-                    //ajax로 보내주기
-                    // console.log(itemNo);
-                    // console.log(userId);
-                    this.showCartPopup = true;
-                    setTimeout(() => {
-                        this.showCartPopup = false;
-                    }, 2000);
+                    var self = this;
+
+                    if (!self.userId) {
+                        // 로그인 페이지로 리디렉션
+                        location.href = "/member/login.do"; // 로그인 페이지 경로
+                        return; // 이후 코드 실행 방지
+                    }
+                    var nparmap = {
+                        count: 1,
+                        userId: self.userId,
+                        itemNo: itemNo
+                    };
+                    $.ajax({
+                        url: "/cart/add.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: nparmap,
+                        success: function (data) {
+                            console.log(data);
+                            self.showCartPopup = true;
+                            setTimeout(() => {
+                                self.showCartPopup = false;
+                            }, 2000);
+                        }
+                    });
+
                 },
 
             },

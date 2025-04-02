@@ -19,9 +19,6 @@ public class PayService {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
 			Pay info = payMapper.paySell(map);
-			System.out.println("paySell() 조회 결과: " + info);
-			System.out.println("map 데이터: " + map);
-			System.out.println("paySell() 조회 시 itemNo 값: " + map.get("itemNo"));
 			resultMap.put("info", info);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
