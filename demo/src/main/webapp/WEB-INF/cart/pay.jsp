@@ -21,25 +21,30 @@
                 <section class="order-section">
                     <section class="order-info">
                         <h2 class="text">주문 상품 정보</h2>
-                        <div class="product" v-if="info && info.filePath">
-                            <img :src="info.filePath">
+                        <div class="product" v-if="productInfo && productInfo.filePath">
+                            <img :src="productInfo.filePath">
                             <div class="product-details">
-                                <p class="product-name">{{ info.itemName }}</p>
-                                <p class="product-price">₩ {{ info.price }}</p>
-                                <p class="product-quantity">수량: {{ info.itemCount }}</p>
+                                <p class="product-name">{{ productInfo.itemName }}</p>
+                                <p class="product-quantity">
+                                    <span class="required-label">필수</span> {{ productInfo.quantity }}
+                                </p>
+                                <p class="product-price">{{ productInfo.price }} 원</p>
                             </div>
+                        </div>
+                         <div class="delivery-info">
+                            <p>배송비 3,000 원</p>
                         </div>
                     </section>
 
                     <section class="order-details">
                         <h2 class="text">주문자 정보</h2>
-                        <input type="text" class="pay_ordererName" v-model="info.ordererName" placeholder="이름">
-                        <input type="text" class="pay_ordererPhone" v-model="info.ordererPhone" placeholder="연락처">
+                        <input type="text" class="pay_ordererName" v-model="memberInfo.userName" placeholder="이름">
+                        <input type="text" class="pay_ordererPhone" v-model="memberInfo.phone" placeholder="연락처">
                     </section>
 
                     <section class="shipping">
                         <h2 class="text">배송 정보</h2>
-                        <input type="text" class="pay_address" v-model="info.address" placeholder="주소">
+                        <input type="text" class="pay_address" v-model="memberInfo.address" placeholder="주소">
                         <input type="text" class="pay_detailAddress" placeholder="상세 주소">
                     </section>  
 
@@ -69,7 +74,7 @@
                             <h2 class="text">쿠폰</h2>
                         </div>
                         <select class="pay_coupon">
-                            <option>{{ info.couponName }}</option>
+                            <option>{{ memberInfo.couponName }}</option>
                         </select>
                     </section>
 
@@ -82,7 +87,7 @@
                             <button class="point_btn" @click="applyPoint">전액 사용</button>
                         </div>
                         <div class="point_text">
-                            보유 포인트 {{ info.point }}
+                            보유 포인트 {{ memberInfo.point }}
                         </div>
                     </section>
                 </section>
@@ -91,16 +96,22 @@
                     <section class="order-summary">
                         <h2 class="text">주문 요약</h2>
                         <div class="summary-details">
-                            <p>상품 가격 <span>{{ info.pPrice }}</span></p>
-                            <p>배송비 <span>+ {{ info.deliveryFee }}</span></p>
-                            <p class="total-price">총 주문금액 <span>{{ info.pPrice + info.deliveryFee }} 원</span></p>
+                            <p>상품 가격 <span>{{ productInfo.price }}</span></p>
+                            <p>배송비 <span>+ 3,000</span></p>
+                            <p v-if="memberInfo.usedPoint && memberInfo.usedPoint > 0">포인트 사용 
+                                <span> - {{ memberInfo.usedPoint }}</span>
+                            </p>
+                            <p class="total-price">
+                                총 주문금액 <span>{{ (parseInt(productInfo.price) || 0) + 3000 - (memberInfo.usedPoint || 0) }} 원</span>
+                            </p>
                         </div>
                     </section>
                   
                     <section class="payment">
                         <h2 class="text">결제 수단</h2>
                         <select class="pay_way">
-                            <option>{{ info.pWay }}</option>
+                            <option>신용카드</option>
+                            <option>실시간 계좌이체</option>
                         </select>
                         <button class="pay-btn" @click="fnPayment">결제하기</button>
                     </section>
@@ -118,31 +129,52 @@
         data() {
             return {
                 itemNo: "${map.itemNo}",
-                info: {},
+                quantity : "${map.quantity}",
+                payList: [],
+                productInfo: {},
+                memberInfo: {},
+                deliveryInfo: [],
                 sessionId : "${sessionId}",
                 displayPoint: null,
-                paymentMethod : 'one'
+                paymentMethod : 'one',
             };
         },
         methods: {
-            fnPay(){
-				var self = this;
-				var nparmap = { itemNo: self.itemNo };
-                console.log("보내는 데이터:", nparmap);
+            fnPayProduct(){
+                var self = this;
+				var nparmap = { 
+                    itemNo : self.itemNo,
+                    quantity : self.quantity
+                };
 				$.ajax({
-					url:"/pay.dox",
+					url:"/product.dox",
 					dataType:"json",	
 					type : "POST", 
 					data : nparmap,
 					success : function(data) { 
-                        self.info = data.info;
+                        self.productInfo = data.productInfo;
+						console.log(data);
+                        console.log(this.productInfo);
+					}
+				});
+            },
+            fnMember(){
+                var self = this;
+				var nparmap = { userId : self.sessionId };
+				$.ajax({
+					url:"/member.dox",
+					dataType:"json",	
+					type : "POST", 
+					data : nparmap,
+					success : function(data) { 
+                        self.memberInfo = data.memberInfo;
 						console.log(data);
 					}
 				});
             },
             fnPayment(){
                 var self = this;
-                const totalPrice = self.info.pPrice + self.info.deliveryFee;
+                const totalPrice = parseInt(self.productInfo.price) + 3000 - parseInt(self.memberInfo.usedPoint || 0);
                 IMP.request_pay({
                     pg: "html5_inicis",
                     pay_method: "card",
@@ -167,9 +199,9 @@
                 var self = this;
                 var nparmap = { 
                     pWay : merchant_uid,
-                    pUid : self.sessionId,
-                    pPrice : self.info.pPrice,
-                    pNo : self.info.pNo
+                    userId : self.sessionId,
+                    price : self.productInfo.price,
+                    pNo : self.payList.pNo
                 };
                 $.ajax({
                     url: "/payment.dox",  
@@ -182,7 +214,11 @@
                 });
             },
             applyPoint() {
-                this.displayPoint = this.info.point || 0;
+                this.displayPoint = this.memberInfo.point || 0;
+                if (this.memberInfo.point > 0) {
+                    this.displayPoint = this.memberInfo.point || 0;  // 입력 칸에 반영
+                    this.memberInfo.usedPoint = this.memberInfo.point; // 주문 요약에 반영할 포인트 사용 값 설정
+                }
             },
         },
         watch: {
@@ -196,7 +232,8 @@
         },
         mounted() {
             var self = this;
-            self.fnPay();
+            self.fnPayProduct();  
+            self.fnMember();  
 
             document.addEventListener("scroll", function() {
                 const orderSection = document.querySelector(".order-section");
