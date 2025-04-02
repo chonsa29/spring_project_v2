@@ -160,10 +160,18 @@
         WHERE USERID = #{userId} AND ITEM_NO = #{itemNo}
     </delete>
     
+    <!-- 유저별 좋아요 목록 가져오기 -->
     <select id="SelectproductWish" parameterType="hashmap" resultType="com.example.demo.model.Wish">
     	SELECT *
     	FROM WISH
     	WHERE USERID = #{userId}
+    </select>
+    
+    <!-- item_no당 리뷰의 총 개수 가져오기 -->
+    <select id="CountProductReview" parameterType="hashmap" resultType="int">
+    	SELECT COUNT(*)
+    	FROM REVIEW
+    	WHERE ITEM_NO = #{itemNo}
     </select>
 </mapper>
 

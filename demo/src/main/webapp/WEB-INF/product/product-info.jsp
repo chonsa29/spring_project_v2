@@ -49,16 +49,29 @@
 
                     <div v-if="review.length > 0" class="review-summary">
                         <div class="average-rating">
-                            <div id="review" class="stars">
-                                <span v-for="n in 5" :key="n" class="star-container">
-                                    <span class="star empty">★</span>
-                                    <span class="star full" v-if="n <= Math.floor(reviewScore)">★</span>
-                                    <span class="star half" v-else-if="n === Math.ceil(reviewScore) && reviewScore % 1 >= 0.5">★</span>
-                                </span>
-                                <span class="review-score">{{ reviewScore.toFixed(1) }}</span>
+                            <div id="review">
+                                <!-- 별과 점수를 감싸는 wrapper -->
+                                <div class="star-wrapper">
+                                    <div class="stars">
+                                        <span v-for="n in 5" :key="n" class="star-container">
+                                            <span class="star empty">★</span>
+                                            <span class="star full" v-if="n <= Math.floor(reviewScore)">★</span>
+                                            <span class="star half"
+                                                v-else-if="n === Math.ceil(reviewScore) && reviewScore % 1 >= 0.5">★</span>
+                                        </span>
+                                    </div>
+                                    <!-- 별점 숫자 -->
+                                    <div class="review-score">
+                                        {{ reviewScore.toFixed(1) }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+
+
+
 
                     <p class="product-discount-style">{{formatPrice(info.price * 3) }}원</p>
                     <p class="product-discount">30%</p>
@@ -133,6 +146,31 @@
 
                     <!-- 상품 리뷰 -->
                     <div v-show="selectedTab === 'review'" class="review-container">
+
+                        <!-- 리뷰 요약 -->
+                        <div class="review-summary">
+                            <div class="review-score-container">
+                                <p class="review-total">총 {{ reviewCount }}건</p>
+                                <p class="review-average" v-if="reviewScore !== undefined">{{ reviewScore.toFixed(1) }}점
+                                </p>
+                                <div class="review-stars">
+                                    <span v-for="n in 5" :key="n" class="star"
+                                        :class="{ 'filled': n <= Math.round(reviewScore || 0) }">★</span>
+                                </div>
+                            </div>
+                            <div class="review-bar-container" v-if="ratingDistribution">
+                                <div v-for="n in 5" :key="n" class="review-bar">
+                                    <span class="review-bar-label">{{ 6 - n }}점</span>
+                                    <div class="bar">
+                                        <div class="filled-bar"
+                                            :style="{ width: (ratingDistribution[5-n] || 0) + '%' }"></div>
+                                    </div>
+                                    <span class="review-bar-percent">{{ ratingDistribution[5-n] || 0 }}%</span>
+                                </div>
+                            </div>
+                        </div>
+
+
                         <div v-if="review.length === 0" class="review-none">
                             <p>리뷰가 없습니다.</p>
                         </div>
@@ -304,6 +342,9 @@
                     likedItems: new Set(),
                     showLikePopup: false, // 좋아요 표시
                     wish: [], // 좋아요 목록
+                    reviewCount: 0, // 리뷰 총 토탈 개수
+                    reviewScore: 0,
+
                 };
             },
 
@@ -357,6 +398,8 @@
                         success: function (data) {
                             if (data.result == "success") {
                                 self.review = data.review;
+                                self.reviewCount = data.reviewCount;
+                                console.log(data.reviewCount);
 
                                 if (self.review && self.review.length > 0) {
                                     let totalScore = 0;
@@ -516,7 +559,6 @@
                     var nparmap = {
                         userId: self.userId
                     };
-                    console.log("fetchLikedItems: " + self.userId);
                     $.ajax({
                         url: "/product/getLikedItems.dox", // userId별 좋아요한 상품을 가져오는 API
                         dataType: "json",
@@ -524,7 +566,6 @@
                         data: nparmap,
                         success: function (data) {
                             if (data.result == "success") {
-                                console.log("좋아요 목록 (Wish 객체): ", data.wish);
 
                                 // Wish 객체 리스트에서 itemNo만 추출하여 Set으로 변환
                                 self.likedItems = new Set(data.wish.map(wish => wish.itemNo));
@@ -555,8 +596,6 @@
             },
             mounted() {
                 var self = this;
-                console.log(self.itemNo);
-                console.log("리뷰 : ", self.reviewScore); // 리뷰 데이터 출력
                 self.fngetInfo();
                 self.fnGetReview();
                 self.fetchLikedItems();

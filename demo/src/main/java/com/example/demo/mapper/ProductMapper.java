@@ -55,5 +55,7 @@ public interface ProductMapper {
 
 	List<Wish> SelectproductWish(HashMap<String, Object> map);
 
+	int CountProductReview(HashMap<String, Object> map);
+
 
 }
