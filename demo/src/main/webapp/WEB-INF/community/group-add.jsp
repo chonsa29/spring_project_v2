@@ -12,41 +12,14 @@
 	<title>커뮤니티</title>
 </head>
 <body>
+    <% String groupId = request.getParameter("groupId"); %>
     <jsp:include page="/WEB-INF/common/header.jsp" />
 	<div id="app">
-        <h1 class="recipe-input">레시피 공유</h1>
-        
+        <h1 class="recipe-input">그룹 구하기</h1>
 
         <!-- 제목 입력 -->
         <div class="input-group">
             <input v-model="title" id="title" placeholder="제목">
-        </div>
-
-        <!-- 요리 정보 입력 -->
-        <div class="recipe-info">
-            <div class="info-item">
-                <label for="cookingTime">요리 시간 (분):</label>
-                <input type="number" id="cookingTime" v-model="cookingTime" min="1">
-            </div>
-            <div class="info-item">
-                <label for="servings">몇 인분:</label>
-                <input type="number" id="servings" v-model="servings" min="1">
-            </div>
-            <div class="info-item">
-                <label>난이도:</label>
-                <div class="star-rating">
-                    <span v-for="n in 5" :key="n" 
-                        @click="setDifficulty(n)" 
-                        :class="{ 'selected': n <= difficulty }">
-                        ★
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <!-- 간략한 요리 설명 -->
-        <div class="input-group">
-            <textarea v-model="description" id="description" placeholder="간략한 요리 설명을 입력하세요"></textarea>
         </div>
 
         <!-- 본문 에디터 -->
@@ -68,21 +41,15 @@
         data() {
             return {
                 title: "",
-                cookingTime: "",
-                servings: "",
-                difficulty: 1,
-                description: "",
                 contents: "",
                 sessionId: "${sessionId}",
+                groupId: "<%= groupId %>" // JSP에서 가져온 값 저장
             };
         },
         methods: {
-            setDifficulty(level) {
-                this.difficulty = level;  // 난이도 변경
-            },
             fnSave() {
                 var self = this;
-                if (self.title === "" || self.contents === "" || self.cookingTime === "" || self.servings === "" || self.description === "") {
+                if (self.title === "" || self.contents === "") {
                     alert("모든 값을 입력해 주세요.");
                     return;
                 }
@@ -92,23 +59,20 @@
 
                 var nparmap = {
                     title: self.title,
-                    cookingTime: self.cookingTime,
-                    servings: self.servings,
-                    difficulty: self.difficulty,
-                    instructions: self.description,
                     contents: quillContentHtml,
-                    userId: self.sessionId
+                    userId: self.sessionId,
+                    groupId: self.groupId
                 };
 
                 $.ajax({
-                    url: "/recipe/add.dox",
+                    url: "/group/add.dox",
                     dataType: "json",
                     type: "POST",
                     data: nparmap,
                     success: function (data) {
                         console.log(data);
-                        alert("레시피가 등록되었습니다.");
-                        location.href = "/commu-main.do?tab=recipe";
+                        alert("게시글이 등록되었습니다.");
+                        location.href = "/commu-main.do?tab=group";
                     },
                     error: function (xhr, status, error) {
                         console.error("AJAX 요청 실패:", status, error);
@@ -138,8 +102,10 @@
             });
 
             self.quill = quill;  // 나중에 접근할 수 있도록 저장
-                }
-            });
+
+            console.log(self.groupId);
+        }
+    });
 
     app.mount('#app');
 </script>

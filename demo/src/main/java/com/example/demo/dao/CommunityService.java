@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.mapper.CommunityMapper;
 import com.example.demo.model.Group;
+import com.example.demo.model.GroupInfo;
 import com.example.demo.model.GroupUser;
 import com.example.demo.model.Question;
 import com.example.demo.model.Recipe;
@@ -196,6 +197,24 @@ public class CommunityService {
 			List<Group> gList =  communityMapper.selectGroupList(map);
 			int count = communityMapper.selectGroup(map);
 			
+			// 사용자의 리더 상태 확인
+	        String leaders = communityMapper.groupLeaderCkeck(map);	
+	      
+	        if (leaders != null) {
+	        	resultMap.put("leaders", true);  // 이미 그룹에 속해 있음
+	            
+	        } else {
+	        	resultMap.put("leaders", false);  // 그룹에 속하지 않음
+	        }
+	        
+	        GroupInfo group = communityMapper.selectGroupId(map);
+	        
+	        if (group != null) {
+	        	resultMap.put("group", group);
+	        } else {
+	        	resultMap.put("group", "");
+	        }
+			
 			resultMap.put("count", count);
 			resultMap.put("gList", gList); 
 			resultMap.put("result", "success");
@@ -251,16 +270,83 @@ public class CommunityService {
 		HashMap<String, Object> result = new HashMap<>();
 
         // 사용자의 그룹 상태 조회 (예: 이미 그룹에 속해있는지 확인)
-        String groupStatus = communityMapper.groupMemberCkeck(map);
-
+        String groupStatus = communityMapper.groupMemberCkeck(map);	
+      
         if (groupStatus != null) {
             result.put("groupStatus", "joined");  // 이미 그룹에 속해 있음
+            
         } else {
             result.put("groupStatus", "not_joined");  // 그룹에 속하지 않음
         }
 
         return result;
     }
+	
+	
+	// 그룹 신청
+	public HashMap<String, Object> joinGroup(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+	        communityMapper.insertGroupJoin(map);
+	        resultMap.put("result", "success");
+	    } catch (Exception e) {
+	        System.out.println(e.getMessage());
+	        resultMap.put("result", "fail");
+	    }
+		return resultMap;
+	}
+
+	// 그룹 게시글 작성
+	public HashMap<String, Object> addGroup(HashMap<String, Object> map) {
+		
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+			// 1. INSERT 실행
+	        communityMapper.insertGroupPost(map);
+
+	        // 2. 마지막 POST_ID 가져오기
+	        int postId = communityMapper.selectLastPostId(map);
+	        map.put("postId", postId); // map에 저장
+
+	        // 3. GROUP_INFO 업데이트
+	        communityMapper.updatePostId(map);
+	        
+	        resultMap.put("result", "success");
+	    } catch (Exception e) {
+	        System.out.println(e.getMessage());
+	        resultMap.put("result", "fail");
+	    }
+		return resultMap;
+	}
+
+	// 그룹 생성
+	public HashMap<String, Object> createGroup(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+	        
+			// 1. 그룹 생성
+			communityMapper.insertGroup(map);
+			
+			// 2. GROUP_ID 가져오기
+			GroupInfo group = communityMapper.selectGroupId(map);
+			String groupId = group.getGroupId();
+			System.out.println(groupId);
+			
+	        map.put("groupId", groupId); // map에 저장
+	        
+	        // 3. 멤버에 추가
+			communityMapper.insertGroupMember(map);
+			
+	        resultMap.put("result", "success");
+	    } catch (Exception e) {
+	        System.out.println(e.getMessage());
+	        resultMap.put("result", "fail");
+	    }
+		return resultMap;
+	}
 	
 
 

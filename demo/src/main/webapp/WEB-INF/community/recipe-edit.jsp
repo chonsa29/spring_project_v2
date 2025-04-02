@@ -14,9 +14,8 @@
     <jsp:include page="/WEB-INF/common/header.jsp" />
 
     <%
-        // savedContents 값 가져오기
         String savedContents = (String) request.getAttribute("savedContents");
-        if (savedContents == null) savedContents = ""; // null 방지
+        if (savedContents == null) savedContents = "";
     %>
 
     <!-- JSON 데이터를 스크립트 변수로 변환 -->
@@ -127,13 +126,6 @@
             },
             fnSave() {
                 var self = this;
-
-                // 필수 값 체크
-    console.log('Title:', self.info.title);
-    console.log('Cooking Time:', self.info.cookingTime);
-    console.log('Servings:', self.info.servings);
-    console.log('instructions:', self.info.instructions);
-    console.log('Quill Content:', self.quill.root.innerHTML);
 
                 if (self.info.title === "" || self.info.contents === "" || self.info.cookingTime === "" || self.info.servings === "" || self.info.instructions === "") {
                     alert("모든 값을 입력해 주세요.");

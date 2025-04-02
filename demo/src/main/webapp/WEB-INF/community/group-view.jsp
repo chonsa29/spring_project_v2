@@ -35,7 +35,7 @@
             <div class="recipe-info-container">
                 <div class="info-item">
                     <span class="info-title">현재 신청자</span>
-                    <span>{{ members.length }}/3</span>
+                    <span>{{ members.length }}명</span>
                 </div>
 
                 <!-- sessionId가 members 배열에 포함되어 있으면 신청자 보기 버튼 -->
@@ -53,7 +53,7 @@
 
                                 <!-- 리더 표시 -->
                                 <span v-if="member.userId === member.leaderId" class="leader-label">리더</span>
-                            
+                                
                                     <template v-else>
                                         <!-- 리더(방장)일 경우 -->
                                         <template v-if="sessionId === member.leaderId">
@@ -83,13 +83,17 @@
                         <div v-if="isLeader" class="button-group">
                             <button class="end-btn">마감하기</button>
                         
-                        <button class="close-btn" @click="closePopup">닫기</button></div>
+                            <button class="close-btn" @click="closePopup">닫기</button>
+                        </div>
+                        <div v-if="!isLeader" class="button-group">
+                            <button class="close-btn" @click="closePopup">닫기</button>
+                        </div>
                     </div>
                 </div>
 
                 <!-- sessionId가 members 배열에 없으면 신청하기 버튼 -->
                 <div class="button-container" v-if="!isMember">
-                    <button class="edit-btn" @click="fnMemberJoin">신청하기</button>
+                    <button class="edit-btn" @click="fnMemberJoinCheck">신청하기</button>
                 </div>
             </div>
 
@@ -189,7 +193,7 @@
                 }
             },
             goBack() {
-                location.href = "/commu-main.do?tab=group";
+                location.href = "/commu-main.do?tab=group"
             },
             fnEdit(postId) {
                 pageChange("/recipe/edit.do", { postId : this.postId });
@@ -216,10 +220,46 @@
             },
 
             // 가입 신청
-            fnMemberJoin: function () {
+            fnMemberJoinCheck: function () {
                 var self = this;
                 var nparmap = {
                     userId : self.sessionId
+                };
+                $.ajax({
+                    url: "/group/memberCheck.dox",
+                    type: "POST",
+                    dataType: "json",
+                    data: nparmap,
+                    success: function(response) {
+                        console.log("서버 응답:", response); //  응답 확인
+
+                        if (response.status === "success") {
+                            if (response.groupStatus === "joined") {
+                                alert("이미 그룹에 참가 중이십니다.");
+                                
+                            } else {
+                                self.fnMemberJoin(); // 가입 신청으로
+                            }
+                        } else {
+                            alert(response.message || "사용자 그룹 상태를 확인할 수 없습니다.");
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("AJAX 오류:", error);
+                        alert("서버와의 통신 중 오류가 발생했습니다.");
+                    }
+                });
+            },
+            fnMemberJoin: function () {
+                var self = this;
+
+                console.log(self.info.groupId, self.info.groupName, self.info.userId);
+                
+                var nparmap = {
+                    userId : self.sessionId,
+                    groupId : self.info.groupId,
+                    groupName : self.info.groupName,
+                    leaderId : self.info.userId
                 };
                 $.ajax({
                     url: "/group/join.dox",
@@ -228,10 +268,11 @@
                     data: nparmap,
                     success: function (data) {
                         if(data.result == "success") {
-							alert("삭제되었습니다!");
-                            location.href="/commu-main.do?tab=recipe";
+							alert("신청되었습니다!");
+                            location.reload();
+                            
 						} else {
-                            alert("삭제 실패")
+                            alert("신청 실패")
                         }
                     }
                 });
@@ -241,8 +282,6 @@
             var self = this;
             self.fnGroup();
 
-            console.log('members:', this.members);
-            
         }
     });
     app.mount('#app');
