@@ -10,4 +10,7 @@ public class GroupInfo {
 	private String groupName;
 	private String leaderId;
 	private String createDate;
+	
+	
+	
 }

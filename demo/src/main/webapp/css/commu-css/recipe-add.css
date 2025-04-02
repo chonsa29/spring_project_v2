@@ -27,7 +27,7 @@ body {
     margin: 0 auto; /* 전체 `#app`을 중앙 정렬 */
     min-height: 60vh; /* 화면 전체 높이 확보 */
 }
-.inquire-input, .inquire-write {
+.recipe-input, .recipe-write {
     width: 100%;
     max-width: 820px;
     text-align: center;
@@ -35,10 +35,10 @@ body {
     padding-bottom: 30px;
     border-bottom: 2px solid #ddd; /* 아래 줄 추가 */
 }
-.inquire-input {
+.recipe-input {
     font-size: 26px;
 }
-.inquire-write {
+.recipe-write {
     font-size: 23px;
 }
 .input-group {
@@ -240,10 +240,10 @@ footer {
 }
 
 @media (max-width: 480px) {
-    .inquire-input {
+    .recipe-input {
         font-size: 20px;
     }
-    .inquire-write {
+    .recipe-write {
         font-size: 18px;
     }
     .input-group label {

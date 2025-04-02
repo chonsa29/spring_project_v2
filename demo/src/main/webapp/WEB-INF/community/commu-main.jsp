@@ -104,14 +104,14 @@
 			</div>
 				
 				<div class="writing">
-				    
-					<button @click="fnAddGroup">그룹 만들기</button>
+				    <button v-if="isLeader" @click="fnAddGroupPost">글쓰기</button>
+    				<button v-else @click="fnAddGroup">그룹 만들기</button>
 				</div>
 				<!-- 그룹 만들기 팝업 -->
 				<div class="popup-overlay" :class="{ show: showGroupPopup }">
 					<div class="popup">
 						<h3>새 그룹 만들기</h3>
-						<input type="text" v-model="newGroupName" placeholder="그룹 이름을 입력하세요">
+						<input type="text" v-model="groupName" placeholder="그룹 이름을 입력하세요">
 						<div class="popup-buttons">
 							<button class="create-btn" @click="createGroup">생성</button>
 							<button class="close-btn" @click="closeGroupPopup">닫기</button>
@@ -137,7 +137,7 @@ const app = Vue.createApp({
 			userId : "${sessionId}",
 
 			showGroupPopup: false, // 팝업 여부 추가
-            newGroupName: "", // 그룹명 입력 필드
+            groupName: "", // 그룹명 입력 필드
 
 			pageSize: 5,
 			index: 0,
@@ -145,7 +145,12 @@ const app = Vue.createApp({
 
 			groupPage: 1,
 			groupIndex: 0,
-			groupPageSize: 5
+			groupPageSize: 5,
+
+            isLeader: false, // 현재 사용자가 리더인지 여부
+			leaders: [],
+
+			groupId : ""
 		};
 	},
 	methods: {
@@ -185,6 +190,7 @@ const app = Vue.createApp({
 		fnGroupList() {
 			let self = this;
 			let nparmap = {
+				userId: self.userId,
 				searchKeyword: self.searchKeyword,
 				searchOption: self.searchOption,
 				groupPageSize: self.groupPageSize,
@@ -198,7 +204,16 @@ const app = Vue.createApp({
 				success: function(data) { 
 					console.log(data);
 					self.gList = data.gList;
+
 					self.groupIndex = Math.ceil(data.count / self.groupPageSize);
+
+					// 리더 찾기
+					self.isLeader = data.leaders;
+					console.log(self.isLeader);
+
+					// 그룹 아이디 가져오기
+					self.group = data.group;
+					console.log(self.group.groupId);
 				}
 			});
 		},
@@ -251,6 +266,9 @@ const app = Vue.createApp({
 			console.log('Post ID:', postId); 
 			pageChange("/group/view.do", { postId : postId });
 		},
+		fnAddGroupPost(groupId) {
+			location.href = "/group/add.do?groupId=" + this.group.groupId;
+		},
 		 // 그룹 만들기 버튼 클릭
 		 fnAddGroup() {
             let self = this;
@@ -292,7 +310,7 @@ const app = Vue.createApp({
 
         // 그룹 생성하기
         createGroup() {
-            if (!this.newGroupName.trim()) {
+            if (!this.groupName.trim()) {
                 alert("그룹 이름을 입력하세요.");
                 return;
             }
@@ -302,13 +320,15 @@ const app = Vue.createApp({
                 url: "/group/create.dox",
                 type: "POST",
                 dataType: "json",
-                data: { groupName: self.newGroupName },
+                data: { 
+					userId: self.userId,
+					groupName: self.groupName 
+				},
                 success: function(response) {
-                    if (response.success) {
+                    if (response.status === "success") {
                         alert("그룹이 성공적으로 생성되었습니다!");
                         self.showGroupPopup = false;
-                        self.newGroupName = '';
-                        self.isMemberOfGroup = true; // 그룹 생성 후, 상태 업데이트
+                        self.groupName = '';
                         self.fnGroupList(); // 그룹 목록 다시 불러오기
                     } else {
                         alert(response.message || "그룹 생성에 실패했습니다.");
@@ -337,7 +357,11 @@ const app = Vue.createApp({
 			this.activeTab = tabParam;
 		}
 
-		this.fnRecipeList();
+		if (this.activeTab === 'group') {
+			this.fnGroupList();  // 그룹 리스트 불러오기
+		} else {
+			this.fnRecipeList(); // 레시피 리스트 불러오기
+		}
 
 	}
 });

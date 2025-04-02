@@ -144,9 +144,6 @@ public class CommunityController {
 	    return new Gson().toJson(resultMap);
 	}
 	
-
-	
-	
 	// 좋아요 기능
 	@RequestMapping(value = "/recipe/like.dox", method = RequestMethod.POST)
 	@ResponseBody
@@ -204,6 +201,12 @@ public class CommunityController {
         return "/community/group-view"; 
     }
 	
+	// 그룹 게시글 쓰기
+	@RequestMapping("/group/add.do")
+	public String groupAdd(Model model) throws Exception{
+        return "/community/group-add"; 
+    }
+	
 	// 그룹 게시글 상세보기
 	@RequestMapping(value = "/group/view.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
@@ -239,6 +242,79 @@ public class CommunityController {
 	        e.printStackTrace();
 	    }
 	    
+	    return new Gson().toJson(resultMap);
+	}
+	
+	
+	// 그룹 신청
+	@RequestMapping(value = "/group/join.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String groupJoin(@RequestParam HashMap<String, Object> map) {
+	    HashMap<String, Object> resultMap = new HashMap<>();
+
+	    try {
+	        // 서비스 호출하여 레시피 추가 처리
+	        resultMap = communityService.joinGroup(map);
+
+	        // 성공 메시지 추가
+	        resultMap.put("status", "success");
+	        resultMap.put("message", "신청이 성공적으로 등록되었습니다.");
+	    } catch (Exception e) {
+	        // 예외 발생 시 오류 메시지 반환
+	        resultMap.put("status", "error");
+	        resultMap.put("message", "신청 중 오류가 발생했습니다.");
+	        resultMap.put("error", e.getMessage());
+	    }
+
+	    // JSON 변환 후 반환
+	    return new Gson().toJson(resultMap);
+	}
+	
+	// 그룹 글쓰기
+	@RequestMapping(value = "/group/add.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String groupAdd(@RequestParam HashMap<String, Object> map) {
+	    HashMap<String, Object> resultMap = new HashMap<>();
+
+	    try {
+	        // 서비스 호출하여 레시피 추가 처리
+	        resultMap = communityService.addGroup(map);
+
+	        // 성공 메시지 추가
+	        resultMap.put("status", "success");
+	        resultMap.put("message", "게시글이 성공적으로 등록되었습니다.");
+	    } catch (Exception e) {
+	        // 예외 발생 시 오류 메시지 반환
+	        resultMap.put("status", "error");
+	        resultMap.put("message", "게시글 등록 중 오류가 발생했습니다.");
+	        resultMap.put("error", e.getMessage());
+	    }
+
+	    // JSON 변환 후 반환
+	    return new Gson().toJson(resultMap);
+	}
+	
+	// 그룹 만들기
+	@RequestMapping(value = "/group/create.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String groupCreate(@RequestParam HashMap<String, Object> map) {
+	    HashMap<String, Object> resultMap = new HashMap<>();
+
+	    try {
+	        // 서비스 호출하여 레시피 추가 처리
+	        resultMap = communityService.createGroup(map);
+
+	        // 성공 메시지 추가
+	        resultMap.put("status", "success");
+	        resultMap.put("message", "그룹이 성공적으로 등록되었습니다.");
+	    } catch (Exception e) {
+	        // 예외 발생 시 오류 메시지 반환
+	        resultMap.put("status", "error");
+	        resultMap.put("message", "그룹 등록 중 오류가 발생했습니다.");
+	        resultMap.put("error", e.getMessage());
+	    }
+
+	    // JSON 변환 후 반환
 	    return new Gson().toJson(resultMap);
 	}
 

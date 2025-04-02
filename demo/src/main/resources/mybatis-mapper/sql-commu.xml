@@ -187,10 +187,62 @@
 	
 	<!-- 그룹 속한 거 확인 -->
 	<select id="groupMemberCkeck" parameterType="hashmap" resultType="string">
-		SELECT GROUP_ID
+		SELECT *
 		FROM GROUP_USER
 		WHERE USERID = #{userId}
 	</select>
+	
+	<!-- 리더 확인 -->
+	<select id="groupLeaderCkeck" parameterType="hashmap" resultType="string">
+		SELECT *
+		FROM GROUP_INFO
+		WHERE LEADER_ID = #{userId}
+	</select>
+	
+	<!-- 그룹 신청 -->
+	<insert id="insertGroupJoin" parameterType="hashmap">
+		INSERT INTO GROUP_USER(GROUP_ID, USERID, JOIN_DATE, STATUS, ROLE, GROUP_NAME, LEADER_ID)
+		VALUES(#{groupId}, #{userId}, SYSDATE, 'PENDING', 'MEMBER', #{groupName}, #{leaderId})
+	</insert>
+	
+	<!-- 그룹 게시글 추가 -->
+	<insert id="insertGroupPost" parameterType="hashmap" useGeneratedKeys="true">
+		INSERT INTO GROUP_POST(POST_ID, USERID, TITLE, CONTENTS)
+		VALUES(GROUP_POST_SEQ.NEXTVAL, #{userId}, #{title}, #{contents, jdbcType=CLOB})
+	</insert>
+	
+	<!-- 그룹 아이디 불러오기 -->
+	<select id="selectGroupId" parameterType="hashmap">
+		SELECT *
+		FROM GROUP_INFO
+		WHERE LEADER_ID = #{userId}
+	</select>
+	
+	<!-- 그룹 생성 시 POST_ID 추가 -->
+	<select id="selectLastPostId" parameterType="hashmap" resultType="int">
+	    SELECT POST_ID FROM GROUP_POST 
+	    WHERE USERID = #{userId}
+	    ORDER BY POST_ID DESC 
+	    FETCH FIRST 1 ROWS ONLY
+	</select>
+	<update id="updatePostId" parameterType="hashmap" keyColumn="POST_ID" keyProperty="postId">
+		UPDATE GROUP_INFO
+		SET
+			POST_ID = #{postId}
+		WHERE GROUP_ID = #{groupId}
+	</update>
+	
+	<!-- 그룹 생성 -->
+	<insert id="insertGroup" parameterType="hashmap">
+		INSERT INTO GROUP_INFO(GROUP_ID, GROUP_NAME, LEADER_ID)
+		VALUES(GROUP_INFO_SEQ.NEXTVAL, #{groupName}, #{userId})
+	</insert>
+	
+	<!-- 그룹 생성 시 멤버도 추가 -->
+	<insert id="insertGroupMember" parameterType="hashmap">
+		INSERT INTO GROUP_USER(GROUP_ID, USERID, STATUS, ROLE, GROUP_NAME, LEADER_ID)
+		VALUES(#{groupId}, #{userId}, 'ACTIVE', 'LEADER', #{groupName}, #{userId})
+	</insert>
 
 </mapper>
 

@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.example.demo.model.Group;
+import com.example.demo.model.GroupInfo;
 import com.example.demo.model.GroupUser;
 import com.example.demo.model.Question;
 import com.example.demo.model.Recipe;
@@ -50,5 +51,21 @@ public interface CommunityMapper {
 	List<GroupUser> selectMembers(HashMap<String, Object> map);
 
 	String groupMemberCkeck(HashMap<String, Object> map);
+
+	void insertGroupJoin(HashMap<String, Object> map);
+
+	String groupLeaderCkeck(HashMap<String, Object> map);
+
+	void insertGroupPost(HashMap<String, Object> map);
+
+	void insertGroup(HashMap<String, Object> map);
+
+	void updatePostId(HashMap<String, Object> map);
+
+	GroupInfo selectGroupId(HashMap<String, Object> map);
+
+	int selectLastPostId(HashMap<String, Object> map);
+
+	void insertGroupMember(HashMap<String, Object> map);
 
 }
