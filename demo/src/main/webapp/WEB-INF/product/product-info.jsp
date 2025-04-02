@@ -165,7 +165,8 @@
                                         <div class="filled-bar"
                                             :style="{ width: (ratingDistribution[5-n] || 0) + '%' }"></div>
                                     </div>
-                                    <span class="review-bar-percent">{{ ratingDistribution[5-n] ? ratingDistribution[5-n] + '%' : '0%' }}</span>
+                                    <span class="review-bar-percent">{{ ratingDistribution[5-n] ?
+                                        ratingDistribution[5-n] + '%' : '0%' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -351,7 +352,7 @@
 
             methods: {
 
-                
+
                 fngetInfo() {
                     var self = this;
                     var nparmap = {
@@ -491,9 +492,10 @@
 
                 fnPay(itemNo, quantity) {
                     var self = this;
-                    console.log(itemNo)
-                    console.log(quantity)
-                    pageChange("/pay.do", { itemNo: itemNo,  quantity: String(quantity) }); // 구매하기로 이동
+                    console.log("itemNo:", itemNo);
+                    console.log("quantity:", String(quantity));
+                    // pageChange("/pay.do", { itemNo: itemNo, quantity: String(quantity) }); // 구매하기로 이동
+                    // 잠시 수정중
                 },
 
                 changeImage(filePath) {
