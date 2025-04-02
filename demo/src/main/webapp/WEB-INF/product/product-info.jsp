@@ -124,7 +124,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button class="buy" @click="fnPay(info.itemNo)">
+                        <button class="buy" @click="fnPay(info.itemNo, quantity)">
                             구매하기
                         </button>
                     </div>
@@ -158,14 +158,14 @@
                                         :class="{ 'filled': n <= Math.round(reviewScore || 0) }">★</span>
                                 </div>
                             </div>
-                            <div class="review-bar-container" v-if="ratingDistribution">
+                            <div class="review-bar-container" v-show="ratingDistribution">
                                 <div v-for="n in 5" :key="n" class="review-bar">
                                     <span class="review-bar-label">{{ 6 - n }}점</span>
                                     <div class="bar">
                                         <div class="filled-bar"
                                             :style="{ width: (ratingDistribution[5-n] || 0) + '%' }"></div>
                                     </div>
-                                    <span class="review-bar-percent">{{ ratingDistribution[5-n] || 0 }}%</span>
+                                    <span class="review-bar-percent">{{ ratingDistribution[5-n] ? ratingDistribution[5-n] + '%' : '0%' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -344,11 +344,14 @@
                     wish: [], // 좋아요 목록
                     reviewCount: 0, // 리뷰 총 토탈 개수
                     reviewScore: 0,
+                    ratingDistribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 } // 기본값 추가
 
                 };
             },
 
             methods: {
+
+                
                 fngetInfo() {
                     var self = this;
                     var nparmap = {
@@ -423,7 +426,6 @@
                 // 수량 조절 메소드(버튼 동작)
                 fnquantity: function (action) {
                     var self = this;
-                    console.log(self.count);
                     if (action === 'sum') {
                         if (self.quantity < self.count) {
                             self.quantity++;
@@ -487,9 +489,11 @@
                     return value ? parseInt(value).toLocaleString() : "0"; // 가격 타입 변환(콤마 추가) 
                 },
 
-                fnPay(itemNo) {
+                fnPay(itemNo, quantity) {
                     var self = this;
-                    pageChange("/pay.do", { itemNo: itemNo, quantity: self.quantity }); // 구매하기로 이동
+                    console.log(itemNo)
+                    console.log(quantity)
+                    pageChange("/pay.do", { itemNo: itemNo,  quantity: String(quantity) }); // 구매하기로 이동
                 },
 
                 changeImage(filePath) {
@@ -509,6 +513,7 @@
                     self.selectedTab = tab; // 선택한 탭으로 변경
                 },
 
+                // 좋아요 표시
                 fnLike(itemNo) {
                     var self = this;
 
@@ -599,6 +604,7 @@
                 self.fngetInfo();
                 self.fnGetReview();
                 self.fetchLikedItems();
+                console.log("별점 비율 데이터:", this.ratingDistribution);
             }
         });
         app.mount('#app');
