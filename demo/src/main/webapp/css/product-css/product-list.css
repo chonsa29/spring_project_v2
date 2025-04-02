@@ -237,6 +237,8 @@ h2 {
 	color: red;
 	text-align: left;
 	font-weight: bold;
+	font-size: 20px;
+	margin-bottom: -10px;
 }
 
 #selectproduct {

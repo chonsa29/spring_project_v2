@@ -46,11 +46,22 @@
                         <div class="like-popup">좋아요 항목에서 제거되었습니다.</div>
                     </div>
                     <span v-if="allergensFlg" id="allergens-info">{{info.allergens}} 주의!</span>
-                    <div id="review">
-                        <span class="stars">★★★★★</span>
-                        <span>4.3</span>
+
+                    <div v-if="review.length > 0" class="review-summary">
+                        <div class="average-rating">
+                            <div id="review" class="stars">
+                                <span v-for="n in 5" :key="n" class="star-container">
+                                    <span class="star empty">★</span>
+                                    <span class="star full" v-if="n <= Math.floor(reviewScore)">★</span>
+                                    <span class="star half" v-else-if="n === Math.ceil(reviewScore) && reviewScore % 1 >= 0.5">★</span>
+                                </span>
+                                <span class="review-score">{{ reviewScore.toFixed(1) }}</span>
+                            </div>
+                        </div>
                     </div>
-                    <p class="product-discount-style">{{formatPrice(info.price * 3) }}</p>
+
+                    <p class="product-discount-style">{{formatPrice(info.price * 3) }}원</p>
+                    <p class="product-discount">30%</p>
                     <div class="price">{{formattedPrice}} 원</div>
                     <div class="delivery">
                         <span id="delivery-price">배송비</span>
@@ -73,7 +84,7 @@
                             <span>{{info.itemName}}</span>
                             <div class="quantity-controls">
                                 <button class="quantity-btn" @click="fnquantity('sub')">-</button>
-                                <input type="text" class="quantity-input" v-model="quantity">
+                                <input type="text" class="quantity-input" v-model="quantity" @input="checkQuantity">
                                 <button class="quantity-btn" @click="fnquantity('sum')">+</button>
                             </div>
                             <span class="quantity-price">{{formattedTotalPrice}}</span>
@@ -154,7 +165,7 @@
 
                     <!-- 교환/환불 내용 -->
                     <div v-show="selectedTab === 'exchange'" class="exchange">
-                        
+
                         <!-- 1 -->
                         <div>
                             <h3>주문 취소</h3>
@@ -288,13 +299,11 @@
                     imgList: [], // 썸네일, 서브 이미지 리스트 가져오기
                     selectedTab: 'info', // 기본값은 "상품 정보"
                     review: [], // 리뷰 리스트 가져오기
-                    reviewFlg: false,
-                    userId: "${sessionId}",
-                    reviewScore: 0, // 리뷰 스코어
-                    maxStars: 5, // 최대 별점
+                    reviewFlg: false, // 리뷰 표시 여부
+                    userId: "${sessionId}", // 로그인 아이디
                     likedItems: new Set(),
                     showLikePopup: false, // 좋아요 표시
-                    wish: [],
+                    wish: [], // 좋아요 목록
                 };
             },
 
@@ -334,6 +343,7 @@
                     });
                 },
 
+                // 리뷰 메소드
                 fnGetReview() {
                     var self = this;
                     var nparmap = {
@@ -347,14 +357,27 @@
                         success: function (data) {
                             if (data.result == "success") {
                                 self.review = data.review;
-                                self.reviewScore = data.review.reviewScore;
+
+                                if (self.review && self.review.length > 0) {
+                                    let totalScore = 0;
+                                    self.review.forEach((review) => {
+                                        totalScore += parseFloat(review.reviewScore) || 0;  // 숫자로 변환하여 합산
+                                    });
+                                    self.reviewScore = totalScore / self.review.length;  // 평균 계산
+                                } else {
+                                    self.reviewScore = 0;  // 리뷰가 없으면 평균 점수를 0으로 설정
+                                }
+
+                                console.log("평균 별점:", self.reviewScore);  // 평균 별점 출력
 
                             }
                         },
                     });
                 },
 
-                // 수량 조절 메소드
+
+
+                // 수량 조절 메소드(버튼 동작)
                 fnquantity: function (action) {
                     var self = this;
                     console.log(self.count);
@@ -365,15 +388,33 @@
                             alert("최대 수량입니다.");
                             return;
                         }
-                    } else if (action === 'sub' && self.quantity > 1) {
-                        self.quantity--;
+                    } else if (action === 'sub') {
+                        if (self.quantity > 1) {
+                            self.quantity--;
+                        } else {
+                            alert("1개 이상부터 구매할 수 있는 상품입니다.");
+                            return;
+                        }
 
+                    }
+                },
+
+                // 수량 조절 메소드(직접 입력)
+                checkQuantity() {
+                    var self = this;
+                    if (self.quantity > self.count) {
+                        self.quantity = self.count;
+                        alert("최대 수량으로 수정되었습니다.");
+                    } else if (self.quantity < 1) {
+                        self.quantity = 1;
+                        alert("최소 수량은 1개입니다.");
                     }
                 },
 
                 // 장바구니에 담기
                 addToCart(itemNo) {
                     var self = this;
+
                     var nparmap = {
                         cartCount: self.quantity,
                         userId: self.userId,
@@ -391,38 +432,49 @@
                     });
 
                 },
+
                 goToCart() {
                     window.location.href = '/cart.do'; // 장바구니로 이동
                 },
                 closeCartPopup() {
-                    this.showCartPopup = false; // 쇼핑 계속하기
+                    var self = this;
+                    self.showCartPopup = false; // 쇼핑 계속하기
                 },
                 formatPrice(value) {
                     return value ? parseInt(value).toLocaleString() : "0"; // 가격 타입 변환(콤마 추가) 
                 },
 
                 fnPay(itemNo) {
-                    console.log(itemNo)
-                    pageChange("/pay.do", { itemNo: itemNo }); // 구매하기로 이동
+                    var self = this;
+                    pageChange("/pay.do", { itemNo: itemNo, quantity: self.quantity }); // 구매하기로 이동
                 },
 
                 changeImage(filePath) {
+                    var self = this;
                     let mainImage = document.getElementById('mainImage').src; // 현재 메인 이미지
-                    let clickedIndex = this.imgList.findIndex(img => img.filePath === filePath); // 클릭한 이미지의 인덱스
+                    let clickedIndex = self.imgList.findIndex(img => img.filePath === filePath); // 클릭한 이미지의 인덱스
 
                     if (clickedIndex !== -1) {
                         // 클릭한 이미지와 메인 이미지 교체
-                        this.imgList[clickedIndex].filePath = mainImage;
+                        self.imgList[clickedIndex].filePath = mainImage;
                         document.getElementById('mainImage').src = filePath;
                     }
                 },
 
                 changeTab(tab) {
-                    this.selectedTab = tab; // 선택한 탭으로 변경
+                    var self = this;
+                    self.selectedTab = tab; // 선택한 탭으로 변경
                 },
 
                 fnLike(itemNo) {
                     var self = this;
+
+                    if (!self.userId) {
+                        // 로그인 페이지로 리디렉션
+                        location.href = "/member/login.do"; // 로그인 페이지 경로
+                        return; // 이후 코드 실행 방지
+                    }
+
                     var nparmap = {
                         itemNo: itemNo,
                         userId: self.userId
@@ -486,13 +538,16 @@
             },
             computed: { // 가격 타입 변환(콤마 추가)
                 formattedPrice() {
-                    return parseInt(this.price).toLocaleString();
+                    var self = this;
+                    return parseInt(self.price).toLocaleString();
                 },
                 formattedTotalPrice() {
-                    return (this.price * this.quantity).toLocaleString();
+                    var self = this;
+                    return (self.price * self.quantity).toLocaleString();
                 },
                 filteredImgList() {
-                    return this.imgList.filter(img => img.thumbNail === 'N');
+                    var self = this;
+                    return self.imgList.filter(img => img.thumbNail === 'N');
                     // thumbNail이 'N'인 이미지들만 필터링해서 반환
                 },
 
@@ -501,6 +556,7 @@
             mounted() {
                 var self = this;
                 console.log(self.itemNo);
+                console.log("리뷰 : ", self.reviewScore); // 리뷰 데이터 출력
                 self.fngetInfo();
                 self.fnGetReview();
                 self.fetchLikedItems();
