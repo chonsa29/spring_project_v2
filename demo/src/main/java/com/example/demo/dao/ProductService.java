@@ -153,12 +153,15 @@ public class ProductService {
 	    return resultMap;
 	}
 
+	// 리뷰 목록 가져오기
 	public HashMap<String, Object> productReview(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
 			List<Review> review = productMapper.SelectProductReview(map);
+			int reviewCount = productMapper.CountProductReview(map);
 			resultMap.put("review", review);
+			resultMap.put("reviewCount", reviewCount);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -168,6 +171,7 @@ public class ProductService {
 		return resultMap;
 	}
 
+	// 좋아요 추가 / 취소 여부
 	public HashMap<String, Object> productlikeToggle(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
@@ -195,6 +199,7 @@ public class ProductService {
 	    return resultMap;
 	}
 
+	// 유저별 좋아요 확인
 	public HashMap<String, Object> productgetLikedItems(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
