@@ -30,16 +30,25 @@
                             </div>
                         </div>
                     </section>
-                    
+
+                    <section class="order-details">
+                        <h2 class="text">주문자 정보</h2>
+                        <input type="text" class="pay_ordererName" v-model="info.ordererName" placeholder="이름">
+                        <input type="text" class="pay_ordererPhone" v-model="info.ordererPhone" placeholder="연락처">
+                    </section>
+
                     <section class="shipping">
                         <h2 class="text">배송 정보</h2>
-                        <input type="text" v-model="info.address" placeholder="주소">
-                        <input type="text" v-model="" placeholder="상세 주소">
+                        <input type="text" class="pay_address" v-model="info.address" placeholder="주소">
+                        <input type="text" class="pay_detailAddress" placeholder="상세 주소">
+                    </section>  
+
+                    <section class="shipping-memo">
                         <div>
                             <h2 class="text">배송 메모</h2>
                         </div>
                         <div>
-                            <select v-model="paymentMethod">
+                            <select v-model="paymentMethod" class="pay_memo">
                                 <option value="one">배송 메모를 선택해 주세요.</option>
                                 <option value="two">배송 전에 미리 연락 바랍니다.</option>
                                 <option value="three">부재 시 경비실에 맡겨 주세요.</option>
@@ -47,19 +56,19 @@
                                 <option value="five">직접 입력</option>
                             </select>
                             <input type="text"
+                                class="pay_shippingMessage"
                                 v-if="paymentMethod === 'five'" 
                                 ref="shippingInput" 
                                 v-model="shippingMessage" 
                                 placeholder="배송 메모를 입력해 주세요.">
                         </div>
-                        
-                    </section>  
-                    
+                    </section>
+
                     <section class="coupon">
                         <div>
                             <h2 class="text">쿠폰</h2>
                         </div>
-                        <select>
+                        <select class="pay_coupon">
                             <option>{{ info.couponName }}</option>
                         </select>
                     </section>
@@ -69,20 +78,12 @@
                            <h2 class="text">포인트</h2> 
                         </div>
                         <div>
-                            <input type="text" v-model="info.point" placeholder="0">
+                            <input type="text" class="pay_point" v-model="displayPoint" placeholder="포인트 입력">
+                            <button class="point_btn" @click="applyPoint">전액 사용</button>
                         </div>
-                        <div>
-                            <button @click="applyPoint">전액 사용</button>
+                        <div class="point_text">
+                            보유 포인트 {{ info.point }}
                         </div>
-                        <div>
-                            사용 가능 포인트 {{ info.point }} / 보유 포인트 {{ info.point }}
-                        </div>
-                    </section>
-
-                    <section class="order-details">
-                        <h2 class="text">주문자 정보</h2>
-                        <input type="text" v-model="info.ordererName" placeholder="이름">
-                        <input type="text" v-model="info.ordererPhone" placeholder="연락처">
                     </section>
                 </section>
                 
@@ -98,7 +99,7 @@
                   
                     <section class="payment">
                         <h2 class="text">결제 수단</h2>
-                        <select>
+                        <select class="pay_way">
                             <option>{{ info.pWay }}</option>
                         </select>
                         <button class="pay-btn" @click="fnPayment">결제하기</button>
@@ -119,6 +120,8 @@
                 itemNo: "${map.itemNo}",
                 info: {},
                 sessionId : "${sessionId}",
+                displayPoint: null,
+                paymentMethod : 'one'
             };
         },
         methods: {
@@ -132,13 +135,8 @@
 					type : "POST", 
 					data : nparmap,
 					success : function(data) { 
-                        // self.info = data.info;
+                        self.info = data.info;
 						console.log(data);
-                        if (data.info) {
-                            self.info = data.info;
-                        } else {
-                            console.error("서버 응답에 info 없음:", data);
-                        }
 					}
 				});
             },
@@ -183,6 +181,9 @@
                     }
                 });
             },
+            applyPoint() {
+                this.displayPoint = this.info.point || 0;
+            },
         },
         watch: {
             paymentMethod(newVal) {
@@ -196,6 +197,12 @@
         mounted() {
             var self = this;
             self.fnPay();
+
+            document.addEventListener("scroll", function() {
+                const orderSection = document.querySelector(".order-section");
+                orderSection.scrollTop = window.scrollY;
+            });
+
         }
     });
     app.mount('#app');
