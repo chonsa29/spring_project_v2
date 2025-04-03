@@ -28,7 +28,7 @@ main {
     overflow-y: auto;
     scrollbar-width: none; /* Firefox에서 스크롤바 숨김 */
     -ms-overflow-style: none; /* IE 및 Edge에서 스크롤바 숨김 */
-    padding: 20px;
+    padding: 5px;
     background: white;
     display: flex;
     gap: 100px;
@@ -37,6 +37,7 @@ main {
     min-height: auto; 
     position: sticky;
     top: 0;
+    margin-right: 15px;
 }
 
 .order-section::-webkit-scrollbar {
@@ -48,13 +49,14 @@ main {
     display: flex;
     flex-direction: column;
     width: 350px;
-    padding: 20px;
+    padding: 5px;
     gap: 100px;
     background: white;
     position: sticky;
     top: 20px; 
     height: fit-content; 
     align-self: flex-start;
+    margin-left: 15px;
 }
 
 .text {
@@ -63,6 +65,24 @@ main {
     margin-bottom: 30px; 
     font-size: 20px; /* 글자 크기 조정 */
     font-weight: bold; /* 글자 굵게 */
+}
+
+.shipping {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 내부 요소를 왼쪽 정렬 */
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%; /* 부모 요소의 전체 너비를 차지 */
+}
+
+.check {
+    margin-bottom: 13px;
+    margin-right: 5px; /* 체크박스와 텍스트 간격 */
 }
 
 /* 주문 상품 정보 섹션 스타일 */
@@ -109,14 +129,14 @@ main {
 .product-quantity {
     margin-top: 5px;
     font-size: 14px;
-    color: #777;
+    color: #000;
 }
 
 /* 배송비 스타일 */
 .delivery-info {
     margin-top: 10px;
     font-size: 14px;
-    color: #888;
+    color: #555;
     display: flex;
     padding-top: 5px;
     text-align: center;
@@ -199,7 +219,8 @@ input.pay_detailAddress,
 input.pay_shippingMessage,
 input.pay_point,
 input.pay_ordererName,
-input.pay_ordererPhone {
+input.pay_ordererPhone,
+input.pay_zipcode {
     width: 100%;
     padding: 12px;
     font-size: 16px;
@@ -216,7 +237,8 @@ input.pay_detailAddress:focus,
 input.pay_shippingMessage:focus,
 input.pay_point:focus,
 input.pay_ordererName:focus,
-input.pay_ordererPhone:focus {
+input.pay_ordererPhone:focus,
+input.pay_zipcode:focus {
     border-color: #0DA043;
     box-shadow: 0 2 3px rgba(0, 0, 0, 0.5);
 }

@@ -82,7 +82,9 @@
 						<td>{{ inquiry.cdatetime }}</td>
 						<td class="gray-text">{{ inquiry.viewCnt }}</td>
 						<td v-if="sessionStatus == 'A'">
-							<button class="statusChange" :class="getStatusClass(inquiry.qsStatus)" @click="updateStatus(qsNo, qsStatus)">
+							<button class="statusChange" 
+							:class="getStatusClass(inquiry.qsStatus)" 
+							@click="updateStatus(inquiry)">
 								{{ getStatusText(inquiry.qsStatus) }}
 							</button>
 						</td>
@@ -301,10 +303,9 @@ const app = Vue.createApp({
 		},
 
 		updateStatus(inquiry) {
+			console.log("updateStatus 실행됨!", inquiry.qsNo, inquiry.qsStatus); 
 
-			console.log("updateStatus 실행됨!", qsNo, qsStatus); 
-
-			let newStatus = inquiry.qsStatus === 0 ? 1 : (inquiry.qsStatus === 1 ? 2 : inquiry.qsStatus);
+			let newStatus = inquiry.qsStatus === '0' ? '1' : (inquiry.qsStatus === '1' ? '2' : inquiry.qsStatus);
 
 			console.log("변경할 상태:", newStatus); // 변경된 값 확인
 

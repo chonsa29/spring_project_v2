@@ -68,13 +68,4 @@ public class PayController {
 		return new Gson().toJson(resultMap);
 	}
 	
-	@RequestMapping(value = "/delivery.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	@ResponseBody
-	public String delivery(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
-				
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		resultMap = payService.payDeliveryInfo(map);
-		
-		return new Gson().toJson(resultMap);
-	}
 }
