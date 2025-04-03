@@ -105,9 +105,10 @@
 		</if>
 	</select>
 	
-	<insert id="qnaInsert" parameterType="hashmap">
-		INSERT INTO QUESTION
-		VALUES(QUESTION_SEQ.NEXTVAL, #{userId}, #{qsTitle}, #{qsContents}, 0, SYSDATE, 0)
+	<insert id="qnaInsert" parameterType="map">
+	    INSERT INTO QUESTION (QS_NO, USERID, QS_TITLE, QS_CONTENTS, QS_STATUS, CDATETIME, VIEW_CNT, QS_CATEGORY) 
+	    VALUES (QUESTION_SEQ.NEXTVAL, #{userId}, #{qsTitle}, #{qsContents}, 
+	            0, SYSDATE, 0, #{qsCategory, jdbcType=VARCHAR}) 
 	</insert>
 	
 	<select id="qnaSelect" parameterType="hashmap" resultType="com.example.demo.model.Question">

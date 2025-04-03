@@ -9,7 +9,7 @@ public class Question {
 	private String userId;
 	private String qsTitle;
 	private String qsContents;
-	private String qsStatus;
+	private String qsStatus; 
 	private String itemNo;
 	private String cdatetime;
 	private String viewCnt;

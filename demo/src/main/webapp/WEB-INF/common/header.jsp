@@ -60,6 +60,7 @@
             <div class="floating-icon">
                 <img src="/img/icon.png" alt="아이콘">
             </div>
+            
         </div>
     </body>
 
