@@ -73,15 +73,15 @@
                         </div>
                         <div class="summary-item">
                             <span>할인 금액:</span>
-                            <span>-10,000원</span>
+                            <span>-{{ totalDiscount.toLocaleString() }}원</span>
                         </div>
                         <div class="summary-item">
                             <span>배송비:</span>
-                            <span>3,000원</span>
+                            <span>{{ totalShippingFee.toLocaleString() }}원</span>
                         </div>
                         <div class="summary-item total">
                             <span>총 결제 금액:</span>
-                            <span>{{ (totalAmount - 10000 + 3000).toLocaleString() }}원</span>
+                            <span>{{ finalAmount.toLocaleString() }}원</span>
                         </div>
                         <div class="orbutton">
                             <button class="order-button">주문하기</button>
@@ -107,10 +107,26 @@
                 isAllSelected: false, // 전체 선택 체크박스 상태
                 userId : "${sessionId}",
                 count : "",
-                selectList : []
+                selectList : [],
+                discount: 10000, // 기본 할인 금액
+                shippingFee: 3000 // 기본 배송비
             };
         },
         computed: { // computed 속성 추가
+            // 할인 금액: 선택된 상품이 있을 때만 적용
+            totalDiscount() {
+                return this.list.some(item => item.checked) ? this.discount : 0;
+            },
+            // 배송비: 선택된 상품이 있을 때만 적용
+            totalShippingFee() {
+                return this.totalAmount >= 30000 ? 0 : this.shippingFee;
+            },
+            // 최종 결제 금액 계산
+            finalAmount() {
+                const discount = this.totalDiscount; // 할인 금액 적용
+                const discountedTotal = Math.max(this.totalAmount - discount, 0);
+                return discountedTotal + this.totalShippingFee; // 배송비 자동 반영
+            },
             progressBarStyle() {
                 const maxAmount = 30000;
                 const percentage = Math.min((this.totalAmount / maxAmount) * 100, 100);
