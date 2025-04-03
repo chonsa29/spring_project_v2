@@ -47,32 +47,30 @@
                     </div>
                     <span v-if="allergensFlg" id="allergens-info">{{info.allergens}} 주의!</span>
 
-                    <div v-if="review.length > 0" class="review-summary">
+                    <!-- <div v-if="review.length > 0" class="review-summary">
                         <div class="average-rating">
                             <div id="review">
-                                <!-- 별과 점수를 감싸는 wrapper -->
+                                별과 점수를 감싸는 wrapper
                                 <div class="star-wrapper">
                                     <div class="stars">
-                                        <span v-for="n in 5" :key="n" class="star-container">
+                                        <span v-for="n in 5" :key="n" class="star-container-main">
                                             <span class="star empty">★</span>
                                             <span class="star full" v-if="n <= Math.floor(reviewScore)">★</span>
+                                            반 별 (조건 추가)
                                             <span class="star half"
-                                                v-else-if="n === Math.ceil(reviewScore) && reviewScore % 1 >= 0.5">★</span>
+                                                v-else-if="n === Math.ceil(reviewScore) && (reviewScore % 1) >= 0.5">
+                                                ★
+                                            </span>
                                         </span>
                                     </div>
-                                    <!-- 별점 숫자 -->
+                                    별점 숫자
                                     <div class="review-score">
                                         {{ reviewScore.toFixed(1) }}
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-
-
-
-
+                    </div> -->
                     <p class="product-discount-style">{{formatPrice(info.price * 3) }}원</p>
                     <p class="product-discount">30%</p>
                     <div class="price">{{formattedPrice}} 원</div>
@@ -148,14 +146,18 @@
                     <div v-show="selectedTab === 'review'" class="review-container">
 
                         <!-- 리뷰 요약 -->
-                        <div class="review-summary">
+                        <div class="review-score-summary">
                             <div class="review-score-container">
                                 <p class="review-total">총 {{ reviewCount }}건</p>
                                 <p class="review-average" v-if="reviewScore !== undefined">{{ reviewScore.toFixed(1) }}점
                                 </p>
                                 <div class="review-stars">
-                                    <span v-for="n in 5" :key="n" class="star"
-                                        :class="{ 'filled': n <= Math.round(reviewScore || 0) }">★</span>
+                                    <span v-for="n in 5" :key="'star-' + n" class="star-container">
+                                        <span class="star"
+                                            :class="{ 'filled': n <= Math.floor(reviewScore || 0) }">★</span>
+                                        <span class="star half-filled"
+                                            v-if="n === Math.ceil(reviewScore || 0) && (reviewScore % 1 >= 0.5)">★</span>
+                                    </span>
                                 </div>
                             </div>
                             <div class="review-bar-container" v-show="ratingDistribution">
@@ -199,7 +201,65 @@
 
                     <!-- 상품 문의 -->
                     <div v-show="selectedTab === 'inquiry'">
-                        <p>❓ 상품 문의 내용을 확인하고 작성할 수 있습니다.</p>
+                        <div class="inquiry-container">
+                            <p class="inquiry-notice">★ 상품 문의사항이 아닌 반품/교환관련 문의는 고객센터 1:1 문의를 이용해주세요.</p>
+
+                            <div class="inquiry-list">
+                                <!-- 문의 항목 -->
+                                <div class="inquiry-item" @click="changeInquiry(1)">
+                                    <div class="inquiry-title">
+                                        <span class="badge-answered">답변완료</span>
+                                        <span class="question-text">며칠 이내에 먹어야하는 제품인가요?</span>
+                                        <span class="user-info">Ex1****</span>
+                                        <span class="date">2025.04.02</span>
+                                    </div>
+                                    
+                                    <div class="inquiry-content" v-show="answer === 1">
+                                        <div class="question-content">
+                                            <div class="question-icon">Q</div>
+                                            <p>며칠 이내에 먹어야하는 제품인가요?</p>
+                                        </div>
+                                        <br>
+                                        <hr>
+                                        <br>
+                                        <div class="answer-content">
+                                            <div class="answer-icon">A</div>
+                                            <div class="answer-text">
+                                                <p>반갑습니다.<br>MEALPICK 온라인몰입니다.</p>
+                                                <p>해당 제품은 구매 후 7일 이내에 섭취하시는게 가장 좋으며, 만일 냉장 보관시 최대 2주 이내에 드시길 바랍니다.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 또 다른 문의 항목 -->
+                                <div class="inquiry-item" @click="changeInquiry(2)">
+                                    <div class="inquiry-title">
+                                        <span class="badge pending">답변완료</span>
+                                        <span class="question-text">혹시 제품에 있는 검은색 점은 먹어도 되는건가요?</span>
+                                        <span class="user-info">Ex2****</span>
+                                        <span class="date">2025.04.03</span>
+                                    </div>
+                                    <div class="inquiry-content" v-show="answer === 2">
+                                        <div class="question-content">
+                                            <div class="question-icon">Q</div>
+                                            <p>혹시 제품에 있는 검은색 점은 먹어도 되는건가요?</p>
+                                        </div>
+                                        <br>
+                                        <hr>
+                                        <br>
+                                        <div class="answer-content">
+                                            <div class="answer-icon">A</div>
+                                            <div class="answer-text">
+                                                <p>반갑습니다.<br>MEALPICK 온라인몰입니다.</p>
+                                                <p>현재 문의 페이지에선 자세하게 판단이 어려우니, 1:1 문의 상담쪽으로 연락주시면 감사하겠습니다.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- 교환/환불 내용 -->
@@ -345,8 +405,8 @@
                     wish: [], // 좋아요 목록
                     reviewCount: 0, // 리뷰 총 토탈 개수
                     reviewScore: 0,
-                    ratingDistribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 } // 기본값 추가
-
+                    ratingDistribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }, // 기본값 추가
+                    answer : null,
                 };
             },
 
@@ -426,13 +486,14 @@
                 },
 
                 updateRatingDistribution() {
+                    var self = this;
                     // 별점 분포 초기화 (모든 별점 0으로 시작)
-                    this.ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+                    self.ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 
                     // 리뷰 데이터가 없는 경우 처리
-                    if (!this.review || this.review.length === 0) {
+                    if (!self.review || self.review.length === 0) {
                         // 데이터가 아직 로드되지 않은 초기 상태
-                        if (this.review === undefined) {
+                        if (self.review === undefined) {
                             console.log("❌ 리뷰 데이터가 아직 로드되지 않음 (초기 상태)");
                         }
                         // 데이터는 로드되었지만 리뷰가 0개인 경우
@@ -443,24 +504,24 @@
                     }
 
                     // 현재 리뷰 데이터를 콘솔에 출력 (디버깅용)
-                    console.log("✅ 현재 리뷰 데이터:", this.review);
+                    // console.log("✅ 현재 리뷰 데이터:", this.review);
 
                     // 리뷰 목록을 순회하면서 별점 개수 세기
-                    this.review.forEach(review => {
+                    self.review.forEach(review => {
                         let score = parseInt(review.reviewScore); // reviewScore를 숫자로 변환
                         if (score >= 1 && score <= 5) {
-                            this.ratingDistribution[score]++; // 해당 별점 개수 증가
+                            self.ratingDistribution[score]++; // 해당 별점 개수 증가
                         }
                     });
 
                     // 별점 개수를 백분율(%)로 변환
-                    let totalReviews = this.review.length; // 총 리뷰 개수
-                    Object.keys(this.ratingDistribution).forEach(key => {
-                        this.ratingDistribution[key] = (this.ratingDistribution[key] / totalReviews) * 100;
+                    let totalReviews = self.review.length; // 총 리뷰 개수
+                    Object.keys(self.ratingDistribution).forEach(key => {
+                        self.ratingDistribution[key] = (self.ratingDistribution[key] / totalReviews) * 100;
                     });
 
                     // 변환된 별점 비율을 콘솔에 출력 (디버깅용)
-                    console.log("✅ 변환된 별점 비율 데이터:", this.ratingDistribution);
+                    // console.log("✅ 변환된 별점 비율 데이터:", this.ratingDistribution);
                 },
 
 
@@ -554,6 +615,11 @@
                 changeTab(tab) {
                     var self = this;
                     self.selectedTab = tab; // 선택한 탭으로 변경
+                },
+
+                changeInquiry(number) {
+                    var self = this;
+                    self.answer = number;
                 },
 
                 // 좋아요 표시

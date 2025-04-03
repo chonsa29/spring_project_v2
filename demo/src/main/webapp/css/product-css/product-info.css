@@ -89,50 +89,51 @@
 
 
 /* 총합 리뷰 css */
-.star-container {
-  display: flex;
-  align-items: center; /* 수직 정렬 */
-  gap: 5px; /* 별과 숫자 사이 간격 */
+.star-container-main {
+    position: relative;
+    font-size: 35px;
+    width: 35px;
+    height: 35px;
+    display: inline-block;
 }
 
 .star-wrapper {
-  display: flex; /* 가로 정렬 */
-  align-items: center; /* 세로 중앙 정렬 */
-  gap: 8px; /* 별과 숫자 사이 여백 */
+	display: flex; /* 가로 정렬 */
+	align-items: center; /* 세로 중앙 정렬 */
+	gap: 8px; /* 별과 숫자 사이 여백 */
 }
 
 .stars {
-  display: flex; /* 별을 가로로 정렬 */
-  gap: 2px; /* 별 사이 간격 */
+	display: flex; /* 별을 가로로 정렬 */
+	gap: 2px; /* 별 사이 간격 */
 }
 
 .star {
-  font-size: 35px; /* 별 크기 */
-  color: #d3d3d3; /* 기본 회색 별 */
-  position: static; /* 겹침 방지 */
+    font-size: 35px;
+    color: #eee; /* 기본 빈 별 */
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .star.full {
-  color: #272727; /* 완전한 별 (어두운 색) */
-  position: absolute;
+    color: #272727; /* 가득 찬 별 */
 }
 
 .star.half {
-  color: #272727;
-  position: absolute;
-  width: 50%;
-  overflow: hidden;
-  white-space: nowrap;
-  z-index: 2; /* 회색 별 위에 덮어씌우기 */
-  position: absolute;
+    position: absolute;
+    width: 50%;  /* 반 별 */
+    overflow: hidden;
+    display: block;
+    color: #272727;
 }
 
 .review-score {
-  font-size: 18px;
-  font-weight: bold;
-  color: black;
-  margin-left: 5px; /* 별과의 간격 조정 */
-  margin-top: 25px;
+	font-size: 18px;
+	font-weight: bold;
+	color: black;
+	margin-left: 5px; /* 별과의 간격 조정 */
+	margin-top: 25px;
 }
 
 /* 가격 및 할인 */
@@ -292,7 +293,7 @@
 	color: #bbb;
 	font-size: 20px;
 	cursor: pointer;
-	margin-left: 245px;
+	margin-left: 323px;
 }
 
 .like-popup-overlay {
@@ -346,7 +347,6 @@
 
 
 #product-view{
-    margin-top: 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -393,8 +393,22 @@ a {
 
 
 /* 리뷰 요약 */
+
+.review-score-summary {
+	display: flex;
+	align-items: center;
+	gap: 30px;
+	margin-bottom: 20px;
+}
 .review-score-container {
     text-align: center;
+}
+.star-container {
+    position: relative;
+	font-size: 35px;
+	width: 35px;
+	height: 35px;
+	display: inline-block;
 }
 .review-total {
     font-size: 14px;
@@ -407,19 +421,27 @@ a {
 .review-stars {
     font-size: 35px;
     color: #7EC594;
+    display: flex;
 }
 .star {
-    color: lightgray;
+    color: #eee; /* 기본 별 색상 */
+    font-size: 35px;
 }
 .filled {
-    color: #7EC594;
+    color: #7EC594; /* 가득 찬 별 색상 */
 }
-
-
-
+.half-filled {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #7EC594;
+    width: 50%; /* 왼쪽 절반만 색칠 */
+    overflow: hidden;
+}
 
 .review-bar-container {
     flex: 1;
+	margin-left: 205px;
 }
 .review-bar {
     display: flex;
@@ -578,6 +600,107 @@ a {
 .review-helpful:hover {
     color: #222;
 }
+
+
+
+
+/* 상품 문의 전체 영역 스타일 */
+.inquiry-container {
+    border-top: 2px solid #ddd;
+    padding: 20px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.inquiry-notice {
+	text-align: left;
+	padding-bottom: 15px;
+}
+
+/* 문의 리스트 스타일 */
+.inquiry-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.inquiry-item {
+	padding: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 문의 제목 스타일 */
+.inquiry-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: bold;
+	padding-top: 30px;
+	padding-bottom: 30px;
+	border-top: 0.5px solid #ddd;
+	border-bottom: 0.5px solid #ddd;
+}
+
+.inquiry-meta {
+    font-size: 12px;
+    color: #888;
+}
+
+.inquiry-content {
+    display: none;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.inquiry-item[style*="display: block"] {
+    display: block;
+}
+
+/* 답변 여부 태그 */
+.status-label {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+
+.status-label.pending {
+    background-color: #aaa;
+}
+
+.status-label.answered {
+    background-color: #8cc63f;
+}
+
+/* 문의 내용 스타일 */
+.inquiry-content {
+	display: block;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-left: 5px solid #8cc63f;
+    margin-top: 10px;
+	text-align: left;
+}
+
+.question-icon {
+    font-size: 24px;
+    color: #aaa;
+}
+
+/* 답변 스타일 */
+
+.answer-icon {
+    font-size: 30px;
+    color: #8cc63f;
+}
+
+
+
 
 /* 교환/환불 문의 */
 #product-view .exchange {
