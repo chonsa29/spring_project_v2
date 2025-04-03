@@ -22,6 +22,4 @@ public interface PayMapper {
 
 	Member payMemberInfo(HashMap<String, Object> map);
 
-	Delivery payDeliveryInfo(HashMap<String, Object> map);
-
 }

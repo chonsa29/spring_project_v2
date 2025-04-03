@@ -26,9 +26,9 @@
                             <div class="product-details">
                                 <p class="product-name">{{ productInfo.itemName }}</p>
                                 <p class="product-quantity">
-                                    <span class="required-label">필수</span> {{ productInfo.quantity }}
+                                    <span class="required-label">필수</span> {{ memberInfo.orderCount }} 개
                                 </p>
-                                <p class="product-price">{{ productInfo.price }} 원</p>
+                                <p class="product-price">{{ formattedTotalPrice }} 원</p>
                             </div>
                         </div>
                          <div class="delivery-info">
@@ -44,6 +44,14 @@
 
                     <section class="shipping">
                         <h2 class="text">배송 정보</h2>
+                        <div>
+                            <input type="checkbox" class="check" v-model="sameAsOrderer">
+                            <label>주문자 정보와 동일</label>
+                        </div>
+                        
+                        <input type="text" class="pay_ordererName" v-model="receiverName" placeholder="수령인">
+                        <input type="text" class="pay_ordererPhone" v-model="receiverPhone" placeholder="연락처">
+                        <input type="text" class="pay_zipcode" v-model="memberInfo.zipCode" placeholder="우편번호">
                         <input type="text" class="pay_address" v-model="memberInfo.address" placeholder="주소">
                         <input type="text" class="pay_detailAddress" placeholder="상세 주소">
                     </section>  
@@ -96,13 +104,16 @@
                     <section class="order-summary">
                         <h2 class="text">주문 요약</h2>
                         <div class="summary-details">
-                            <p>상품 가격 <span>{{ productInfo.price }}</span></p>
+                            <p>상품 가격 <span>{{ formattedTotalPrice }}</span></p>
                             <p>배송비 <span>+ 3,000</span></p>
+                            <p v-if="memberInfo.discountAmount">
+                                할인 금액 <span>{{ memberInfo.discountAmount }}</span>
+                            </p>
                             <p v-if="memberInfo.usedPoint && memberInfo.usedPoint > 0">포인트 사용 
                                 <span> - {{ memberInfo.usedPoint }}</span>
                             </p>
                             <p class="total-price">
-                                총 주문금액 <span>{{ (parseInt(productInfo.price) || 0) + 3000 - (memberInfo.usedPoint || 0) }} 원</span>
+                                총 주문금액 <span>{{ formattedTotalOrderPrice }} 원</span>
                             </p>
                         </div>
                     </section>
@@ -129,14 +140,13 @@
         data() {
             return {
                 itemNo: "${map.itemNo}",
-                quantity : "${map.quantity}",
-                payList: [],
+                quantity: "${map.quantity}",
                 productInfo: {},
                 memberInfo: {},
-                deliveryInfo: [],
                 sessionId : "${sessionId}",
                 displayPoint: null,
                 paymentMethod : 'one',
+                sameAsOrderer: false,
             };
         },
         methods: {
@@ -144,7 +154,6 @@
                 var self = this;
 				var nparmap = { 
                     itemNo : self.itemNo,
-                    quantity : self.quantity
                 };
 				$.ajax({
 					url:"/product.dox",
@@ -154,13 +163,15 @@
 					success : function(data) { 
                         self.productInfo = data.productInfo;
 						console.log(data);
-                        console.log(this.productInfo);
 					}
 				});
             },
             fnMember(){
                 var self = this;
-				var nparmap = { userId : self.sessionId };
+				var nparmap = { 
+                    userId : self.sessionId,
+                    orderCount : self.quantity
+                };
 				$.ajax({
 					url:"/member.dox",
 					dataType:"json",	
@@ -174,7 +185,19 @@
             },
             fnPayment(){
                 var self = this;
-                const totalPrice = parseInt(self.productInfo.price) + 3000 - parseInt(self.memberInfo.usedPoint || 0);
+
+                 // 기본 가격 계산
+                let originalPrice = parseInt(this.productInfo.price) * parseInt(this.memberInfo.orderCount);
+
+                // 할인 금액 계산
+                let discountAmount = originalPrice * this.discountRate;
+
+                // 포인트 사용 금액
+                let usedPoint = parseInt(this.memberInfo.usedPoint) || 0;
+
+                // 최종 결제 금액 (할인 적용)
+                let totalPrice = originalPrice - discountAmount + 3000 - usedPoint;
+
                 IMP.request_pay({
                     pg: "html5_inicis",
                     pay_method: "card",
@@ -200,8 +223,7 @@
                 var nparmap = { 
                     pWay : merchant_uid,
                     userId : self.sessionId,
-                    price : self.productInfo.price,
-                    pNo : self.payList.pNo
+                    price : self.productInfo.price
                 };
                 $.ajax({
                     url: "/payment.dox",  
@@ -213,6 +235,7 @@
                     }
                 });
             },
+
             applyPoint() {
                 this.displayPoint = this.memberInfo.point || 0;
                 if (this.memberInfo.point > 0) {
@@ -220,7 +243,9 @@
                     this.memberInfo.usedPoint = this.memberInfo.point; // 주문 요약에 반영할 포인트 사용 값 설정
                 }
             },
+
         },
+
         watch: {
             paymentMethod(newVal) {
                 if (newVal === "five") {
@@ -228,9 +253,50 @@
                         this.$refs.shippingInput?.focus();
                     });
                 }
+            },
+
+            sameAsOrderer(newVal) {
+                if (newVal) {
+                    this.receiverName = this.memberInfo.userName;
+                    this.receiverPhone = this.memberInfo.phone;
+                } else {
+                    this.receiverName = "";
+                    this.receiverPhone = "";
+                }
+            }
+             
+        },
+         
+        computed: { 
+            formattedPrice() {
+                return this.productInfo.price ? parseInt(this.productInfo.price).toLocaleString() : "0";
+            },
+            formattedTotalPrice() {
+                return this.productInfo.price && this.memberInfo.orderCount
+                    ? (parseInt(this.productInfo.price) * parseInt(this.memberInfo.orderCount)).toLocaleString()
+                    : "0";
+            },
+            discountRate() {
+                if (this.memberInfo.discountAmount && this.memberInfo.discountAmount.includes("%")) {
+                    return parseFloat(this.memberInfo.discountAmount.replace("%", "")) / 100;
+                }
+                return 0;
+            },
+            formattedTotalOrderPrice() {
+                if (!this.productInfo.price || !this.memberInfo.orderCount) return "0";
+
+                let originalPrice = parseInt(this.productInfo.price) * parseInt(this.memberInfo.orderCount);
+                let discountAmount = originalPrice * this.discountRate; // 할인 적용
+                let usedPoint = parseInt(this.memberInfo.usedPoint) || 0; // NaN 방지
+
+                let finalPrice = originalPrice - discountAmount + 3000 - usedPoint;
+
+                return isNaN(finalPrice) ? "0" : finalPrice.toLocaleString();
             }
         },
         mounted() {
+            console.log(this.itemNo);
+            console.log(this.quantity);
             var self = this;
             self.fnPayProduct();  
             self.fnMember();  

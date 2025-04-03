@@ -23,16 +23,11 @@
 	</select>
 	
 	<select id="payMemberInfo" parameterType="map" resultType="com.example.demo.model.Member">
-	    SELECT M.USERID, M.USERNAME, M.PHONE, M.ADDRESS, M.POINT, C.COUPON_NAME
-	    FROM MEMBER M
-	    LEFT JOIN COUPON C ON C.USERID = M.USERID AND C.IS_USED = 'N' 
-	    WHERE M.USERID = '${userId}'
-	</select>
-
-	<select id="payDeliveryInfo" parameterType="hashmap" resultType="com.example.demo.model.Delivery">
-		SELECT DELIVERY_NO, DELIVERY_FEE
-	    FROM DELIVERY
-	    WHERE DELIVERY_NO = #{deliveryNo}
+	   SELECT M.GROUP_ID, M.USERID, M.USERNAME, O.ZIPCODE, M.ADDRESS, M.PHONE, O.ORDER_COUNT, M.POINT, C.COUPON_NAME, C.DISCOUNT_AMOUNT
+		FROM ORDER_LIST O
+		INNER JOIN MEMBER M ON O.USERID = M.USERID
+		INNER JOIN COUPON C ON M.USERID = C.USERID AND C.IS_USED = 'N' 
+	    WHERE M.USERID = #{userId}
 	</select>
 	
 </mapper>

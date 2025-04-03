@@ -67,7 +67,16 @@ public class PayService {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
 			Member memberInfo = payMapper.payMemberInfo(map);
+			
+            String discountAmountStr = memberInfo.getDiscountAmount(); 
+
+            double discountRate = 0.0;
+            if (discountAmountStr != null && discountAmountStr.endsWith("%")) {
+                discountRate = Double.parseDouble(discountAmountStr.replace("%", "")) / 100.0;
+            }
+
 			resultMap.put("memberInfo", memberInfo);
+			resultMap.put("discountRate", discountRate);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -77,18 +86,4 @@ public class PayService {
 		return resultMap;
 	}
 
-	public HashMap<String, Object> payDeliveryInfo(HashMap<String, Object> map) {
-		// TODO Auto-generated method stub
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		try {
-			Delivery deliveryInfo = payMapper.payDeliveryInfo(map);
-			resultMap.put("deliveryInfo", deliveryInfo);
-			resultMap.put("result", "success");
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			resultMap.put("result", "fail");
-		}
-		
-		return resultMap;
-	}
 }
