@@ -83,7 +83,7 @@
 						<th>제목</th>
 						<th>날짜</th>
 						<th>조회수</th>
-						<!-- <th>좋아요</th> -->
+						<th>모집 상태</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -92,7 +92,11 @@
 						<td @click="fnGroupView(item.postId)">{{ item.title }}</td>
 						<td>{{ item.cdatetime.substring(0, 10) }}</td>
 						<td class="gray-text">{{ item.viewCnt }}</td>
-						<!-- <td class="gray-text">{{ item.likes }}</td> -->
+						<td class="gray-text">
+							<!-- 모집 상태 버튼 -->
+							<button v-if="item.status === 'PENDING'" class="status-btn open">모집 중</button>
+							<button v-if="item.status === 'CLOSE'" class="status-btn closed">마감</button>
+						</td>
 					</tr>
 				</tbody>
 			</table>
@@ -322,7 +326,7 @@ const app = Vue.createApp({
                 dataType: "json",
                 data: { 
 					userId: self.userId,
-					groupName: self.groupName 
+					groupName: self.groupName,
 				},
                 success: function(response) {
                     if (response.status === "success") {

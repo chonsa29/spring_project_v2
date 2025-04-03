@@ -36,6 +36,10 @@
                 <div class="info-item">
                     <span class="info-title">현재 신청자</span>
                     <span>{{ members.length }}명</span>
+
+                    <!-- 모집 상태 버튼 -->
+                    <button v-if="info.status === 'PENDING'" class="status-btn open">모집 중</button>
+                    <button v-if="info.status === 'CLOSE'" class="status-btn closed">마감</button>
                 </div>
 
                 <!-- sessionId가 members 배열에 포함되어 있으면 신청자 보기 버튼 -->
@@ -61,7 +65,7 @@
                                                 <button v-if="member.status === 'ACTIVE'" class="accept-btn" disabled>수락 완료</button>
                                                 <button v-if="member.status === 'ACTIVE'" class="reject-btn" @click="removeMember(member.userId)">삭제</button>
                                                 <button v-if="member.status === 'PENDING'" class="accept-btn2" @click="acceptMember(member.userId)">수락</button>
-                                                <button v-if="member.status === 'PENDING'" class="reject-btn" @click="rejectMember(member.userId)">거절</button>
+                                                <button v-if="member.status === 'PENDING'" class="reject-btn" @click="removeMember(member.userId)">거절</button>
                                             </div>
                                         </template>
 
@@ -69,9 +73,9 @@
                                         <template v-else-if="sessionId === member.userId">
                                             <div class="button-group">
                                                 <button v-if="member.status === 'ACTIVE'" class="accept-btn" disabled>수락 완료</button>
-                                                <button v-if="member.status === 'ACTIVE'" class="cancel-btn" @click="cancelApplication(member.userId)">취소</button>
+                                                <button v-if="member.status === 'ACTIVE'" class="cancel-btn" @click="removeMember(member.userId)">취소</button>
                                                 <button v-if="member.status === 'PENDING'" class="pending-btn" disabled>수락 대기</button>
-                                                <button v-if="member.status === 'PENDING'" class="cancel-btn" @click="cancelApplication(member.userId)">취소</button>
+                                                <button v-if="member.status === 'PENDING'" class="cancel-btn" @click="removeMember(member.userId)">취소</button>
                                             </div>
                                         </template>
                                     </template>
@@ -81,7 +85,7 @@
 
                         <!-- 리더일 때만 마감 버튼을 팝업 하단에 추가 -->
                         <div v-if="isLeader" class="button-group">
-                            <button class="end-btn">마감하기</button>
+                            <button class="end-btn" @click="fnCloseGroup">마감하기</button>
                         
                             <button class="close-btn" @click="closePopup">닫기</button>
                         </div>
@@ -93,7 +97,8 @@
 
                 <!-- sessionId가 members 배열에 없으면 신청하기 버튼 -->
                 <div class="button-container" v-if="!isMember">
-                    <button class="edit-btn" @click="fnMemberJoinCheck">신청하기</button>
+                    <button v-if="info.status == 'PENDING'" class="edit-btn" @click="fnMemberJoinCheck">신청하기</button>
+                    <span v-if="info.status == 'CLOSE'">모집이 마감되었습니다.</span>
                 </div>
             </div>
 
@@ -272,11 +277,85 @@
                             location.reload();
                             
 						} else {
-                            alert("신청 실패")
+                            alert("신청 실패");
+                        }
+                    }
+                });
+            },
+            // 리더 - 멤버 수락
+            acceptMember: function(userId) {
+                var self = this;
+                
+                var nparmap = {
+                    userId : userId
+                }
+
+                $.ajax({
+                    url: "/group/accept.dox",
+                    dataType: "json",
+                    type: "POST",
+                    contentType: "application/json",  
+                    data: JSON.stringify(nparmap),  
+                    success: function (data) {
+                        if(data.result == "success") {
+							alert("수락되었습니다!");
+                            location.reload();
+                            
+						} else {
+                            alert("수락 실패");
+                        }
+                    }
+                });
+            },
+            // 멤버 삭제/거절/취소
+            removeMember: function(userId) {
+                var self = this;
+                
+                var nparmap = {
+                    userId : userId
+                }
+
+                $.ajax({
+                    url: "/group/reject.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: nparmap,
+                    success: function (data) {
+                        if(data.result == "success") {
+							alert("가입 취소되었습니다");
+                            location.reload();
+                            
+						} else {
+                            alert("취소 실패");
+                        }
+                    }
+                });
+            },
+            // 마감하기
+            fnCloseGroup: function(){
+                var self = this;
+                
+                var nparmap = {
+                    groupId : self.info.groupId
+                }
+
+                $.ajax({
+                    url: "/group/close.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: nparmap,
+                    success: function (data) {
+                        if(data.result == "success") {
+							alert("모집이 마감되었습니다");
+                            location.reload();
+                            
+						} else {
+                            alert("마감 실패");
                         }
                     }
                 });
             }
+            
         },
         mounted() {
             var self = this;

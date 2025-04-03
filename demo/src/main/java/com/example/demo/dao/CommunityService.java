@@ -347,6 +347,46 @@ public class CommunityService {
 	    }
 		return resultMap;
 	}
+
+	// 멤버 수락하기
+	public HashMap<String, Object> acceptMember(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+	        communityMapper.updateMemberJoin(map);
+	        resultMap.put("result", "success");
+	    } catch (Exception e) {
+	        System.out.println(e.getMessage());
+	        resultMap.put("result", "fail");
+	    }
+		return resultMap;
+	}
+
+	public HashMap<String, Object> rejectMember(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+	        communityMapper.deleteMemberReject(map);
+	        resultMap.put("result", "success");
+	    } catch (Exception e) {
+	        System.out.println(e.getMessage());
+	        resultMap.put("result", "fail");
+	    }
+		return resultMap;
+	}
+
+	public HashMap<String, Object> closeGroup(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+	        communityMapper.updateGroupStatus(map);
+	        resultMap.put("result", "success");
+	    } catch (Exception e) {
+	        System.out.println(e.getMessage());
+	        resultMap.put("result", "fail");
+	    }
+		return resultMap;
+	}
 	
 
 

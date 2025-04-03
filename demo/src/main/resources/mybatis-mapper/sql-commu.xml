@@ -131,7 +131,8 @@
 	<!-- group 부분 -->
 	<select id="selectGroupList" parameterType="hashmap" resultType="com.example.demo.model.Group">
 		SELECT *
-		FROM GROUP_POST
+		FROM GROUP_POST GP
+		INNER JOIN GROUP_INFO GI ON GP.POST_ID = GI.POST_ID
 		WHERE 1=1
 		<if test="searchOption != null and searchOption == 'all'">
 			AND (TITLE LIKE '%' || #{searchKeyword} || '%'
@@ -234,8 +235,8 @@
 	
 	<!-- 그룹 생성 -->
 	<insert id="insertGroup" parameterType="hashmap">
-		INSERT INTO GROUP_INFO(GROUP_ID, GROUP_NAME, LEADER_ID)
-		VALUES(GROUP_INFO_SEQ.NEXTVAL, #{groupName}, #{userId})
+		INSERT INTO GROUP_INFO(GROUP_ID, GROUP_NAME, LEADER_ID, STATUS)
+		VALUES(GROUP_INFO_SEQ.NEXTVAL, #{groupName}, #{userId}, 'PENDING')
 	</insert>
 	
 	<!-- 그룹 생성 시 멤버도 추가 -->
@@ -244,6 +245,30 @@
 		VALUES(#{groupId}, #{userId}, 'ACTIVE', 'LEADER', #{groupName}, #{userId})
 	</insert>
 
+	<!-- 멤버 수락하기 -->
+	<update id="updateMemberJoin" parameterType="hashmap">
+		UPDATE GROUP_USER
+		SET
+			STATUS = 'ACTIVE',
+			JOIN_DATE = SYSDATE
+		WHERE USERID = #{userId}
+	</update>
+	
+	<!-- 멤버 삭제/거절 -->
+	<delete id="deleteMemberReject" parameterType="hashmap">
+		DELETE
+		FROM GROUP_USER
+		WHERE USERID = #{userId}
+	</delete>
+	
+	<!-- 그룹 상태 수정 -->
+	<update id="updateGroupStatus" parameterType="hashmap">
+		UPDATE GROUP_INFO
+		SET
+			STATUS = 'CLOSE'
+		WHERE GROUP_ID = #{groupId}
+	</update>
+	
 </mapper>
 
 

@@ -317,5 +317,47 @@ public class CommunityController {
 	    // JSON 변환 후 반환
 	    return new Gson().toJson(resultMap);
 	}
+	
+	// 멤버 수락하기
+	@RequestMapping(value = "/group/accept.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String acceptMember(@RequestBody HashMap<String, Object> map) {
+	    HashMap<String, Object> resultMap = new HashMap<>();
+
+	    try {
+	        // 서비스 호출하여 레시피 추가 처리
+	        resultMap = communityService.acceptMember(map);
+
+	        // 성공 메시지 추가
+	        resultMap.put("status", "success");
+	        resultMap.put("message", "멤버가 성공적으로 수락되었습니다.");
+	    } catch (Exception e) {
+	        // 예외 발생 시 오류 메시지 반환
+	        resultMap.put("status", "error");
+	        resultMap.put("message", "멤버 수락 중 오류가 발생했습니다.");
+	        resultMap.put("error", e.getMessage());
+	    }
+	    return new Gson().toJson(resultMap);
+	}
+	
+	// 멤버 거절하기(삭제, 거절)
+	@RequestMapping(value = "/group/reject.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String rejectMember(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		resultMap = communityService.rejectMember(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	// 그룹 마감
+	@RequestMapping(value = "/group/close.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String closeGroup(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		resultMap = communityService.closeGroup(map);
+		return new Gson().toJson(resultMap);
+	}
 
 }

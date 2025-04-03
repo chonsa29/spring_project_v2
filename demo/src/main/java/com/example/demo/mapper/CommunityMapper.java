@@ -68,4 +68,10 @@ public interface CommunityMapper {
 
 	void insertGroupMember(HashMap<String, Object> map);
 
+	void updateMemberJoin(HashMap<String, Object> map);
+
+	void deleteMemberReject(HashMap<String, Object> map);
+
+	void updateGroupStatus(HashMap<String, Object> map);
+
 }
