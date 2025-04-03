@@ -100,6 +100,9 @@
                     <button v-if="info.status == 'PENDING'" class="edit-btn" @click="fnMemberJoinCheck">신청하기</button>
                     <span v-if="info.status == 'CLOSE'">모집이 마감되었습니다.</span>
                 </div>
+                <div class="button-container" v-if="isMember">
+                    <button class="chat-btn" @click="openChatRoom">채팅방 열기</button>
+                </div>
             </div>
 
 
@@ -226,6 +229,7 @@
 
             // 가입 신청
             fnMemberJoinCheck: function () {
+
                 var self = this;
                 var nparmap = {
                     userId : self.sessionId
@@ -237,6 +241,7 @@
                     data: nparmap,
                     success: function(response) {
                         console.log("서버 응답:", response); //  응답 확인
+
 
                         if (response.status === "success") {
                             if (response.groupStatus === "joined") {
@@ -257,6 +262,11 @@
             },
             fnMemberJoin: function () {
                 var self = this;
+
+                if(self.userId == null) {
+                    alert("로그인을 해 주세요");
+                    location.href = "/member/login.do";
+                }
 
                 console.log(self.info.groupId, self.info.groupName, self.info.userId);
                 
@@ -354,6 +364,18 @@
                         }
                     }
                 });
+            },
+
+            // 채팅
+            openChatRoom() {
+                const chatWindow = window.open(
+                    "/chatting/chatRoom?groupId=" + this.info.groupId, 
+                    "ChatRoom", 
+                    "width=500,height=600,left=600,top=100"
+                );
+                if (!chatWindow) {
+                    alert("팝업이 차단되었습니다. 팝업 차단을 해제해주세요.");
+                }
             }
             
         },

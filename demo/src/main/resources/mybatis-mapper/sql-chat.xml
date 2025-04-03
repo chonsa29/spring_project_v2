@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.ChatMessageMapper">
+
+    <!-- 메시지 저장 -->
+    <insert id="saveMessage">
+        INSERT INTO CHAT_MESSAGE (ID, GROUP_ID, SENDER, CONTENT, MESSAGE_TYPE, CREATED_AT)
+        VALUES (CHAT_MESSAGE_SEQ.NEXTVAL, #{groupId}, #{sender}, #{content}, #{messageType}, SYSTIMESTAMP)
+    </insert>
+
+    <!-- 특정 그룹 채팅방의 메시지 조회 -->
+    <select id="findMessagesByGroupId" resultType="ChatMessage">
+        SELECT * FROM CHAT_MESSAGE WHERE GROUP_ID = #{groupId} ORDER BY CREATED_AT ASC
+    </select>
+
+	<!-- 사용자가 채팅방에 입장한 적이 있는지 확인 -->
+	<select id="countUserJoinMessages" resultType="int">
+	    SELECT COUNT(*) 
+	    FROM CHAT_MESSAGE 
+	    WHERE GROUP_ID = #{groupId} 
+	      AND SENDER = #{userId} 
+	      AND MESSAGE_TYPE = 'JOIN'
+	</select>
+</mapper>
