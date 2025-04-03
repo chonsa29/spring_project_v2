@@ -406,14 +406,18 @@ a {
 }
 .review-stars {
     font-size: 35px;
-    color: #ff5a5a;
+    color: #7EC594;
 }
 .star {
     color: lightgray;
 }
 .filled {
-    color: #ff5a5a;
+    color: #7EC594;
 }
+
+
+
+
 .review-bar-container {
     flex: 1;
 }
@@ -426,19 +430,23 @@ a {
 .review-bar-label {
     width: 30px;
     text-align: right;
-    font-size: 14px;
+    font-size: 15px;
+	font-weight: bold;
+	color : #7EC594;
 }
 .bar {
-    width: 100px; /* 막대 길이 */
+    width: 300px; /* 막대 길이 */
     height: 10px;
-    background-color: #e0e0e0; /* 배경색 (연한 회색) */
+    background-color: #eee; /* 배경색 (연한 회색) */
     border-radius: 5px;
     overflow: hidden;
 }
 .filled-bar {
     height: 100%;
-    background-color: #ffcc00; /* 별점 색 (노란색) */
+    background-color: #7EC594; /* 별점 색 (노란색) */
     transition: width 0.3s ease-in-out;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
 }
 .review-bar-percent {
     font-size: 14px;

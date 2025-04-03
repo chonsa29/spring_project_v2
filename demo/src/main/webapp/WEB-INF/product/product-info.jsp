@@ -163,10 +163,10 @@
                                     <span class="review-bar-label">{{ 6 - n }}점</span>
                                     <div class="bar">
                                         <div class="filled-bar"
-                                            :style="{ width: (ratingDistribution[5-n] || 0) + '%' }"></div>
+                                            :style="{ width: (ratingDistribution[6-n] || 0) + '%' }"></div>
                                     </div>
-                                    <span class="review-bar-percent">{{ ratingDistribution[5-n] ?
-                                        ratingDistribution[5-n] + '%' : '0%' }}</span>
+                                    <span class="review-bar-percent">{{ ratingDistribution[6-n] ?
+                                        ratingDistribution[6-n].toFixed(1) + '%' : '0%' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -405,9 +405,11 @@
                                 self.reviewCount = data.reviewCount;
                                 console.log(data.reviewCount);
 
+                                // 리뷰 평균 계산
                                 if (self.review && self.review.length > 0) {
                                     let totalScore = 0;
                                     self.review.forEach((review) => {
+                                        console.log(review.reviewScore)
                                         totalScore += parseFloat(review.reviewScore) || 0;  // 숫자로 변환하여 합산
                                     });
                                     self.reviewScore = totalScore / self.review.length;  // 평균 계산
@@ -416,10 +418,49 @@
                                 }
 
                                 console.log("평균 별점:", self.reviewScore);  // 평균 별점 출력
+                                self.updateRatingDistribution();
 
                             }
                         },
                     });
+                },
+
+                updateRatingDistribution() {
+                    // 별점 분포 초기화 (모든 별점 0으로 시작)
+                    this.ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+
+                    // 리뷰 데이터가 없는 경우 처리
+                    if (!this.review || this.review.length === 0) {
+                        // 데이터가 아직 로드되지 않은 초기 상태
+                        if (this.review === undefined) {
+                            console.log("❌ 리뷰 데이터가 아직 로드되지 않음 (초기 상태)");
+                        }
+                        // 데이터는 로드되었지만 리뷰가 0개인 경우
+                        else {
+                            console.log("ℹ️ 리뷰 데이터가 로드되었지만 0개임");
+                        }
+                        return; // 별점 계산을 진행하지 않고 종료
+                    }
+
+                    // 현재 리뷰 데이터를 콘솔에 출력 (디버깅용)
+                    console.log("✅ 현재 리뷰 데이터:", this.review);
+
+                    // 리뷰 목록을 순회하면서 별점 개수 세기
+                    this.review.forEach(review => {
+                        let score = parseInt(review.reviewScore); // reviewScore를 숫자로 변환
+                        if (score >= 1 && score <= 5) {
+                            this.ratingDistribution[score]++; // 해당 별점 개수 증가
+                        }
+                    });
+
+                    // 별점 개수를 백분율(%)로 변환
+                    let totalReviews = this.review.length; // 총 리뷰 개수
+                    Object.keys(this.ratingDistribution).forEach(key => {
+                        this.ratingDistribution[key] = (this.ratingDistribution[key] / totalReviews) * 100;
+                    });
+
+                    // 변환된 별점 비율을 콘솔에 출력 (디버깅용)
+                    console.log("✅ 변환된 별점 비율 데이터:", this.ratingDistribution);
                 },
 
 
@@ -494,7 +535,7 @@
                     var self = this;
                     console.log("itemNo:", itemNo);
                     console.log("quantity:", String(quantity));
-                    // pageChange("/pay.do", { itemNo: itemNo, quantity: String(quantity) }); // 구매하기로 이동
+                    pageChange("/pay.do", { itemNo: itemNo, quantity: String(quantity) }); // 구매하기로 이동
                     // 잠시 수정중
                 },
 
@@ -606,7 +647,6 @@
                 self.fngetInfo();
                 self.fnGetReview();
                 self.fetchLikedItems();
-                console.log("별점 비율 데이터:", this.ratingDistribution);
             }
         });
         app.mount('#app');
