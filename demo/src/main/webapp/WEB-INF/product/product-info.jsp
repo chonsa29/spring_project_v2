@@ -625,12 +625,15 @@
                         alert("로그인 후 이용바랍니다.");
                         location.href = "/member/login.do";
                         return;
+                        // 로그인
                     }
 
                     if (self.iqContents == "" || self.iqTitle == "") {
                         alert("문의 내용을 입력해주세요.");
                         return;
+                        // 내용 입력
                     }
+                    
 
                     var nparmap = {
                         userId: self.userId,
