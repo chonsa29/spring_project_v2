@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.mapper.ProductMapper;
 import com.example.demo.model.Product;
+import com.example.demo.model.ProductQuestion;
 import com.example.demo.model.Review;
 import com.example.demo.model.Wish;
 
@@ -207,6 +208,37 @@ public class ProductService {
 			List<Wish> wish = productMapper.SelectproductWish(map);
 			resultMap.put("result", "success");
 			resultMap.put("wish", wish);
+		} catch (Exception e) {
+			// TODO: handle exception
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage());
+		}
+		return resultMap;
+	}
+
+	// 상품별 문의 가져오기
+	public HashMap<String, Object> getproductQuestion(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			List<ProductQuestion> ProductQuestion = productMapper.SelectproductQuestion(map);
+			resultMap.put("result", "success");
+			resultMap.put("ProductQuestion", ProductQuestion);
+		} catch (Exception e) {
+			// TODO: handle exception
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage());
+		}
+		return resultMap;
+		// TODO Auto-generated method stub
+	}
+
+	// 상품별 문의 추가하기
+	public HashMap<String, Object> addproductQuestion(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			productMapper.InsertproductQuestion(map);
+			resultMap.put("result", "success");
 		} catch (Exception e) {
 			// TODO: handle exception
 			resultMap.put("result", "fail");

@@ -232,6 +232,29 @@ public class ProductController {
 		return new Gson().toJson(resultMap);
 	}
 	
+	// 상품별 문의 가져오기
+	@RequestMapping(value = "/product/getproductQuestion.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String getproductQuestion(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		resultMap = productService.getproductQuestion(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	
+	// 상품별 문의 추가하기
+	@RequestMapping(value = "/product/addproductQuestion.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String addproductQuestion(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		resultMap = productService.addproductQuestion(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	
+	
 	
 	
 }

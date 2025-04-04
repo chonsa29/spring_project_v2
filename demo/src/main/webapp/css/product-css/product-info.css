@@ -84,6 +84,7 @@
     font-size: 24px;
     font-weight: bold;
 	margin-bottom: 10px;
+	position: relative;
 }
 
 
@@ -287,13 +288,14 @@
 
 
 .product-like {
-	margin-left: auto;
-	background: none;
-	border : none;
-	color: #bbb;
-	font-size: 20px;
-	cursor: pointer;
-	margin-left: 323px;
+	position: absolute;
+    top: 10px;  /* 원하는 위치로 조정 */
+    right: 10px; /* 원하는 위치로 조정 */
+    font-size: 24px; /* 크기 조정 */
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #ccc; /* 기본 색상 */
 }
 
 .like-popup-overlay {
@@ -612,6 +614,134 @@ a {
     color: #555;
 }
 
+/* 팝업 오버레이 (배경 어둡게 처리) */
+.inquiry-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* 어두운 반투명 배경 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* 팝업 스타일 */
+.inquiry-popup {
+    width: 600px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+    padding: 25px;
+    position: relative;
+}
+
+/* 팝업 내부 내용 */
+.popup-content {
+    text-align: left;
+}
+
+/* 제목 스타일 */
+.popup-content h2 {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* 상품 정보 */
+.product-info {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 10px;
+	margin-top : 30px;
+	color: black;
+}
+
+.textarea-container-title{
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+	margin-bottom: 10px;
+}
+
+.popup-content .textarea-container-title textarea {
+    width: 100%;
+    height: 45px;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    resize: none;
+    font-size: 14px;
+    color: #333;
+    line-height: 1.4;
+    outline: none;
+}
+
+
+/* 입력칸 스타일 */
+.textarea-container-contents {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.popup-content .textarea-container-contents textarea {
+    width: 100%;
+    height: 150px;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    resize: none;
+    font-size: 14px;
+    color: #333;
+    line-height: 1.4;
+    outline: none;
+}
+
+/* 글자 수 표시 */
+.char-count {
+    font-size: 12px;
+    color: #777;
+    text-align: right;
+}
+
+/* 버튼 스타일 */
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.button-container button {
+    width: 130px;
+    height: 45px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 15px;
+    cursor: pointer;
+    background-color: #f5f5f5;
+    color: #333;
+    font-weight: bold;
+}
+
+.button-container .cancel-btn {
+    background-color: #fff;
+}
+
+.button-container .submit-btn {
+    background-color: #fff;
+    color: #333;
+}
+
+
+
 .inquiry-notice {
 	text-align: left;
 	padding-bottom: 15px;
@@ -630,6 +760,17 @@ a {
     flex-direction: column;
 }
 
+.inquiry-button {
+	border: none;
+	outline: none;
+	padding: 10px;
+	color: white;
+	background-color: #7EC594;
+	border-radius: 5px;
+	margin-left: 30px;
+	cursor: pointer;
+}
+
 /* 문의 제목 스타일 */
 .inquiry-title {
     display: flex;
@@ -640,6 +781,7 @@ a {
 	padding-bottom: 30px;
 	border-top: 0.5px solid #ddd;
 	border-bottom: 0.5px solid #ddd;
+	cursor: pointer;
 }
 
 .inquiry-meta {
@@ -658,21 +800,20 @@ a {
     display: block;
 }
 
-/* 답변 여부 태그 */
-.status-label {
-    padding: 5px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: bold;
-    color: white;
-}
 
-.status-label.pending {
+
+.badge-pending {
     background-color: #aaa;
+	border-radius: 5px;
+	color: white;
+	padding: 5px;
 }
 
-.status-label.answered {
-    background-color: #8cc63f;
+.badge-answered {
+    background-color: #7EC594;
+	border-radius: 5px;
+	color: white;
+	padding: 5px;
 }
 
 /* 문의 내용 스타일 */
@@ -682,7 +823,7 @@ a {
     gap: 10px;
     padding: 15px;
     background: #f9f9f9;
-    border-left: 5px solid #8cc63f;
+    border-left: 5px solid #7EC594;
     margin-top: 10px;
 	text-align: left;
 }
@@ -696,9 +837,16 @@ a {
 
 .answer-icon {
     font-size: 30px;
-    color: #8cc63f;
+    color: #7EC594;
 }
 
+.no-inquiry {
+    text-align: center;
+    font-size: 16px;
+    color: #777;
+    padding: 20px;
+    border-top: 1px solid #ddd;
+}
 
 
 
