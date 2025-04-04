@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.example.demo.model.Product;
+import com.example.demo.model.ProductQuestion;
 import com.example.demo.model.Review;
 import com.example.demo.model.Wish;
 
@@ -56,6 +57,10 @@ public interface ProductMapper {
 	List<Wish> SelectproductWish(HashMap<String, Object> map);
 
 	int CountProductReview(HashMap<String, Object> map);
+
+	List<ProductQuestion> SelectproductQuestion(HashMap<String, Object> map);
+
+	void InsertproductQuestion(HashMap<String, Object> map);
 
 
 }

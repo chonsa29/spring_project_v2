@@ -173,6 +173,21 @@
     	FROM REVIEW
     	WHERE ITEM_NO = #{itemNo}
     </select>
+    
+    
+    <!-- item_no당 상품의 문의 내역 가져오기 -->
+    <select id="SelectproductQuestion" parameterType="hashmap" resultType="com.example.demo.model.ProductQuestion">
+    	SELECT *
+    	FROM ITEM_QUESTION
+    	WHERE ITEM_NO = #{itemNo}
+    </select>
+    
+    <!-- item_no당 상품에 문의 내역 추가하기 -->
+    <insert id="InsertproductQuestion" parameterType="hashmap">
+    	INSERT INTO ITEM_QUESTION
+    	VALUES (ITEM_QUESTION_SEQ.NEXTVAL, #{userId}, #{iqTitle}, #{iqContents}, 'N', #{itemNo}, SYSDATE)
+    </insert>
+    
 </mapper>
 
 
