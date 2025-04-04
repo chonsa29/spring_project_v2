@@ -22,4 +22,6 @@ public interface PayMapper {
 
 	Member payMemberInfo(HashMap<String, Object> map);
 
+	void upsertOrderCount(HashMap<String, Object> map);
+
 }
