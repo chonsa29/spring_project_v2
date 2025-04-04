@@ -231,6 +231,11 @@ body {
     flex-direction: column;
     z-index: 1000;
     overflow: hidden;
+    resize: both; /* 사용자가 크기 조절 가능 */
+    min-width: 250px;
+    min-height: 300px;
+    max-width: 600px;
+    max-height: 800px;
 }
 
 /* 채팅 헤더 */
@@ -285,22 +290,37 @@ body {
     display: flex;
     padding: 10px;
     border-top: 1px solid #ddd;
+    align-items: center;
 }
 
-.chat-footer input[type="text"] {
+.chat-footer textarea {
     flex: 1;
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    min-height: 30px; 
+    max-height: 50px; 
+    overflow-y: auto;
+    scrollbar-width: none; 
+    -ms-overflow-style: none; 
+    resize: none; /* 크기 조절 방지 */
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 .chat-footer button {
+    width: 50px;
+    font-size: 15px;
     margin-left: 8px;
-    padding: 8px 12px;
+    height: 35px !important;
+    line-height: 30px; 
+    justify-content: center;
+    align-items: center;
+    padding: 0;
     background-color: #4caf50;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
 }
 

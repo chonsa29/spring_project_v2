@@ -70,7 +70,8 @@
                     <p class="bot-message">안녕하세요! 무엇을 도와드릴까요?</p>
                 </div>
                 <div class="chat-footer">
-                    <input type="text" v-model="userMessage" @keypress.enter="sendMessage">
+                    <textarea type="text" v-model="userMessage" ref="messageInput"
+                    placeholder="문의사항을 입력해 주세요" @keypress.enter="sendMessage"></textarea>
                     <button @click="sendMessage">전송</button>
                 </div>
             </div>
@@ -171,6 +172,14 @@
                             chatBody.scrollTop = chatBody.scrollHeight;
                         }
                     });
+                },
+
+                resizeTextarea() {
+                    this.$nextTick(() => {
+                        const textarea = this.$refs.messageTextarea;
+                        textarea.style.height = "auto"; // 높이 초기화
+                        textarea.style.height = textarea.scrollHeight + "px"; // 내용에 맞게 높이 조정
+                    });
                 }
 
             },
@@ -187,6 +196,7 @@
                         floatingIcon.src = "/img/icon.png"; // 기본 상태 이미지 경로
                     });
                 }
+                
             },
         });
 
