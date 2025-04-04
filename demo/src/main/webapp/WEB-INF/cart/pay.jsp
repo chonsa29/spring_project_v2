@@ -28,7 +28,7 @@
                                 <p class="product-quantity">
                                     <span class="required-label">필수</span> {{ item.quantity }} 개
                                 </p>
-                                <p class="product-price">{{ item.price.toLocaleString() }} 원</p>
+                                <p class="product-price">{{ isNaN(item.price) ? "0" : item.price.toLocaleString() }} 원</p>
                             </div>
                         </div>
                          <div class="delivery-info">
@@ -161,19 +161,33 @@
 					type : "POST", 
 					data : nparmap,
 					success : function(data) { 
-                        if (self.quantity) {
+                        let quantity = parseInt(self.quantity, 10) || 1; // self.quantity가 null일 경우 1로 처리
+                        console.log("수량:", quantity);
+
+                        if (quantity > 1) {
                             self.productInfo = [{
                                 itemName: data.productInfo.itemName,
                                 filePath: data.productInfo.filePath,
-                                price: data.productInfo.price,
-                                quantity: parseInt(self.quantity)  // 바로 구매 수량 적용
+                                price: parseInt(data.productInfo.price, 10) * quantity, // 가격 반영
+                                quantity: quantity // 수량 반영
                             }];
                         } else {
-                            // 장바구니에서 구매한 경우
-                            self.productInfo = Array.isArray(data.productInfo) ? data.productInfo : [data.productInfo];
+                            self.productInfo = Array.isArray(data.productInfo) 
+                                ? data.productInfo.map(item => ({
+                                    itemName: item.itemName,
+                                    filePath: item.filePath,
+                                    price: parseInt(item.price, 10) * parseInt(item.quantity, 10), // 가격 반영
+                                    quantity: parseInt(item.quantity, 10)
+                                }))
+                                : [{
+                                    itemName: data.productInfo.itemName,
+                                    filePath: data.productInfo.filePath,
+                                    price: parseInt(data.productInfo.price, 10) * (parseInt(data.productInfo.quantity, 10) || 1), // 가격 반영
+                                    quantity: parseInt(data.productInfo.quantity, 10) || 1
+                                }];
                         }
                         console.log("상품 정보:", self.productInfo);
-					}
+                    }
 				});
             },
             fnMember(){
@@ -197,7 +211,7 @@
                 var self = this;
 
                  // 기본 가격 계산
-                let originalPrice = parseInt(this.productInfo.price) * parseInt(this.quantity);
+                 let originalPrice = this.productInfo.reduce((total, item) => total + (parseInt(item.price) * item.quantity), 0);
 
                 // 할인 금액 계산
                 let discountAmount = originalPrice * this.discountRate;
@@ -233,7 +247,7 @@
                 var nparmap = { 
                     pWay : merchant_uid,
                     userId : self.sessionId,
-                    price : self.productInfo.price
+                    price : totalPrice 
                 };
                 $.ajax({
                     url: "/payment.dox",  
@@ -283,7 +297,7 @@
             },
             formattedTotalPrice() {
                 return this.productInfo.length > 0
-                    ? this.productInfo.reduce((total, item) => total + (parseInt(item.price) * item.quantity), 0).toLocaleString()
+                    ? this.productInfo.reduce((total, item) => total + (parseInt(item.price, 10) * item.quantity), 0).toLocaleString()
                     : "0";
             },
             discountRate() {
@@ -295,9 +309,12 @@
             formattedTotalOrderPrice() {
                 if (!this.productInfo.length) return "0";
 
-                let originalPrice = this.productInfo.reduce((total, item) => total + (parseInt(item.price) * item.quantity), 0);
+                let originalPrice = this.productInfo.reduce((total, item) => 
+                    total + (parseInt(item.price, 10) * item.quantity), 0
+                );
+
                 let discountAmount = originalPrice * this.discountRate; // 할인 적용
-                let usedPoint = parseInt(this.memberInfo.usedPoint) || 0; // NaN 방지
+                let usedPoint = parseInt(this.memberInfo.usedPoint, 10) || 0; // NaN 방지
 
                 let finalPrice = originalPrice - discountAmount + 3000 - usedPoint;
 
