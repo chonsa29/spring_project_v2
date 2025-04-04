@@ -221,8 +221,11 @@ public class ProductService {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
 			List<ProductQuestion> ProductQuestion = productMapper.SelectproductQuestion(map);
-			resultMap.put("result", "success");
+			int QuestionCount = productMapper.CountProductQuestion(map);
+			
 			resultMap.put("ProductQuestion", ProductQuestion);
+			resultMap.put("QuestionCount", QuestionCount);
+			resultMap.put("result", "success");
 		} catch (Exception e) {
 			// TODO: handle exception
 			resultMap.put("result", "fail");

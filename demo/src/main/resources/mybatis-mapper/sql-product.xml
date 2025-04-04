@@ -180,6 +180,13 @@
     	SELECT *
     	FROM ITEM_QUESTION
     	WHERE ITEM_NO = #{itemNo}
+    	ORDER BY CDATETIME
+    </select>
+    
+    <select id="CountProductQuestion" parameterType="hashmap" resultType="int">
+    	SELECT COUNT(*)
+    	FROM ITEM_QUESTION
+    	WHERE ITEM_NO = #{itemNo}
     </select>
     
     <!-- item_no당 상품에 문의 내역 추가하기 -->
