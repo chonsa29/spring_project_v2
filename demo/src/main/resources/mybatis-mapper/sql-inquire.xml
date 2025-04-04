@@ -5,7 +5,9 @@
 <mapper namespace="com.example.demo.mapper.QuestionMapper">
 
 	<select id="qnaInquire" parameterType="hashmap" resultType="com.example.demo.model.Question">
-		SELECT QS_NO, QS_TITLE, QS_CONTENTS, QS_STATUS, TO_CHAR(CDATETIME, 'YYYY-MM-DD') AS CDATETIME, VIEW_CNT, QS_CATEGORY
+		SELECT  ROW_NUMBER() OVER (ORDER BY QS_NO DESC) AS row_num,
+				QS_NO, QS_TITLE, QS_CONTENTS, QS_STATUS, 
+				TO_CHAR(CDATETIME, 'YYYY-MM-DD') AS CDATETIME, VIEW_CNT, QS_CATEGORY
 		FROM QUESTION
 		WHERE 1=1
 	    <if test="category != null and category != 'all' and category != 'etc' and category != 'delivery' and category != 'payment' and category != 'member' and category != 'product'">
