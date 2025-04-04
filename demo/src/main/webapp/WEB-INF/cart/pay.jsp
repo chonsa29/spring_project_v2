@@ -21,14 +21,14 @@
                 <section class="order-section">
                     <section class="order-info">
                         <h2 class="text">주문 상품 정보</h2>
-                        <div class="product" v-if="productInfo && productInfo.filePath">
-                            <img :src="productInfo.filePath">
+                        <div class="product" v-for="(item, index) in productInfo" :key="index">
+                            <img :src="item.filePath">
                             <div class="product-details">
-                                <p class="product-name">{{ productInfo.itemName }}</p>
+                                <p class="product-name">{{ item.itemName }}</p>
                                 <p class="product-quantity">
-                                    <span class="required-label">필수</span> {{ memberInfo.orderCount }} 개
+                                    <span class="required-label">필수</span> {{ item.quantity }} 개
                                 </p>
-                                <p class="product-price">{{ formattedTotalPrice }} 원</p>
+                                <p class="product-price">{{ item.price.toLocaleString() }} 원</p>
                             </div>
                         </div>
                          <div class="delivery-info">
@@ -141,7 +141,7 @@
             return {
                 itemNo: "${map.itemNo}",
                 quantity: "${map.quantity}",
-                productInfo: {},
+                productInfo: [],
                 memberInfo: {},
                 sessionId : "${sessionId}",
                 displayPoint: null,
@@ -161,8 +161,18 @@
 					type : "POST", 
 					data : nparmap,
 					success : function(data) { 
-                        self.productInfo = data.productInfo;
-						console.log(data);
+                        if (self.quantity) {
+                            self.productInfo = [{
+                                itemName: data.productInfo.itemName,
+                                filePath: data.productInfo.filePath,
+                                price: data.productInfo.price,
+                                quantity: parseInt(self.quantity)  // 바로 구매 수량 적용
+                            }];
+                        } else {
+                            // 장바구니에서 구매한 경우
+                            self.productInfo = Array.isArray(data.productInfo) ? data.productInfo : [data.productInfo];
+                        }
+                        console.log("상품 정보:", self.productInfo);
 					}
 				});
             },
@@ -170,7 +180,7 @@
                 var self = this;
 				var nparmap = { 
                     userId : self.sessionId,
-                    orderCount : self.quantity
+                    quantity : self.quantity
                 };
 				$.ajax({
 					url:"/member.dox",
@@ -187,7 +197,7 @@
                 var self = this;
 
                  // 기본 가격 계산
-                let originalPrice = parseInt(this.productInfo.price) * parseInt(this.memberInfo.orderCount);
+                let originalPrice = parseInt(this.productInfo.price) * parseInt(this.quantity);
 
                 // 할인 금액 계산
                 let discountAmount = originalPrice * this.discountRate;
@@ -272,8 +282,8 @@
                 return this.productInfo.price ? parseInt(this.productInfo.price).toLocaleString() : "0";
             },
             formattedTotalPrice() {
-                return this.productInfo.price && this.memberInfo.orderCount
-                    ? (parseInt(this.productInfo.price) * parseInt(this.memberInfo.orderCount)).toLocaleString()
+                return this.productInfo.length > 0
+                    ? this.productInfo.reduce((total, item) => total + (parseInt(item.price) * item.quantity), 0).toLocaleString()
                     : "0";
             },
             discountRate() {
@@ -283,9 +293,9 @@
                 return 0;
             },
             formattedTotalOrderPrice() {
-                if (!this.productInfo.price || !this.memberInfo.orderCount) return "0";
+                if (!this.productInfo.length) return "0";
 
-                let originalPrice = parseInt(this.productInfo.price) * parseInt(this.memberInfo.orderCount);
+                let originalPrice = this.productInfo.reduce((total, item) => total + (parseInt(item.price) * item.quantity), 0);
                 let discountAmount = originalPrice * this.discountRate; // 할인 적용
                 let usedPoint = parseInt(this.memberInfo.usedPoint) || 0; // NaN 방지
 
@@ -295,17 +305,59 @@
             }
         },
         mounted() {
-            console.log(this.itemNo);
-            console.log(this.quantity);
-            var self = this;
-            self.fnPayProduct();  
-            self.fnMember();  
+            const self = this;
+    
+            const orderSection = document.querySelector(".order-section");
 
-            document.addEventListener("scroll", function() {
-                const orderSection = document.querySelector(".order-section");
+            // 윈도우 스크롤 시 order-section 내부 스크롤 조정
+            document.addEventListener("scroll", function () {
                 orderSection.scrollTop = window.scrollY;
             });
 
+            window.addEventListener("wheel", function (event) {
+                const windowHeight = window.innerHeight;
+                const documentHeight = document.documentElement.scrollHeight;
+                const scrollPosition = window.scrollY + windowHeight;
+
+                if (scrollPosition >= documentHeight - 1) {
+                    if (orderSection.scrollTop + orderSection.clientHeight < orderSection.scrollHeight) {
+                        orderSection.scrollBy({
+                            top: event.deltaY,
+                            behavior: "smooth"
+                        });
+                    } else {
+                        window.scrollBy({
+                            top: event.deltaY,
+                            behavior: "smooth"
+                        });
+                    }
+                }
+            }, { passive: false });
+
+            // orderData 확인 후 상품 정보 불러오기
+            const orderData = JSON.parse(localStorage.getItem('orderData'));
+            
+            if (orderData && orderData.length > 0) {
+                if (self.itemNo && self.quantity) {
+                    self.productInfo = [{
+                        itemName: orderData[0].itemName,
+                        filePath: orderData[0].filePath,
+                        price: orderData[0].price,
+                        quantity: parseInt(self.quantity)
+                    }];
+                } else {
+                    self.productInfo = orderData.map(item => ({
+                        itemName: item.itemName,
+                        filePath: item.filePath,
+                        price: item.price,
+                        quantity: item.cartCount || 1
+                    }));
+                }
+                self.fnMember();
+            } else {
+                self.fnPayProduct();
+                self.fnMember();
+            }
         }
     });
     app.mount('#app');

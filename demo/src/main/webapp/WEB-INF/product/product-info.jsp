@@ -33,11 +33,11 @@
                 <div id="product-Info">
                     <div id="item-Info">{{info.itemInfo}}</div>
                     <div id="product-name">{{info.itemName}}
+                        <!-- 좋아요 활성화 버튼 -->
                         <button class="product-like" :class="{ active: likedItems.has(info.itemNo) }"
                             @click="fnLike(info.itemNo)">
                             ❤
                         </button>
-                        <!-- 좋아요 활성화 버튼 -->
                     </div>
                     <div v-if="showLikePopup" class="like-popup-overlay">
                         <div class="like-popup">좋아요 항목에 추가되었습니다</div>
@@ -47,31 +47,30 @@
                     </div>
                     <span v-if="allergensFlg" id="allergens-info">{{info.allergens}} 주의!</span>
 
-                    <div v-if="review.length > 0" class="review-summary">
+                    <!-- <div v-if="review.length > 0" class="review-summary">
                         <div class="average-rating">
                             <div id="review">
-                                <!-- 별과 점수를 감싸는 wrapper -->
+                                별과 점수를 감싸는 wrapper
                                 <div class="star-wrapper">
                                     <div class="stars">
-                                        <span v-for="n in 5" :key="n" class="star-container">
+                                        <span v-for="n in 5" :key="n" class="star-container-main">
                                             <span class="star empty">★</span>
                                             <span class="star full" v-if="n <= Math.floor(reviewScore)">★</span>
+                                            반 별 (조건 추가)
                                             <span class="star half"
-                                                v-else-if="n === Math.ceil(reviewScore) && reviewScore % 1 >= 0.5">★</span>
+                                                v-else-if="n === Math.ceil(reviewScore) && (reviewScore % 1) >= 0.5">
+                                                ★
+                                            </span>
                                         </span>
                                     </div>
-                                    <!-- 별점 숫자 -->
+                                    별점 숫자
                                     <div class="review-score">
                                         {{ reviewScore.toFixed(1) }}
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-
-
-
+                    </div> -->
 
                     <p class="product-discount-style">{{formatPrice(info.price * 3) }}원</p>
                     <p class="product-discount">30%</p>
@@ -148,14 +147,18 @@
                     <div v-show="selectedTab === 'review'" class="review-container">
 
                         <!-- 리뷰 요약 -->
-                        <div class="review-summary">
+                        <div class="review-score-summary">
                             <div class="review-score-container">
                                 <p class="review-total">총 {{ reviewCount }}건</p>
                                 <p class="review-average" v-if="reviewScore !== undefined">{{ reviewScore.toFixed(1) }}점
                                 </p>
                                 <div class="review-stars">
-                                    <span v-for="n in 5" :key="n" class="star"
-                                        :class="{ 'filled': n <= Math.round(reviewScore || 0) }">★</span>
+                                    <span v-for="n in 5" :key="'star-' + n" class="star-container">
+                                        <span class="star"
+                                            :class="{ 'filled': n <= Math.floor(reviewScore || 0) }">★</span>
+                                        <span class="star half-filled"
+                                            v-if="n === Math.ceil(reviewScore || 0) && (reviewScore % 1 >= 0.5)">★</span>
+                                    </span>
                                 </div>
                             </div>
                             <div class="review-bar-container" v-show="ratingDistribution">
@@ -199,7 +202,80 @@
 
                     <!-- 상품 문의 -->
                     <div v-show="selectedTab === 'inquiry'">
-                        <p>❓ 상품 문의 내용을 확인하고 작성할 수 있습니다.</p>
+                        <div class="inquiry-container">
+                            <p class="inquiry-notice">★ 상품 문의사항이 아닌 반품/교환관련 문의는 고객센터 1:1 문의를 이용해주세요. <button
+                                    @click="openInquiryPopup" class="inquiry-button">상품 문의하기</button></p>
+                            <!-- 상품 문의하기 버튼 -->
+
+                            <div>
+
+                                <!-- 상품 문의 팝업 -->
+                                <div v-if="isPopupOpen" class="inquiry-popup-overlay" @click="closePopup">
+                                    <div class="inquiry-popup" @click.stop>
+                                        <div class="popup-content">
+                                            <h2>상품 Q&A 작성</h2>
+                                            <div class="product-info">{{ info.itemName }}</div>
+                                            <div class="textarea-container-title">
+                                                <textarea v-model="iqTitle" placeholder="문의 제목을 입력하세요."
+                                                    @input="limitText"></textarea>
+                                                <div class="char-count">{{ iqTitle.length }}/50자</div>
+                                            </div>
+                                            <div class="textarea-container-contents">
+                                                <textarea v-model="iqContents" placeholder="문의 내용을 입력하세요."
+                                                    @input="limitText"></textarea>
+                                                <div class="char-count">{{ iqContents.length }}/250자</div>
+                                            </div>
+                                            <div class="button-container">
+                                                <button class="cancel-btn" @click="closePopup">취소</button>
+                                                <button class="submit-btn" @click="fnAddInquiry">등록</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="inquiry-list">
+                                <!-- 문의 항목 -->
+                                <div v-if="inquiry.length > 0">
+                                    <div v-for="(inquiry, index) in inquiry" :key="inquiry.iqNo" class="inquiry-inquiry"
+                                        @click="changeInquiry(inquiry.iqNo)">
+                                        <div class="inquiry-title">
+                                            <span class="badge-answered" v-if="inquiry.iqStatus === 'Y'">답변완료</span>
+                                            <span class="badge-pending" v-else>답변대기</span>
+                                            <span class="question-text">{{ inquiry.iqTitle }}</span>
+                                            <span class="user-info">{{ maskUserId(inquiry.userId) }}</span>
+                                            <span class="date">{{ inquiry.cDateTime }}</span>
+                                        </div>
+
+                                        <div class="inquiry-content" v-show="answer === inquiry.iqNo">
+                                            <div class="question-content">
+                                                <div class="question-icon">Q</div>
+                                                <p>{{ inquiry.iqTitle }}</p>
+                                            </div>
+                                            <br>
+                                            <hr>
+                                            <br>
+                                            <div class="answer-content" v-if="inquiry.iqStatus === 'Y'">
+                                                <div class="answer-icon">A</div>
+                                                <div class="answer-text">
+                                                    <p>{{ inquiry.iqContents }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="answer-content" v-else>
+                                                <p>아직 답변이 등록되지 않았습니다.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 문의 내역이 없을때 -->
+                                <div v-else class="no-inquiry">
+                                    등록된 문의가 없습니다.
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- 교환/환불 내용 -->
@@ -328,31 +404,45 @@
         const app = Vue.createApp({
             data() {
                 return {
-                    itemNo: "${map.itemNo}",
                     info: {}, // 단일 객체 가져오기
+                    itemNo: "${map.itemNo}",
+                    userId: "${sessionId}", // 로그인 아이디
+
                     quantity: 1, // 재고 기본값
                     allergensFlg: false, // 알레르기 여부
                     count: 0, // 재고
                     price: 0, // 가격
-                    showCartPopup: false, // 장바구니 추가 팝업
+
+
                     imgList: [], // 썸네일, 서브 이미지 리스트 가져오기
+
                     selectedTab: 'info', // 기본값은 "상품 정보"
-                    review: [], // 리뷰 리스트 가져오기
-                    reviewFlg: false, // 리뷰 표시 여부
-                    userId: "${sessionId}", // 로그인 아이디
+
+                    showCartPopup: false, // 장바구니 추가 팝업
+
                     likedItems: new Set(),
                     showLikePopup: false, // 좋아요 표시
                     wish: [], // 좋아요 목록
+
+                    review: [], // 리뷰 리스트 가져오기
+                    reviewFlg: false, // 리뷰 표시 여부
                     reviewCount: 0, // 리뷰 총 토탈 개수
                     reviewScore: 0,
-                    ratingDistribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 } // 기본값 추가
+                    ratingDistribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }, // 기본값 추가
 
+                    answer: null, // 문의 표시 여부 기본값은 없음.
+
+                    isPopupOpen: false,  // 팝업 열림 여부
+                    iqContents: "",  // 문의 내용 입력값
+                    iqTitle: "", // 문의 제목 입력값
+
+                    inquiry: [], // 문의 내역 가져오기
                 };
             },
 
             methods: {
 
-
+                // 상세 정보 가져오기
                 fngetInfo() {
                     var self = this;
                     var nparmap = {
@@ -425,14 +515,15 @@
                     });
                 },
 
-                updateRatingDistribution() {
+                updateRatingDistribution() { // 총점 리뷰 정리
+                    var self = this;
                     // 별점 분포 초기화 (모든 별점 0으로 시작)
-                    this.ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+                    self.ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 
                     // 리뷰 데이터가 없는 경우 처리
-                    if (!this.review || this.review.length === 0) {
+                    if (!self.review || self.review.length === 0) {
                         // 데이터가 아직 로드되지 않은 초기 상태
-                        if (this.review === undefined) {
+                        if (self.review === undefined) {
                             console.log("❌ 리뷰 데이터가 아직 로드되지 않음 (초기 상태)");
                         }
                         // 데이터는 로드되었지만 리뷰가 0개인 경우
@@ -443,27 +534,126 @@
                     }
 
                     // 현재 리뷰 데이터를 콘솔에 출력 (디버깅용)
-                    console.log("✅ 현재 리뷰 데이터:", this.review);
+                    // console.log("✅ 현재 리뷰 데이터:", this.review);
 
                     // 리뷰 목록을 순회하면서 별점 개수 세기
-                    this.review.forEach(review => {
+                    self.review.forEach(review => {
                         let score = parseInt(review.reviewScore); // reviewScore를 숫자로 변환
                         if (score >= 1 && score <= 5) {
-                            this.ratingDistribution[score]++; // 해당 별점 개수 증가
+                            self.ratingDistribution[score]++; // 해당 별점 개수 증가
                         }
                     });
 
                     // 별점 개수를 백분율(%)로 변환
-                    let totalReviews = this.review.length; // 총 리뷰 개수
-                    Object.keys(this.ratingDistribution).forEach(key => {
-                        this.ratingDistribution[key] = (this.ratingDistribution[key] / totalReviews) * 100;
+                    let totalReviews = self.review.length; // 총 리뷰 개수
+                    Object.keys(self.ratingDistribution).forEach(key => {
+                        self.ratingDistribution[key] = (self.ratingDistribution[key] / totalReviews) * 100;
                     });
 
                     // 변환된 별점 비율을 콘솔에 출력 (디버깅용)
-                    console.log("✅ 변환된 별점 비율 데이터:", this.ratingDistribution);
+                    // console.log("✅ 변환된 별점 비율 데이터:", this.ratingDistribution);
+                },
+
+                // 문의 내용 가져오기
+                fnInquiry() {
+                    var self = this;
+                    var nparmap = {
+                        itemNo: self.itemNo,
+                    };
+
+                    $.ajax({
+                        url: "/product/getproductQuestion.dox",
+                        type: "POST",
+                        data: nparmap,
+                        success: function (data) {
+                            if (data.result == "success") {
+                                self.inquiry = data.ProductQuestion
+                                console.log(data);
+                            } else {
+                                console.log("실패")
+                            }
+                        }
+                    });
                 },
 
 
+
+                // 문의 내역 표시 여부
+                changeInquiry(iqNo) {
+                    var self = this;
+                    self.answer = self.answer === iqNo ? null : iqNo;
+                },
+
+                // 사용자 ID 마스킹 (예: Ex1234 -> Ex1****)
+                maskUserId(userId) {
+                    return userId.substring(0, 3) + "****";
+                },
+
+
+                openInquiryPopup() {
+                    var self = this;
+                    self.isPopupOpen = true;
+                },
+                closePopup() {
+                    var self = this;
+                    self.isPopupOpen = false;
+                    self.iqContents = ""; // 입력 초기화
+                },
+
+                // 문의 내용 글자수 제한
+                limitText() {
+                    var self = this;
+                    if (self.iqContents.length > 250) {
+                        self.iqContents = self.iqContents.substring(0, 250);
+                    }
+                    if (self.iqTitle.length > 50) {
+                        self.iqTitle = self.iqTitle.substring(0, 50);
+                    }
+                },
+
+                // 문의 내용 등록하기
+                fnAddInquiry() {
+                    var self = this;
+
+                    if (!self.userId) {
+                        alert("로그인 후 이용바랍니다.");
+                        location.href = "/home.do";
+                        return;
+                    }
+
+                    if (self.iqContents == "" || self.iqTitle == "") {
+                        alert("문의 내용을 입력해주세요.");
+                        return;
+                    }
+
+                    var nparmap = {
+                        userId: self.userId,
+                        itemNo: self.itemNo,
+                        iqContents: self.iqContents,
+                        iqTitle: self.iqTitle,
+                    };
+
+                    console.log("userId:", self.userId);
+                    console.log("itemNo:", self.itemNo);
+                    console.log("iqContents:", self.iqContents);
+                    console.log("iqTitle:", self.iqTitle);
+
+                    $.ajax({
+                        url: "/product/addproductQuestion.dox",
+                        type: "POST",
+                        data: nparmap,
+                        success: function (data) {
+                            if (data.result == "success") {
+                                console.log(data);
+                                alert("문의가 정상적으로 등록되었습니다.");
+                                self.fnInquiry();
+                                self.closePopup();
+                            } else {
+                                alert("등록 실패. 다시 시도해주세요.");
+                            }
+                        }
+                    });
+                },
 
                 // 수량 조절 메소드(버튼 동작)
                 fnquantity: function (action) {
@@ -520,25 +710,31 @@
 
                 },
 
+                // 장바구니로 이동
                 goToCart() {
-                    window.location.href = '/cart.do'; // 장바구니로 이동
-                },
-                closeCartPopup() {
-                    var self = this;
-                    self.showCartPopup = false; // 쇼핑 계속하기
-                },
-                formatPrice(value) {
-                    return value ? parseInt(value).toLocaleString() : "0"; // 가격 타입 변환(콤마 추가) 
+                    window.location.href = '/cart.do';
                 },
 
+                // 쇼핑 계속하기
+                closeCartPopup() {
+                    var self = this;
+                    self.showCartPopup = false;
+                },
+
+                // 가격 타입 변혼(콤마 추가)
+                formatPrice(value) {
+                    return value ? parseInt(value).toLocaleString() : "0";
+                },
+
+                // 구매하기로 이동
                 fnPay(itemNo, quantity) {
                     var self = this;
                     console.log("itemNo:", itemNo);
                     console.log("quantity:", String(quantity));
-                    pageChange("/pay.do", { itemNo: itemNo, quantity: String(quantity) }); // 구매하기로 이동
-                    // 잠시 수정중
+                    pageChange("/pay.do", { itemNo: itemNo, quantity: String(quantity) });
                 },
 
+                // 이미지 교체
                 changeImage(filePath) {
                     var self = this;
                     let mainImage = document.getElementById('mainImage').src; // 현재 메인 이미지
@@ -551,10 +747,12 @@
                     }
                 },
 
+                // 선택한 탭으로 변경 (상품정보, 상품리뷰, 상품문의, 교환/환불)
                 changeTab(tab) {
                     var self = this;
-                    self.selectedTab = tab; // 선택한 탭으로 변경
+                    self.selectedTab = tab;
                 },
+
 
                 // 좋아요 표시
                 fnLike(itemNo) {
@@ -602,6 +800,7 @@
                     });
                 },
 
+                // 좋아요 여부 확인
                 fetchLikedItems() {
                     var self = this;
                     var nparmap = {
@@ -647,6 +846,7 @@
                 self.fngetInfo();
                 self.fnGetReview();
                 self.fetchLikedItems();
+                self.fnInquiry();
             }
         });
         app.mount('#app');

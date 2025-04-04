@@ -84,7 +84,7 @@
                             <span>{{ finalAmount.toLocaleString() }}원</span>
                         </div>
                         <div class="orbutton">
-                            <button class="order-button">주문하기</button>
+                            <button class="order-button" @click="fnGoPay">주문하기</button>
                             <button class="remove-button" @click="fnRemoveAll">삭제</button>
                         </div>
                     </div>
@@ -286,10 +286,30 @@
                 });
                 this.updateTotalAmount(); // 총 금액 업데이트
 
+            },
+
+            fnGoPay(itemNo, count) {
+                const selectedItems = this.list.filter(item => item.checked);
+                if (selectedItems.length === 0) {
+                    alert("주문할 상품을 선택해주세요.");
+                    return;
+                }
+                
+                // 필요한 데이터를 localStorage에 저장
+                localStorage.setItem('orderData', JSON.stringify(selectedItems));
+                
+                // 페이지 이동
+                location.href = '/pay.do';
             }
         },
         mounted() {
             this.fnCartList(); // 컴포넌트가 마운트될 때 데이터 가져오기
+
+            const orderData = JSON.parse(localStorage.getItem('orderData'));
+            if (orderData) {
+                this.orderItems = orderData;
+                this.calculateTotal();
+            }
         },
     });
 

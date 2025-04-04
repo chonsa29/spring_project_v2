@@ -216,3 +216,115 @@ body {
 .material-symbols-outlined {
     color: #000; /* 원하는 기본 색상 */
 }
+
+/* 채팅 모달창 */
+.chat-modal {
+    position: fixed;
+    bottom: 150px; 
+    right: 30px;
+    width: 300px;
+    height: 400px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    overflow: hidden;
+    resize: both; /* 사용자가 크기 조절 가능 */
+    min-width: 250px;
+    min-height: 300px;
+    max-width: 600px;
+    max-height: 800px;
+}
+
+/* 채팅 헤더 */
+.chat-header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 채팅 바디 */
+.chat-body {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 채팅 메시지 - 사용자 */
+.user-message {
+    background-color: #d1e7dd;
+    color: #0f5132;
+    padding: 8px 12px;
+    border-radius: 15px;
+    max-width: 75%;
+    max-width: 60%; 
+    margin-left: auto; 
+    margin-right: 0;
+    margin-top: 5px;
+    text-align: right;
+}
+
+/* 채팅 메시지 - 봇 */
+.bot-message {
+    background-color: rgb(228, 228, 228);
+    color: #333;
+    padding: 8px 12px;
+    border-radius: 15px;
+    max-width: 75%;
+    margin-right: auto;
+    margin-top: 5px;
+    text-align: left;
+}
+
+/* 채팅 입력 영역 */
+.chat-footer {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    align-items: center;
+}
+
+.chat-footer textarea {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    min-height: 30px; 
+    max-height: 50px; 
+    overflow-y: auto;
+    scrollbar-width: none; 
+    -ms-overflow-style: none; 
+    resize: none; /* 크기 조절 방지 */
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.chat-footer button {
+    width: 50px;
+    font-size: 15px;
+    margin-left: 8px;
+    height: 35px !important;
+    line-height: 30px; 
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.chat-footer button:hover {
+    background-color: rgb(11, 165, 68);
+    transform: scale(1.01);
+}

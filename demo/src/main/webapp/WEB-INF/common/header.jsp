@@ -53,13 +53,29 @@
                         </div>
                     </div>
                 </div>
-
-
             </header>
 
-            <div class="floating-icon">
+            <!-- 채팅 아이콘 -->
+            <div class="floating-icon" @click="toggleChat">
                 <img src="/img/icon.png" alt="아이콘">
             </div>
+
+            <!-- AI 채팅창 (v-if 적용) -->
+            <div v-if="isChatOpen" class="chat-modal">
+                <div class="chat-header">
+                    <span>AI 문의</span>
+                    <button class="close-btn" @click="toggleChat">✖</button>
+                </div>
+                <div class="chat-body" id="chatBody">
+                    <p class="bot-message">안녕하세요! 무엇을 도와드릴까요?</p>
+                </div>
+                <div class="chat-footer">
+                    <textarea type="text" v-model="userMessage" ref="messageInput"
+                    placeholder="문의사항을 입력해 주세요" @keypress.enter="sendMessage"></textarea>
+                    <button @click="sendMessage">전송</button>
+                </div>
+            </div>
+
         </div>
     </body>
 
@@ -79,7 +95,9 @@
             data() {
                 return {
                     sessionStatus : "${sessionStatus}",
-                    sessionId : "${sessionId}"
+                    sessionId : "${sessionId}",
+                    isChatOpen: false, // 채팅창 상태
+                    userMessage: "" // 사용자 입력 메시지
                 };
             },
             methods: {
@@ -101,6 +119,69 @@
                 fnCart : function(userId) {
                     pageChange("/cart.do", {userId : userId});
                 },
+                toggleChat() {
+                    this.isChatOpen = !this.isChatOpen; // 채팅창 열기/닫기
+                },
+                sendMessage(event) {
+                    if (this.userMessage.trim() === "") return;
+
+                    const chatBody = document.getElementById("chatBody");
+
+                    // 사용자 메시지 추가
+                    const userMessageEl = document.createElement("p");
+                    userMessageEl.classList.add("user-message");
+                    userMessageEl.textContent = this.userMessage;
+                    chatBody.appendChild(userMessageEl);
+                    chatBody.scrollTop = chatBody.scrollHeight;
+
+                    const messageToSend = this.userMessage; // 보낼 메시지 저장
+                    this.userMessage = ""; // 입력창 초기화
+
+                    // Gemini 응답 대기 메시지
+                    const botMessageEl = document.createElement("p");
+                    botMessageEl.classList.add("bot-message");
+                    botMessageEl.textContent = "질문을 분석 중입니다...";
+                    chatBody.appendChild(botMessageEl);
+                    chatBody.scrollTop = chatBody.scrollHeight;
+
+                    // AJAX 요청
+                    $.ajax({
+                        url: "/gemini/chat",  // 여기를 너의 백엔드 컨트롤러 URL로 수정해
+                        type: "POST",
+                        data: JSON.stringify({ message: messageToSend }),
+                        contentType: "application/json",
+                        dataType: "json",
+                        success: function (response) {
+                            // 기존 로딩 메시지 삭제
+                            chatBody.removeChild(botMessageEl);
+
+                            const reply = response.reply || "답변을 불러오지 못했습니다.";
+                            const newBotMessageEl = document.createElement("p");
+                            newBotMessageEl.classList.add("bot-message");
+                            newBotMessageEl.textContent = reply;
+                            chatBody.appendChild(newBotMessageEl);
+                            chatBody.scrollTop = chatBody.scrollHeight;
+                        },
+                        error: function () {
+                            chatBody.removeChild(botMessageEl);
+
+                            const errorMsg = document.createElement("p");
+                            errorMsg.classList.add("bot-message");
+                            errorMsg.textContent = "죄송합니다. AI 응답을 가져오는 데 실패했습니다.";
+                            chatBody.appendChild(errorMsg);
+                            chatBody.scrollTop = chatBody.scrollHeight;
+                        }
+                    });
+                },
+
+                resizeTextarea() {
+                    this.$nextTick(() => {
+                        const textarea = this.$refs.messageTextarea;
+                        textarea.style.height = "auto"; // 높이 초기화
+                        textarea.style.height = textarea.scrollHeight + "px"; // 내용에 맞게 높이 조정
+                    });
+                }
+
             },
             mounted() {
                 console.log(this.sessionStatus);
@@ -115,6 +196,7 @@
                         floatingIcon.src = "/img/icon.png"; // 기본 상태 이미지 경로
                     });
                 }
+                
             },
         });
 

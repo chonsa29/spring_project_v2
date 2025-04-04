@@ -75,8 +75,8 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="inquiry in inquiryList" :key="inquiry.userId">
-						<td @click="fnView(inquiry.qsNo)">{{ inquiry.qsNo }}</td>
+					<tr v-for="(inquiry, index) in inquiryList" :key="inquiry.userId">
+						<td @click="fnView(inquiry.qsNo)">{{ (page - 1) * pageSize + index + 1 }}</td>
 						<td @click="fnView(inquiry.qsNo)">{{ inquiry.qsTitle }}</td>
 						<td @click="fnView(inquiry.qsNo)"><span v-html="inquiry.qsContents"></span></td>
 						<td>{{ inquiry.cdatetime }}</td>
@@ -141,8 +141,8 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="notice in noticeList">
-						<td @click="fnNoticeView(notice.noticeNo)">{{ notice.noticeNo }}</td>
+					<tr v-for="(notice, noticeIndex) in noticeList">
+						<td @click="fnNoticeView(notice.noticeNo)">{{ (noticePage - 1) * noticePageSize + noticeIndex + 1 }}</td>
 						<td @click="fnNoticeView(notice.noticeNo)">{{ notice.noticeTitle }}</td>
 						<td @click="fnNoticeView(notice.noticeNo)"><span v-html="notice.noticeContents"></span></td>
 						<td>{{ notice.noticeDate }}</td>
