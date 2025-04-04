@@ -23,4 +23,25 @@
 	      AND SENDER = #{userId} 
 	      AND MESSAGE_TYPE = 'JOIN'
 	</select>
+	
+	<!-- 그룹 이름 출력 -->
+	<select id="getGroupNameById" resultType="String">
+        SELECT GROUP_NAME FROM GROUP_INFO WHERE GROUP_ID = #{groupId}
+    </select>
+    
+    <!-- 닉네임 불러오기 -->
+    <select id="selectMembers" parameterType="hashmap" resultType="com.example.demo.model.Group">
+		SELECT *
+		FROM GROUP_USER GU
+		INNER JOIN MEMBER M ON GU.USERID = M.USERID
+		WHERE GU.GROUP_ID = 1
+	</select>
+	
+	<!-- JOIN 상태 삭제 -->
+	<delete id="deleteJoin" parameterType="hashmap">
+		DELETE
+		FROM CHAT_MESSAGE
+		WHERE SENDER = #{userId} AND GROUP_ID = #{groupId} AND MESSAGE_TYPE = 'JOIN'
+	</delete>
+    
 </mapper>

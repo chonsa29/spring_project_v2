@@ -26,5 +26,7 @@ public class Group {
 //	private String postId;
 //	private String groupName;
 //	private String leaderId;
-	private String createDate;
+	private String createDate; 
+	
+	public String nickname;
 }

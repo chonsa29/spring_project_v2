@@ -1,37 +1,135 @@
+/* 기본 스타일 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
 }
 
+/* 채팅 컨테이너 */
 .chat-container {
-    width: 100%;
-    max-width: 480px;
-    margin: 20px auto;
-    background: white;
+    width: 40vw; /* 화면 너비의 40% */
+    max-width: 600px; /* 최대 600px로 제한 */
+    height: 100vh;
+    background: rgb(227, 254, 222);
     border-radius: 8px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 h2 {
     text-align: center;
 }
 
+/* 채팅 박스 */
 .chat-box {
-    height: 400px;
+    flex-grow: 1;
     overflow-y: auto;
     border: 1px solid #ccc;
     padding: 10px;
     margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    background: rgb(248, 255, 247);
+    align-items: stretch;
 }
 
+/* ✅ 메시지 전체를 감싸는 래퍼 */
+.message-wrapper {
+    display: flex;
+    flex-direction: column; /* 세로 정렬 */
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+/* ✅ 내 메시지일 때 오른쪽 정렬 */
+.message-wrapper.my-message-wrapper {
+    justify-content: flex-end;
+}
+.my-message {
+    align-self: flex-end; /* 내 메시지를 오른쪽으로 정렬 */
+    background-color: #dcf8c6;
+}
+/* 채팅 메시지 */
 .chat-message {
-    margin-bottom: 5px;
+    max-width: 60%;
+    word-wrap: break-word;
+    padding: 10px;
+    border-radius: 15px;
+    height: auto;
 }
 
+/* 닉네임 스타일 */
+.sender-name {
+    font-size: 12px;
+    margin-bottom: 3px;
+    font-weight: bold;
+	display: block;
+}
+
+/* 상대방 메시지 */
+.other-message {
+    align-self: flex-start;
+    background-color: #f1f0f0;
+    color: #000;
+    padding: 10px 14px;
+    border-radius: 15px;
+    position: relative;
+}
+
+/* 상대방 말풍선 꼬리 */
+.other-message::before {
+    content: "";
+    position: absolute;
+    left: -8px;
+    top: 10px;
+    width: 0;
+    height: 0;
+    border-top: 12px solid transparent;
+    border-bottom: 1px solid transparent;
+    border-right: 12px solid #f1f0f0;
+}
+
+/* 내 메시지 */
+.my-message {
+    background-color: #dcf8c6;
+    color: #000;
+    padding: 10px 14px;
+    border-radius: 15px;
+    position: relative;
+}
+
+/* 내 말풍선 꼬리 */
+.my-message::after {
+    content: "";
+    position: absolute;
+    right: -8px;
+    top: 10px;
+    width: 0;
+    height: 0;
+    border-top: 12px solid transparent;
+    border-bottom: 1px solid transparent;
+    border-left: 12px solid #dcf8c6;
+}
+
+/* 채팅 입력창 */
 .chat-input {
     display: flex;
     gap: 10px;
+    padding: 10px;
 }
 
 .chat-input input {
@@ -52,4 +150,86 @@ h2 {
 
 .chat-input button:hover {
     background-color: #0056b3;
+}
+
+/* 채팅방 나가기 버튼 */
+.out {
+    padding: 8px 12px;
+    background-color: rgb(192, 192, 192);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    margin-left: auto;
+    margin-bottom: 10px;
+}
+
+.out:hover {
+    background-color: rgb(128, 128, 128);
+}
+
+/* 일반 메시지 */
+.message-bubble {
+    max-width: 20%;
+    min-width: 100px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+/* ✅ 입장/퇴장 메시지를 별도 스타일로 중앙 정렬 */
+.chat-info {
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    color: gray;
+    margin: 10px 0;
+    padding: 5px 10px;
+}
+
+/* ✅ 입장 메시지 스타일 */
+.join-message {
+    background-color: #d4f1d4;
+    color: #2d7a2d;
+    text-align: center;
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 5px;
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+/* ✅ 퇴장 메시지 스타일 */
+.leave-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-align: center;
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 5px;
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 600px) {
+    .chat-container {
+        width: 95vw;
+        height: 95vh;
+        padding: 15px;
+    }
+
+    .chat-message {
+        max-width: 50%;
+    }
+
+    .chat-input input {
+        font-size: 14px;
+    }
+
+    .chat-input button {
+        font-size: 14px;
+    }
 }
