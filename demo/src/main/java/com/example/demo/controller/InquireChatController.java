@@ -1,32 +1,36 @@
 package com.example.demo.controller;
 
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.stereotype.Controller;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import ch.qos.logback.core.model.Model;
+import com.example.demo.model.InquireChatMessage;
+import com.example.demo.dao.InquireChatService;
 
-@Controller
+
+@RestController
+@RequestMapping("/gemini")
 public class InquireChatController {
-	
-	@RequestMapping("/inquire/chat.do")
-    public String chat(Model model) throws Exception{
 
-        return "/WebSocket";
-    }
+	@Autowired
+    private InquireChatService inquireChatService;
 	
-	@RequestMapping("/inquire/gemini.do")
-    public String gemini(Model model) throws Exception{
+	public InquireChatController(InquireChatService inquireChatService) {
+        this.inquireChatService = inquireChatService;
+    }
 
-        return "/inquireGemini";
-    }
-	
-	@MessageMapping("/inquire/sendMessage") // 클라이언트에서 "/app/sendMessage"로 요청 시 실행
-    @SendTo("/topic/public") // 메시지를 "/topic/public"을 구독하는 모든 사용자에게 전송
-    public String sendMessage(String message) {
-        System.out.println("Received message: " + message); // 로그 확인
-        return message;
+    @PostMapping("/chat")
+    public Map<String, Object> chat(@RequestBody InquireChatMessage inquireChatMessage) {
+        String reply = inquireChatService.getGeminiResponse(inquireChatMessage.getMessage());
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("reply", reply);
+        return result;
     }
 
 }
