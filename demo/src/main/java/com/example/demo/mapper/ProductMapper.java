@@ -62,5 +62,7 @@ public interface ProductMapper {
 
 	void InsertproductQuestion(HashMap<String, Object> map);
 
+	int CountProductQuestion(HashMap<String, Object> map);
+
 
 }

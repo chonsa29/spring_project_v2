@@ -132,8 +132,8 @@
             <div id="product-view">
                 <div id="product-menu">
                     <div class="Info" @click="changeTab('info')">상품 정보</div>
-                    <div class="Review" @click="changeTab('review')">상품 리뷰</div>
-                    <div class="Inquiry" @click="changeTab('inquiry')">상품 문의</div>
+                    <div class="Review" @click="changeTab('review')">상품 리뷰 ({{reviewCount}})</div>
+                    <div class="Inquiry" @click="changeTab('inquiry')">상품 문의 ({{QuestionCount}})</div>
                     <div class="Exchange-Return" @click="changeTab('exchange')">교환/환불</div>
                 </div>
 
@@ -203,7 +203,7 @@
                     <!-- 상품 문의 -->
                     <div v-show="selectedTab === 'inquiry'">
                         <div class="inquiry-container">
-                            <p class="inquiry-notice">★ 상품 문의사항이 아닌 반품/교환관련 문의는 고객센터 1:1 문의를 이용해주세요. <button
+                            <p class="inquiry-notice">★ 상품 문의사항이 아닌 반품/교환관련 문의는 1:1 채팅, 또는 고객센터(1800-1234)를 이용해주세요. <button
                                     @click="openInquiryPopup" class="inquiry-button">상품 문의하기</button></p>
                             <!-- 상품 문의하기 버튼 -->
 
@@ -222,7 +222,7 @@
                                             </div>
                                             <div class="textarea-container-contents">
                                                 <textarea v-model="iqContents" placeholder="문의 내용을 입력하세요."
-                                                    @input="limitText"></textarea>
+                                                    @input="limitText" @keyup.enter="fnAddInquiry"></textarea>
                                                 <div class="char-count">{{ iqContents.length }}/250자</div>
                                             </div>
                                             <div class="button-container">
@@ -251,7 +251,7 @@
                                         <div class="inquiry-content" v-show="answer === inquiry.iqNo">
                                             <div class="question-content">
                                                 <div class="question-icon">Q</div>
-                                                <p>{{ inquiry.iqTitle }}</p>
+                                                <p>{{ inquiry.iqContents }}</p>
                                             </div>
                                             <br>
                                             <hr>
@@ -263,6 +263,7 @@
                                                 </div>
                                             </div>
                                             <div class="answer-content" v-else>
+                                                <div class="answer-icon">A</div>
                                                 <p>아직 답변이 등록되지 않았습니다.</p>
                                             </div>
                                         </div>
@@ -303,7 +304,7 @@
 
                             <h4>신선/냉장/냉동 식품</h4>
                             <ol type="1">
-                                <li>상품을 받은 날로부터 7일 이내에 상품의 상태를 확인할 수 있는 사진을 첨부해 1:1문의, 카카오톡 상담 및 고객지원센터(1800-1234)에
+                                <li>상품을 받은 날로부터 7일 이내에 상품의 상태를 확인할 수 있는 사진을 첨부해 1:1채팅, 카카오톡 상담 및 고객지원센터(1800-1234)에
                                     접수해주세요. </li>
                                 <li>상품 및 배송 문제로 인한 교환/반품 배송비는 MEALPICK에서 부담합니다.</li>
                                 <li>상품 섭취 후 치료가 필요한 경우, 고객지원센터는 증빙(진료확인서, 진단서 등)을 요청할 수 있으며, 사실 확인 후 내부 보상기준에 따라 진행됩니다.
@@ -437,6 +438,7 @@
                     iqTitle: "", // 문의 제목 입력값
 
                     inquiry: [], // 문의 내역 가져오기
+                    QuestionCount : 0, // 문의 개수 가져오기
                 };
             },
 
@@ -567,7 +569,8 @@
                         data: nparmap,
                         success: function (data) {
                             if (data.result == "success") {
-                                self.inquiry = data.ProductQuestion
+                                self.inquiry = data.ProductQuestion;
+                                self.QuestionCount = data.QuestionCount;
                                 console.log(data);
                             } else {
                                 console.log("실패")
@@ -589,15 +592,18 @@
                     return userId.substring(0, 3) + "****";
                 },
 
-
+                // 문의 사항 작성 팝업 열기
                 openInquiryPopup() {
                     var self = this;
                     self.isPopupOpen = true;
                 },
+
+                // 문의 사항 작성 팝업 닫기
                 closePopup() {
                     var self = this;
                     self.isPopupOpen = false;
                     self.iqContents = ""; // 입력 초기화
+                    self.iqTitle = "";
                 },
 
                 // 문의 내용 글자수 제한
@@ -617,7 +623,7 @@
 
                     if (!self.userId) {
                         alert("로그인 후 이용바랍니다.");
-                        location.href = "/home.do";
+                        location.href = "/member/login.do";
                         return;
                     }
 
