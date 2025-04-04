@@ -65,6 +65,16 @@ public class ChatMessage {
         this.createdAt = createdAt;
     }
     
+    @Override
+    public String toString() {
+        return "ChatMessage{" +
+                "sender='" + sender + '\'' +
+                ", content='" + content + '\'' +
+                ", groupId='" + groupId + '\'' +
+                ", messageType='" + messageType + '\'' +
+                '}';
+    }
+    
     
     
 }

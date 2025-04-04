@@ -109,6 +109,15 @@
     transform: scale(1.01);
 }
 
+.chat-btn {
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-left: 10px; /* 버튼 간격 */
+}
+
 .buttonGoBack {
     background-color: #919191;
     color: #fff;
@@ -362,3 +371,4 @@
     background-color: rgb(192, 192, 192);
     color: white;
 }
+

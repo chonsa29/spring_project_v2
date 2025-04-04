@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/css/commu-css/recipe-view.css">
     <script src="/js/pageChange.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-straight/css/uicons-regular-straight.css">
 	<title>상세보기</title>
 </head>
 <style>
@@ -100,8 +100,10 @@
                     <button v-if="info.status == 'PENDING'" class="edit-btn" @click="fnMemberJoinCheck">신청하기</button>
                     <span v-if="info.status == 'CLOSE'">모집이 마감되었습니다.</span>
                 </div>
-                <div class="button-container" v-if="isMember">
-                    <button class="chat-btn" @click="openChatRoom">채팅방 열기</button>
+                <div class="button-container" v-if="isMember && memberStatus === 'ACTIVE'">
+                    <button class="chat-btn" @click="openChatRoom">
+                        <i class="fi fi-rs-comments" style="font-size: 22px; margin-top: 5px; color: #0DA043;"></i>
+                    </button>
                 </div>
             </div>
 
@@ -134,6 +136,12 @@
                 isMember: false, // sessionId가 members 배열에 포함되었는지 여부
                 isLeader: false, // 현재 사용자가 리더인지 여부
             };
+        },
+        computed: {
+            memberStatus() {
+                const member = this.members.find(m => m.userId === this.sessionId);
+                return member ? member.status : null;
+            }
         },
         methods: {
             fnGroup(){
@@ -371,7 +379,7 @@
                 const chatWindow = window.open(
                     "/chatting/chatRoom?groupId=" + this.info.groupId, 
                     "ChatRoom", 
-                    "width=500,height=600,left=600,top=100"
+                    "width=400,height=600,left=650,top=100"
                 );
                 if (!chatWindow) {
                     alert("팝업이 차단되었습니다. 팝업 차단을 해제해주세요.");
