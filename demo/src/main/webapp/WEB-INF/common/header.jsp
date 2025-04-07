@@ -106,6 +106,7 @@
             }
         });
 
+
         const appHeader = Vue.createApp({
             data() {
                 return {
@@ -116,6 +117,8 @@
                     info : {},
                     showModal: false,
                     modalMessage: "",
+                    notificationSent: '<%= String.valueOf(session.getAttribute("notificationSent")) %>',
+                    messageFlg : "${messageFlg}"
                 };
             },
             computed: {
@@ -293,7 +296,10 @@
                 console.log(this.sessionStatus);
                 console.log(this.sessionId);
 
-                this.fetchDeleteNotification();
+                console.log("알림 상태:", this.notificationSent);
+                if (this.messageFlg == "true" || this.messageFlg == "") {
+                    this.fetchDeleteNotification();
+                }
 
                 const floatingIcon = document.querySelector(".floating-icon img");
                 if (floatingIcon && floatingIcon.parentElement) { // 요소가 있는지 확인

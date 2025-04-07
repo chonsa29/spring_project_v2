@@ -288,7 +288,7 @@
 	    SELECT GROUP_ID, GROUP_NAME AS groupName, CREATE_DATE
 	    FROM GROUP_INFO
 	    WHERE STATUS = 'PENDING'
-	    AND CREATE_DATE &lt;= SYSDATE - 27
+	    AND CREATE_DATE &lt;= SYSDATE - 1
 	</select>
 	
 	<select id="selectGroupMembersByGroupId" resultType="com.example.demo.model.GroupUser">

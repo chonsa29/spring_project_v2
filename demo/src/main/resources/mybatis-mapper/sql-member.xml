@@ -11,9 +11,9 @@
 	
 	<select id="loginMember" parameterType="hashmap" resultType="com.example.demo.model.Member">
 		SELECT *
-		FROM MEMBER
-		
-		WHERE USERID = #{userId} AND PASSWORD = #{password}
+		FROM MEMBER M
+		LEFT JOIN NOTIFICATION N ON M.USERID = N.USERID 
+		WHERE M.USERID = #{userId} AND PASSWORD = #{password}
 	</select>
 	
 	<insert id="addMember" parameterType="hashmap">
