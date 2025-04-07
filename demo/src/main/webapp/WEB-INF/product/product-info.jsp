@@ -40,10 +40,9 @@
                         </button>
                     </div>
                     <div v-if="showLikePopup" class="like-popup-overlay">
-                        <div class="like-popup">좋아요 항목에 추가되었습니다</div>
-                    </div>
-                    <div v-else class="like-popup-overlay">
-                        <div class="like-popup">좋아요 항목에서 제거되었습니다.</div>
+                        <div class="like-popup">
+                            {{ likeAction === 'add' ? '좋아요 항목에 추가되었습니다' : '좋아요 항목에서 취소되었습니다.' }}
+                        </div>
                     </div>
                     <span v-if="allergensFlg" id="allergens-info">{{info.allergens}} 주의!</span>
 
@@ -139,9 +138,10 @@
 
                 <div id="product-view">
                     <!-- 상세정보 -->
-                    <div v-show="selectedTab === 'info'">
-                        <p>📦 상품의 상세 정보를 확인하세요!</p>
-                    </div>
+                    <div v-show="selectedTab === 'info'" class="preparing-info">
+                        <p>아직 준비중인 상품입니다.</p>
+                      </div>
+                      
 
                     <!-- 상품 리뷰 -->
                     <div v-show="selectedTab === 'review'" class="review-container">
@@ -204,11 +204,9 @@
                     <div v-show="selectedTab === 'inquiry'">
                         <div class="inquiry-container">
                             <p class="inquiry-notice">★ 상품 문의사항이 아닌 반품/교환관련 문의는 1:1 채팅, 또는 고객센터(1800-1234)를 이용해주세요. <button
-                                    @click="openInquiryPopup" class="inquiry-button">상품 문의하기</button></p>
-                            <!-- 상품 문의하기 버튼 -->
-
+                                @click="openInquiryPopup" class="inquiry-button">상품 문의하기</button></p>
+                                <!-- 상품 문의하기 버튼 -->
                             <div>
-
                                 <!-- 상품 문의 팝업 -->
                                 <div v-if="isPopupOpen" class="inquiry-popup-overlay" @click="closePopup">
                                     <div class="inquiry-popup" @click.stop>
@@ -424,6 +422,7 @@
                     likedItems: new Set(),
                     showLikePopup: false, // 좋아요 표시
                     wish: [], // 좋아요 목록
+                    likeAction: '', // 'add' 또는 'remove'
 
                     review: [], // 리뷰 리스트 가져오기
                     reviewFlg: false, // 리뷰 표시 여부
@@ -701,6 +700,10 @@
                 addToCart(itemNo) {
                     var self = this;
 
+                    if(!self.userId) {
+                        alert("로그인 후 이용가능합니다.");
+                        return;
+                    }
                     var nparmap = {
                         cartCount: self.quantity,
                         userId: self.userId,
@@ -769,7 +772,7 @@
 
                     if (!self.userId) {
                         // 로그인 페이지로 리디렉션
-                        location.href = "/member/login.do"; // 로그인 페이지 경로
+                        alert("로그인 후 이용가능합니다.");
                         return; // 이후 코드 실행 방지
                     }
 
@@ -781,7 +784,7 @@
                     console.log(self.userId);
                     // 서버에 요청 보내기 (좋아요 추가 또는 취소)
                     $.ajax({
-                        url: "/product/likeToggle.dox",  // 서버의 엔드포인트 (좋아요 추가/취소 처리)
+                        url: "/product/likeToggle.dox",
                         dataType: "json",
                         type: "POST",
                         data: nparmap,
@@ -789,6 +792,7 @@
                             if (data.result == "a") {  // 좋아요 추가
                                 if (!self.likedItems.has(itemNo)) {
                                     self.likedItems.add(itemNo);  // 좋아요 추가
+                                    self.likeAction = 'add';
                                     self.showLikePopup = true;
                                     setTimeout(() => {
                                         self.showLikePopup = false;
@@ -797,6 +801,7 @@
                             } else if (data.result == "c") {  // 좋아요 취소
                                 if (self.likedItems.has(itemNo)) {
                                     self.likedItems.delete(itemNo);  // 좋아요 취소
+                                    self.likeAction = 'remove';
                                     self.showLikePopup = false;
                                 }
                             } else {
