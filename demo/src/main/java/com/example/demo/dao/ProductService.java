@@ -57,12 +57,18 @@ public class ProductService {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
 			Product info = productMapper.SelectProductInfo(map);
+			// 단일객체
 			int count = productMapper.SelectProductCount(map);
+			// 재고
 			List<Product> imgList = productMapper.SelectProductImgList(map);
+			// 이미지 리스트
+			List<Product> recommend = productMapper.RecommendProduct(map);
+			// 추천 상품 목록 가져오기
 			
 			resultMap.put("imgList", imgList); 
 			resultMap.put("count", count); 
 			resultMap.put("info", info); 
+			resultMap.put("recommend", recommend); 
 			
 			resultMap.put("result", "success");
 		} catch (Exception e) {

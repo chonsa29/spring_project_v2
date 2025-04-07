@@ -64,5 +64,7 @@ public interface ProductMapper {
 
 	int CountProductQuestion(HashMap<String, Object> map);
 
+	List<Product> RecommendProduct(HashMap<String, Object> map);
+
 
 }

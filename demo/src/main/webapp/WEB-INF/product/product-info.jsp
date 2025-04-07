@@ -108,7 +108,7 @@
                         <span id="price-total">{{formattedTotalPrice}}</span>
                     </div>
 
-                    <!-- 좋아요, 장바구니, 구매하기 박스-->
+                    <!-- 장바구니, 구매하기 박스-->
                     <div class="buttons">
                         <button class="cart" @click="addToCart(info.itemNo)">장바구니</button>
                         <div v-if="showCartPopup" class="cart-popup-overlay">
@@ -128,6 +128,44 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 추천 상품 영역 -->
+            <div class="recommend-section">
+                <h3 class="recommend-title">이런 상품은 어때요?</h3>
+
+                <div class="recommend-wrapper">
+                    <!-- 왼쪽 버튼 -->
+                    <button class="arrow left" @click="slideLeft">&#10094;</button>
+
+                    <!-- 슬라이드 뷰포트 -->
+                    <div class="recommend-viewport" :style="{ width: (itemWidth * visibleCount - 24) + 'px' }">
+                        <!-- 슬라이드 리스트 -->
+                        <div class="recommend-list" :style="{ transform: 'translateX(' + currentOffset + 'px)' }">
+                            <div class="recommend-item" v-for="(item, index) in recommend" :key="item.id"
+                                @click="fnInfo(item.itemNo)">
+                                <div class="image-wrapper">
+                                    <img :src="item.filePath" alt="item.itemName" class="recommend-thumb" />
+                                    <div class="icon-buttons">
+                                        <button @click.stop="addToCart(item.itemNo)">🛒</button>
+                                        <button @click.stop="fnLike(item.itemNo)">🤍</button>
+                                    </div>
+                                </div>
+                                <p class="recommend-name">{{ item.itemName }}</p>
+                                <p class="recommend-price">
+                                    <span class="original-price">{{ formatRecommendPrice(item.price) }}원</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 오른쪽 버튼 -->
+                    <button class="arrow right" @click="slideRight">&#10095;</button>
+                </div>
+            </div>
+
+
+
+
             <div id="product-view">
                 <div id="product-menu">
                     <div class="Info" @click="changeTab('info')">상품 정보</div>
@@ -140,8 +178,15 @@
                     <!-- 상세정보 -->
                     <div v-show="selectedTab === 'info'" class="preparing-info">
                         <p>아직 준비중인 상품입니다.</p>
-                      </div>
-                      
+
+                    </div>
+                    <div class="info-sidebar">
+                        <div class="sticky-box">
+                            <p>🛒 장바구니 요약</p>
+                            <p>선택한 상품: {{ selectedItems }}개</p>
+                            <p>총 합계: {{ totalPrice }}원</p>
+                        </div>
+                    </div>
 
                     <!-- 상품 리뷰 -->
                     <div v-show="selectedTab === 'review'" class="review-container">
@@ -203,9 +248,10 @@
                     <!-- 상품 문의 -->
                     <div v-show="selectedTab === 'inquiry'">
                         <div class="inquiry-container">
-                            <p class="inquiry-notice">★ 상품 문의사항이 아닌 반품/교환관련 문의는 1:1 채팅, 또는 고객센터(1800-1234)를 이용해주세요. <button
-                                @click="openInquiryPopup" class="inquiry-button">상품 문의하기</button></p>
-                                <!-- 상품 문의하기 버튼 -->
+                            <p class="inquiry-notice">★ 상품 문의사항이 아닌 반품/교환관련 문의는 1:1 채팅, 또는 고객센터(1800-1234)를 이용해주세요.
+                                <button @click="openInquiryPopup" class="inquiry-button">상품 문의하기</button>
+                            </p>
+                            <!-- 상품 문의하기 버튼 -->
                             <div>
                                 <!-- 상품 문의 팝업 -->
                                 <div v-if="isPopupOpen" class="inquiry-popup-overlay" @click="closePopup">
@@ -412,8 +458,14 @@
                     count: 0, // 재고
                     price: 0, // 가격
 
-
                     imgList: [], // 썸네일, 서브 이미지 리스트 가져오기
+
+                    recommend: [], // 추천상품 목록 들고오기
+                    currentOffset: 0,
+                    itemWidth: 200 + 24, // 224px
+                    visibleCount: 4,
+                    currentIndex: 0,
+                    hoveredIndex: null, // 추천 상품 hover
 
                     selectedTab: 'info', // 기본값은 "상품 정보"
 
@@ -437,7 +489,7 @@
                     iqTitle: "", // 문의 제목 입력값
 
                     inquiry: [], // 문의 내역 가져오기
-                    QuestionCount : 0, // 문의 개수 가져오기
+                    QuestionCount: 0, // 문의 개수 가져오기
                 };
             },
 
@@ -468,8 +520,14 @@
                                 // 이미지들
                                 self.imgList = data.imgList;
 
-                                console.log(data.info);
+                                // 추천상품 리스트
+                                let filtered = data.recommend.filter(function (item) {
+                                    return item.itemNo !== self.itemNo;
+                                });
+                                // 6개만 랜덤으로 보여주기
+                                self.recommend = shuffle(filtered).slice(0, 6);
 
+                                // 알레르기 표시 여부
                                 if (data.info.allergens != "없음") {
                                     self.allergensFlg = true;
                                 }
@@ -477,7 +535,42 @@
                             }
                         },
                     });
+                    // 배열을 섞는 함수
+                    function shuffle(array) {
+                        for (let i = array.length - 1; i > 0; i--) {
+                            const j = Math.floor(Math.random() * (i + 1));
+                            [array[i], array[j]] = [array[j], array[i]];
+                        }
+                        return array;
+                    }
                 },
+
+
+
+                slideLeft() {
+                    var self = this;
+                    if (self.currentIndex > 0) {
+                        self.currentIndex--;
+                        self.updateOffset();
+                    }
+                },
+                slideRight() {
+                    var self = this;
+                    var maxIndex = self.recommend.length - self.visibleCount;
+                    if (self.currentIndex < maxIndex) {
+                        self.currentIndex++;
+                        self.updateOffset();
+                    }
+                },
+                updateOffset() {
+                    var self = this;
+                    self.currentOffset = -(self.currentIndex * self.itemWidth);
+                },
+
+                fnInfo(itemNo) {
+                    pageChange("/product/info.do", { itemNo: itemNo });
+                },
+
 
                 // 리뷰 메소드
                 fnGetReview() {
@@ -632,7 +725,7 @@
                         return;
                         // 내용 입력
                     }
-                    
+
 
                     var nparmap = {
                         userId: self.userId,
@@ -700,7 +793,7 @@
                 addToCart(itemNo) {
                     var self = this;
 
-                    if(!self.userId) {
+                    if (!self.userId) {
                         alert("로그인 후 이용가능합니다.");
                         return;
                     }
@@ -835,6 +928,10 @@
                     });
                 },
 
+                formatRecommendPrice(value) {
+                    if (!value) return '0';
+                    return parseInt(value).toLocaleString();
+                }
 
 
             },
