@@ -271,7 +271,7 @@
             fnMemberJoin: function () {
                 var self = this;
 
-                if(self.userId == null) {
+                if(self.sessionId == null) {
                     alert("로그인을 해 주세요");
                     location.href = "/member/login.do";
                 }

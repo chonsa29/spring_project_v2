@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import com.example.demo.model.Group;
 import com.example.demo.model.GroupInfo;
 import com.example.demo.model.GroupUser;
+import com.example.demo.model.Notification;
 import com.example.demo.model.Question;
 import com.example.demo.model.Recipe;
 
@@ -73,5 +74,17 @@ public interface CommunityMapper {
 	void deleteMemberReject(HashMap<String, Object> map);
 
 	void updateGroupStatus(HashMap<String, Object> map);
+
+	Group selectGroupChat(HashMap<String, Object> map);
+
+	void deleteMember(HashMap<String, Object> map);
+
+	List<Group> selectGroupsToNotify(); // 27일 지난 그룹 조회
+	List<GroupUser> selectGroupMembersByGroupId(String groupId); // 그룹 멤버 조회
+	void insertGroupDeleteNotification(HashMap<String, Object> notiMap); // 알림 등록
+
+	List<Notification> selectUserNotifications(HashMap<String, Object> map);
+	
+	int checkDuplicateNotification(HashMap<String, Object> map);
 
 }
