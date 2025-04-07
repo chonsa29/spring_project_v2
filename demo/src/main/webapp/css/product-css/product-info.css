@@ -401,24 +401,29 @@
   width: 100%;
   height: 120px;
   object-fit: cover;
-  margin-bottom: 10px;
   object-position: center;
 }
 
 .image-wrapper {
   position: relative;
+  width: 100%;
+    height: 120px;
 }
 
 .icon-buttons {
   position: absolute;
   bottom: 10px;
   left: 10px;
+  right: 10px; /* 양 끝까지 확장 */
   display: flex;
+  justify-content: space-between; /* 버튼을 양쪽 또는 간격 있게 */
   gap: 8px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease;
+  z-index: 10;
 }
+
 
 .image-wrapper:hover .icon-buttons {
   opacity: 1;
@@ -426,14 +431,26 @@
 }
 
 .icon-buttons button {
+  flex: 1;
   background: white;
   border: 1px solid #ddd;
   border-radius: 6px;
   padding: 6px;
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
+  min-width: 40px;
+  height: 36px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+.recommend-like {
+	color: #ccc; /* 기본 색상 */
+}
+
+.recommend-like.active {
+  color: red;
+}
+
 
 .icon-buttons button:hover {
   background: #f5f5f5;
@@ -444,18 +461,22 @@
 .recommend-name {
   font-size: 14px;
   line-height: 1.4;
-  margin-bottom: 8px;
+  margin-top: 30px;
   min-height: 38px;
+  font-weight: bold;
 }
 
 .recommend-price {
   font-size: 14px;
   margin-bottom: 8px;
+  color: red;
+  font-weight: bold;
 }
 
-.recommend-price .original-price {
-  margin-right: 4px;
-  font-weight: bold;
+.recommend-discount-style {
+	margin-right: 4px;
+	color: #bbb;	
+  	text-decoration: line-through;
 }
 
 .recommend-badges {
@@ -579,29 +600,6 @@ a {
   width: 800px;
 }
 
-.info-with-sidebar {
-  display: flex;
-  gap: 24px;
-  align-items: flex-start;
-}
-
-.info-content {
-  flex: 1;
-}
-
-.info-sidebar {
-  width: 250px;
-}
-
-.sticky-box {
-  position: sticky;
-  top: 100px; /* 원하는 위치만큼 내려서 고정 */
-  background: #fff;
-  padding: 16px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
 
 /* 리뷰 요약 */
 
@@ -921,14 +919,14 @@ a {
 }
 
 /* 버튼 스타일 */
-.button-container {
+.inquiry-button-container {
     display: flex;
     justify-content: center;
     gap: 10px;
     margin-top: 15px;
 }
 
-.button-container button {
+.inquiry-button-container button {
     width: 130px;
     height: 45px;
     border: 1px solid #ddd;
@@ -940,11 +938,11 @@ a {
     font-weight: bold;
 }
 
-.button-container .cancel-btn {
+.inquiry-button-container .cancel-btn {
     background-color: #fff;
 }
 
-.button-container .submit-btn {
+.inquiry-button-container .submit-btn {
     background-color: #fff;
     color: #333;
 }

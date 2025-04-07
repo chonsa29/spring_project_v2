@@ -137,26 +137,33 @@
                     <!-- 왼쪽 버튼 -->
                     <button class="arrow left" @click="slideLeft">&#10094;</button>
 
-                    <!-- 슬라이드 뷰포트 -->
-                    <div class="recommend-viewport" :style="{ width: (itemWidth * visibleCount - 24) + 'px' }">
-                        <!-- 슬라이드 리스트 -->
-                        <div class="recommend-list" :style="{ transform: 'translateX(' + currentOffset + 'px)' }">
-                            <div class="recommend-item" v-for="(item, index) in recommend" :key="item.id"
+                    <!-- 추천상품 뷰포트 -->
+                    <div class="recommend-viewport"
+                        :style="{ width: (itemWidth * visibleCount - 24) + 'px', overflow: 'hidden' }">
+                        <!-- recommend 대신 duplicatedRecommend 사용 -->
+                        <div class="recommend-list" :style="getSlideStyle()">
+                            <div class="recommend-item" v-for="(item, index) in duplicatedRecommend" :key="index"
+                                @mouseenter="hoveredIndex = index" @mouseleave="hoveredIndex = null"
                                 @click="fnInfo(item.itemNo)">
+
                                 <div class="image-wrapper">
-                                    <img :src="item.filePath" alt="item.itemName" class="recommend-thumb" />
+                                    <img :src="item.filePath" alt="item.itemName" class="recommend-thumb">
                                     <div class="icon-buttons">
-                                        <button @click.stop="addToCart(item.itemNo)">🛒</button>
-                                        <button @click.stop="fnLike(item.itemNo)">🤍</button>
+                                        <button @click.stop="addToCart(item.itemNo)" class="recommend-cart"
+                                            @click="fnCart(item.itemNo, userId)">🛒</button>
+                                        <button @click.stop="fnLike(item.itemNo)" class="recommend-like"
+                                            :class="{ active: likedItems.has(item.itemNo) }">❤</button>
                                     </div>
                                 </div>
+
                                 <p class="recommend-name">{{ item.itemName }}</p>
-                                <p class="recommend-price">
-                                    <span class="original-price">{{ formatRecommendPrice(item.price) }}원</span>
-                                </p>
+                                <p class="recommend-discount-style">{{formatPrice(info.price * 3) }}원</p>
+                                <p class="recommend-price">{{ formatRecommendPrice(item.price) }}원</p>
                             </div>
+
                         </div>
                     </div>
+
 
                     <!-- 오른쪽 버튼 -->
                     <button class="arrow right" @click="slideRight">&#10095;</button>
@@ -180,13 +187,7 @@
                         <p>아직 준비중인 상품입니다.</p>
 
                     </div>
-                    <div class="info-sidebar">
-                        <div class="sticky-box">
-                            <p>🛒 장바구니 요약</p>
-                            <p>선택한 상품: {{ selectedItems }}개</p>
-                            <p>총 합계: {{ totalPrice }}원</p>
-                        </div>
-                    </div>
+
 
                     <!-- 상품 리뷰 -->
                     <div v-show="selectedTab === 'review'" class="review-container">
@@ -269,7 +270,7 @@
                                                     @input="limitText" @keyup.enter="fnAddInquiry"></textarea>
                                                 <div class="char-count">{{ iqContents.length }}/250자</div>
                                             </div>
-                                            <div class="button-container">
+                                            <div class="inquiry-button-container">
                                                 <button class="cancel-btn" @click="closePopup">취소</button>
                                                 <button class="submit-btn" @click="fnAddInquiry">등록</button>
                                             </div>
@@ -461,17 +462,20 @@
                     imgList: [], // 썸네일, 서브 이미지 리스트 가져오기
 
                     recommend: [], // 추천상품 목록 들고오기
-                    currentOffset: 0,
                     itemWidth: 200 + 24, // 224px
                     visibleCount: 4,
                     currentIndex: 0,
                     hoveredIndex: null, // 추천 상품 hover
+
+                    duplicatedRecommend: [], // 앞뒤 복제된 리스트 (무한 슬라이드용)
+                    isSliding: false, // transition 중 중복 방지
 
                     selectedTab: 'info', // 기본값은 "상품 정보"
 
                     showCartPopup: false, // 장바구니 추가 팝업
 
                     likedItems: new Set(),
+                    likedItemsLoaded: false, // 좋아요 로딩 완료 여부
                     showLikePopup: false, // 좋아요 표시
                     wish: [], // 좋아요 목록
                     likeAction: '', // 'add' 또는 'remove'
@@ -498,6 +502,10 @@
                 // 상세 정보 가져오기
                 fngetInfo() {
                     var self = this;
+
+                    if (!self.likedItemsLoaded) return;
+
+
                     var nparmap = {
                         itemNo: self.itemNo,
                     };
@@ -520,12 +528,20 @@
                                 // 이미지들
                                 self.imgList = data.imgList;
 
-                                // 추천상품 리스트
-                                let filtered = data.recommend.filter(function (item) {
-                                    return item.itemNo !== self.itemNo;
-                                });
-                                // 6개만 랜덤으로 보여주기
-                                self.recommend = shuffle(filtered).slice(0, 6);
+                                // 현재 상품 제외한 추천 리스트 중 6개 무작위 추출
+                                let filtered = data.recommend.filter(item => item.itemNo !== self.itemNo);
+                                let shuffled = shuffle(filtered).slice(0, 6);
+                                self.recommend = shuffled;
+
+                                // 무한 슬라이드를 위한 리스트 복제 (앞뒤로 visibleCount만큼 추가)
+                                self.duplicatedRecommend = [
+                                    ...shuffled.slice(-self.visibleCount), // 뒤에서 앞부분 복제
+                                    ...shuffled,
+                                    ...shuffled.slice(0, self.visibleCount)  // 앞에서 뒷부분 복제
+                                ];
+
+                                // 복제 리스트 기준으로 슬라이드 시작점 설정
+                                self.currentIndex = self.visibleCount;
 
                                 // 알레르기 표시 여부
                                 if (data.info.allergens != "없음") {
@@ -536,6 +552,7 @@
                         },
                     });
                     // 배열을 섞는 함수
+                    // Fisher–Yates shuffle 알고리즘
                     function shuffle(array) {
                         for (let i = array.length - 1; i > 0; i--) {
                             const j = Math.floor(Math.random() * (i + 1));
@@ -549,22 +566,43 @@
 
                 slideLeft() {
                     var self = this;
-                    if (self.currentIndex > 0) {
-                        self.currentIndex--;
-                        self.updateOffset();
-                    }
+                    if (self.isSliding) return;
+                    self.isSliding = true;
+                    self.currentIndex--;
+
+                    setTimeout(() => {
+                        // 복제 리스트의 앞쪽에 도달한 경우 → 원본 마지막 위치로 점프
+                        if (self.currentIndex === 0) {
+                            self.currentIndex = self.recommend.length;
+                        }
+                        self.isSliding = false;
+                    }, 300); // transition 시간과 맞춤
                 },
                 slideRight() {
                     var self = this;
-                    var maxIndex = self.recommend.length - self.visibleCount;
-                    if (self.currentIndex < maxIndex) {
-                        self.currentIndex++;
-                        self.updateOffset();
-                    }
+                    if (self.isSliding) return;
+                    self.isSliding = true;
+                    self.currentIndex++;
+
+                    // 복제 리스트의 뒷쪽 끝에 도달한 경우 → 원본 시작 위치로 점프
+                    setTimeout(() => {
+                        if (self.currentIndex === self.recommend.length + self.visibleCount) {
+                            // 오른쪽 끝 도달 → 원본 리스트 시작으로 점프
+                            self.currentIndex = self.visibleCount;
+                        }
+                        self.isSliding = false;
+                    }, 300);
                 },
-                updateOffset() {
+
+
+                // 현재 슬라이드 위치 계산 + transition 효과 처리
+                getSlideStyle() {
                     var self = this;
-                    self.currentOffset = -(self.currentIndex * self.itemWidth);
+                    return {
+                        transform: 'translateX(' + -(self.currentIndex * self.itemWidth) + 'px)',
+                        transition: self.isSliding ? 'transform 0.3s ease' : 'none',
+                        width: (self.duplicatedRecommend.length * self.itemWidth) + 'px',
+                    };
                 },
 
                 fnInfo(itemNo) {
@@ -920,9 +958,10 @@
                         data: nparmap,
                         success: function (data) {
                             if (data.result == "success") {
-
                                 // Wish 객체 리스트에서 itemNo만 추출하여 Set으로 변환
                                 self.likedItems = new Set(data.wish.map(wish => wish.itemNo));
+                                self.likedItemsLoaded = true; // 불러왔다는 표시
+                                self.fngetInfo(); // 여기서 호출!
                             }
                         }
                     });
