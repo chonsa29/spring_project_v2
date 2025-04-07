@@ -269,6 +269,72 @@
 		WHERE GROUP_ID = #{groupId}
 	</update>
 	
+	<!-- 헤더에서 그룹 채팅 -->
+	<select id="selectGroupChat" parameterType="hashmap">
+		SELECT *
+		FROM GROUP_USER
+		WHERE USERID = #{userId}
+	</select>
+	
+	<!-- 그룹 마감 시 신청자 PENDING 삭제-->
+	<delete id="deleteMember" parameterType="hashmap">
+		DELETE
+		FROM GROUP_USER
+		WHERE STATUS = 'PENDING'
+	</delete>
+	
+	<!-- 그룹 삭제 전 알림 -->
+	<select id="selectGroupsToNotify" resultType="com.example.demo.model.Group">
+	    SELECT GROUP_ID, GROUP_NAME AS groupName, CREATE_DATE
+	    FROM GROUP_INFO
+	    WHERE STATUS = 'PENDING'
+	    AND CREATE_DATE &lt;= SYSDATE - 27
+	</select>
+	
+	<select id="selectGroupMembersByGroupId" resultType="com.example.demo.model.GroupUser">
+	    SELECT USERID
+	    FROM GROUP_USER
+	    WHERE GROUP_ID = #{groupId}
+	    AND STATUS = 'ACTIVE'
+	</select>
+	
+	<insert id="insertGroupDeleteNotification">
+	    INSERT INTO NOTIFICATION (
+	        NOTI_ID,
+	        USERID,
+	        GROUP_ID,
+	        TITLE,
+	        MESSAGE,
+	        TYPE,
+	        CREATED_AT
+	    ) VALUES (
+	        NOTIFICATION_SEQ.NEXTVAL,
+	        #{userId},
+	        #{groupId},
+	        #{title},
+	        #{message},
+	        #{type},
+	        SYSDATE
+	    )
+	</insert>
+	
+	<select id="selectUserNotifications" resultType="com.example.demo.model.Notification">
+	    SELECT NOTI_ID, USERID, GROUP_ID, TITLE, MESSAGE, TYPE, CREATED_AT
+	    FROM NOTIFICATION
+	    WHERE USERID = #{userId}
+	    ORDER BY CREATED_AT DESC
+	</select>
+	
+	<select id="checkDuplicateNotification" resultType="int">
+	    SELECT COUNT(*)
+	    FROM NOTIFICATION
+	    WHERE USERID = #{userId}
+	      AND GROUP_ID = #{groupId}
+	      AND TYPE = #{type}
+	</select>
+
+
+	
 </mapper>
 
 

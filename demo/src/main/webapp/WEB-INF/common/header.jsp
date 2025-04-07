@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="/css/style.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8.4.7/swiper-bundle.min.css" />
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-straight/css/uicons-regular-straight.css">
         <script src="/js/pageChange.js"></script>
         <title>MealPick - 밀키트 쇼핑몰</title>
     </head>
@@ -44,6 +45,20 @@
                             <a href="/member/login.do" v-if="!sessionStatus">LOGIN</a>
                             <a href="/home.do" v-else @click="fnLogout">LOGOUT</a>
                             <a  href="javascript:;" @click="fnCart(sessionId)">CART</a>
+                            <div class="button-container" v-if="sessionStatus=='C'">
+                                <button class="chat-btn" @click="openChatRoom">
+                                    <i class="fi fi-rs-comments" style="font-size: 20px; margin-top: 5px; color: #0DA043;"></i>
+                                </button>
+                            </div>
+
+                            <!-- 모달 팝업창 -->
+                            <div class="custom-modal" v-if="showModal">
+                                <div class="custom-modal-content">
+                                    <p>{{ modalMessage }}</p>
+                                    <button @click="closeModal">확인</button>
+                                </div>
+                            </div>
+
                         </div>
                         <div class="search-container">
                             <a href="#"><span class="material-symbols-outlined">
@@ -97,8 +112,17 @@
                     sessionStatus : "${sessionStatus}",
                     sessionId : "${sessionId}",
                     isChatOpen: false, // 채팅창 상태
-                    userMessage: "" // 사용자 입력 메시지
+                    userMessage: "", // 사용자 입력 메시지
+                    info : {},
+                    showModal: false,
+                    modalMessage: "",
                 };
+            },
+            computed: {
+                memberStatus() {
+                    const member = this.members.find(m => m.userId === this.sessionId);
+                    return member ? member.status : null;
+                }
             },
             methods: {
                 fnLogout(){
@@ -180,12 +204,97 @@
                         textarea.style.height = "auto"; // 높이 초기화
                         textarea.style.height = textarea.scrollHeight + "px"; // 내용에 맞게 높이 조정
                     });
-                }
+                },
 
+                fnGroup : function() {
+                    let self = this;
+                    var nparmap = {
+                        userId : self.sessionId
+                    };
+                    $.ajax({
+                        url: "/group/groupChat.dox",
+                        type: "POST",
+                        dataType: "json",
+                        data: nparmap,
+                        success: function(data) {
+                            self.info = data.info;
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("AJAX 오류:", error);
+                            alert("서버와의 통신 중 오류가 발생했습니다.");
+                        }
+                    });
+                },
+                showPopup(message) {
+                    this.modalMessage = message;
+                    this.showModal = true;
+                },
+                closeModal() {
+                    this.showModal = false;
+                },
+                // 그룹 채팅
+                openChatRoom() {
+                    const self = this;
+
+                    // 그룹 정보 조회 후 상태 확인
+                    self.fnGroup(); // 최신 정보 조회
+                    setTimeout(() => {
+                        const groupInfo = self.info;
+
+                        if (!groupInfo || !groupInfo.groupId) {
+                            self.showPopup("그룹에 가입하세요!");
+                            return;
+                        }
+
+                        if (groupInfo.status === "PENDING") {
+                            self.showPopup("그룹 승인 요청을 기다리는 중입니다.");
+                            return;
+                        }
+
+                        if (groupInfo.status === "ACTIVE") {
+                            window.open(
+                                "/chatting/chatRoom?groupId=" + groupInfo.groupId,
+                                "ChatRoom",
+                                "width=400,height=600,left=650,top=100"
+                            );
+                        } else {
+                            self.showPopup("유효하지 않은 그룹 상태입니다.");
+                        }
+                    }, 300); // 비동기 요청에 약간의 시간 대기
+                },
+                fetchDeleteNotification() {
+                    const self = this;
+                    if (!self.sessionId) return;
+
+                    const nparmap = {
+                        userId: self.sessionId
+                    };
+
+                    $.ajax({
+                        url: "/notification/getUserNotifications.dox",
+                        type: "POST",
+                        dataType: "json",
+                        data: nparmap,
+                        success: function(data) {
+                            if (data.status === "success" && data.notifications.length > 0) {
+                                const recentNoti = data.notifications[0]; // 최신 알림 하나
+                                self.showPopup(recentNoti.message);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("삭제 알림 조회 실패:", error);
+                        }
+                    });
+                },
+                
             },
             mounted() {
+                
                 console.log(this.sessionStatus);
                 console.log(this.sessionId);
+
+                this.fetchDeleteNotification();
+
                 const floatingIcon = document.querySelector(".floating-icon img");
                 if (floatingIcon && floatingIcon.parentElement) { // 요소가 있는지 확인
                     floatingIcon.parentElement.addEventListener("mouseover", function () {

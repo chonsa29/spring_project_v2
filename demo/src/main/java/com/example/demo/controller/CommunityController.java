@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.common.Common;
 import com.example.demo.dao.CommunityService;
+import com.example.demo.model.Notification;
 import com.example.demo.model.Recipe;
 import com.google.gson.Gson;
 
@@ -358,6 +359,52 @@ public class CommunityController {
 
 		resultMap = communityService.closeGroup(map);
 		return new Gson().toJson(resultMap);
+	}
+	
+	// 헤더에서 그룹 채팅 가져오기
+	@RequestMapping(value = "/group/groupChat.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String chatGroup(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		resultMap = communityService.chatGroup(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	// 그룹 삭제 전 알림 전송
+	@RequestMapping(value = "/group/deleteNotify.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String groupDeleteNotify(@RequestParam HashMap<String, Object> map) {
+	    HashMap<String, Object> resultMap = new HashMap<>();
+
+	    try {
+	        resultMap = communityService.sendDeleteNotification(map); // 삭제 알림 처리
+	        resultMap.put("status", "success");
+	        resultMap.put("message", "삭제 예정 알림이 발송되었습니다.");
+	    } catch (Exception e) {
+	        resultMap.put("status", "error");
+	        resultMap.put("message", "알림 발송 중 오류가 발생했습니다.");
+	        resultMap.put("error", e.getMessage());
+	    }
+
+	    return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/notification/getUserNotifications.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String getUserNotifications(@RequestParam HashMap<String, Object> map) {
+	    HashMap<String, Object> resultMap = new HashMap<>();
+
+	    try {
+	        List<Notification> notiList = communityService.getUserNotifications(map);
+	        resultMap.put("status", "success");
+	        resultMap.put("notifications", notiList);
+	    } catch (Exception e) {
+	        resultMap.put("status", "error");
+	        resultMap.put("message", "알림 조회 실패");
+	    }
+
+	    return new Gson().toJson(resultMap);
 	}
 
 }

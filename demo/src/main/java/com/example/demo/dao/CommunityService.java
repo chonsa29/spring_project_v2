@@ -10,6 +10,7 @@ import com.example.demo.mapper.CommunityMapper;
 import com.example.demo.model.Group;
 import com.example.demo.model.GroupInfo;
 import com.example.demo.model.GroupUser;
+import com.example.demo.model.Notification;
 import com.example.demo.model.Question;
 import com.example.demo.model.Recipe;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -379,7 +380,24 @@ public class CommunityService {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
 		try {
-	        communityMapper.updateGroupStatus(map);
+	        communityMapper.updateGroupStatus(map); //마감상태
+	        communityMapper.deleteMember(map); //PENDING 멤버 삭제
+	        resultMap.put("result", "success");
+	    } catch (Exception e) {
+	        System.out.println(e.getMessage());
+	        resultMap.put("result", "fail");
+	    }
+		return resultMap;
+	}
+
+	public HashMap<String, Object> chatGroup(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+			
+			Group info =  communityMapper.selectGroupChat(map);
+			
+			resultMap.put("info", info);
 	        resultMap.put("result", "success");
 	    } catch (Exception e) {
 	        System.out.println(e.getMessage());
@@ -388,6 +406,58 @@ public class CommunityService {
 		return resultMap;
 	}
 	
+	// 그룹 삭제 전 알림
+	public HashMap<String, Object> sendDeleteNotification(HashMap<String, Object> map) {
+	    HashMap<String, Object> resultMap = new HashMap<>();
 
+	    try {
+	        List<Group> groupList = communityMapper.selectGroupsToNotify(); // 27일 이상 지난 그룹 조회
+	        int totalNotiCount = 0;
+
+	        for (Group group : groupList) {
+	            String groupId = group.getGroupId();
+	            String groupName = group.getGroupName();
+	            
+	            System.out.println("알림 보낼 그룹 이름: " + group.getGroupName());
+
+	            List<GroupUser> members = communityMapper.selectGroupMembersByGroupId(groupId);
+
+	            for (GroupUser member : members) {
+	                HashMap<String, Object> notiMap = new HashMap<>();
+	                notiMap.put("userId", member.getUserId());
+	                notiMap.put("groupId", groupId);
+	                notiMap.put("title", "[알림] " + groupName);
+	                notiMap.put("message", "'" + groupName + "' 그룹이 3일 후 자동 삭제됩니다.");
+	                notiMap.put("type", "DELETE_NOTICE");
+
+	                int duplicateCount = communityMapper.checkDuplicateNotification(notiMap);
+
+	                if (duplicateCount == 0) {
+	                    notiMap.put("title", "[알림] " + groupName);
+	                    notiMap.put("message", "'" + groupName + "' 그룹이 3일 후 자동 삭제됩니다.");
+
+	                    communityMapper.insertGroupDeleteNotification(notiMap);
+	                    totalNotiCount++;
+	                }
+	            }
+	        }
+
+	        resultMap.put("notifiedGroups", groupList.size());
+	        resultMap.put("totalNotiSent", totalNotiCount);
+	        resultMap.put("result", "success");
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        resultMap.put("result", "fail");
+	        resultMap.put("error", e.getMessage());
+	    }
+
+	    return resultMap;
+	}
+	
+	public List<Notification> getUserNotifications(HashMap<String, Object> map) {
+	    return communityMapper.selectUserNotifications(map);
+	}
+	
 
 }
