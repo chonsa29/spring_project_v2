@@ -235,8 +235,8 @@
 	
 	<!-- 그룹 생성 -->
 	<insert id="insertGroup" parameterType="hashmap">
-		INSERT INTO GROUP_INFO(GROUP_ID, GROUP_NAME, LEADER_ID, STATUS)
-		VALUES(GROUP_INFO_SEQ.NEXTVAL, #{groupName}, #{userId}, 'PENDING')
+		INSERT INTO GROUP_INFO(GROUP_ID, GROUP_NAME, LEADER_ID, STATUS, MONTH_STATUS)
+		VALUES(GROUP_INFO_SEQ.NEXTVAL, #{groupName}, #{userId}, 'PENDING', 'ACTIVE')
 	</insert>
 	
 	<!-- 그룹 생성 시 멤버도 추가 -->
@@ -287,8 +287,8 @@
 	<select id="selectGroupsToNotify" resultType="com.example.demo.model.Group">
 	    SELECT GROUP_ID, GROUP_NAME AS groupName, CREATE_DATE
 	    FROM GROUP_INFO
-	    WHERE STATUS = 'PENDING'
-	    AND CREATE_DATE &lt;= SYSDATE - 1
+	    WHERE MONTH_STATUS = 'ACTIVE'
+	    AND CREATE_DATE &lt;= SYSDATE - 27
 	</select>
 	
 	<select id="selectGroupMembersByGroupId" resultType="com.example.demo.model.GroupUser">
