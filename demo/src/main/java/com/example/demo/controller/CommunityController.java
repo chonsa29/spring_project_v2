@@ -6,6 +6,7 @@ import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,6 +28,9 @@ import com.google.gson.Gson;
 public class CommunityController {
 	@Autowired
 	CommunityService communityService;
+	
+	@Autowired
+	HttpSession session;
 	
 	// 커뮤니티 메인
 	@RequestMapping("/commu-main.do")
@@ -399,6 +403,7 @@ public class CommunityController {
 	        List<Notification> notiList = communityService.getUserNotifications(map);
 	        resultMap.put("status", "success");
 	        resultMap.put("notifications", notiList);
+	        session.setAttribute("messageFlg", false);
 	    } catch (Exception e) {
 	        resultMap.put("status", "error");
 	        resultMap.put("message", "알림 조회 실패");

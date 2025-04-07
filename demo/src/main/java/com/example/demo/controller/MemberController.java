@@ -8,12 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.demo.dao.CommunityService;
 import com.example.demo.dao.MemberService;
 import com.example.demo.model.Member;
 import com.google.gson.Gson;
@@ -24,6 +26,9 @@ import jakarta.servlet.http.HttpSession;
 public class MemberController {
 	@Autowired
 	MemberService memberService;
+	
+	@Autowired
+	CommunityService communityService;
 
 	@Autowired
 	HttpSession session;
@@ -73,6 +78,7 @@ public class MemberController {
 		return new Gson().toJson(resultMap);
 	}
 
+	@CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
 	@RequestMapping(value = "/member/login.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String login(@RequestParam HashMap<String, Object> map) throws Exception {
@@ -82,6 +88,17 @@ public class MemberController {
 			session.setAttribute("sessionId", member.getUserId());
 			session.setAttribute("sessionName", member.getUserName());
 			session.setAttribute("sessionStatus", member.getStatus());
+			session.setAttribute("messageFlg", true);
+			
+			// 로그 찍어보자
+			System.out.println("세션 ID: " + session.getId());
+	        System.out.println("세션에 notificationSent 있음? -> " + session.getAttribute("notificationSent"));
+	        
+			// 로그인 성공 + 세션 당 한 번만 알림 전송
+		    communityService.sendDeleteNotification(new HashMap<>());
+		    session.setAttribute("notificationSent", true);
+		    resultMap.put("notificationSent", true); // 프론트로 알림 전송 사실을 알려줌
+			
 		}
 		return new Gson().toJson(resultMap);
 	}

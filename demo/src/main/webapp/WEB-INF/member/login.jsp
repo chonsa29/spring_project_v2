@@ -87,6 +87,9 @@ const app = Vue.createApp({
 					dataType:"json",	
 					type : "POST", 
 					data : nparmap,
+                    xhrFields: {
+                        withCredentials: true
+                    },
 					success : function(data) { 
 						console.log(data);
                         if(data.result == "fail"){

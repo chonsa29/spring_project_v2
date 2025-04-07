@@ -15,6 +15,8 @@ import com.example.demo.model.Question;
 import com.example.demo.model.Recipe;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.websocket.Session;
+
 @Service
 public class CommunityService {
 	@Autowired
