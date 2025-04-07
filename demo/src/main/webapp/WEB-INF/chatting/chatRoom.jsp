@@ -126,8 +126,7 @@
                         }
                     });
 
-                    // ✅ 창 닫기 위치를 변경!
-                    // window.close(); // ❌ 여기에 있으면 AJAX 요청이 날아가기 전에 창이 닫혀버림
+                
                 },
                 sendJoinMessage() { // 입장 메시지
                     let self = this;
@@ -159,7 +158,7 @@
                         type : "POST", 
                         data : nparmap,
                         success : function(data) {
-                            console.log(data);
+                            console.log("📌 서버 응답 데이터:", data); // 응답 데이터 확인
                             self.members = data.members;
                             
                             console.log("📌 members 업데이트됨:", self.members);

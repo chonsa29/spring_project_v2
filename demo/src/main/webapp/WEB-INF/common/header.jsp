@@ -232,6 +232,12 @@
                     this.modalMessage = message;
                     this.showModal = true;
                 },
+                // 엔터 키가 눌렸을 때 팝업 닫기
+                handleKeyDown(event) {
+                    if (event.key === 'Enter' && this.showModal) {
+                        this.closeModal(); // 팝업 닫기
+                    }
+                },
                 closeModal() {
                     this.showModal = false;
                 },
@@ -289,7 +295,10 @@
                         }
                     });
                 },
-                
+                beforeUnmount() {
+                    // 컴포넌트가 파괴되기 전에 이벤트 리스너 제거
+                    document.removeEventListener('keydown', this.handleKeyDown);
+                }
             },
             mounted() {
                 
@@ -300,6 +309,8 @@
                 if (this.messageFlg == "true" || this.messageFlg == "") {
                     this.fetchDeleteNotification();
                 }
+
+                document.addEventListener('keydown', this.handleKeyDown);
 
                 const floatingIcon = document.querySelector(".floating-icon img");
                 if (floatingIcon && floatingIcon.parentElement) { // 요소가 있는지 확인

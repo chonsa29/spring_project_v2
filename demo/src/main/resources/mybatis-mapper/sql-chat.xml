@@ -34,7 +34,7 @@
 		SELECT *
 		FROM GROUP_USER GU
 		INNER JOIN MEMBER M ON GU.USERID = M.USERID
-		WHERE GU.GROUP_ID = 1
+		WHERE GU.GROUP_ID = #{groupId}
 	</select>
 	
 	<!-- JOIN 상태 삭제 -->
