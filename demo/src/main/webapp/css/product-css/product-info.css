@@ -393,6 +393,20 @@ a {
 }
 
 
+.preparing-info {
+  background-color: #f9f9f9;
+  border: 2px dashed #ccc;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  width: 800px;
+}
+
+
 
 /* 리뷰 요약 */
 

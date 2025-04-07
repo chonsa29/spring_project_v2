@@ -68,12 +68,11 @@
                         <!-- 좋아요 -->
                         <button class="product-like" :class="{ active: likedItems.has(item.itemNo) }"
                             @click="fnLike(item.itemNo)">❤</button>
-                        <div v-if="showLikePopup" class="like-popup-overlay">
-                            <div class="like-popup">좋아요 항목에 추가되었습니다</div>
-                        </div>
-                        <div v-if="!showLikePopup" class="like-popup-overlay">
-                            <div class="like-popup">좋아요 항목에서 취소되었습니다.</div>
-                        </div>
+                            <div v-if="showLikePopup" class="like-popup-overlay">
+                                <div class="like-popup">
+                                    {{ likeAction === 'add' ? '좋아요 항목에 추가되었습니다' : '좋아요 항목에서 취소되었습니다.' }}
+                                </div>
+                            </div>
 
                         <!-- 장바구니 -->
                         <button class="product-cart" @click="fnCart(item.itemNo, userId)">🛒</button>
@@ -120,6 +119,7 @@
                     userId: "${sessionId}",
                     likedItems: new Set(),
                     showLikePopup: false, // 좋아요 표시
+                    likeAction: '', // 'add' 또는 'remove'
 
                     showCartPopup: false, // 장바구니 표시
 
@@ -227,7 +227,7 @@
 
                     if (!self.userId) {
                         // 로그인 페이지로 리디렉션
-                        location.href = "/member/login.do"; // 로그인 페이지 경로
+                        alert("로그인 후 이용가능합니다."); // 로그인 페이지 경로
                         return; // 이후 코드 실행 방지
                     }
                     var nparmap = {
@@ -248,6 +248,7 @@
                                 if (!self.likedItems.has(itemNo)) {
                                     self.likedItems.add(itemNo);  // 좋아요 추가
                                     self.showLikePopup = true;
+                                    self.likeAction = 'add';
                                     setTimeout(() => {
                                         self.showLikePopup = false;
                                     }, 2000);
@@ -255,6 +256,7 @@
                             } else if (data.result == "c") {  // 좋아요 취소
                                 if (self.likedItems.has(itemNo)) {
                                     self.likedItems.delete(itemNo);  // 좋아요 취소
+                                    self.likeAction = 'remove';
                                     self.showLikePopup = false;
                                 }
                             } else {
