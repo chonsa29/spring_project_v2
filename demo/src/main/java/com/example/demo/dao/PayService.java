@@ -12,6 +12,8 @@ import com.example.demo.model.Member;
 import com.example.demo.model.Pay;
 import com.example.demo.model.Product;
 
+import jakarta.servlet.http.HttpSession;
+
 @Service
 public class PayService {
 	
@@ -33,11 +35,16 @@ public class PayService {
 		return resultMap;
 	}
 
-	public HashMap<String, Object> paymentProduct(HashMap<String, Object> map) {
+	public HashMap<String, Object> paymentProduct(HashMap<String, Object> map, HttpSession session) {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
 			payMapper.paymentSell(map);
+			
+		    if (map.get("orderItems") != null) {
+	            session.setAttribute("orderItems", map.get("orderItems"));
+	        }
+			
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

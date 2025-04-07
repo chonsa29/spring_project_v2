@@ -7,6 +7,8 @@
 	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.min.js"></script>
     <link rel="stylesheet" href="/css/inquire-css/inquire-edit-style.css">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     <script src="/js/pageChange.js"></script>
 	<title>문의 수정</title>
 </head>
@@ -31,7 +33,7 @@
 
             <!-- 본문 내용 -->
             <div class="post-content">
-                <input class="post-content" v-model="info.qsContents">
+                <div v-model="info.qsContents" contenteditable="true" id="editor"></div>
             </div>
 
             <!-- 버튼들 -->
@@ -69,6 +71,7 @@
 					success : function(data) { 
 						console.log(data);
                         self.info = data.info;
+                        self.quill.root.innerHTML = self.info.qsContents;
 					}
 				});
             },
@@ -97,6 +100,24 @@
         },
         mounted() {
             var self = this;
+            self.quill = new Quill('#editor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                        ['bold', 'italic', 'underline'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        ['link', 'image'],
+                        ['clean'],
+                        [{'color' : []}, {'background' : []}]
+                    ]
+                }
+            });
+
+            self.quill.on('text-change', function() {
+                self.info.qsContents = self.quill.root.innerHTML;
+            });
+
             self.fnInquire();
         }
     });
