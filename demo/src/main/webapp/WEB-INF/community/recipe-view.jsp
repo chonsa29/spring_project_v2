@@ -26,7 +26,7 @@
 
             <!-- 작성자 정보 -->
             <div class="post-meta">
-                <span class="post-user">{{ info.userId }}</span> ·
+                <span class="post-user">{{ info.nickname }}</span> ·
                 <span class="post-date">{{ info.cdatetime }}</span> ·
                 조회 {{ info.cnt }} · 
                 <!-- 좋아요 버튼 -->
@@ -80,6 +80,30 @@
                 </div>
                 <button class="buttonGoBack" @click="goBack">목록으로</button>
             </div>
+
+            <!-- 댓글 영역 -->
+            <div class="comment-section">
+                <h3>댓글</h3>
+
+                <!-- 댓글 작성 영역 -->
+                <div class="comment-form">
+                    <textarea v-model="contents" placeholder="댓글을 입력하세요."></textarea>
+                    <button @click="addComment">등록</button>
+                </div>
+
+                <!-- 댓글 리스트 -->
+                <div class="comment-list" v-if="commentList.length > 0">
+                    <div class="comment-item" v-for="(comment, index) in commentList" :key="index">
+                        <div class="comment-header">
+                            <span class="comment-user">{{ comment.nickname }}</span>
+                            <span class="comment-date">{{ comment.cdateTime }}</span>
+                        </div>
+                        <div class="comment-body">{{ comment.contents }}</div>
+                    </div>
+                </div>
+                <div v-else class="no-comments">댓글이 없습니다.</div>
+            </div>
+
         </div>
     </div>
     <jsp:include page="/WEB-INF/common/footer.jsp" />
@@ -92,6 +116,9 @@
                 info : {},
                 sessionId: "${sessionId}",
                 sessionStatus: "${sessionStatus}",
+                commentList: [],
+                contents: "",
+
             };
         },
         methods: {
@@ -185,10 +212,57 @@
                     }
                 });
             },
+            // 댓글 목록 불러오기
+            loadComments() {
+                var self = this;
+                $.ajax({
+                    url: "/recipe/comments.dox",
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                        postId: self.postId
+                    },
+                    success: function (res) {
+                        self.commentList = res.commentList || [];
+                    }
+                });
+            },
+
+            // 댓글 등록
+            addComment() {
+                var self = this;
+
+                if (!self.contents.trim()) {
+                    alert("댓글을 입력해주세요.");
+                    return;
+                }
+
+                var nparmap = {
+                    postId: self.postId,
+                    userId: self.sessionId,
+                    contents: self.contents
+                };
+
+                $.ajax({
+                    url: "/recipe/commentAdd.dox",
+                    type: "POST",
+                    dataType: "json",
+                    data: nparmap,
+                    success: function (res) {
+                        if (res.result === "success") {
+                            self.newComment = "";
+                            self.loadComments(); // 새로고침
+                        } else {
+                            alert("댓글 등록 실패");
+                        }
+                    }
+                });
+            }
         },
         mounted() {
             var self = this;
             self.fnRecipe();
+            self.loadComments();
             
         }
     });

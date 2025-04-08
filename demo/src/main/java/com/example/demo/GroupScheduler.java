@@ -17,7 +17,7 @@ public class GroupScheduler {
     private CommunityService communityService;
 
     // 매일 오전 9시에 실행 (그룹 삭제 3일 전 알림 전송)
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 0 9 * * ?")
     public void scheduleDeleteNotification() {
         System.out.println("[스케줄러 실행] 그룹 삭제 알림 전송 시작...");
         HashMap<String, Object> dummyMap = new HashMap<>();

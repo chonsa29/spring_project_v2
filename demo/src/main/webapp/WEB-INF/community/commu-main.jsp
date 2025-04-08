@@ -46,7 +46,7 @@
 				<tbody>
 					<tr v-for="item in rList">
 						<td>{{ item.postId }}</td>
-						<td @click="fnRecipeView(item.postId)">{{ item.title }}</td>
+						<td @click="fnRecipeView(item.postId)">{{ item.title }} <span style="color: #0DA043;">({{ item.commentCount }})</span></td>
 						<td>{{ item.cdatetime.substring(0, 10) }}</td>
 						<td class="gray-text">{{ item.cnt }}</td>
 						<td class="gray-text">{{ item.likes }}</td>

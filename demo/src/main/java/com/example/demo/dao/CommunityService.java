@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.mapper.CommunityMapper;
+import com.example.demo.model.Comment;
 import com.example.demo.model.Group;
 import com.example.demo.model.GroupInfo;
 import com.example.demo.model.GroupUser;
@@ -156,6 +157,7 @@ public class CommunityService {
 	    return communityMapper.selectLikes(postId);
 	}
 
+	// 레시피 게시글 삭제
 	public HashMap<String, Object> removeRecipe(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
@@ -189,6 +191,35 @@ public class CommunityService {
 	        resultMap.put("result", "fail");
 	    }
 	    return resultMap;
+	}
+	
+	// 댓글
+	public HashMap<String, Object> getCommentList(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			List<Comment> commentList =  communityMapper.selectCommentList(map);
+			resultMap.put("commentList", commentList); 
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+		}
+		return resultMap;
+	}
+	
+	// 댓글 추가
+	public HashMap<String, Object> addComment(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+	        communityMapper.insertComment(map);
+	        resultMap.put("result", "success");
+	    } catch (Exception e) {
+	        System.out.println(e.getMessage());
+	        resultMap.put("result", "fail");
+	    }
+		return resultMap;
 	}
 	
 	// // 그룹 부분 // //
@@ -460,6 +491,43 @@ public class CommunityService {
 	public List<Notification> getUserNotifications(HashMap<String, Object> map) {
 	    return communityMapper.selectUserNotifications(map);
 	}
+
+	public HashMap<String, Object> removeGroupPost(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+			communityMapper.deleteGroupPost(map);
+
+	        resultMap.put("result", "success");
+	            
+	    } catch (Exception e) {
+	    	
+	        System.out.println(e.getMessage());
+	        resultMap.put("result", "fail");
+	        
+	    }
+		return resultMap;
+	}
+
+	// 게시글 수정
+	public HashMap<String, Object> editGroupPost(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		communityMapper.updateGroupPost(map);
+		resultMap.put("result", "success");
+		return resultMap;
+	}
+
+	public Group getGroupById(Object postId) {
+		try {
+	        HashMap<String, Object> paramMap = new HashMap<>();
+	        paramMap.put("postId", postId);
+	        return communityMapper.groupEditView(paramMap);
+	    } catch (Exception e) {
+	        System.out.println("Error fetching recipe: " + e.getMessage());
+	        throw e;
+	    }
+	}
+
 	
 
 }

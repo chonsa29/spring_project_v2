@@ -101,7 +101,7 @@
     border-radius: 4px;
     cursor: pointer;
     transition: background 0.3s;
-    margin-left: 10px; /* 버튼 간격 */
+    
 }
 
 .edit-btn:hover, .delete-btn:hover {
@@ -370,5 +370,69 @@
 .status-btn.closed {
     background-color: rgb(192, 192, 192);
     color: white;
+}
+
+/* 댓글 */
+.comment-section {
+    width: 100%;
+    margin-top: 50px;
+    padding: 20px;
+    border-top: 1px solid #ddd;
+}
+
+.comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.comment-form textarea {
+    width: 100%;
+    height: 80px;
+    padding: 10px;
+    resize: none;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.comment-form button {
+    align-self: flex-end;
+    background-color: #0DA043;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.comment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.comment-item {
+    background: #f4f4f4;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.comment-header {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.comment-body {
+    font-size: 15px;
+    color: #333;
+}
+
+.no-comments {
+    color: #999;
+    text-align: center;
 }
 

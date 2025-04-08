@@ -18,6 +18,8 @@ public class Recipe {
     private int likes;
     private String postCategory;
     private boolean isLiked;
+    private int commentCount;
+    private String nickname;
     
     // Getter and Setter for Contents
     public String getContents() {
@@ -127,6 +129,14 @@ public class Recipe {
 
 	public void setLiked(boolean isLiked) {
 		this.isLiked = isLiked;
+	}
+	
+	public int getCommentCount() {
+	    return commentCount;
+	}
+
+	public void setCommentCount(int commentCount) {
+	    this.commentCount = commentCount;
 	}
 
     
