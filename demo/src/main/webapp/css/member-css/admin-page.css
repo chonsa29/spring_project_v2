@@ -427,144 +427,180 @@ img {
 
 /* 모달 오버레이 */
 .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1050;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-    padding: 20px; /* 상하좌우 여백 추가 */
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1050;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.3s ease;
+	padding: 20px;
+	/* 상하좌우 여백 추가 */
 }
 
 
 /* 모달 표시 상태 */
 .modal.show {
-    opacity: 1;
-    pointer-events: auto;
+	opacity: 1;
+	pointer-events: auto;
 }
+
 /* 모달 콘텐츠 */
 .modal-dialog {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    width: 90%;
-    max-width: 800px;
-    max-height: calc(100vh - 40px); /* 여백 고려한 높이 조정 */
-    overflow-y: auto;
-    margin: auto;
-    position: relative;
-    transform: scale(0.95); /* 열릴 때 약간 작아졌다가 */
-    transition: all 0.3s ease;
+	background: white;
+	border-radius: 8px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+	width: 90%;
+	max-width: 800px;
+	max-height: calc(100vh - 40px);
+	/* 여백 고려한 높이 조정 */
+	overflow-y: auto;
+	margin: auto;
+	position: relative;
+	transform: scale(0.95);
+	/* 열릴 때 약간 작아졌다가 */
+	transition: all 0.3s ease;
 }
 
 /* 모달 표시 상태 */
 .modal.show .modal-dialog {
-    transform: scale(1); /* 원래 크기로 */
+	transform: scale(1);
+	/* 원래 크기로 */
 }
 
 /* 모달 크기 조정 */
 .modal-dialog.modal-lg {
-    max-width: 1000px;
+	max-width: 1000px;
 }
 
 
 /* 모달 헤더 */
 .modal-header {
-    padding: 15px 20px;
-    border-bottom: 1px solid #dee2e6;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    background: white;
-    z-index: 1;
+	padding: 15px 20px;
+	border-bottom: 1px solid #dee2e6;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	position: sticky;
+	top: 0;
+	background: white;
+	z-index: 1;
 }
 
 /* 닫기 버튼 */
 .btn-close {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #6c757d;
-    transition: color 0.3s;
+	background: none;
+	border: none;
+	font-size: 1.5rem;
+	cursor: pointer;
+	color: #6c757d;
+	transition: color 0.3s;
 }
 
 .btn-close:hover {
-    color: #333;
+	color: #333;
 }
 
 
 /* 모달 바디 */
 .modal-body {
-    padding: 20px;
+	padding: 20px;
 }
 
 /* 모달 푸터 */
 .modal-footer {
-    padding: 15px 20px;
-    border-top: 1px solid #dee2e6;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    position: sticky;
-    bottom: 0;
-    background: white;
+	padding: 15px 20px;
+	border-top: 1px solid #dee2e6;
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	position: sticky;
+	bottom: 0;
+	background: white;
 }
 
 /* 모달이 열려 있을 때 body 스크롤 방지 */
 body.modal-open {
-    overflow: hidden;
+	overflow: hidden;
 }
 
 /* 백드롭 제거 (모달 외부 클릭 가능하도록) */
 .modal-backdrop {
-    display: none !important;
+	display: none !important;
 }
 
 /* 부트스트랩 오버라이드 */
 .modal:not(.show) {
-    display: flex !important;
-    opacity: 0;
+	display: flex !important;
+	opacity: 0;
 }
 
 /* 모달 내부 테이블 스타일 */
 .modal-body table {
-    box-shadow: none;
-    margin-bottom: 0;
+	box-shadow: none;
+	margin-bottom: 0;
 }
 
 .modal-body th {
-    background-color: #f8f9fa;
-    color: #333;
+	background-color: #f8f9fa;
+	color: #333;
 }
 
 /* 모달 내부 이미지 */
 .modal-body img {
-    max-width: 100%;
-    height: auto;
+	max-width: 100%;
+	height: auto;
 }
 
 /* 반응형 조정 */
 @media (max-width: 768px) {
-    .modal {
-        padding: 10px;
-    }
-    
-    .modal-dialog {
-        width: 95%;
-        max-height: calc(100vh - 20px);
-    }
-    
-    .modal-body {
-        padding: 15px;
-    }
+	.modal {
+		padding: 10px;
+	}
+
+	.modal-dialog {
+		width: 95%;
+		max-height: calc(100vh - 20px);
+	}
+
+	.modal-body {
+		padding: 15px;
+	}
+}
+
+/* 게시판 & 문의 관리 스타일 */
+.inquiry-list {
+	border: 1px solid #ddd;
+	border-radius: 5px;
+}
+
+.inquiry-item {
+	padding: 15px;
+	border-bottom: 1px solid #eee;
+}
+
+.inquiry-header {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 10px;
+	font-weight: bold;
+}
+
+.answer-section {
+	margin-top: 10px;
+	padding: 10px;
+	background-color: #f8f9fa;
+	border-radius: 3px;
+}
+
+textarea {
+	width: 100%;
+	margin-top: 10px;
+	padding: 8px;
 }

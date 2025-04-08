@@ -12,7 +12,7 @@
             <title>상품 관리</title>
             <style>
                 /* 추가적인 인라인 스타일이 필요한 경우 여기에 작성 */
-            </style>    
+            </style>
         </head>
 
         <body>
@@ -32,6 +32,8 @@
                             <li><a href="#" @click="showSection('product-management')">상품 관리</a></li>
                             <li><a href="#" @click="showSection('order-management')">주문 관리</a></li>
                             <li><a href="#" @click="showSection('member-management')">회원 관리</a></li>
+                            <li><a href="#" @click="showSection('board-management')">게시판 관리</a></li>
+                            <li><a href="#" @click="showSection('inquiry-management')">문의 관리</a></li>
                         </ul>
                     </div>
 
@@ -181,7 +183,8 @@
                                         <tr v-for="item in productList" :key="item.itemNo">
                                             <td>{{ item.itemNo }}</td>
                                             <td>
-                                                <a href="javascript:;" @click="fnEdit(item.itemNo)">{{ item.itemName }}</a>
+                                                <a href="javascript:;" @click="fnEdit(item.itemNo)">{{ item.itemName
+                                                    }}</a>
                                             </td>
                                             <td>{{ formatCurrency(item.price) }}</td>
                                             <td>{{ item.itemCount }}</td>
@@ -498,6 +501,101 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- 게시판 관리 섹션 -->
+                        <div v-if="currentSection === 'board-management'" class="section">
+                            <h3>게시판 관리</h3>
+
+                            <!-- 검색 필터 -->
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <input type="text" class="form-control" v-model="boardSearch.keyword"
+                                                placeholder="제목/작성자 검색">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <select class="form-select" v-model="boardSearch.boardType">
+                                                <option value="">전체 게시판</option>
+                                                <option value="notice">공지사항</option>
+                                                <option value="qna">Q&A</option>
+                                            </select>
+                                        </div>
+                                        <button class="btn btn-primary col-md-2" @click="searchBoards">검색</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 게시글 테이블 -->
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>번호</th>
+                                        <th>제목</th>
+                                        <th>작성자</th>
+                                        <th>작성일</th>
+                                        <th>조회수</th>
+                                        <th>관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="board in boardList" :key="board.id">
+                                        <td>{{ board.id }}</td>
+                                        <td>{{ board.title }}</td>
+                                        <td>{{ board.writer }}</td>
+                                        <td>{{ formatDate(board.regDate) }}</td>
+                                        <td>{{ board.viewCount }}</td>
+                                        <td>
+                                            <button @click="deleteBoard(board.id)"
+                                                class="btn btn-sm btn-danger">삭제</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- 페이징 -->
+                            <nav v-if="boardTotalPages > 1">
+                                <ul class="pagination">
+                                    <li v-for="page in boardDisplayedPages" :key="page"
+                                        :class="{ active: page === boardCurrentPage }">
+                                        <a @click="changeBoardPage(page)">{{ page }}</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+
+                        <!-- 문의 관리 섹션 -->
+                        <div v-if="currentSection === 'inquiry-management'" class="section">
+                            <h3>문의 관리</h3>
+
+                            <!-- 상태 필터 -->
+                            <div class="mb-3">
+                                <select v-model="inquiryFilter.status" @change="fetchInquiries">
+                                    <option value="all">전체 문의</option>
+                                    <option value="pending">답변 대기</option>
+                                    <option value="completed">답변 완료</option>
+                                </select>
+                            </div>
+
+                            <!-- 문의 목록 -->
+                            <div class="inquiry-list">
+                                <div v-for="inquiry in inquiries" :key="inquiry.id" class="inquiry-item">
+                                    <div class="inquiry-header">
+                                        <span>[{{ inquiry.type }}] {{ inquiry.title }}</span>
+                                        <span>{{ inquiry.writer }} | {{ formatDate(inquiry.createdAt) }}</span>
+                                    </div>
+                                    <div class="inquiry-content">{{ inquiry.content }}</div>
+
+                                    <!-- 답변 영역 -->
+                                    <div v-if="inquiry.answer" class="answer-section">
+                                        <strong>답변:</strong> {{ inquiry.answer }}
+                                    </div>
+                                    <div v-else>
+                                        <textarea v-model="inquiry.answerText" placeholder="답변 내용 입력"></textarea>
+                                        <button @click="submitAnswer(inquiry.id, inquiry.answerText)">답변 등록</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -772,6 +870,7 @@
                 </div>
             </div>
 
+
             <!-- Bootstrap JS -->
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -852,10 +951,37 @@
                         currentMember: null,
                         memberCurrentPage: 1,
                         memberPageSize: 10,
-                        memberTotalCount: 0
+                        memberTotalCount: 0,
+
+                        // 게시판 관리 데이터
+                        boardList: [],
+                        boardSearch: {
+                            keyword: '',
+                            boardType: '',
+                            page: 1,
+                            size: 10
+                        },
+                        boardCurrentPage: 1,
+                        boardTotalCount: 0,
+                        // 문의 관리 데이터
+                        inquiries: [],
+                        inquiryFilter: {
+                            status: 'all'
+                        }
                     };
                 },
                 computed: {
+                    // 게시판 페이징 계산
+                    boardTotalPages() {
+                        return Math.ceil(this.boardTotalCount / this.boardSearch.size);
+                    },
+                    boardDisplayedPages() {
+                        const range = [];
+                        for (let i = 1; i <= this.boardTotalPages; i++) {
+                            range.push(i);
+                        }
+                        return range;
+                    },
                     totalPages() {
                         return Math.ceil(this.totalCount / this.pageSize);
                     },
@@ -1172,6 +1298,11 @@
                             this.loadDashboardData();
                         } else if (section === 'product-management') {
                             this.fetchProducts();
+                        }
+                        else if (section === 'board-management') {
+                            this.fetchBoards();
+                        } else if (section === 'inquiry-management') {
+                            this.fetchInquiries();
                         }
                     },
                     formatDateTime(dateString) {
@@ -1551,6 +1682,69 @@
                             case 'REFUNDED': return '환불완료';
                             case 'FAILED': return '결제실패';
                             default: return status || '알 수 없음';
+                        }
+                    },
+                    // 게시판 관리
+                    async fetchBoards() {
+                        try {
+                            const response = await $.ajax({
+                                url: '/admin/boards',
+                                method: 'GET',
+                                data: this.boardSearch
+                            });
+                            this.boardList = response.data;
+                            this.boardTotalCount = response.totalCount;
+                        } catch (error) {
+                            console.error('게시판 조회 실패:', error);
+                        }
+                    },
+                    searchBoards() {
+                        this.boardCurrentPage = 1;
+                        this.fetchBoards();
+                    },
+                    changeBoardPage(page) {
+                        this.boardCurrentPage = page;
+                        this.boardSearch.page = page;
+                        this.fetchBoards();
+                    },
+                    async deleteBoard(id) {
+                        if (confirm('정말 삭제하시겠습니까?')) {
+                            await $.ajax({
+                                url: `/admin/boards/${id}`,
+                                method: 'DELETE'
+                            });
+                            this.fetchBoards();
+                        }
+                    },
+
+                    // 문의 관리
+                    async fetchInquiries() {
+                        try {
+                            const response = await $.ajax({
+                                url: '/admin/inquiries',
+                                method: 'GET',
+                                data: { status: this.inquiryFilter.status }
+                            });
+                            this.inquiries = response.map(inquiry => ({
+                                ...inquiry,
+                                answerText: ''
+                            }));
+                        } catch (error) {
+                            console.error('문의 조회 실패:', error);
+                        }
+                    },
+                    async submitAnswer(inquiryId, answer) {
+                        if (!answer.trim()) return alert('답변 내용을 입력하세요');
+
+                        try {
+                            await $.ajax({
+                                url: `/admin/inquiries/${inquiryId}/answer`,
+                                method: 'POST',
+                                data: { answer }
+                            });
+                            this.fetchInquiries();
+                        } catch (error) {
+                            alert('답변 등록 실패');
                         }
                     },
                 },
