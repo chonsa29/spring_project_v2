@@ -10,9 +10,9 @@
 	    WHERE P_NO = #{pNo}
 	</select>
 	
-	<insert id="productSell" parameterType="hashmap">
-		INSERT INTO PAY
-		VALUES(#{pNo}, #{pWay}, SYSDATE)
+	<insert id="paymentSell" parameterType="hashmap">
+		INSERT INTO PAY (pNo, pWay, price, pDate)
+		VALUES (#{pNo}, #{pWay}, #{price}, SYSDATE)
 	</insert>
 	
 	<select id="payProductInfo" parameterType="hashmap" resultType="com.example.demo.model.Product">
