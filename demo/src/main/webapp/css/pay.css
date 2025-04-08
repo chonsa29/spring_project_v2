@@ -319,35 +319,56 @@ select.pay_way:focus {
 }
 
 .complete-container {
-    max-width: 600px;
-    margin: 35px auto;
+    flex-shrink: 0;
+    max-width: 700px;
+    width: 100%;
     margin-bottom: 160px;
     background-color: white;
     padding: 30px;
     border-radius: 16px;
     text-align: center;
-    flex-grow: 1;
 }
 
 .complete-container .txt {
     color: black;
     font-size: 28px;
-    margin-bottom: 10px;
+    margin-bottom: 70px;
 }
 
 .complete-container .txtwo {
     color: #555;
-    font-size: 16px;
-    margin-top: 20px;
-    margin-bottom: 80px;
+    font-size: 21px;
+    font-weight: bold;
+    margin-top: 150px;
+    margin-bottom: 90px;
 }
 
 /* 주문 상품 섹션 제목 */
 .txthree {
     font-size: 1.5rem;
-    margin-top: 30px;
+    margin-top: 15px;
     margin-bottom: 20px;
     color: #0b7d36;
+}
+
+.payment-summary {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #9baca0;
+    border-radius: 12px;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.payment-summary .txtfour {
+    margin-top: 8px;
+    margin-bottom: 18px;
+    font-size: 20px;
+    color: #333;
+}
+
+.payment-summary p {
+    margin: 6px;
 }
 
 /* 전체 리스트 스타일 */
@@ -366,12 +387,8 @@ select.pay_way:focus {
 }
 
 .item-price {
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     color: #333;
-}
-
-.item-finalPrice {
-    margin-bottom: 20px;
 }
 
 /* 각각의 주문 상품 항목 */
@@ -439,6 +456,90 @@ select.pay_way:focus {
     padding: 16px;
     margin-bottom: 12px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.complete-wrapper {
+    display: flex;
+    justify-content: center; 
+    align-items: flex-start;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    gap: 40px;
+}
+
+.recommend-side {
+    width: 260px;
+    background: #f9f9f9;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    height: fit-content;
+    position: sticky;
+    top: 100px;
+    align-self: flex-start;
+}
+
+.recommend-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.recommend-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.recommend-item {
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.recommend-thumb {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.recommend-info {
+    margin-top: 8px;
+}
+
+.recommend-buttons {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+}
+
+.recommend-buttons button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    .complete-wrapper {
+        flex-direction: column;
+    }
+    .recommend-side {
+        width: 100%;
+        position: static;
+        margin-top: 30px;
+    }
 }
 
 /* 반응형 처리 (작은 화면에서 세로 정렬) */

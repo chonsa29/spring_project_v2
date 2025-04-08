@@ -24,4 +24,6 @@ public interface PayMapper {
 
 	void upsertOrderCount(HashMap<String, Object> map);
 
+	List<Product> selectAllProducts();
+
 }
