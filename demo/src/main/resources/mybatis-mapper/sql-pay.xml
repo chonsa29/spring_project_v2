@@ -30,6 +30,12 @@
 	    WHERE M.USERID = #{userId}
 	</select>
 	
+	<select id="selectAllProducts" resultType="com.example.demo.model.Product">
+	    SELECT P.ITEM_NO, P.ITEM_NAME, P.PRICE, I.FILEPATH
+	    FROM product P
+	    LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
+	</select>
+	
 </mapper>
 
 
