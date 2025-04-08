@@ -36,22 +36,39 @@ public class PayService {
 	}
 
 	public HashMap<String, Object> paymentProduct(HashMap<String, Object> map, HttpSession session) {
-		// TODO Auto-generated method stub
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		try {
-			payMapper.paymentSell(map);
-			
-		    if (map.get("orderItems") != null) {
+	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	    try {
+	        payMapper.paymentSell(map);
+
+	        if (map.get("orderItems") != null) {
 	            session.setAttribute("orderItems", map.get("orderItems"));
 	        }
-			
-			resultMap.put("result", "success");
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			resultMap.put("result", "fail");
-		}
-		
-		return resultMap;
+
+	        if (map.get("discountAmount") != null) {
+	            session.setAttribute("discountAmount", map.get("discountAmount"));
+	        } else {
+	            session.setAttribute("discountAmount", "0");
+	        }
+
+	        if (map.get("usedPoint") != null) {
+	            session.setAttribute("usedPoint", map.get("usedPoint"));
+	        } else {
+	            session.setAttribute("usedPoint", "0");
+	        }
+
+	        if (map.get("shippingFee") != null) {
+	            session.setAttribute("shippingFee", map.get("shippingFee"));
+	        } else {
+	            session.setAttribute("shippingFee", "3000");
+	        }
+
+	        resultMap.put("result", "success");
+	    } catch (Exception e) {
+	        System.out.println(e.getMessage());
+	        resultMap.put("result", "fail");
+	    }
+
+	    return resultMap;
 	}
 
 	public HashMap<String, Object> payProductInfo(HashMap<String, Object> map) {

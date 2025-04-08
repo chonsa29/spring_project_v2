@@ -353,7 +353,7 @@ select.pay_way:focus {
 /* 전체 리스트 스타일 */
 .item-details {
     align-items: center;
-    border: 1px solid #7d8f83;
+    border: 1px solid #9baca0;
     border-radius: 12px;
     padding: 18px;
     margin-bottom: 20px;
@@ -370,19 +370,23 @@ select.pay_way:focus {
     color: #333;
 }
 
+.item-finalPrice {
+    margin-bottom: 20px;
+}
+
 /* 각각의 주문 상품 항목 */
 .item-details .item-detail {
     display: flex;
     align-items: center;
-    border-top: 1px solid #7d8f83;
+    border-top: 1px solid #9baca0;
     padding: 16px;
     background-color: #fff;
 }
 
 /* 상품 이미지 */
 .item-img {
-    width: 140px;
-    height: 140px;
+    width: 160px;
+    height: 160px;
     object-fit: cover;
     border-radius: 8px;
     margin-right: 16px;
