@@ -212,7 +212,7 @@
                 location.href = "/commu-main.do?tab=group"
             },
             fnEdit(postId) {
-                pageChange("/recipe/edit.do", { postId : this.postId });
+                pageChange("/group/edit.do", { postId : this.postId });
             },
             fnRemove: function () {
                 var self = this;
@@ -220,14 +220,14 @@
                     postId: self.postId
                 };
                 $.ajax({
-                    url: "/recipe/remove.dox",
+                    url: "/group/remove.dox",
                     dataType: "json",
                     type: "POST",
                     data: nparmap,
                     success: function (data) {
                         if(data.result == "success") {
 							alert("삭제되었습니다!");
-                            location.href="/commu-main.do?tab=recipe";
+                            location.href="/commu-main.do?tab=group";
 						} else {
                             alert("삭제 실패")
                         }

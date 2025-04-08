@@ -42,5 +42,23 @@ public class CommonController {
 		resultMap = commonService.getNewProductList(map);
 		return new Gson().toJson(resultMap);
 	}
+	
+	@RequestMapping(value = "/main/bestlist.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String bestProductList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		resultMap = commonService.getBestProductList(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/main/monthlylist.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String monthlyProductList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		resultMap = commonService.getMonthlyProductList(map);
+		return new Gson().toJson(resultMap);
+	}
 
 }

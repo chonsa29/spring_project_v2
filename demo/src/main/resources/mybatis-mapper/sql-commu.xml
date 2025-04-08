@@ -11,9 +11,18 @@
 
 	
 	<select id="selectRecipetList" parameterType="hashmap" resultType="com.example.demo.model.Recipe">
-		SELECT RP.POST_ID, RP.TITLE, RP.CDATETIME, RP.CNT, COUNT(RL.USER_ID) AS LIKES
+		SELECT RP.POST_ID, RP.TITLE, RP.CDATETIME, RP.CNT, NVL(L.LIKES, 0) AS likes, NVL(C.COMMENT_COUNT, 0) AS commentCount
 		FROM RECIPE_POST RP
-		LEFT JOIN RECIPE_LIKES RL ON RP.POST_ID = RL.POST_ID
+		LEFT JOIN (
+	        SELECT POST_ID, COUNT(*) AS LIKES
+	        FROM RECIPE_LIKES
+	        GROUP BY POST_ID
+	    ) L ON RP.POST_ID = L.POST_ID
+	    LEFT JOIN (
+	        SELECT POST_ID, COUNT(*) AS COMMENT_COUNT
+	        FROM POST_COMMENT
+	        GROUP BY POST_ID
+	    ) C ON RP.POST_ID = C.POST_ID
 		WHERE 1=1
 		<if test="searchOption != null and searchOption == 'all'">
 			AND (TITLE LIKE '%' || #{searchKeyword} || '%'
@@ -25,8 +34,8 @@
 		<if test="searchOption != null and searchOption == 'contents'">
 			AND CONTENTS LIKE '%' || #{searchKeyword} || '%'
 		</if>
-		GROUP BY RP.POST_ID, RP.TITLE, RP.CDATETIME, RP.CNT
-		ORDER BY CDATETIME DESC
+		<!--GROUP BY RP.POST_ID, RP.TITLE, RP.CDATETIME, RP.CNT-->
+		ORDER BY RP.CDATETIME DESC
 		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	</select>
 	
@@ -49,7 +58,7 @@
 	<select id="selectRecipeView" parameterType="hashmap" resultType="com.example.demo.model.Recipe">
 		SELECT MAIN.*, (SELECT CONTENTS 
 		                FROM RECIPE_POST 
-		                WHERE POST_ID = MAIN.POST_ID) AS CONTENTS
+		                WHERE POST_ID = MAIN.POST_ID) AS CONTENTS, NICKNAME
 		FROM (
 		    SELECT 
 		        RP.POST_ID, 
@@ -67,7 +76,7 @@
 		    WHERE RP.POST_ID = #{postId}
 		    GROUP BY RP.POST_ID, RP.TITLE, RP.COOKING_TIME, RP.SERVINGS, RP.DIFFICULTY, RP.INSTRUCTIONS, 
 		    					RP.CNT, RP.CDATETIME, RP.USERID
-		) MAIN
+		) MAIN LEFT JOIN MEMBER M ON MAIN.USERID = M.USERID
 	</select>
 	
 	<select id="recipeEditView" parameterType="hashmap" resultType="com.example.demo.model.Recipe">
@@ -127,6 +136,20 @@
 	        CONTENTS = #{contents, jdbcType=CLOB} 
 	    WHERE POST_ID = #{postId} <!-- 수정할 레시피를 식별하는 postId -->
 	</update>
+	
+	<!-- 댓글 -->
+	<select id="selectCommentList" parameterType="hashmap" resultType="com.example.demo.model.Comment">
+		SELECT *
+		FROM POST_COMMENT PC
+		LEFT JOIN MEMBER M ON PC.USERID = M.USERID
+		ORDER BY PC.CDATETIME DESC
+	</select>
+	
+	
+	<insert id="insertComment" parameterType="hashmap">
+        INSERT INTO POST_COMMENT
+        VALUES (COMMENT_SEQ.NEXTVAL, #{postId}, #{userId}, #{contents}, SYSDATE)
+    </insert>
 	
 	<!-- group 부분 -->
 	<select id="selectGroupList" parameterType="hashmap" resultType="com.example.demo.model.Group">
@@ -332,8 +355,27 @@
 	      AND GROUP_ID = #{groupId}
 	      AND TYPE = #{type}
 	</select>
-
-
+	
+	<!-- 그룹 게시글 삭제 -->
+	<delete id="deleteGroupPost" parameterType="hashmap">
+		DELETE
+		FROM GROUP_POST
+		WHERE POST_ID = #{postId}
+	</delete>
+	
+	<!-- 그룹 게시글 수정 -->
+	<update id="updateGroupPost" parameterType="com.example.demo.model.Group">
+	    UPDATE GROUP_POST
+	    SET 
+	        TITLE = #{title},
+	        CONTENTS = #{contents, jdbcType=CLOB} 
+	    WHERE POST_ID = #{postId}
+	</update>
+	
+	<select id="groupEditView" parameterType="hashmap" resultType="com.example.demo.model.Group">
+		SELECT * FROM GROUP_POST
+		WHERE POST_ID = #{postId}
+	</select>
 	
 </mapper>
 

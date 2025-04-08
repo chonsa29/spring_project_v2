@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.example.demo.model.Comment;
 import com.example.demo.model.Group;
 import com.example.demo.model.GroupInfo;
 import com.example.demo.model.GroupUser;
@@ -86,5 +87,17 @@ public interface CommunityMapper {
 	List<Notification> selectUserNotifications(HashMap<String, Object> map);
 	
 	int checkDuplicateNotification(HashMap<String, Object> map);
+
+	void deleteGroupPost(HashMap<String, Object> map);
+
+	void updateGroupPost(HashMap<String, Object> map);
+
+	Group groupEditView(HashMap<String, Object> paramMap);
+
+	List<Comment> selectCommentList(HashMap<String, Object> map);
+
+	int selectComment(HashMap<String, Object> map);
+
+	void insertComment(HashMap<String, Object> map);
 
 }

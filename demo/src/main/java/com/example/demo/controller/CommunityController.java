@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.common.Common;
 import com.example.demo.dao.CommunityService;
+import com.example.demo.model.Group;
 import com.example.demo.model.Notification;
 import com.example.demo.model.Recipe;
 import com.google.gson.Gson;
@@ -187,6 +188,26 @@ public class CommunityController {
 		return new Gson().toJson(resultMap);
 	}
 	
+	// 댓글 불러오기
+	@RequestMapping(value = "/recipe/comments.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String commentList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		resultMap = communityService.getCommentList(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	// 댓글 등록
+	@RequestMapping(value = "/recipe/commentAdd.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String commentAdd(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		resultMap = communityService.addComment(map);
+		return new Gson().toJson(resultMap);
+	}
+	
 	// // 그룹 부분 // //
 	
 	// 그룹 리스트
@@ -210,6 +231,22 @@ public class CommunityController {
 	@RequestMapping("/group/add.do")
 	public String groupAdd(Model model) throws Exception{
         return "/community/group-add"; 
+    }
+	
+	// 그룹 게시글 수정
+	@RequestMapping("/group/edit.do")
+	public String groupEdit(HttpServletRequest request,Model model, @RequestParam HashMap<String, Object> map) throws Exception{
+		request.setAttribute("map", map);
+		
+		// POST_ID 기반으로 데이터 조회
+	    Group group = communityService.getGroupById(map.get("postId"));
+	    
+	    // JSP에 전달할 데이터 설정
+	    model.addAttribute("map", map);
+	    model.addAttribute("group", group); // 조회된 데이터
+	    model.addAttribute("savedContents", group.getContents()); // HTML 콘텐츠
+		
+	    return "/community/group-edit"; // JSP 경로
     }
 	
 	// 그룹 게시글 상세보기
@@ -411,5 +448,38 @@ public class CommunityController {
 
 	    return new Gson().toJson(resultMap);
 	}
+	
+	// 그룹 게시글 삭제
+	@RequestMapping(value = "/group/remove.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String groupRemove(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		resultMap = communityService.removeGroupPost(map);
+		return new Gson().toJson(resultMap);
+	}
 
+	// 그룹 게시글 수정
+	@RequestMapping(value = "/group/edit.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String groupEdit(@RequestBody HashMap<String, Object> map) {
+	    HashMap<String, Object> resultMap = new HashMap<>();
+
+	    try {
+	        // 서비스 호출하여 레시피 추가 처리
+	        resultMap = communityService.editGroupPost(map);
+
+	        // 성공 메시지 추가
+	        resultMap.put("status", "success");
+	        resultMap.put("message", "수정되었습니다.");
+	    } catch (Exception e) {
+	        // 예외 발생 시 오류 메시지 반환
+	        resultMap.put("status", "error");
+	        resultMap.put("message", "수정 중 오류가 발생했습니다.");
+	        resultMap.put("error", e.getMessage());
+	    }
+
+	    // JSON 변환 후 반환
+	    return new Gson().toJson(resultMap);
+	}
 }

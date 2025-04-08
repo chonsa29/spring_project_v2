@@ -50,7 +50,7 @@
             </div>
             <div class="swiper-container product-swiper">
                 <div class="swiper-wrapper">
-                    <div class="swiper-slide product-box" v-for="item in list">
+                    <div class="swiper-slide product-box" v-for="item in bestList">
                         <img :src="item.filePath" alt="상품" :data-item-no="item.itemNo" @click="fnInfo(item.itemNo)">
                         <div class="product-info">
                             <span class="product-name">{{ item.itemName }}</span>
@@ -113,18 +113,21 @@ const app = Vue.createApp({
             list: [],
             sessionStatus: "${sessionStatus}",
             userId: "${sessionId}",
-            monthlyList: []
+            monthlyList: [],
+            bestList : []
         };
     },
     methods: {
         fnProductList() {
             let self = this;
             $.ajax({
-                url: "/main/list.dox",
+                url: "/main/bestlist.dox",
                 dataType: "json",
                 type: "POST",
                 success: (data) => {
-                    self.list = data.list;
+                    self.bestList = data.list;
+
+                    console.log(self.bestList);
 
                     // 데이터가 반영된 후 Swiper 초기화
                     self.$nextTick(() => {
@@ -169,7 +172,7 @@ const app = Vue.createApp({
         fnMonthlyPick() {
             let self = this;
             $.ajax({
-                url: "/main/list.dox",
+                url: "/main/monthlylist.dox",
                 dataType: "json",
                 type: "POST",
                 success: (data) => {
