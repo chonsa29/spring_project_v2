@@ -1,155 +1,57 @@
 /* 기본 스타일 설정 */
 
-.product-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: left;
-    margin: 30px 15vw;
-}
-
-.product {
-    width: 400px;
-    border-radius: 15px;
-    overflow: hidden;
-    transform-origin: center;
-    border-radius: 8px;
-    margin: 0 10px 10px 10px;
-    padding: 20px;
-	cursor: pointer;
-	
-}
-
-
 a {
     text-decoration: none;
     color: black;
-
 }
 
-#product-search {
-    border-radius: 50px;
-    border: 1px solid #ccc;
-    width: 50%;
-    height: 50px;
-    margin: 30px 0 30px 0;
-}
-
-#product-search {
-    text-align: center;
+a {
+	text-decoration: none;
 }
 
 input::placeholder {
     padding: 10px;
 }
 
-input:focus{
-    outline : none;
-}
-
-#name {
-    text-align: left;
-    margin-left: 15vw;
+input:focus {
+    outline: none;
 }
 
 h2 {
 	display: inline;
 }
 
-
-/* 드롭다운 스타일 */
-.custom-dropdown {
-	text-align: left;
-    position: relative;
-    display: inline-block;
+/* 상품 개수 + 정렬 드롭다운 감싸는 wrapper */
+.product-list-wrapper {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 10px;
+  box-sizing: border-box;
 }
 
-.dropdown-btn {
-	width: 180px;
-    font-size: 25px;
-    font-weight: bold;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    background-color: white;
-    cursor: pointer;
+/* 상품 개수 + 정렬 드롭다운 */
+#product-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
 }
 
 
-.dropdown-menu {
-	width: 200px; /* 너비 조정 */
-	margin-left: 80px;
-    display: none;
-    position: absolute;
-    background-color: white;
-    border: 1px solid #ccc;
-    width: 100%;
-    list-style: none;
-    padding: 0;
-    margin: 0;
+#product-count span {
+  font-size: 16px;
+  font-weight: bold;
+  margin-left: 26px;
 }
 
 
-.dropdown-menu li {
-    font-size: 14px; /* option 글자 크기 줄이기 */
-    padding: 10px;
-    cursor: pointer;
-}
-
-
-.dropdown-menu li:hover {
-    background-color: white;
-    color: #6EB98A;
-}
-
-
-.custom-dropdown:hover .dropdown-menu {
-    display: block;
-}
-
-
-
-.product-image {
-	width: 100%;
-    height: 300px;
-    object-fit: cover; /* 비율을 유지하면서 박스에 맞춤 */
-    display: block;
-    background-color: #bbb;
-}
-
-.product-name,
-.product-price,
-.product-info {
-    text-align: left;
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-.product-name {
-	font-size: 18px;
-}
-
-#product-count {
-    text-align: left;
-}
-
-
-#product-menu {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end; /* 오른쪽 정렬 */
-    gap: 10px; /* 요소 간 간격 */
-	max-width: 1130px; /* 컨테이너 최대 너비 지정 */
-    width: 100%;
-	margin: 0 auto; /* 가운데 정렬 */
-}
-/* 정렬 기준 드롭다운 컨테이너 */
 .sort-custom-dropdown {
     position: relative;
     display: inline-block;
     font-family: Arial, sans-serif;
+	margin-right: 50px;
 }
 
-/* 버튼 스타일 */
 .sort-custom-dropdown .sort-dropdown-btn {
     padding: 10px 16px;
     font-size: 14px;
@@ -162,7 +64,6 @@ h2 {
     text-align: left;
 }
 
-/* 버튼 아이콘 (기본 select 화살표 제거하고 커스텀 스타일 적용 가능) */
 .sort-custom-dropdown .sort-dropdown-btn::after {
     content: "▼";
     float: right;
@@ -171,7 +72,6 @@ h2 {
     color: #333;
 }
 
-/* 드롭다운 메뉴 */
 .sort-custom-dropdown .sort-dropdown-menu {
     position: absolute;
     top: 100%;
@@ -183,15 +83,13 @@ h2 {
     border-radius: 4px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 1000;
-	text-align: right;
+    text-align: right;
 }
 
-/* 드롭다운이 열렸을 때 */
 .sort-custom-dropdown.open .sort-dropdown-menu {
     display: block;
 }
 
-/* 드롭다운 항목 스타일 */
 .sort-custom-dropdown .sort-dropdown-menu li {
     padding: 10px 16px;
     font-size: 14px;
@@ -201,64 +99,37 @@ h2 {
     transition: color 0.3s ease;
 }
 
-/* 마우스를 올렸을 때 폰트 색상 변경 */
 .sort-custom-dropdown .sort-dropdown-menu li:hover {
     color: #6EB98A;
 }
 
-/* 선택된 항목 스타일 */
 .sort-custom-dropdown .sort-dropdown-menu li.selected {
     font-weight: bold;
     color: #6EB98A;
 }
 
-
-
-
-
-
-.product-price {
-	font-size: 25px;
-	font-weight: bold;
-
-}
-
-.product-info {
-	color: #bbb;
-}
-
-.product-discount-style {
-	color: #bbb;
-	text-decoration: line-through;
-	text-align: left;
-}
-
-.product-discount {
-	color: red;
-	text-align: left;
-	font-weight: bold;
-	font-size: 20px;
-	margin-bottom: -10px;
-}
-
 #selectproduct {
     font-weight: bold;
-    margin-left:15vw;
+    margin-left: 15vw;
     margin-right: 10px;
 }
 
 #rootname {
     text-align: left;
     color: #bbb;
-    margin-left: 15vw;
+    margin-left: 338px;
     margin-bottom: 20px;
+}
+
+#rootname>a:visited {
+    color: #bbb;
 }
 
 #indexnum {
     margin-left: 20px;
     color: black;
     text-decoration: none;
-	margin-bottom: 30px;
+    margin-bottom: 30px;
 }
 
 #indexnum>a {
@@ -266,24 +137,121 @@ h2 {
     color: black;
     text-decoration: none;
 }
-a {
-	text-decoration: none;
+
+#name {
+    text-align: left;
+    margin-left: 295px;
+}
+
+#product-search {
+    border-radius: 50px;
+    border: 1px solid #ccc;
+    width: 50%;
+    height: 50px;
+    margin: 30px 0 30px 0;
+    text-align: center;
+}
+
+#product-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1300px;
+    width: 100%;
+    margin: 0 auto 30px auto;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+.product-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: left;
+    margin: 30px auto;
+    max-width: 1300px;
+}
+
+.product {
+    width: 400px;
+    border-radius: 15px;
+    overflow: hidden;
+    transform-origin: center;
+    border-radius: 8px;
+    margin: 0 10px 30px 10px;
+    padding: 20px;
+    cursor: pointer;
+}
+
+.product-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+    background-color: #bbb;
+}
+
+.product-name {
+    font-size: 18px;
+    text-align: left;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.product-price {
+    font-size: 25px;
+    font-weight: bold;
+    text-align: left;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.product-info {
+    color: #bbb;
+    text-align: left;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.product-discount-style {
+    color: #bbb;
+    text-decoration: line-through;
+    text-align: left;
+}
+
+.product-discount {
+    color: red;
+    text-align: left;
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: -10px;
 }
 
 #reaction-menu {
-	display: flex;
-	line-height: 50%;
+    display: flex;
+    line-height: 50%;
 }
 
 .product-like {
-	background: none;
-	border : none;
-	color: #bbb;
-	text-align: left;
-	justify-content: flex-start;
-	font-size: 20px;
-	margin-right: 20px;
-	cursor: pointer;
+    background: none;
+    border: none;
+    color: #bbb;
+    text-align: left;
+    justify-content: flex-start;
+    font-size: 20px;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.product-like.active {
+    color: red;
+}
+
+.product-cart {
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 20px;
+    cursor: pointer;
 }
 
 .like-popup-overlay {
@@ -298,23 +266,6 @@ a {
     font-size: 14px;
     z-index: 1001;
     animation: fadeOut 2s forwards;
-}
-
-@keyframes fadeOut {
-    0% { opacity: 1; }
-    100% { opacity: 0; }
-}
-
-.product-like.active {
-    color: red;
-}
-
-.product-cart {
-	background: none;
-	border : none;
-	text-align: left;
-	font-size: 20px;
-	cursor: pointer;
 }
 
 .popup-overlay {
@@ -336,6 +287,49 @@ a {
     100% { opacity: 0; }
 }
 
-#rootname>a:visited {
-	color: #bbb;
+/* 드롭다운 스타일 */
+
+.custom-dropdown {
+    text-align: left;
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-btn {
+    width: 180px;
+    font-size: 25px;
+    font-weight: bold;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: white;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    width: 200px;
+    margin-left: 80px;
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    width: 100%;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown-menu li {
+    font-size: 14px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+    background-color: white;
+    color: #6EB98A;
+}
+
+.custom-dropdown:hover .dropdown-menu {
+    display: block;
 }

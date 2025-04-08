@@ -77,7 +77,7 @@
                     <div class="delivery">
                         <span id="delivery-price">배송비</span>
                         <span id="delicery-total">3,000원 </span>
-                        <span> / 30,000원 이상 구매시 무료</span>
+                        <span> / 30,000원 이상 구매시 배송비 무료</span>
                     </div>
 
                     <div id="delivery-info">
@@ -135,7 +135,7 @@
 
                 <div class="recommend-wrapper">
                     <!-- 왼쪽 버튼 -->
-                    <button class="arrow left" @click="slideLeft">&#10094;</button>
+                    <button class="arrow left" v-if="isSliderActive" @click="slideLeft">&#10094;</button>
 
                     <!-- 추천상품 뷰포트 -->
                     <div class="recommend-viewport"
@@ -163,10 +163,8 @@
 
                         </div>
                     </div>
-
-
                     <!-- 오른쪽 버튼 -->
-                    <button class="arrow right" @click="slideRight">&#10095;</button>
+                    <button class="arrow right" v-if="isSliderActive" @click="slideRight">&#10095;</button>
                 </div>
             </div>
 
@@ -528,20 +526,7 @@
                                 // 이미지들
                                 self.imgList = data.imgList;
 
-                                // 현재 상품 제외한 추천 리스트 중 6개 무작위 추출
-                                let filtered = data.recommend.filter(item => item.itemNo !== self.itemNo);
-                                let shuffled = shuffle(filtered).slice(0, 6);
-                                self.recommend = shuffled;
-
-                                // 무한 슬라이드를 위한 리스트 복제 (앞뒤로 visibleCount만큼 추가)
-                                self.duplicatedRecommend = [
-                                    ...shuffled.slice(-self.visibleCount), // 뒤에서 앞부분 복제
-                                    ...shuffled,
-                                    ...shuffled.slice(0, self.visibleCount)  // 앞에서 뒷부분 복제
-                                ];
-
-                                // 복제 리스트 기준으로 슬라이드 시작점 설정
-                                self.currentIndex = self.visibleCount;
+                                self.filterAndPrepareRecommend(data.recommend);
 
                                 // 알레르기 표시 여부
                                 if (data.info.allergens != "없음") {
@@ -551,18 +536,51 @@
                             }
                         },
                     });
-                    // 배열을 섞는 함수
-                    // Fisher–Yates shuffle 알고리즘
-                    function shuffle(array) {
-                        for (let i = array.length - 1; i > 0; i--) {
-                            const j = Math.floor(Math.random() * (i + 1));
-                            [array[i], array[j]] = [array[j], array[i]];
-                        }
-                        return array;
+                },
+
+
+                filterAndPrepareRecommend(recommendList) {
+                    var self = this;
+
+                    let filtered = recommendList.filter(item => {
+                        return item.itemNo !== self.itemNo && !self.likedItems.has(item.itemNo);
+                    });
+
+                    let shuffled = self.shuffleArray(filtered);
+
+                    // 슬라이드 비활성 조건: 추천 상품 수가 visibleCount보다 적을 때
+                    self.isSliderActive = shuffled.length >= self.visibleCount;
+
+                    // 최대 6개만 선택 (슬라이드든 아니든)
+                    shuffled = shuffled.slice(0, 6);
+
+                    self.recommend = shuffled;
+
+                    if (self.isSliderActive) {
+                        // 무한 슬라이드를 위한 duplicated 구성
+                        self.duplicatedRecommend = [
+                            ...shuffled.slice(-self.visibleCount),
+                            ...shuffled,
+                            ...shuffled.slice(0, self.visibleCount)
+                        ];
+                        self.currentIndex = self.visibleCount;
+                    } else {
+                        // 슬라이드 비활성 시 복제 없이 원본만 사용
+                        self.duplicatedRecommend = [...shuffled];
+                        self.currentIndex = 0;
                     }
                 },
 
 
+                // 배열 섞기 메소드 (Fisher–Yates)
+                shuffleArray(array) {
+                    let shuffled = [...array];
+                    for (let i = shuffled.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                    }
+                    return shuffled;
+                },
 
                 slideLeft() {
                     var self = this;
@@ -595,13 +613,21 @@
                 },
 
 
-                // 현재 슬라이드 위치 계산 + transition 효과 처리
                 getSlideStyle() {
                     var self = this;
+
+                    if (!self.isSliderActive) {
+                        return {
+                            transform: 'none',
+                            transition: 'none',
+                            width: (self.duplicatedRecommend.length * self.itemWidth) + 'px'
+                        };
+                    }
+
                     return {
                         transform: 'translateX(' + -(self.currentIndex * self.itemWidth) + 'px)',
                         transition: self.isSliding ? 'transform 0.3s ease' : 'none',
-                        width: (self.duplicatedRecommend.length * self.itemWidth) + 'px',
+                        width: (self.duplicatedRecommend.length * self.itemWidth) + 'px'
                     };
                 },
 
