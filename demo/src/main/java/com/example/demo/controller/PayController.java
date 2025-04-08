@@ -57,9 +57,9 @@ public class PayController {
 	        session.setAttribute("orderItems", orderItemsJson);
 	    }
 	    
-	    session.setAttribute("discountAmount", map.get("discountAmount"));
-	    session.setAttribute("usedPoint", map.get("usedPoint"));
-	    session.setAttribute("shippingFee", map.get("shippingFee"));
+	    session.setAttribute("discountAmount", map.getOrDefault("discountAmount", "0"));
+	    session.setAttribute("usedPoint", map.getOrDefault("usedPoint", "0"));
+	    session.setAttribute("shippingFee", map.getOrDefault("shippingFee", "3000"));
 
 	    // 여기!! 세션도 함께 전달
 	    HashMap<String, Object> resultMap = payService.paymentProduct(map, session);

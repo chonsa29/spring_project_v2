@@ -46,7 +46,7 @@
 
            
             <ul class="item-details">
-                <h2 class="txthree">주문하신 상품</h2>
+                <h2 class="txthree">구매 상품</h2>
                 <li class="item-detail" v-for="(item, index) in orderItems" :key="index">
                     <img :src="item.filePath" class="item-img">
                     <div class="item-info">
@@ -54,7 +54,8 @@
                         <p class="item-quantity">
                             <span class="required-label">필수</span> {{ item.quantity }} 개
                         </p>
-                        <p class="item-price">{{ finalPayment.toLocaleString() }} 원</p>
+                        <p class="item-price">{{ (item.price * item.quantity).toLocaleString() }} 원</p>
+                        <p class="item-finalPrice">최종 결제 금액: {{ finalPayment.toLocaleString() }} 원</p>
                     </div>
                 </li>
             </ul>

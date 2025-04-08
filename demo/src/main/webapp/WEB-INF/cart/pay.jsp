@@ -284,25 +284,28 @@
                     const quantity = Number(item.quantity) || 1;
                     const itemTotalPrice = Number(item.price) * quantity;
                     const discount = itemTotalPrice * discountRate;
-                    const finalItemPrice = Math.floor(itemTotalPrice - discount); // 각 상품의 최종 가격
 
-                    totalPriceBeforePoint += finalItemPrice;
+                    totalPriceBeforePoint += itemTotalPrice;
 
                     return {
                         itemName: item.itemName,
-                        price: finalItemPrice, 
+                        price: item.price,
                         quantity: quantity,
                         filePath: item.filePath
                     };
                 });
 
+                const discountAmount = totalPriceBeforePoint * discountRate;
                 const finalPrice = Math.max(0, totalPriceBeforePoint + 3000 - usedPoint);
 
                 var nparmap = { 
                     pWay : merchant_uid,
                     userId : self.sessionId,
                     price: finalPrice,
-                    orderItems: JSON.stringify(orderItems)
+                    orderItems: JSON.stringify(orderItems),
+                    discountAmount: Math.floor(discountAmount),
+                    usedPoint: usedPoint,
+                    shippingFee: 3000
                 };
 
                 $.ajax({
@@ -312,7 +315,9 @@
                     data: nparmap,
                     success: function (data) {
                         console.log(data);
-                        location.href = "/paySuccess.do?orderId=" + data.orderId;
+                        setTimeout(function() {
+                        window.location.href = "/paySuccess.do?orderId=" + result.orderId;
+                        }, 500);
                     }
                 });
             },
