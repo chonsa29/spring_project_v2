@@ -126,24 +126,23 @@ h2 {
 }
 
 #indexnum {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin: 30px auto;
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+	margin: 30px auto;
 }
 
 #indexnum > a {
-/*  padding: 8px 12px;*/
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  color: #333;
-  text-decoration: none;
-  transition: background 0.3s, color 0.3s;
+	border: 1px solid #ddd;
+	border-radius: 20px;
+	color: #333;
+	text-decoration: none;
+	transition: background 0.3s, color 0.3s;
 }
 
 /* 마우스 오버 시 */
 #indexnum > a:hover {
-  background-color: #f7f7f7;
+ 	background-color: #f7f7f7;
 }
 
 #indexnum > a {
@@ -153,11 +152,11 @@ h2 {
 
 /* 현재 페이지 번호에만 적용되는 스타일 */
 #indexnum span:not(.color-black) {
-  background-color: #333;
-  color: #fff;
-  padding: 8px 12px;
-  border-radius: 20px;
-  border: 1px solid #333;
+ 	background-color: #333;
+ 	color: #fff;
+ 	padding: 8px 12px;
+ 	border-radius: 20px;
+ 	border: 1px solid #333;
 }
 
 
