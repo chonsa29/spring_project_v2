@@ -87,20 +87,62 @@
 
                 <!-- 댓글 작성 영역 -->
                 <div class="comment-form">
-                    <textarea v-model="contents" placeholder="댓글을 입력하세요."></textarea>
+                    <textarea v-model="contents" @keyup.enter="addComment" placeholder="댓글을 입력하세요."></textarea>
                     <button @click="addComment">등록</button>
                 </div>
 
                 <!-- 댓글 리스트 -->
                 <div class="comment-list" v-if="commentList.length > 0">
-                    <div class="comment-item" v-for="(comment, index) in commentList" :key="index">
+                    <template v-for="(comment, index) in commentList" :key="index">
+                    <!-- 부모 댓글 -->
+                    <div class="comment-item">
                         <div class="comment-header">
-                            <span class="comment-user">{{ comment.nickname }}</span>
-                            <span class="comment-date">{{ comment.cdateTime }}</span>
+                        <span class="comment-user">{{ comment.nickname }}</span>
+                        <span class="comment-date">{{ comment.cdateTime }}</span>
                         </div>
+                
                         <div class="comment-body">{{ comment.contents }}</div>
+                
+                        <!-- 아이콘 영역 -->
+                        <div class="comment-actions">
+                        <template v-if="comment.userId === sessionId || sessionStatus == 'A'">
+                            <i class="fas fa-edit" @click="editComment(comment)" title="수정"></i>
+                            <i class="fas fa-trash-alt" @click="deleteComment(comment)" title="삭제"></i>
+                        </template>
+                        <!-- 답글 버튼 -->
+                        <i class="fas fa-reply" @click="toggleReply(comment.commentId)" title="답글">답글</i>
+                        </div>
                     </div>
+                
+                    <!-- 대댓글 입력창 -->
+                    <div v-if="replyIndex === comment.commentId" class="reply-box">
+                        <textarea v-model="replyContent" @keyup.enter="addReply(comment.commentId)" placeholder="답글을 입력하세요"></textarea>
+                        <button @click="addReply(comment.commentId)">등록</button>
+                    </div>
+                
+                    <!-- 대댓글 리스트 -->
+                    <div class="replies" v-if="comment.replies && comment.replies.length > 0">
+                        <div class="reply-item" v-for="reply in comment.replies" :key="reply.commentId">
+                        <!-- 대댓글 내용 박스 -->
+                        <div class="reply-content">
+                            <div class="comment-header">
+                                <span class="comment-user">{{ reply.nickname }}</span>
+                                <span class="comment-date">{{ reply.cdateTime }}</span>
+                            </div>
+                            <div class="comment-body">{{ reply.contents }}</div>
+                            <div class="comment-actions">
+                                <template v-if="reply.userId === sessionId || sessionStatus == 'A'">
+                                <i class="fas fa-edit" @click="editComment(reply)" title="수정"></i>
+                                <i class="fas fa-trash-alt" @click="deleteComment(reply)" title="삭제"></i>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    </template>
                 </div>
+  
+                  
+                  
                 <div v-else class="no-comments">댓글이 없습니다.</div>
             </div>
 
@@ -118,6 +160,8 @@
                 sessionStatus: "${sessionStatus}",
                 commentList: [],
                 contents: "",
+                replyIndex: null,
+                replyContent: '',
 
             };
         },
@@ -250,10 +294,72 @@
                     data: nparmap,
                     success: function (res) {
                         if (res.result === "success") {
-                            self.newComment = "";
+                            self.contents = "";
                             self.loadComments(); // 새로고침
                         } else {
                             alert("댓글 등록 실패");
+                        }
+                    }
+                });
+            },
+            // 수정 버튼 클릭
+            editComment(comment) {
+                // 나중에 구현
+                alert("수정 기능 준비중");
+            },
+            // 삭제
+            deleteComment(comment) {
+                if (confirm("댓글을 삭제하시겠습니까?")) {
+                    $.ajax({
+                        url: "/recipe/commentDelete.dox",
+                        type: "POST",
+                        dataType: "json",
+                        data: {
+                            commentId: comment.commentId
+                        },
+                        success: (res) => {
+                            if (res.result === "success") {
+                                this.loadComments();
+                            } else {
+                                alert("삭제 실패");
+                            }
+                        }
+                    });
+                }
+            },
+            // 대댓글 토글
+            toggleReply(index) {
+                console.log("Toggle reply for index:", index);
+                if (this.replyIndex === index) {
+                this.replyIndex = null; // 다시 누르면 닫힘
+                } else {
+                this.replyIndex = index;
+                }
+            },
+            // 대댓글 등록
+            addReply(commentId) {
+                if (!this.replyContent.trim()) {
+                    alert("답글을 입력하세요");
+                    return;
+                }
+
+                $.ajax({
+                    url: "/recipe/recommentAdd.dox",
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                        postId: this.postId,
+                        commentId: commentId,
+                        userId: this.sessionId,
+                        contents: this.replyContent
+                    },
+                    success: (res) => {
+                        if (res.result === "success") {
+                            this.replyIndex = null;
+                            this.replyContent = "";
+                            this.loadComments();
+                        } else {
+                            alert("답글 등록 실패");
                         }
                     }
                 });

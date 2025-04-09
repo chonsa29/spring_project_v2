@@ -188,7 +188,7 @@ public class CommunityController {
 		return new Gson().toJson(resultMap);
 	}
 	
-	// 댓글 불러오기
+	// 댓글/대댓글 불러오기
 	@RequestMapping(value = "/recipe/comments.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String commentList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
@@ -207,6 +207,18 @@ public class CommunityController {
 		resultMap = communityService.addComment(map);
 		return new Gson().toJson(resultMap);
 	}
+	
+	// 대댓글 등록
+	@RequestMapping(value = "/recipe/recommentAdd.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String recommentAdd(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		resultMap = communityService.addRecomment(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	
 	
 	// // 그룹 부분 // //
 	
@@ -399,6 +411,16 @@ public class CommunityController {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 
 		resultMap = communityService.closeGroup(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	// 그룹 활성화
+	@RequestMapping(value = "/group/active.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String activeGroup(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		resultMap = communityService.activeGroup(map);
 		return new Gson().toJson(resultMap);
 	}
 	

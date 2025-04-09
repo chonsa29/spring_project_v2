@@ -142,13 +142,20 @@
 		SELECT *
 		FROM POST_COMMENT PC
 		LEFT JOIN MEMBER M ON PC.USERID = M.USERID
-		ORDER BY PC.CDATETIME DESC
+		WHERE PC.POST_ID = 56
+		ORDER BY NVL(PC.PARENT_ID, PC.COMMENT_ID) DESC, PC.CDATETIME ASC
 	</select>
 	
 	
 	<insert id="insertComment" parameterType="hashmap">
         INSERT INTO POST_COMMENT
         VALUES (COMMENT_SEQ.NEXTVAL, #{postId}, #{userId}, #{contents}, SYSDATE)
+    </insert>
+    
+    <!-- 대댓글 추가 -->
+    <insert id="insertRecomment" parameterType="hashmap">
+        INSERT INTO POST_COMMENT
+        VALUES (COMMENT_SEQ.NEXTVAL, #{postId}, #{userId}, #{contents}, SYSDATE, #{commentId})
     </insert>
 	
 	<!-- group 부분 -->
@@ -284,11 +291,19 @@
 		WHERE USERID = #{userId}
 	</delete>
 	
-	<!-- 그룹 상태 수정 -->
+	<!-- 그룹 상태 마감 -->
 	<update id="updateGroupStatus" parameterType="hashmap">
 		UPDATE GROUP_INFO
 		SET
 			STATUS = 'CLOSE'
+		WHERE GROUP_ID = #{groupId}
+	</update>
+	
+	<!-- 그룹 활성화 -->
+	<update id="updateGroupStatusActive" parameterType="hashmap">
+		UPDATE GROUP_INFO
+		SET
+			STATUS = 'PENDING'
 		WHERE GROUP_ID = #{groupId}
 	</update>
 	

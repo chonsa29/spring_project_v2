@@ -1,7 +1,9 @@
 package com.example.demo.dao;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -197,7 +199,30 @@ public class CommunityService {
 	public HashMap<String, Object> getCommentList(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
-			List<Comment> commentList =  communityMapper.selectCommentList(map);
+			// 1. 댓글 + 대댓글을 한 번에 불러옴
+	        List<Comment> flatList = communityMapper.selectCommentList(map);
+
+	        // 2. commentId 기준으로 매핑
+	        Map<String, Comment> commentMap = new HashMap<>();
+	        List<Comment> commentList = new ArrayList<Comment>();
+
+	        for (Comment comment : flatList) {
+	            commentMap.put(comment.getCommentId(), comment);
+	        }
+
+	        // 3. parentId를 기준으로 계층화
+	        for (Comment comment : flatList) {
+	            String parentId = comment.getParentId();
+	            if (parentId == null) {
+	                commentList.add(comment); // 일반 댓글
+	            } else {
+	                Comment parent = commentMap.get(parentId);
+	                if (parent != null) {
+	                    parent.getReplies().add(comment); // 대댓글 추가
+	                }
+	            }
+	        }
+	        
 			resultMap.put("commentList", commentList); 
 			resultMap.put("result", "success");
 		} catch (Exception e) {
@@ -214,6 +239,20 @@ public class CommunityService {
 		
 		try {
 	        communityMapper.insertComment(map);
+	        resultMap.put("result", "success");
+	    } catch (Exception e) {
+	        System.out.println(e.getMessage());
+	        resultMap.put("result", "fail");
+	    }
+		return resultMap;
+	}
+	
+	// 대댓글 추가
+	public HashMap<String, Object> addRecomment(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+	        communityMapper.insertRecomment(map);
 	        resultMap.put("result", "success");
 	    } catch (Exception e) {
 	        System.out.println(e.getMessage());
@@ -396,6 +435,7 @@ public class CommunityService {
 		return resultMap;
 	}
 
+	// 멤버 거절
 	public HashMap<String, Object> rejectMember(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
@@ -409,6 +449,7 @@ public class CommunityService {
 		return resultMap;
 	}
 
+	// 그룹 마감
 	public HashMap<String, Object> closeGroup(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
@@ -422,7 +463,22 @@ public class CommunityService {
 	    }
 		return resultMap;
 	}
+	
+	// 그룹 활성화
+	public HashMap<String, Object> activeGroup(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+	        communityMapper.updateGroupStatusActive(map); //마감상태
+	        resultMap.put("result", "success");
+	    } catch (Exception e) {
+	        System.out.println(e.getMessage());
+	        resultMap.put("result", "fail");
+	    }
+		return resultMap;
+	}
 
+	// 채팅
 	public HashMap<String, Object> chatGroup(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
