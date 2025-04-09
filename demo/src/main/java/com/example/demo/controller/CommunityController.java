@@ -482,4 +482,6 @@ public class CommunityController {
 	    // JSON 변환 후 반환
 	    return new Gson().toJson(resultMap);
 	}
+	
+	
 }

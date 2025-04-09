@@ -3,10 +3,10 @@ package com.example.demo.mapper;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.example.demo.model.Notice;
 import com.example.demo.model.Question;
 
 @Mapper
