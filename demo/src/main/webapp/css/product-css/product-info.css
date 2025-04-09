@@ -140,10 +140,11 @@
 /* 가격 및 할인 */
 
 .price {
-    font-size: 22px;
+    font-size: 25px;
     font-weight: bold;
     margin-top: 10px;
     margin-bottom: 10px;
+	margin-left: 10px;
 }
 
 .product-discount-style {
@@ -152,13 +153,92 @@
 	margin-top: 10px;
 }
 
-.product-discount {
-	color: red;
-	text-align: left;
-	font-weight: bold;
-	font-size: 20px;
-	margin-bottom: -10px;
+.discount-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
+
+.discount {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.discount-toggle {
+  display: flex;
+  align-items: center;
+  color: rgb(78, 78, 78);
+  font-weight: bold;
+}
+
+.caret-icon {
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+.discount-popup {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 6px;
+  width: 450px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  white-space: normal;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.custom-close-btn {
+  font-weight: normal;
+  font-size: 16px;
+  color: #333;
+  background: none;
+  border: none;
+  padding: 0;
+  line-height: 1;
+  cursor: pointer;
+}
+
+
+.popup-content .price-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.popup-content .discount-detail {
+  display: flex;
+  justify-content: space-between;
+  color: #e02020;
+  font-size: 13px;
+  font-weight: bold;
+  margin-left: 8px;
+  margin-bottom: 10px;
+}
+
+.popup-content .final-price {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  font-size: 15px;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+
 
 
 /* 배송정보 */
@@ -170,6 +250,7 @@
     margin-bottom: 5px;
     border-bottom: 1px solid #ddd;
     padding-bottom: 10px;
+	margin-top: 10px;
 }
 
 #delicery-total {
@@ -207,65 +288,66 @@
 
 /* 수량 체크 css */
 
-.quantity-container {
-    width: 100%;
-    display: flex;
-    justify-content: flex-start;
-    margin-bottom: 20px;
-}
-
 .quantity-box {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 500px;
-	height: 100px;
-    background-color: #eee;
-    padding: 10px 15px;
-    border-radius: 8px;
+    height: 80px;
+    background-color: #f9f9f9;
+    padding: 0 20px;
+    border-radius: 5px;
+	border: 1px solid rgb(222, 222, 222);
+	margin-bottom: 15px;
 }
 
 .quantity-controls {
     display: flex;
     align-items: center;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    overflow: hidden;
 }
 
 .quantity-btn {
-    width: 30px;
+	width: 28px;
     height: 30px;
+    background-color: #f0f0f0;
     border: none;
-    background-color: #ddd;
-    font-size: 16px;
+    font-size: 18px;
+	color: #aaa;
     cursor: pointer;
-    margin: 0 5px;
-    border-radius: 4px;
+    transition: background-color 0.2s;
 }
 
 .quantity-btn:hover {
-    background-color: #ccc;
+    background-color: #e0e0e0;
 }
 
 .quantity-input {
-    width: 40px;
-	height: 30px;
+    width: 60px;
+    height: 26px;
+    border: none;
     text-align: center;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    font-size: 16px;
 }
 
 .quantity-price {
     font-weight: bold;
-	font-size: 20px;
+    font-size: 15px;
 }
+
 
 .total {
     display: flex;
     justify-content: space-between;
     font-size: 18px;
     font-weight: bold;
-    border-top: 1px solid #ddd;
     padding-top: 20px;
+	padding-bottom: 20px;
+	color: #1a1a1a;
+	border-bottom: 3px solid #1a1a1a;
 }
 
 #price-total {
@@ -318,7 +400,7 @@
 }
 
 .product-like.active {
-    color: red;
+    color: #e02020;
 }
 
 .cart {
@@ -351,7 +433,7 @@
 .recommend-title {
   font-size: 18px;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
   text-align: left;
   margin-left: 350px;
 }
@@ -448,7 +530,7 @@
 }
 
 .recommend-like.active {
-  color: red;
+  color: #e02020;
 }
 
 
@@ -469,7 +551,7 @@
 .recommend-price {
   font-size: 14px;
   margin-bottom: 8px;
-  color: red;
+  color: #e02020;
   font-weight: bold;
 }
 
@@ -573,10 +655,37 @@ a {
     color: #aaa;
 }
 
-.Info:hover, .Review:hover, .Inquiry:hover, .Exchange-Return:hover {
+.Info, .Review, .Inquiry, .Exchange-Return {
+  position: relative;
+  padding-bottom: 10px;
+  cursor: pointer;
+  
+}
+
+.Info::after,
+.Review::after,
+.Inquiry::after,
+.Exchange-Return::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background-color: #333;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+  font-weight: bold;
+  
+}
+
+.active-tab {
 	font-weight: bold;
-	cursor: pointer;
-}	
+}
+
+.active-tab::after {
+  width: 120%;
+}
 
 
 .review-summary {

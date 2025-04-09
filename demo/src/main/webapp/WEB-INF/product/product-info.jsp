@@ -71,9 +71,43 @@
                         </div>
                     </div> -->
 
-                    <p class="product-discount-style">{{formatPrice(info.price * 3) }}원</p>
-                    <p class="product-discount">30%</p>
-                    <div class="price">{{formattedPrice}} 원</div>
+                    <div class="discount-info">
+                        <span class="product-discount-style">{{formatPrice(info.price * 3) }}원</span>
+                        <span class="price">{{formattedPrice}}원</span>
+                        <span class="discount">
+                            <span @click="toggleDiscount" class="discount-toggle">
+                                <span>혜택 정보</span>
+                                <span class="caret-icon">
+                                    <span v-if="isDiscountOpen">▲</span>
+                                    <span v-else>▼</span>
+                                </span>
+                            </span>
+
+                            <!-- 팝업: caret-icon 기준으로 absolute 위치 -->
+                            <div v-if="isDiscountOpen" class="discount-popup">
+                                <div class="popup-header">
+                                    <span>혜택 정보</span>
+                                    <button class="custom-close-btn" @click="toggleDiscount">✕</button>
+                                </div>
+                                <div class="popup-content">
+                                    <div class="price-row">
+                                        <span class="label">판매가</span>
+                                        <span class="value">{{ formatPrice(info.price * 3) }}원</span>
+                                    </div>
+                                    <div class="discount-detail">
+                                        <span>ㄴ 세일 (25.04.01 ~ 25.05.31)</span>
+                                        <span class="discount-amount">- {{ formatPrice((info.price * 3) - info.price)
+                                            }}원</span>
+                                    </div>
+                                    <div class="final-price">
+                                        <span>최적가</span>
+                                        <span class="final-value">{{ formattedPrice }}원</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </span>
+                    </div>
                     <div class="delivery">
                         <span id="delivery-price">배송비</span>
                         <span id="delicery-total">3,000원 </span>
@@ -92,13 +126,12 @@
 
                     <div class="quantity-container">
                         <div class="quantity-box">
-                            <span>{{info.itemName}}</span>
+                            <span>구매 수량</span>
                             <div class="quantity-controls">
                                 <button class="quantity-btn" @click="fnquantity('sub')">-</button>
                                 <input type="text" class="quantity-input" v-model="quantity" @input="checkQuantity">
                                 <button class="quantity-btn" @click="fnquantity('sum')">+</button>
                             </div>
-                            <span class="quantity-price">{{formattedTotalPrice}}</span>
                         </div>
                     </div>
 
@@ -157,7 +190,7 @@
                                 </div>
 
                                 <p class="recommend-name">{{ item.itemName }}</p>
-                                <p class="recommend-discount-style">{{formatPrice(info.price * 3) }}원</p>
+                                <p class="recommend-discount-style">{{formatRecommendPrice(item.price * 3) }}원</p>
                                 <p class="recommend-price">{{ formatRecommendPrice(item.price) }}원</p>
                             </div>
 
@@ -173,10 +206,15 @@
 
             <div id="product-view">
                 <div id="product-menu">
-                    <div class="Info" @click="changeTab('info')">상품 정보</div>
-                    <div class="Review" @click="changeTab('review')">상품 리뷰 ({{reviewCount}})</div>
-                    <div class="Inquiry" @click="changeTab('inquiry')">상품 문의 ({{QuestionCount}})</div>
-                    <div class="Exchange-Return" @click="changeTab('exchange')">교환/환불</div>
+                    <div :class="['Info', selectedTab === 'info' ? 'active-tab' : '']" @click="changeTab('info')">상품 정보
+                    </div>
+                    <div :class="['Review', selectedTab === 'review' ? 'active-tab' : '']" @click="changeTab('review')">
+                        상품 리뷰 ({{reviewCount}})</div>
+                    <div :class="['Inquiry', selectedTab === 'inquiry' ? 'active-tab' : '']"
+                        @click="changeTab('inquiry')">상품 문의 ({{QuestionCount}})</div>
+                    <div :class="['Exchange-Return', selectedTab === 'exchange' ? 'active-tab' : '']"
+                        @click="changeTab('exchange')">교환/환불</div>
+
                 </div>
 
                 <div id="product-view">
@@ -212,8 +250,9 @@
                                         <div class="filled-bar"
                                             :style="{ width: (ratingDistribution[6-n] || 0) + '%' }"></div>
                                     </div>
-                                    <span class="review-bar-percent">{{ ratingDistribution[6-n] ?
-                                        ratingDistribution[6-n].toFixed(1) + '%' : '0%' }}</span>
+                                    <span class="review-bar-percent">
+                                        {{ ratingDistribution[6-n] ? Math.round(ratingDistribution[6-n]) + '%' : '0%' }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -233,7 +272,7 @@
                                     </span>
                                     <span class="reviewScore`">{{ review.reviewScore }}</span> <!-- 숫자 별점 표시 -->
                                 </div>
-                                <div class="review-date">{{ review.cDatetime }}</div>
+                                <div class="review-date">{{ review.cDatetime.substring(0, 10) }}</div>
                             </div>
                             <div class="review-title">{{ review.reviewTitle }}</div>
                             <div class="review-content">{{ review.reviewContents }}</div>
@@ -288,7 +327,7 @@
                                             <span class="badge-pending" v-else>답변대기</span>
                                             <span class="question-text">{{ inquiry.iqTitle }}</span>
                                             <span class="user-info">{{ maskUserId(inquiry.userId) }}</span>
-                                            <span class="date">{{ inquiry.cDateTime }}</span>
+                                            <span class="date">{{ inquiry.cDateTime.substring(0, 10) }}</span>
                                         </div>
 
                                         <div class="inquiry-content" v-show="answer === inquiry.iqNo">
@@ -457,6 +496,8 @@
                     count: 0, // 재고
                     price: 0, // 가격
 
+                    isDiscountOpen: false, // 할인 팝업
+
                     imgList: [], // 썸네일, 서브 이미지 리스트 가져오기
 
                     recommend: [], // 추천상품 목록 들고오기
@@ -467,6 +508,7 @@
 
                     duplicatedRecommend: [], // 앞뒤 복제된 리스트 (무한 슬라이드용)
                     isSliding: false, // transition 중 중복 방지
+                    isSliderActive: false,
 
                     selectedTab: 'info', // 기본값은 "상품 정보"
 
@@ -500,9 +542,10 @@
                 // 상세 정보 가져오기
                 fngetInfo() {
                     var self = this;
-
-                    if (!self.likedItemsLoaded) return;
-
+                    self.showLikePopup = false;
+                    if (!self.likedItemsLoaded) {
+                        return;
+                    }
 
                     var nparmap = {
                         itemNo: self.itemNo,
@@ -635,6 +678,9 @@
                     pageChange("/product/info.do", { itemNo: itemNo });
                 },
 
+                toggleDiscount() {
+                    this.isDiscountOpen = !this.isDiscountOpen;
+                },
 
                 // 리뷰 메소드
                 fnGetReview() {
@@ -705,7 +751,8 @@
                     // 별점 개수를 백분율(%)로 변환
                     let totalReviews = self.review.length; // 총 리뷰 개수
                     Object.keys(self.ratingDistribution).forEach(key => {
-                        self.ratingDistribution[key] = (self.ratingDistribution[key] / totalReviews) * 100;
+                        let percent = (self.ratingDistribution[key] / totalReviews) * 100;
+                        self.ratingDistribution[key] = Math.round(percent); // 소수점 없이 정수로 저장
                     });
 
                     // 변환된 별점 비율을 콘솔에 출력 (디버깅용)
@@ -1023,6 +1070,9 @@
                 self.fnGetReview();
                 self.fetchLikedItems();
                 self.fnInquiry();
+
+                // 초기화
+                self.showLikePopup = false;
             }
         });
         app.mount('#app');

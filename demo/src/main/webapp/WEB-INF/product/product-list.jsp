@@ -35,59 +35,59 @@
             </div>
 
             <div class="product-list-wrapper">
-            <!-- 💡 상품 개수 + 정렬 드롭다운을 감싸는 상단 바 -->
-            <div id="product-top-bar">
-                <div id="product-count">
-                    <span>전체개수 {{ productcount }}개</span>
+                <!-- 💡 상품 개수 + 정렬 드롭다운을 감싸는 상단 바 -->
+                <div id="product-top-bar">
+                    <div id="product-count">
+                        <span>전체개수 {{ productcount }}개</span>
+                    </div>
+
+                    <div id="sort-menu" class="sort-custom-dropdown">
+                        <button class="sort-dropdown-btn" @click="toggleSortDropdown">
+                            {{ sortLabel[sortOption] }}
+                        </button>
+                        <ul class="sort-dropdown-menu" v-show="isSortDropdownOpen">
+                            <li @click="changeSortOption('newest')">최신순</li>
+                            <li @click="changeSortOption('popularity')">인기순</li>
+                            <li @click="changeSortOption('lowPrice')">낮은가격순</li>
+                            <li @click="changeSortOption('highPrice')">높은가격순</li>
+                        </ul>
+                    </div>
                 </div>
 
-                <div id="sort-menu" class="sort-custom-dropdown">
-                    <button class="sort-dropdown-btn" @click="toggleSortDropdown">
-                        {{ sortLabel[sortOption] }}
-                    </button>
-                    <ul class="sort-dropdown-menu" v-show="isSortDropdownOpen">
-                        <li @click="changeSortOption('newest')">최신순</li>
-                        <li @click="changeSortOption('popularity')">인기순</li>
-                        <li @click="changeSortOption('lowPrice')">낮은가격순</li>
-                        <li @click="changeSortOption('highPrice')">높은가격순</li>
-                    </ul>
-                </div>
-            </div>
+                <div class="product-list">
+                    <div class="product" v-for="item in list">
+                        <div class="product-image" @click="fnInfo(item.itemNo)">
+                            <img class="product-image" :src="item.filePath" alt="item.itemName" />
+                        </div>
+                        <div @click="fnInfo(item.itemNo)">
+                            <p class="product-info">{{item.itemInfo}}</p>
+                            <h4 class="product-name">{{item.itemName}}</h4>
+                            <p class="product-discount-style">{{formatPrice(item.price * 3) }}원</p>
+                            <p class="product-price">{{formatPrice(item.price)}}원</p>
+                        </div>
+                        <div id="reaction-menu">
+                            <!-- 좋아요 -->
+                            <button class="product-like" :class="{ active: likedItems.has(item.itemNo) }"
+                                @click="fnLike(item.itemNo)">❤</button>
+                            <div v-if="showLikePopup" class="like-popup-overlay">
+                                <div class="like-popup">
+                                    {{ likeAction === 'add' ? '좋아요 항목에 추가되었습니다' : '좋아요 항목에서 취소되었습니다.' }}
+                                </div>
+                            </div>
 
-            <div class="product-list">
-                <div class="product" v-for="item in list">
-                    <div class="product-image" @click="fnInfo(item.itemNo)">
-                        <img class="product-image" :src="item.filePath" alt="item.itemName" />
-                    </div>
-                    <div @click="fnInfo(item.itemNo)">
-                        <p class="product-info">{{item.itemInfo}}</p>
-                        <h4 class="product-name">{{item.itemName}}</h4>
-                        <p class="product-discount-style">{{formatPrice(item.price * 3) }}원</p>
-                        <p class="product-discount">30%</p>
-                        <p class="product-price">{{formatPrice(item.price)}}원</p>
-                    </div>
-                    <div id="reaction-menu">
-                        <!-- 좋아요 -->
-                        <button class="product-like" :class="{ active: likedItems.has(item.itemNo) }"
-                            @click="fnLike(item.itemNo)">❤</button>
-                        <div v-if="showLikePopup" class="like-popup-overlay">
-                            <div class="like-popup">
-                                {{ likeAction === 'add' ? '좋아요 항목에 추가되었습니다' : '좋아요 항목에서 취소되었습니다.' }}
+                            <!-- 장바구니 -->
+                            <button class="product-cart" @click="fnCart(item.itemNo, userId)">🛒</button>
+                            <div v-if="showCartPopup" class="popup-overlay">
+                                <div class="popup">장바구니에 추가되었습니다</div>
                             </div>
                         </div>
-
-                        <!-- 장바구니 -->
-                        <button class="product-cart" @click="fnCart(item.itemNo, userId)">🛒</button>
-                        <div v-if="showCartPopup" class="popup-overlay">
-                            <div class="popup">장바구니에 추가되었습니다</div>
-                        </div>
                     </div>
                 </div>
             </div>
-        </div>
             <div id="indexnum">
                 <a v-if="page !=1" id="index" href="javascript:;" class="color-black" @click="fnPageMove('prev')">
-                    < </a>
+                    < 
+                </a>
                         <a id="index" href="javascript:;" v-for="num in index" @click="fnPage(num)">
                             <span v-if="page == num">
                                 {{num}}
@@ -96,9 +96,10 @@
                                 {{num}}
                             </span>
                         </a>
-                        <a v-if="page!=index" id="index" href="javascript:;" class="color-black"
-                            @click="fnPageMove('next')"> >
-                        </a>
+                <a v-if="page!=index" id="index" href="javascript:;" class="color-black"
+                    @click="fnPageMove('next')"> 
+                    > 
+                </a>
             </div>
         </div>
         </div>
