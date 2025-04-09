@@ -33,7 +33,7 @@
             <div class="post-content" v-html="info.qsContents"></div>
 
             <!-- 관리자 답변 -->
-            <div v-if="reply.replyContents" class="admin-reply">
+            <div v-if="reply && reply.replyContents" class="admin-reply">
                 <h3>관리자 답변</h3>
                 <div class="reply-content" v-html="reply.replyContents"></div>
             </div>
@@ -135,6 +135,7 @@
                     success: function (data) {
                         if (data.result == "success") {
                             self.fnInquire();
+                            self.replyContents = "";
                         } else {
                             alert("답변 저장 실패");
                         }
