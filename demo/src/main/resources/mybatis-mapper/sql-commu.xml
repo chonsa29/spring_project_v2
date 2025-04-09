@@ -142,14 +142,14 @@
 		SELECT *
 		FROM POST_COMMENT PC
 		LEFT JOIN MEMBER M ON PC.USERID = M.USERID
-		WHERE PC.POST_ID = 56
+		WHERE PC.POST_ID = #{postId}
 		ORDER BY NVL(PC.PARENT_ID, PC.COMMENT_ID) DESC, PC.CDATETIME ASC
 	</select>
 	
 	<!-- 댓글 등록 -->
 	<insert id="insertComment" parameterType="hashmap">
         INSERT INTO POST_COMMENT
-        VALUES (COMMENT_SEQ.NEXTVAL, #{postId}, #{userId}, #{contents}, SYSDATE)
+        VALUES (COMMENT_SEQ.NEXTVAL, #{postId}, #{userId}, #{contents}, SYSDATE, null)
     </insert>
     
     <!-- 댓글 수정 -->
