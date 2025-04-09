@@ -102,4 +102,10 @@ public interface CommunityMapper {
 
 	void insertComment(HashMap<String, Object> map);
 
+	void insertRecomment(HashMap<String, Object> map);
+
+	List<Comment> selectRecommentList(HashMap<String, Object> map);
+
+	void updateGroupStatusActive(HashMap<String, Object> map);
+
 }

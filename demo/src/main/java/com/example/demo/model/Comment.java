@@ -1,5 +1,8 @@
 package com.example.demo.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -11,5 +14,9 @@ public class Comment {
 	private String contents;
 	private String cdateTime;
 	private String nickname;
+	
+	private String parentId;
+	private List<Comment> replies = new ArrayList<Comment>();
+	
 	
 }

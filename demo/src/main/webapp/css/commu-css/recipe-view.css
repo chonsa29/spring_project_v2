@@ -436,3 +436,153 @@
     text-align: center;
 }
 
+.comment-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  position: relative;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.comment-user {
+  font-weight: bold;
+}
+
+.comment-date {
+  font-size: 0.85em;
+  color: #999;
+}
+
+.comment-body {
+  margin-top: 5px;
+  margin-bottom: 8px;
+}
+
+.comment-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 4px;
+}
+
+.comment-actions i,
+.comment-actions .reply-btn {
+  cursor: pointer;
+}
+
+.comment-actions i:hover,
+.comment-actions .reply-btn:hover {
+  color: #222;
+}
+
+.comment-actions .reply-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 대댓글 */
+.reply-toggle {
+  font-size: 0.85em;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+/* 대댓글 박스 */
+.reply-box {
+  margin-top: 10px;
+  /* 들여쓰기 최소화 or 제거 */
+  margin-left: 0; 
+
+  padding: 12px 15px;
+  background-color: #f1f1f1;
+  border-radius: 10px;
+  /*box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);*/
+  /*border-left: 4px solid #0DA043;*/
+
+  animation: fadeIn 0.3s ease-in-out;
+  width: 100%; /* div에 꽉 차게 */
+  box-sizing: border-box; /* 패딩 포함해서 너비 계산 */
+}
+
+/* 대댓글 입력창 */
+.reply-box textarea {
+  width: 100%;
+  min-height: 70px;
+  resize: vertical;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #fff;
+  font-family: inherit;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  transition: border 0.3s ease;
+}
+
+.reply-box textarea:focus {
+  border: 1px solid #0DA043;
+  outline: none;
+}
+
+/* 대댓글 작성 버튼 */
+.reply-box button {
+  background-color: #0DA043;
+  color: white;
+  border: none;
+  padding: 7px 16px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+  display: block;           /* 블록 요소로 만들어야 margin 적용 가능 */
+  margin-left: auto;        /* 오른쪽으로 밀기 */
+}
+
+.reply-box button:hover {
+  background-color: #0b7d36;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.replies {
+	position: relative;
+	margin-left: 40px;
+    margin-top: -5px;
+    padding: 10px;
+    background-color: rgb(242, 255, 247);
+    border-left: 2px solid #4caf50;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.replies::before {
+  content: "↳";
+  position: absolute;
+  top: 0;
+  left: -19px;
+  font-size: 20px;
+  color: #4caf50;
+  
+}
+
+.reply-item {
+  margin-bottom: 8px;
+}

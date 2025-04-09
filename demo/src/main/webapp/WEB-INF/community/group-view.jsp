@@ -85,7 +85,9 @@
 
                         <!-- 리더일 때만 마감 버튼을 팝업 하단에 추가 -->
                         <div v-if="isLeader" class="button-group">
-                            <button class="end-btn" @click="fnCloseGroup">마감하기</button>
+                            <button class="end-btn" v-if="info.status == 'PENDING'" @click="fnCloseGroup">마감하기</button>
+                            <button class="end-btn" v-if="info.status == 'CLOSE'" @click="fnActiveGroup"
+                                        style="background-color: #0DA043">활성화</button>
                         
                             <button class="close-btn" @click="closePopup">닫기</button>
                         </div>
@@ -365,6 +367,31 @@
                     success: function (data) {
                         if(data.result == "success") {
 							alert("모집이 마감되었습니다");
+                            location.reload();
+                            
+						} else {
+                            alert("마감 실패");
+                        }
+                    }
+                });
+            },
+
+            // 활성화
+            fnActiveGroup: function(){
+                var self = this;
+                
+                var nparmap = {
+                    groupId : self.info.groupId
+                }
+
+                $.ajax({
+                    url: "/group/active.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: nparmap,
+                    success: function (data) {
+                        if(data.result == "success") {
+							alert("모집이 활성화되었습니다");
                             location.reload();
                             
 						} else {
