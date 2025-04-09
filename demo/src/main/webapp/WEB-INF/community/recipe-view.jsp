@@ -94,25 +94,40 @@
                 <!-- 댓글 리스트 -->
                 <div class="comment-list" v-if="commentList.length > 0">
                     <template v-for="(comment, index) in commentList" :key="index">
-                    <!-- 부모 댓글 -->
+                    <!-- 댓글 -->
                     <div class="comment-item">
                         <div class="comment-header">
                         <span class="comment-user">{{ comment.nickname }}</span>
                         <span class="comment-date">{{ comment.cdateTime }}</span>
                         </div>
-                
-                        <div class="comment-body">{{ comment.contents }}</div>
-                
-                        <!-- 아이콘 영역 -->
+                    
+                        <!-- 수정 중일 때 -->
+                        <div v-if="editIndex === comment.commentId" class="comment-body">
+                            <textarea v-model="editContent"></textarea>
+                        </div>
+                        <!-- 일반 출력 -->
+                        <div v-else class="comment-body">
+                            {{ comment.contents }}
+                        </div>
+                    
+                        <!-- 버튼 영역도 수정 모드에 따라 다르게 -->
                         <div class="comment-actions">
-                        <template v-if="comment.userId === sessionId || sessionStatus == 'A'">
-                            <i class="fas fa-edit" @click="editComment(comment)" title="수정"></i>
-                            <i class="fas fa-trash-alt" @click="deleteComment(comment)" title="삭제"></i>
+                        <!-- 수정 중이면 저장/취소 -->
+                        <template v-if="editIndex === comment.commentId">
+                            <i class="fas fa-check" @click="saveEdit(comment.commentId)" title="저장">저장</i>
+                            <i class="fas fa-times" @click="cancelEdit" title="취소">취소</i>
                         </template>
-                        <!-- 답글 버튼 -->
-                        <i class="fas fa-reply" @click="toggleReply(comment.commentId)" title="답글">답글</i>
+                        <!-- 일반 상태 -->
+                        <template v-else>
+                            <template v-if="comment.userId === sessionId || sessionStatus == 'A'">
+                                <i class="fas fa-edit" @click="editComment(comment)" title="수정"></i>
+                                <i class="fas fa-trash-alt" @click="deleteComment(comment)" title="삭제"></i>
+                            </template>
+                            <i class="fas fa-reply" @click="toggleReply(comment.commentId)" title="답글">답글</i>
+                        </template>
                         </div>
                     </div>
+  
                 
                     <!-- 대댓글 입력창 -->
                     <div v-if="replyIndex === comment.commentId" class="reply-box">
@@ -129,13 +144,31 @@
                                 <span class="comment-user">{{ reply.nickname }}</span>
                                 <span class="comment-date">{{ reply.cdateTime }}</span>
                             </div>
-                            <div class="comment-body">{{ reply.contents }}</div>
-                            <div class="comment-actions">
-                                <template v-if="reply.userId === sessionId || sessionStatus == 'A'">
-                                <i class="fas fa-edit" @click="editComment(reply)" title="수정"></i>
-                                <i class="fas fa-trash-alt" @click="deleteComment(reply)" title="삭제"></i>
-                                </template>
+
+                            <!-- 대댓글 수정 중 -->
+                            <div v-if="editIndex === reply.commentId" class="comment-body">
+                                <textarea v-model="editContent"></textarea>
                             </div>
+
+                            <!-- 일반 출력 -->
+                            <div v-else class="comment-body">
+                                {{ reply.contents }}
+                            </div>
+
+                            <div class="comment-actions">
+                                <template v-if="editIndex === reply.commentId">
+                                  <i class="fas fa-check" @click="saveEdit(reply.commentId)" title="저장">저장</i>
+                                  <i class="fas fa-times" @click="cancelEdit" title="취소">취소</i>
+                                </template>
+                                <template v-else>
+                                  <template v-if="reply.userId === sessionId || sessionStatus == 'A'">
+                                    <i class="fas fa-edit" @click="editComment(reply)" title="수정"></i>
+                                    <i class="fas fa-trash-alt" @click="deleteComment(reply)" title="삭제"></i>
+                                  </template>
+                                </template>
+                              </div>
+
+                            
                         </div>
                     </div>
                     </template>
@@ -162,6 +195,8 @@
                 contents: "",
                 replyIndex: null,
                 replyContent: '',
+                editIndex: null,         // 현재 수정 중인 댓글 ID
+                editContent: "",         // 수정 중인 내용
 
             };
         },
@@ -304,8 +339,41 @@
             },
             // 수정 버튼 클릭
             editComment(comment) {
-                // 나중에 구현
-                alert("수정 기능 준비중");
+                this.editIndex = comment.commentId;
+                this.editContent = comment.contents;
+
+                this.$nextTick(() => {
+                    const textarea = document.querySelector(`#comment-${comment.id} textarea`);
+                    if (textarea) textarea.focus();
+                });
+            },
+            cancelEdit() {
+                this.editIndex = null;
+                this.editContent = "";
+            },
+            saveEdit(commentId) {
+                let self = this;
+                var nparmap = {
+                    commentId: commentId,
+                    contents: self.editContent
+                };
+
+                $.ajax({
+                    url: "/recipe/commentEdit.dox",
+                    type: "POST",
+                    dataType: "json",
+                    data: nparmap,
+                    success: (res) => {
+                        if (res.result === "success") {
+                            alert("수정되었습니다!");
+                            self.editIndex = null;         // ✅ 수정 모드 초기화
+                            self.editContent = "";         // ✅ 수정 내용 초기화
+                            self.loadComments();
+                        } else {
+                            alert("수정 실패");
+                        }
+                    }
+                });
             },
             // 삭제
             deleteComment(comment) {
@@ -319,6 +387,7 @@
                         },
                         success: (res) => {
                             if (res.result === "success") {
+                                alert("삭제되었습니다!");
                                 this.loadComments();
                             } else {
                                 alert("삭제 실패");

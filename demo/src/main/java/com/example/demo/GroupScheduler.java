@@ -24,4 +24,9 @@ public class GroupScheduler {
         communityService.sendDeleteNotification(dummyMap);
         System.out.println("[스케줄러 완료] 알림 전송 완료");
     }
+    
+    @Scheduled(cron = "0 0 3 * * ?") // 매일 새벽 3시에 실행
+    public void deleteExpiredGroups() {
+    	communityService.deleteExpiredGroups(); // 1개월 지난 그룹 삭제
+    }
 }

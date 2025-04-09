@@ -92,9 +92,16 @@
         </div>
 
         <!-- 커뮤니티 이동 사진 -->
-         <div class="commu">
-            <img src="/img/main5.png" alt="커뮤니티 배너" @click="fnCommu">
-         </div>
+        <div class="commu" @click="fnCommu">
+            <div class="overlay"></div> <!-- 오버레이 추가 -->
+            <img src="/img/main6.jpg" alt="커뮤니티 배너">
+            <div class="content">
+                <h2>🌿 나만의 요리 레시피</h2>
+                <h3>#요리하는 즐거움 #꿀팁 공유하기
+                    <br>나만의 비법, 함께 나눠요!</h3>
+                <button @click="fnCommu">바로가기</button>
+            </div>
+        </div>
          
 
     </div>

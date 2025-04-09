@@ -247,6 +247,34 @@ public class CommunityService {
 		return resultMap;
 	}
 	
+	// 댓글 수정
+	public HashMap<String, Object> editComment(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+	        communityMapper.updateComment(map);
+	        resultMap.put("result", "success");
+	    } catch (Exception e) {
+	        System.out.println(e.getMessage());
+	        resultMap.put("result", "fail");
+	    }
+		return resultMap;
+	}
+	
+	// 댓글 삭제
+	public HashMap<String, Object> deleteComment(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+	        communityMapper.deleteComment(map);
+	        resultMap.put("result", "success");
+	    } catch (Exception e) {
+	        System.out.println(e.getMessage());
+	        resultMap.put("result", "fail");
+	    }
+		return resultMap;
+	}
+	
 	// 대댓글 추가
 	public HashMap<String, Object> addRecomment(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
@@ -506,6 +534,7 @@ public class CommunityService {
 	        for (Group group : groupList) {
 	            String groupId = group.getGroupId();
 	            String groupName = group.getGroupName();
+	            int daysLeft = group.getDaysLeft();
 	            
 	            System.out.println("알림 보낼 그룹 이름: " + group.getGroupName());
 
@@ -516,14 +545,14 @@ public class CommunityService {
 	                notiMap.put("userId", member.getUserId());
 	                notiMap.put("groupId", groupId);
 	                notiMap.put("title", "[알림] " + groupName);
-	                notiMap.put("message", "'" + groupName + "' 그룹이 3일 후 자동 삭제됩니다.");
+	                notiMap.put("message", "'" + groupName + "' 그룹이 " + daysLeft + "일 후 자동 삭제됩니다.");
 	                notiMap.put("type", "DELETE_NOTICE");
 
 	                int duplicateCount = communityMapper.checkDuplicateNotification(notiMap);
 
 	                if (duplicateCount == 0) {
 	                    notiMap.put("title", "[알림] " + groupName);
-	                    notiMap.put("message", "'" + groupName + "' 그룹이 3일 후 자동 삭제됩니다.");
+	                    notiMap.put("message", "'" + groupName + "' 그룹이 " + daysLeft + "일 후 자동 삭제됩니다.");
 
 	                    communityMapper.insertGroupDeleteNotification(notiMap);
 	                    totalNotiCount++;
@@ -582,6 +611,11 @@ public class CommunityService {
 	        System.out.println("Error fetching recipe: " + e.getMessage());
 	        throw e;
 	    }
+	}
+
+	public void deleteExpiredGroups() {
+		communityMapper.deleteGroupsOlderThanOneMonth();
+		
 	}
 
 	

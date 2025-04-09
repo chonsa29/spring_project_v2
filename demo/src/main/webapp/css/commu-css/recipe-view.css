@@ -584,5 +584,30 @@
 }
 
 .reply-item {
-  margin-bottom: 8px;
+	padding-bottom: 10px;
+	margin-bottom: 2px;
+    border-bottom: 1px solid rgb(198, 236, 218); /* 연한 구분선 */
+}
+
+.reply-item:last-child {
+  border-bottom: none;
+}
+
+.comment-body textarea {
+  width: 100%;
+  height: 70px;
+  resize: none;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.comment-body textarea:focus {
+  border-color: #7aa3e5;
+  box-shadow: 0 0 0 3px rgba(122, 163, 229, 0.2);
+  outline: none;
 }
