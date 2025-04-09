@@ -1,7 +1,7 @@
 package com.example.demo.model;
 
 import lombok.Data;
-
+import java.util.Date;
 @Data
 public class Question {
 	
@@ -11,8 +11,7 @@ public class Question {
 	private String qsContents;
 	private String qsStatus; 
 	private String itemNo;
-	private String cdatetime;
+	private Date cdatetime;
 	private String viewCnt;
 	private String qsCategory;
-
 }
