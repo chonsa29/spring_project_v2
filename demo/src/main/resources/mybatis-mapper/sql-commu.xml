@@ -146,17 +146,33 @@
 		ORDER BY NVL(PC.PARENT_ID, PC.COMMENT_ID) DESC, PC.CDATETIME ASC
 	</select>
 	
-	
+	<!-- 댓글 등록 -->
 	<insert id="insertComment" parameterType="hashmap">
         INSERT INTO POST_COMMENT
         VALUES (COMMENT_SEQ.NEXTVAL, #{postId}, #{userId}, #{contents}, SYSDATE)
     </insert>
+    
+    <!-- 댓글 수정 -->
+    <update id="updateComment" parameterType="hashmap">
+    	UPDATE POST_COMMENT
+    	SET
+    		CONTENTS = #{contents}
+    	WHERE COMMENT_ID = #{commentId}
+    </update>
+    
+    <!-- 댓글 삭제 -->
+    <delete id="deleteComment">
+    	DELETE
+    	FROM POST_COMMENT
+    	WHERE COMMENT_ID = #{commentId}
+    </delete>
     
     <!-- 대댓글 추가 -->
     <insert id="insertRecomment" parameterType="hashmap">
         INSERT INTO POST_COMMENT
         VALUES (COMMENT_SEQ.NEXTVAL, #{postId}, #{userId}, #{contents}, SYSDATE, #{commentId})
     </insert>
+    
 	
 	<!-- group 부분 -->
 	<select id="selectGroupList" parameterType="hashmap" resultType="com.example.demo.model.Group">
@@ -323,11 +339,18 @@
 	
 	<!-- 그룹 삭제 전 알림 -->
 	<select id="selectGroupsToNotify" resultType="com.example.demo.model.Group">
-	    SELECT GROUP_ID, GROUP_NAME AS groupName, CREATE_DATE
+	    SELECT GROUP_ID, GROUP_NAME AS groupName, CREATE_DATE,
+           (ADD_MONTHS(CREATE_DATE, 1) - TRUNC(SYSDATE)) AS DAYS_LEFT
 	    FROM GROUP_INFO
 	    WHERE MONTH_STATUS = 'ACTIVE'
-	    AND CREATE_DATE &lt;= SYSDATE - 27
+	      AND (ADD_MONTHS(CREATE_DATE, 1) - TRUNC(SYSDATE)) IN (1, 2, 3)
 	</select>
+	
+	<!-- 생긴 지 한 달 된 그룹 삭제 -->
+	<delete id="deleteGroupsOlderThanOneMonth" parameterType="hashmap">
+		DELETE FROM GROUP_INFO
+		WHERE ADD_MONTHS(CREATE_DATE, 1) &lt;= SYSDATE;
+	</delete>
 	
 	<select id="selectGroupMembersByGroupId" resultType="com.example.demo.model.GroupUser">
 	    SELECT USERID
@@ -391,6 +414,7 @@
 		SELECT * FROM GROUP_POST
 		WHERE POST_ID = #{postId}
 	</select>
+	
 	
 </mapper>
 

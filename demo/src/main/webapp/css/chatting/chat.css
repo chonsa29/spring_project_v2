@@ -171,12 +171,13 @@ h2 {
 
 /* 일반 메시지 */
 .message-bubble {
-    max-width: 20%;
-    min-width: 100px;
+    max-width: 50%;
+    min-width: 170px;
     padding: 8px 12px;
     border-radius: 10px;
     word-wrap: break-word;
     white-space: pre-wrap;
+	font-size: 15px;
 }
 
 /* ✅ 입장/퇴장 메시지를 별도 스타일로 중앙 정렬 */
@@ -222,7 +223,7 @@ h2 {
     }
 
     .chat-message {
-        max-width: 50%;
+        max-width: 60%;
     }
 
     .chat-input input {

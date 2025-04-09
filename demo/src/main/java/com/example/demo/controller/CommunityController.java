@@ -208,6 +208,26 @@ public class CommunityController {
 		return new Gson().toJson(resultMap);
 	}
 	
+	// 댓글 수정
+	@RequestMapping(value = "/recipe/commentEdit.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String commentEdit(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		resultMap = communityService.editComment(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	// 댓글 삭제
+	@RequestMapping(value = "/recipe/commentDelete.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String commentDelete(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		resultMap = communityService.deleteComment(map);
+		return new Gson().toJson(resultMap);
+	}
+	
 	// 대댓글 등록
 	@RequestMapping(value = "/recipe/recommentAdd.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody

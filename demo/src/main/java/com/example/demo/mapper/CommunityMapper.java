@@ -108,4 +108,10 @@ public interface CommunityMapper {
 
 	void updateGroupStatusActive(HashMap<String, Object> map);
 
+	void updateComment(HashMap<String, Object> map);
+
+	void deleteComment(HashMap<String, Object> map);
+
+	void deleteGroupsOlderThanOneMonth();
+
 }

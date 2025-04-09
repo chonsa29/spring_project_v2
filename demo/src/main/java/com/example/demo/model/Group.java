@@ -29,4 +29,6 @@ public class Group {
 	private String createDate; 
 	
 	public String nickname;
+	
+	private int daysLeft;
 }
