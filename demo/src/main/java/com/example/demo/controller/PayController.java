@@ -34,9 +34,15 @@ public class PayController {
     }
 	
 	@RequestMapping("/paySuccess.do") 
-    public String paySuccess(HttpServletRequest request,Model model, 
+    public String paySuccess(HttpSession session, HttpServletRequest request,Model model, 
     		@RequestParam HashMap<String, Object> map) throws Exception{
 		request.setAttribute("map", map);
+		model.addAttribute("orderItems", session.getAttribute("orderItems"));
+	    model.addAttribute("discountAmount", session.getAttribute("discountAmount"));
+	    model.addAttribute("usedPoint", session.getAttribute("usedPoint"));
+	    model.addAttribute("shippingFee", session.getAttribute("shippingFee"));
+	    model.addAttribute("gradeDiscount", session.getAttribute("gradeDiscount"));
+		
         return "/cart/paySuccess";
     }
 	
@@ -45,7 +51,7 @@ public class PayController {
 	public List<Product> getRecommendedProducts() {
 	    List<Product> allProducts = payService.getAll(); // 전체 상품 불러오기
 	    Collections.shuffle(allProducts); // 랜덤 섞기
-	    return allProducts.stream().limit(5).collect(Collectors.toList()); // 5개만
+	    return allProducts.stream().limit(10).collect(Collectors.toList()); // 5개만
 	}
 	
 	@RequestMapping(value = "/pay.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -72,6 +78,7 @@ public class PayController {
 	    session.setAttribute("discountAmount", map.getOrDefault("discountAmount", "0"));
 	    session.setAttribute("usedPoint", map.getOrDefault("usedPoint", "0"));
 	    session.setAttribute("shippingFee", map.getOrDefault("shippingFee", "3000"));
+	    session.setAttribute("gradeDiscount", map.getOrDefault("gradeDiscount", "0"));
 
 	    // 여기!! 세션도 함께 전달
 	    HashMap<String, Object> resultMap = payService.paymentProduct(map, session);

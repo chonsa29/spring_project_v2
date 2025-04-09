@@ -40,6 +40,7 @@ public class Member {
     private String qsStatus;
     private String orderCount;
     private String zipCode;
+    private String sale;
     
     // 추가 필드 (DB에는 없지만 화면에 표시하기 위해 사용)
     private String gradeName;

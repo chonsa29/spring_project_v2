@@ -6,6 +6,7 @@
     int discountAmount = 0;
     int usedPoint = 0;
     int shippingFee = 0;
+    int memberSale = 0; 
 
     if (session.getAttribute("discountAmount") != null) {
         discountAmount = Integer.parseInt(session.getAttribute("discountAmount").toString());
@@ -16,6 +17,9 @@
     if (session.getAttribute("shippingFee") != null) {
         shippingFee = Integer.parseInt(session.getAttribute("shippingFee").toString());
     }
+    if (session.getAttribute("gradeDiscount") != null) {
+        memberSale = Integer.parseInt(session.getAttribute("gradeDiscount").toString());
+    }    
 %>
 <!DOCTYPE html>
 <html>
@@ -25,19 +29,18 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="/js/pageChange.js"></script>
+    <link rel="stylesheet" href="/css/pay.css">
     <script type="application/json" id="order-data">
         <%= "{" %>
           "items": <%= orderItemsJson %>,
           "discountAmount": <%= discountAmount %>,
           "usedPoint": <%= usedPoint %>,
-          "shippingFee": <%= shippingFee %>
+          "shippingFee": <%= shippingFee %>,
+          "memberSale": <%= memberSale %>
         <%= "}" %>
     </script>
-    <link rel="stylesheet" href="/css/pay.css">
 	<title>결제 완료</title>
 </head>
-<style>
-</style>
 <body>
     <jsp:include page="/WEB-INF/common/header.jsp" />
 	<div id="app">
@@ -66,6 +69,7 @@
                     <p>총 상품 금액: {{ totalProductPrice.toLocaleString() }} 원</p>
                     <p>할인 금액: - {{ discountAmount.toLocaleString() }} 원</p>
                     <p>사용한 포인트: - {{ usedPoint.toLocaleString() }} 원</p>
+                    <p>회원 등급 할인: - {{ memberSale.toLocaleString() }} 원</p>
                     <p>배송비: + {{ shippingFee.toLocaleString() }} 원</p>
                     <p class="item-finalPrice"><strong>최종 결제 금액: {{ finalPayment.toLocaleString() }} 원</strong></p>
                 </div>
@@ -84,11 +88,8 @@
                         <p class="recommend-name">{{ item.itemName }}</p>
                         <p class="recommend-price">{{ formatRecommendPrice(item.price) }}원</p>
                     </div>
-                    <div class="recommend-buttons">
-                        <button @click.stop="fnCart(item.itemNo, userId)">🛒</button>
-                        <button @click.stop="fnLike(item.itemNo)">❤</button>
-                    </div>
                 </div>
+                <button class="btn" @click="loadMore">더보기</button>
             </div>
         </div>
 	</div>
@@ -104,7 +105,11 @@
                 usedPoint: 0,
                 shippingFee: 0,
                 recommendedItems: [],
-                userId : "${sessionId}",
+                userId: '<%= session.getAttribute("sessionId") != null ? session.getAttribute("sessionId") : "" %>',
+                memberSale: 0,
+                likedItems: new Set(),
+                showLikePopup: false,
+                likeAction: ''
             };
         },
         computed: {
@@ -114,7 +119,7 @@
                 }, 0);
             },
             finalPayment() {
-                return this.totalProductPrice - this.discountAmount - this.usedPoint + this.shippingFee;
+                return this.totalProductPrice - this.discountAmount - this.usedPoint - this.memberSale + this.shippingFee;
             }
         },
         methods: {
@@ -122,84 +127,12 @@
             formatRecommendPrice(price) {
                 return price.toLocaleString();
             },
-            fnCart(itemNo, userId) {
-                if (!userId) {
-                alert("로그인이 필요합니다.");
-                return;
-                }
-
-                const nparmap = {
-                    itemNo: itemNo,
-                    userId: userId
-                };
-
-                $.ajax({
-                    url: "/cart/add.dox", // 예시 URL (서버에서 이 URL로 장바구니 처리)
-                    type: "POST",
-                    data: nparmap,
-                    dataType: "json",
-                    success: function(data) {
-                        if (data.result === "success") {
-                            alert("장바구니에 담겼습니다!");
-                            window.location.href = '/cart.do';
-                        } else {
-                            alert("장바구니 담기 실패!");
-                        }
-                    },
-                    error: function() {
-                        alert("서버 요청 실패");
-                    }
-                })
-            },
-            fnLike(itemNo) {
-                var self = this;
-
-                if (!self.userId) {
-                    // 로그인 페이지로 리디렉션
-                    alert("로그인 후 이용가능합니다."); // 로그인 페이지 경로
-                    return; // 이후 코드 실행 방지
-                }
-                var nparmap = {
-                    itemNo: itemNo,
-                    userId: self.userId
-                };
-                console.log(itemNo);
-                console.log(self.userId);
-
-                // 서버에 요청 보내기 (좋아요 추가 또는 취소)
-                $.ajax({
-                    url: "/product/likeToggle.dox",  // 서버의 엔드포인트 (좋아요 추가/취소 처리)
-                    dataType: "json",
-                    type: "POST",
-                    data: nparmap,
-                    success: function (data) {
-                        if (data.result == "a") {  // 좋아요 추가
-                            if (!self.likedItems.has(itemNo)) {
-                                self.likedItems.add(itemNo);  // 좋아요 추가
-                                self.showLikePopup = true;
-                                self.likeAction = 'add';
-                                setTimeout(() => {
-                                    self.showLikePopup = false;
-                                }, 2000);
-                            }
-                        } else if (data.result == "c") {  // 좋아요 취소
-                            if (self.likedItems.has(itemNo)) {
-                                self.likedItems.delete(itemNo);  // 좋아요 취소
-                                self.likeAction = 'remove';
-                                self.showLikePopup = false;
-                            }
-                        } else {
-                            console.error("좋아요 처리 실패", data.message);
-                        }
-                    },
-                    error: function () {
-                        console.error("AJAX 요청 실패");
-                    }
-                });
-            },
             fnInfo(itemNo) {
                 pageChange("/product/info.do", { itemNo: itemNo });
             },
+            loadMore() {
+                location.href="/product.do"
+            }
    
         },
         mounted() {
@@ -210,6 +143,7 @@
                 this.discountAmount = parsed.discountAmount;
                 this.usedPoint = parsed.usedPoint;
                 this.shippingFee = parsed.shippingFee;
+                this.memberSale = parsed.memberSale;
             } catch (e) {
                 console.error("주문 데이터 파싱 오류:", e);
             }
@@ -229,8 +163,16 @@
                 origin: { y: 0.6 }
             });
 
+            const container = document.querySelector('.recommend-vertical');
             setInterval(() => {
-                const container = document.querySelector('.recommend-vertical');
+                const maxScroll = container.scrollHeight - container.clientHeight;
+                const currentScroll = container.scrollTop;
+
+                if (currentScroll >= maxScroll) {
+                    container.scrollTo({ top: 0, behavior: 'smooth' }); // 다시 위로
+                    return;
+                }
+
                 container.scrollBy({ top: 160, behavior: 'smooth' });
             }, 3000);
 

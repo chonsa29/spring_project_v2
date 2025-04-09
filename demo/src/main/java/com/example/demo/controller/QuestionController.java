@@ -183,6 +183,10 @@ public class QuestionController {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap = questionService.questionReplySave(map);
 		
+		System.out.println("qsNo: " + map.get("qsNo"));
+		System.out.println("replyContents: " + map.get("replyContents"));
+		System.out.println("adminId: " + map.get("adminId"));
+		
 		return new Gson().toJson(resultMap);
 	}
 	

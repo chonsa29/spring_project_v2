@@ -11,7 +11,7 @@ public class Question {
 	private String qsContents;
 	private String qsStatus; 
 	private String itemNo;
-	private Date cdatetime;
+	private String cdatetime;
 	private String viewCnt;
 	private String qsCategory;
 }

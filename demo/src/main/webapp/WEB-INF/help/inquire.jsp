@@ -270,7 +270,9 @@ const app = Vue.createApp({
 
         // FAQ 질문 클릭 시 답변 토글
         toggleFaq(faq) {
-			faq.open = !faq.open;
+			this.faqList.forEach(item => {
+				item.open = (item === faq) ? !item.open : false;
+			});
         },
 
 		fnWriting() {
