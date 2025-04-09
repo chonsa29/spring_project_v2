@@ -88,7 +88,7 @@
                        <h2 class="text">포인트</h2> 
                     </div>
                     <div>
-                        <input type="text" class="pay_point" v-model="displayPoint" placeholder="포인트 입력">
+                        <input type="text" class="pay_point" v-model.number="displayPoint" placeholder="포인트 입력">
                         <button class="point_btn" @click="applyPoint">전액 사용</button>
                     </div>
                     <div class="point_text">
@@ -184,6 +184,19 @@
             }
         },
         watch: {
+            displayPoint(val) {
+                const parsed = parseInt(val) || 0;
+
+                if (parsed > this.memberInfo.point) {
+                    this.displayPoint = this.memberInfo.point;
+                    this.memberInfo.usedPoint = this.memberInfo.point;
+                } else if (parsed < 0) {
+                    this.displayPoint = 0;
+                    this.memberInfo.usedPoint = 0;
+                } else {
+                    this.memberInfo.usedPoint = parsed;
+                }
+            },
             sameAsOrderer(val) {
                 this.receiverName = val ? this.memberInfo.userName : '';
                 this.receiverPhone = val ? this.memberInfo.phone : '';
@@ -265,8 +278,9 @@
 
                 const originalPrice = this.productInfo.reduce((total, item) => total + item.price * item.quantity, 0);
                 const discount = this.discountRate * originalPrice;
+                const gradeDiscount = this.gradeDiscountAmount;
                 const usedPoint = parseInt(this.memberInfo.usedPoint) || 0;
-                const totalPrice = originalPrice - discount + this.shippingFee - usedPoint;
+                const totalPrice = originalPrice - discount - gradeDiscount + this.shippingFee - usedPoint;
 
                 IMP.request_pay({
                     pg: "html5_inicis",
@@ -317,7 +331,7 @@
                     ? 0
                     : Math.floor(totalPriceBeforePoint * discountRate); // 쿠폰 할인
 
-                const finalPrice = Math.max(0, (totalPriceBeforePoint + this.shippingFee - usedPoint));
+                const finalPrice = Math.max(0, (totalPriceBeforePoint - discountAmount - gradeDiscount + this.shippingFee - usedPoint));
                 const shippingFee = this.shippingFee;
 
                 var nparmap = { 
@@ -346,10 +360,14 @@
             },
 
             applyPoint() {
-                this.displayPoint = this.memberInfo.point || 0;
-                if (this.memberInfo.point > 0) {
-                    this.displayPoint = this.memberInfo.point || 0;  // 입력 칸에 반영
-                    this.memberInfo.usedPoint = this.memberInfo.point; // 주문 요약에 반영할 포인트 사용 값 설정
+                if (this.memberInfo.usedPoint && this.memberInfo.usedPoint > 0) {
+                    // 이미 포인트가 적용된 상태라면 초기화
+                    this.displayPoint = null;
+                    this.memberInfo.usedPoint = 0;
+                } else {
+                    // 포인트 적용
+                    this.displayPoint = this.memberInfo.point || 0;
+                    this.memberInfo.usedPoint = this.memberInfo.point || 0;
                 }
             },
 

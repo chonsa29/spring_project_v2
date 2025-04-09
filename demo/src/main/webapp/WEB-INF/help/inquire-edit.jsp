@@ -38,7 +38,7 @@
 
             <!-- 버튼들 -->
             <div class="button-group-container">
-                <div v-if="sessionId == info.userId || sessionStatus == 'A'" class="button-group">
+                <div class="button-group">
                     <button class="edit-btn" @click="fnEdit">저장</button>
                 </div>
                 <button class="buttonGoBack" @click="goBack">목록으로</button>
