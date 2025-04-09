@@ -10,6 +10,7 @@ import com.example.demo.mapper.NoticeMapper;
 import com.example.demo.mapper.QuestionMapper;
 import com.example.demo.model.Notice;
 import com.example.demo.model.Question;
+import com.example.demo.model.QuestionReply;
 
 @Service
 public class QuestionService {
@@ -67,6 +68,8 @@ public class QuestionService {
 				questionMapper.updateCnt(map);
 			}
 			Question info = questionMapper.qnaSelect(map);
+			QuestionReply reply = questionMapper.qnaReply(map);
+			resultMap.put("reply", reply);
 			resultMap.put("info", info);
 			resultMap.put("result", "success");
 		} catch (Exception e) {

@@ -162,52 +162,59 @@
 	    WHERE QS_NO = #{qsNo}
 	</update>
 	
-	  <select id="selectDeliveryList" resultType="map">
-        SELECT 
-            d.DELIVERY_NO as deliveryNo,
-            d.ORDER_KEY as orderKey,
-            d.CART_KEY as cartKey,
-            d.DELIVERY_STATUS as deliveryStatus,
-            d.TRACKING_NUMBER as trackingNumber,
-            TO_CHAR(d.DELIVERY_DATE, 'YYYY-MM-DD') as deliveryDate,
-            d.DELIVERY_FEE as deliveryFee,
-            o.ORDER_DATE as orderDate,
-            m.USERNAME as userName
-        FROM DELIVERY d
-        JOIN ORDER_LIST o ON d.ORDER_KEY = o.ORDER_KEY
-        JOIN MEMBER m ON o.USERID = m.USERID
-        <where>
-            <if test="searchType == 'orderKey' and searchKeyword != null">
-                AND d.ORDER_KEY = #{searchKeyword}
-            </if>
-            <if test="searchType == 'trackingNumber' and searchKeyword != null">
-                AND d.TRACKING_NUMBER LIKE '%' || #{searchKeyword} || '%'
-            </if>
-            <if test="searchType == 'userName' and searchKeyword != null">
-                AND m.USERNAME LIKE '%' || #{searchKeyword} || '%'
-            </if>
-        </where>
-        ORDER BY d.DELIVERY_NO DESC
-        OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
-    </select>
-
-    <select id="selectDeliveryCount" resultType="int">
-        SELECT COUNT(*)
-        FROM DELIVERY d
-        JOIN ORDER_LIST o ON d.ORDER_KEY = o.ORDER_KEY
-        JOIN MEMBER m ON o.USERID = m.USERID
-        <where>
-            <if test="searchType == 'orderKey' and searchKeyword != null">
-                AND d.ORDER_KEY = #{searchKeyword}
-            </if>
-            <if test="searchType == 'trackingNumber' and searchKeyword != null">
-                AND d.TRACKING_NUMBER LIKE '%' || #{searchKeyword} || '%'
-            </if>
-            <if test="searchType == 'userName' and searchKeyword != null">
-                AND m.USERNAME LIKE '%' || #{searchKeyword} || '%'
-            </if>
-        </where>
-    </select>
+	<select id="selectDeliveryList" resultType="map">
+	    SELECT 
+	        d.DELIVERY_NO as deliveryNo,
+	        d.ORDER_KEY as orderKey,
+	        d.DELIVERY_STATUS as deliveryStatus,
+	        d.TRACKING_NUMBER as trackingNumber,
+	        TO_CHAR(d.DELIVERY_DATE, 'YYYY-MM-DD') as deliveryDate,
+	        d.DELIVERY_FEE as deliveryFee,
+	        o.ORDER_DATE as orderDate,
+	        m.USERNAME as userName
+	    FROM DELIVERY d
+	    INNER JOIN ORDER_LIST o ON d.ORDER_KEY = o.ORDER_KEY
+	    INNER JOIN MEMBER m ON o.USERID = m.USERID
+	    ORDER BY d.DELIVERY_NO DESC
+	    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	<select id="selectDeliveryDetail" resultType="map">
+   	 SELECT 
+	        d.DELIVERY_NO as deliveryNo,
+	        d.ORDER_KEY as orderKey,
+	        d.CART_KEY as cartKey,
+	        d.DELIVERY_STATUS as deliveryStatus,
+	        d.TRACKING_NUMBER as trackingNumber,
+	        TO_CHAR(d.DELIVERY_DATE, 'YYYY-MM-DD HH24:MI') as deliveryDate,
+	        d.DELIVERY_FEE as deliveryFee,
+	        o.ORDER_DATE as orderDate,
+	        m.USERNAME as userName,
+	        m.PHONE as userPhone,
+	        m.EMAIL as userEmail,
+	        o.PRICE as orderPrice
+	    FROM DELIVERY d
+	    LEFT JOIN ORDER_LIST o ON d.ORDER_KEY = o.ORDER_KEY
+	    LEFT JOIN MEMBER m ON o.USERID = m.USERID
+	    WHERE d.DELIVERY_NO = #{deliveryNo}
+	</select>
+	
+	<select id="selectDeliveryCount" resultType="int">
+	    SELECT COUNT(*)
+	    FROM DELIVERY d
+	    LEFT JOIN ORDER_LIST o ON d.ORDER_KEY = o.ORDER_KEY
+	    LEFT JOIN MEMBER m ON o.USERID = m.USERID
+	    <where>
+	        <if test="searchType == 'orderKey' and searchKeyword != null">
+	            AND d.ORDER_KEY = #{searchKeyword}
+	        </if>
+	        <if test="searchType == 'trackingNumber' and searchKeyword != null">
+	            AND d.TRACKING_NUMBER LIKE '%' || #{searchKeyword} || '%'
+	        </if>
+	        <if test="searchType == 'userName' and searchKeyword != null">
+	            AND m.USERNAME LIKE '%' || #{searchKeyword} || '%'
+	        </if>
+	    </where>
+	</select>
 
     <update id="updateDeliveryStatus">
         UPDATE DELIVERY SET

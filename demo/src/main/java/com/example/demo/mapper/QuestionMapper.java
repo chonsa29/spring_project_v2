@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.example.demo.model.Question;
+import com.example.demo.model.QuestionReply;
 
 @Mapper
 public interface QuestionMapper {
@@ -29,5 +30,7 @@ public interface QuestionMapper {
 	int qnaStatusUpdate(HashMap<String, Object> map);
 
 	void qnaSaveReply(HashMap<String, Object> map);
+
+	QuestionReply qnaReply(HashMap<String, Object> map);
 
 }

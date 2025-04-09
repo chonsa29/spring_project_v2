@@ -23,10 +23,13 @@
 	</select>
 	
 	<select id="payMemberInfo" parameterType="map" resultType="com.example.demo.model.Member">
-	   SELECT M.GROUP_ID, M.USERID, M.USERNAME, O.ZIPCODE, M.ADDRESS, M.PHONE, M.POINT, C.COUPON_NAME, C.DISCOUNT_AMOUNT
+        SELECT 
+        	M.GROUP_ID, M.USERID, M.USERNAME, M.GRADE, G.GRADE_NAME, G.SALE, O.ZIPCODE,
+        	M.ADDRESS, M.PHONE, M.POINT, C.COUPON_NAME, C.DISCOUNT_AMOUNT
 		FROM MEMBER M
 		INNER JOIN ORDER_LIST O ON O.USERID = M.USERID
 		INNER JOIN COUPON C ON M.USERID = C.USERID AND C.IS_USED = 'N' 
+        INNER JOIN GRADE G ON G.GRADE_ID = M.GRADE
 	    WHERE M.USERID = #{userId}
 	</select>
 	
@@ -37,7 +40,3 @@
 	</select>
 	
 </mapper>
-
-
-
-

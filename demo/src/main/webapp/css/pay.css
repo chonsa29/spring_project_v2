@@ -209,6 +209,21 @@ main {
     font-size: 16px;
 }
 
+.color {
+    color: #0b7d36;
+}
+
+.free-shipping {
+    color: #0b7d36;
+    font-weight: bold;
+    font-size: 1.05em;
+}
+
+.free-shipping::before {
+    content: "🚚 ";
+    margin-right: 4px;
+}
+
 /* 총 주문 금액 강조 */
 .total-price {
     font-weight: bold;
@@ -462,9 +477,9 @@ select.pay_way:focus {
     display: flex;
     justify-content: center; 
     align-items: flex-start;
-    max-width: 1300px;
+    max-width: 1000px;
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: 40px 30px;
     gap: 40px;
 }
 
@@ -474,24 +489,32 @@ select.pay_way:focus {
     padding: 16px;
     border-radius: 12px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    height: fit-content;
+    height: 860px;
     position: sticky;
     top: 100px;
     align-self: flex-start;
+    max-height: calc(100vh - 120px);
+    border: none;
+    margin: 15px auto 0;
+    cursor: pointer;
 }
 
 .recommend-title {
     font-size: 18px;
     font-weight: bold;
-    margin-bottom: 12px;
+    margin-bottom: 25px;
+    margin-top: 15px;
 }
 
 .recommend-vertical {
     display: flex;
     flex-direction: column;
     gap: 14px;
-    max-height: 600px;
+    max-height: 750px;
     overflow-y: auto;
+    scrollbar-width: none; 
+    -ms-overflow-style: none; 
+    padding-bottom: 100px;
 }
 
 .recommend-item {
@@ -524,11 +547,33 @@ select.pay_way:focus {
     gap: 8px;
 }
 
-.recommend-buttons button {
-    background: none;
+.recommend-side .btn {
+    display: inline-block;
+    margin-top: 15px;
+    margin: 20px auto 0 auto;
+    background-color: #919191;
+    color: #fff;
+    font-size: 14px;
+    width: 100px; 
+    height: 42px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
     border: none;
+    outline: none;
+    box-shadow: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
     cursor: pointer;
-    font-size: 16px;
+}
+
+.recommend-side .btn:hover {
+    background-color: #0b7d36;
+    transform: scale(1.01);
 }
 
 @media (max-width: 768px) {

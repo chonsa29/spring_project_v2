@@ -146,12 +146,17 @@
 		WHERE QS_NO = #{qsNo}
 	</update>
 	
-	<update id="qnaSaveReply" parameterType="hashmap">
-		UPDATE QUESTION
-		SET
-			QS_CATEGORY = #{qsCategory}
+	<select id="qnaReply"  parameterType="hashmap" resultType="com.example.demo.model.QuestionReply">
+		SELECT * FROM REPLY
 		WHERE QS_NO = #{qsNo}
-	</update>
+		ORDER BY REPLY_NO DESC
+		FETCH FIRST 1 ROWS ONLY
+	</select>
+	
+	<insert id="qnaSaveReply" parameterType="hashmap">
+	    INSERT INTO REPLY 
+	    VALUES (REPLY_SEQ.NEXTVAL, #{qsNo}, #{userId}, #{replyContents}, #{adminId})
+	</insert>
 	
 </mapper>
 
