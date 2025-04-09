@@ -29,7 +29,7 @@
                         </div>
                     </div>
                      <div class="delivery-info">
-                        <p>배송비 3,000 원</p>
+                        <p>배송비 {{ shippingFee.toLocaleString() }} 원</p>
                     </div>
                 </section>
 
@@ -102,13 +102,17 @@
                     <h2 class="text">주문 요약</h2>
                     <div class="summary-details">
                         <p>상품 가격 <span>{{ formattedTotalPrice }}</span></p>
-                        <p>배송비 <span>+ 3,000</span></p>
+                        <p>배송비 <span>{{ shippingFee.toLocaleString() }}</span></p>
                         <p v-if="memberInfo.discountAmount">
                             할인 금액 <span>{{ memberInfo.discountAmount }}</span>
                         </p>
                         <p v-if="memberInfo.usedPoint && memberInfo.usedPoint > 0">포인트 사용 
-                            <span> - {{ memberInfo.usedPoint }}</span>
+                            <span>{{ memberInfo.usedPoint }}</span>
                         </p>
+                        <p v-if="gradeDiscountAmount > 0">
+                            <span class="color">{{ memberInfo.gradeName }}</span>
+                            <span class="color">{{ memberInfo.sale }} %</span>
+                        </p>                        
                         <p class="total-price">
                             총 주문금액 <span>{{ formattedTotalOrderPrice }} 원</span>
                         </p>
@@ -158,11 +162,24 @@
                 if (!amount) return 0;
                 return amount.toString().includes('%') ? parseFloat(amount) / 100 : parseFloat(amount);
             },
+            shippingFee() {
+                const totalPrice = this.productInfo.reduce((total, item) => total + item.price * item.quantity, 0);
+                return totalPrice >= 30000 ? 0 : 3000;
+            },
+            gradeDiscountRate() {
+                const sale = this.memberInfo.sale;
+                return sale ? parseFloat(sale) / 100 : 0;
+            },
+            gradeDiscountAmount() {
+                const total = this.productInfo.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                return Math.floor(total * this.gradeDiscountRate);
+            },
             formattedTotalOrderPrice() {
                 const originalPrice = this.productInfo.reduce((total, item) => total + item.price * item.quantity, 0);
                 const discount = this.discountRate * originalPrice;
+                const gradeDiscount = this.gradeDiscountAmount;
                 const usedPoint = parseInt(this.memberInfo.usedPoint) || 0;
-                const final = originalPrice - discount + 3000 - usedPoint;
+                const final = originalPrice - discount - gradeDiscount + this.shippingFee - usedPoint;
                 return isNaN(final) ? '0' : Math.round(final).toLocaleString();
             }
         },
@@ -249,7 +266,7 @@
                 const originalPrice = this.productInfo.reduce((total, item) => total + item.price * item.quantity, 0);
                 const discount = this.discountRate * originalPrice;
                 const usedPoint = parseInt(this.memberInfo.usedPoint) || 0;
-                const totalPrice = originalPrice - discount + 3000 - usedPoint;
+                const totalPrice = originalPrice - discount + this.shippingFee - usedPoint;
 
                 IMP.request_pay({
                     pg: "html5_inicis",
@@ -295,8 +312,13 @@
                     };
                 });
 
-                const discountAmount = totalPriceBeforePoint * discountRate;
-                const finalPrice = Math.max(0, totalPriceBeforePoint + 3000 - usedPoint);
+                const gradeDiscount = self.gradeDiscountAmount; // computed에서 계산됨
+                const discountAmount = isNaN(totalPriceBeforePoint * discountRate)
+                    ? 0
+                    : Math.floor(totalPriceBeforePoint * discountRate); // 쿠폰 할인
+
+                const finalPrice = Math.max(0, (totalPriceBeforePoint + this.shippingFee - usedPoint));
+                const shippingFee = this.shippingFee;
 
                 var nparmap = { 
                     pWay : merchant_uid,
@@ -304,8 +326,9 @@
                     price: finalPrice,
                     orderItems: JSON.stringify(orderItems),
                     discountAmount: Math.floor(discountAmount),
+                    gradeDiscount: gradeDiscount,
                     usedPoint: usedPoint,
-                    shippingFee: 3000
+                    shippingFee: shippingFee
                 };
 
                 $.ajax({
@@ -316,7 +339,7 @@
                     success: function (data) {
                         console.log(data);
                         setTimeout(function() {
-                        window.location.href = "/paySuccess.do?orderId=" + result.orderId;
+                            window.location.href = "/paySuccess.do?orderId=" + data.orderId;
                         }, 500);
                     }
                 });

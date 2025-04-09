@@ -33,16 +33,16 @@
             <div class="post-content" v-html="info.qsContents"></div>
 
             <!-- 관리자 답변 -->
-            <div v-if="info.qsCategory" class="admin-reply">
+            <div v-if="reply.replyContents" class="admin-reply">
                 <h3>관리자 답변</h3>
-                <div class="reply-content" v-html="info.qsCategory"></div>
+                <div class="reply-content" v-html="reply.replyContents"></div>
             </div>
 
             <!-- 관리자 답변 작성 -->
             <div v-if="sessionStatus == 'A'" class="admin-reply-form">
                 <h3>관리자 답변 작성</h3>
                 <div class="reply-container">
-                    <textarea class="replyform" v-model="qsCategory" placeholder="답변을 입력하세요."></textarea>
+                    <textarea class="replyform" v-model="replyContents" @keyup.enter="fnSaveReply" placeholder="답변을 입력하세요."></textarea>
                     <div class="button-container">
                         <button @click="fnSaveReply">답변 저장</button>
                     </div>
@@ -67,9 +67,11 @@
             return {
                 qsNo : "${map.qsNo}",
                 info : {},
+                reply : {},
                 sessionId: "${sessionId}",
                 sessionStatus: "${sessionStatus}",
-                adminReplyText: ""
+                adminReplyText: "",
+                replyContents: ""
             };
         },
         methods: {
@@ -87,6 +89,7 @@
 					success : function(data) { 
 						console.log(data);
                         self.info = data.info;
+                        self.reply = data.reply;
 					}
 				});
             },
@@ -120,7 +123,9 @@
                 var self = this;
                 var nparmap = {
                     qsNo: self.qsNo,
-                    qsCategory: self.qsCategory
+                    replyContents: self.replyContents,
+                    adminId: self.sessionId,
+                    userId: self.sessionId
                 };
                 $.ajax({
                     url: "/inquire/replySave.dox",
@@ -129,9 +134,7 @@
                     data: nparmap,
                     success: function (data) {
                         if (data.result == "success") {
-                            alert("답변이 저장되었습니다!");
-                            self.info.adminReply = self.adminReplyText;  // UI 업데이트
-                            self.adminReplyText = "";  // 입력창 초기화
+                            self.fnInquire();
                         } else {
                             alert("답변 저장 실패");
                         }

@@ -61,6 +61,12 @@ public class PayService {
 	        } else {
 	            session.setAttribute("shippingFee", "3000");
 	        }
+	        
+	        if (map.get("gradeDiscount") != null) {
+	            session.setAttribute("gradeDiscount", map.get("gradeDiscount"));
+	        } else {
+	            session.setAttribute("gradeDiscount", "0");
+	        }
 
 	        resultMap.put("result", "success");
 	    } catch (Exception e) {
