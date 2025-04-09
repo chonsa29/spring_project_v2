@@ -69,6 +69,8 @@ public interface CommunityMapper {
 	int selectLastPostId(HashMap<String, Object> map);
 
 	void insertGroupMember(HashMap<String, Object> map);
+	
+	
 
 	void updateMemberJoin(HashMap<String, Object> map);
 

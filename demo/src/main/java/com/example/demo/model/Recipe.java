@@ -1,7 +1,7 @@
 package com.example.demo.model;
 
 import lombok.Data;
-
+import java.util.Date;
 @Data
 public class Recipe {
 	
@@ -14,7 +14,7 @@ public class Recipe {
     private String title;
     private String userId;
     private String cnt;
-    private String cdatetime;
+    private Date cdatetime;
     private int likes;
     private String postCategory;
     private boolean isLiked;
@@ -111,11 +111,11 @@ public class Recipe {
 		this.cnt = cnt;
 	}
 
-	public String getCdatetime() {
+	public Date getCdatetime() {
 		return cdatetime;
 	}
 
-	public void setCdatetime(String cdatetime) {
+	public void setCdatetime(Date cdatetime) {
 		this.cdatetime = cdatetime;
 	}
 

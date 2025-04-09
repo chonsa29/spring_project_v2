@@ -12,7 +12,7 @@
             <title>상품 관리</title>
             <style>
                 /* 추가적인 인라인 스타일이 필요한 경우 여기에 작성 */
-            </style>    
+            </style>
         </head>
 
         <body>
@@ -32,6 +32,9 @@
                             <li><a href="#" @click="showSection('product-management')">상품 관리</a></li>
                             <li><a href="#" @click="showSection('order-management')">주문 관리</a></li>
                             <li><a href="#" @click="showSection('member-management')">회원 관리</a></li>
+                            <li><a href="#" @click="showSection('board-management')">게시판 관리</a></li>
+                            <li><a href="#" @click="showSection('inquiry-management')">문의 관리</a></li>
+                            <li><a href="#" @click="showSection('delivery-management')">배송 관리</a></li>
                         </ul>
                     </div>
 
@@ -181,7 +184,8 @@
                                         <tr v-for="item in productList" :key="item.itemNo">
                                             <td>{{ item.itemNo }}</td>
                                             <td>
-                                                <a href="javascript:;" @click="fnEdit(item.itemNo)">{{ item.itemName }}</a>
+                                                <a href="javascript:;" @click="fnEdit(item.itemNo)">{{ item.itemName
+                                                    }}</a>
                                             </td>
                                             <td>{{ formatCurrency(item.price) }}</td>
                                             <td>{{ item.itemCount }}</td>
@@ -400,18 +404,8 @@
                             <div class="card mb-4">
                                 <div class="card-body">
                                     <div class="row g-3">
-                                        <div class="col-md-3">
-                                            <label class="form-label">회원 상태</label>
-                                            <select class="form-select" v-model="memberSearch.status">
-                                                <option value="">전체</option>
-                                                <option value="ACTIVE">활성</option>
-                                                <option value="DORMANT">휴면</option>
-                                                <option value="BANNED">정지</option>
-                                                <option value="WITHDRAWN">탈퇴</option>
-                                            </select>
-                                        </div>
                                         <div class="col-md-4">
-                                            <label class="form-label">검색 조건</label>
+                                            <label class="form-label">검색</label>
                                             <div class="input-group">
                                                 <select class="form-select" v-model="memberSearch.searchType"
                                                     style="max-width: 120px;">
@@ -492,6 +486,212 @@
                                                 :class="{ disabled: memberCurrentPage === memberTotalPages }">
                                                 <a class="page-link" href="#"
                                                     @click.prevent="changeMemberPage(memberCurrentPage + 1)">다음</a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 게시판 관리 섹션 -->
+                        <div v-if="currentSection === 'board-management'" class="section">
+                            <h3>게시판 관리</h3>
+
+                            <!-- 검색 필터 -->
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <input type="text" class="form-control" v-model="boardSearch.keyword"
+                                                placeholder="제목/작성자 검색">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <select class="form-select" v-model="boardSearch.boardType">
+                                                <option value="">전체 게시판</option>
+                                                <option value="notice">공지사항</option>
+                                                <option value="qna">Q&A</option>
+                                            </select>
+                                        </div>
+                                        <button class="btn btn-primary col-md-2" @click="searchBoards">검색</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 게시글 테이블 -->
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>번호</th>
+                                        <th>제목</th>
+                                        <th>작성자</th>
+                                        <th>작성일</th>
+                                        <th>조회수</th>
+                                        <th>관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="board in boardList" :key="board.postId">
+                                        <td>{{ board.postId }}</td>
+                                        <td>{{ board.title }}</td>
+                                        <td>{{ board.userId }}</td>
+                                        <td>{{ formatDate(board.cdatetime) }}</td>
+                                        <td>{{ board.cnt }}</td>
+                                        <td>
+                                            <button @click="deleteBoard(board.postId)"
+                                                class="btn btn-sm btn-danger">삭제</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- 페이징 -->
+                            <nav v-if="boardTotalPages > 1">
+                                <ul class="pagination">
+                                    <li v-for="page in boardDisplayedPages" :key="page"
+                                        :class="{ active: page === boardCurrentPage }">
+                                        <a @click="changeBoardPage(page)">{{ page }}</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+
+                        <!-- 문의 관리 섹션 -->
+                        <div v-if="currentSection === 'inquiry-management'" class="section">
+                            <h3>문의 관리</h3>
+
+                            <!-- 상태 필터 -->
+                            <div class="mb-3">
+                                <select v-model="inquiryFilter.status" @change="fetchInquiries">
+                                    <option value="all">전체 문의</option>
+                                    <option value="pending">답변 대기</option>
+                                    <option value="completed">답변 완료</option>
+                                </select>
+                            </div>
+
+                            <div v-for="inquiry in inquiries" :key="inquiry.qsNo" class="inquiry-item">
+                                <div class="inquiry-header">
+                                    <span>[{{ inquiry.qsCategory }}] {{ inquiry.qsTitle }}</span>
+                                    <span>{{ inquiry.userId }} | {{ formatDate(inquiry.cdatetime) }}</span>
+                                    <span class="badge" :class="inquiry.qsStatus === '1' ? 'bg-success' : 'bg-warning'">
+                                        {{ inquiry.qsStatus === '1' ? '답변완료' : '답변대기' }}
+                                    </span>
+                                </div>
+                                <!-- HTML 태그 이스케이프 처리 -->
+                                <div class="inquiry-content" v-html="stripHtml(inquiry.qsContents)"></div>
+
+                                <!-- 답변 영역 -->
+                                <div v-if="inquiry.replies && inquiry.replies.length > 0" class="answer-section">
+                                    <div v-for="reply in inquiry.replies" :key="reply.replyNo" class="reply-item">
+                                        <strong>{{ reply.adminId }}</strong>
+                                        <p v-html="stripHtml(reply.replyContents)"></p>
+                                        <small>{{ formatDate(reply.cdatetime) }}</small>
+                                        <button @click="deleteReply(reply.replyNo, inquiry.qsNo)"
+                                            class="btn btn-sm btn-danger">삭제</button>
+                                    </div>
+                                </div>
+                                <div v-else class="reply-form">
+                                    <textarea v-model="inquiry.newReply" placeholder="답변 내용 입력"></textarea>
+                                    <button @click="submitReply(inquiry.qsNo, inquiry.newReply)"
+                                        class="btn btn-primary">답변 등록</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-if="currentSection === 'delivery-management'" class="section">
+                            <h3>배송 관리</h3>
+
+                            <!-- 검색 필터 -->
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <select class="form-select" v-model="deliverySearch.searchType">
+                                                <option value="orderKey">주문번호</option>
+                                                <option value="trackingNumber">운송장번호</option>
+                                                <option value="userName">회원명</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control"
+                                                v-model="deliverySearch.searchKeyword" @keyup.enter="searchDeliveries"
+                                                placeholder="검색어 입력">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <button class="btn btn-primary me-2" @click="searchDeliveries">검색</button>
+                                            <button class="btn btn-outline-secondary"
+                                                @click="resetDeliverySearch">초기화</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 배송 목록 -->
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>배송번호</th>
+                                                    <th>주문번호</th>
+                                                    <th>회원명</th>
+                                                    <th>배송상태</th>
+                                                    <th>운송장번호</th>
+                                                    <th>배송예정일</th>
+                                                    <th>배송비</th>
+                                                    <th>관리</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="delivery in deliveryList" :key="delivery.deliveryNo">
+                                                    <td>{{ delivery.deliveryNo }}</td>
+                                                    <td>{{ delivery.orderKey }}</td>
+                                                    <td>{{ delivery.userName }}</td>
+                                                    <td>
+                                                        <select class="form-select form-select-sm"
+                                                            v-model="delivery.deliveryStatus"
+                                                            @change="updateDeliveryStatus(delivery.deliveryNo, delivery.deliveryStatus)">
+                                                            <option value="READY">배송준비중</option>
+                                                            <option value="IN_PROGRESS">배송중</option>
+                                                            <option value="COMPLETED">배송완료</option>
+                                                            <option value="CANCELED">배송취소</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control form-control-sm"
+                                                            v-model="delivery.trackingNumber"
+                                                            @blur="updateTrackingNumber(delivery.deliveryNo, delivery.trackingNumber)">
+                                                    </td>
+                                                    <td>{{ delivery.deliveryDate }}</td>
+                                                    <td>{{ formatCurrency(delivery.deliveryFee) }}</td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary"
+                                                            @click="showDeliveryDetail(delivery.deliveryNo)">
+                                                            상세보기
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                <tr v-if="deliveryList.length === 0">
+                                                    <td colspan="8" class="text-center">조회된 배송 정보가 없습니다.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- 페이징 -->
+                                    <nav v-if="deliveryTotalPages > 1">
+                                        <ul class="pagination justify-content-center mt-3">
+                                            <li class="page-item" :class="{ disabled: deliveryCurrentPage === 1 }">
+                                                <a class="page-link" href="#"
+                                                    @click.prevent="changeDeliveryPage(deliveryCurrentPage - 1)">이전</a>
+                                            </li>
+                                            <li class="page-item" v-for="page in deliveryDisplayedPages" :key="page"
+                                                :class="{ active: page === deliveryCurrentPage }">
+                                                <a class="page-link" href="#"
+                                                    @click.prevent="changeDeliveryPage(page)">{{ page }}</a>
+                                            </li>
+                                            <li class="page-item"
+                                                :class="{ disabled: deliveryCurrentPage === deliveryTotalPages }">
+                                                <a class="page-link" href="#"
+                                                    @click.prevent="changeDeliveryPage(deliveryCurrentPage + 1)">다음</a>
                                             </li>
                                         </ul>
                                     </nav>
@@ -772,6 +972,7 @@
                 </div>
             </div>
 
+
             <!-- Bootstrap JS -->
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -852,10 +1053,60 @@
                         currentMember: null,
                         memberCurrentPage: 1,
                         memberPageSize: 10,
-                        memberTotalCount: 0
+                        memberTotalCount: 0,
+
+                        // 게시판 관리 데이터
+                        boardList: [],
+                        boardSearch: {
+                            keyword: '',
+                            boardType: '',
+                            page: 1,
+                            size: 10
+                        },
+                        boardCurrentPage: 1,
+                        boardTotalCount: 0,
+                        // 문의 관리 데이터
+                        inquiries: [],
+                        inquiryFilter: {
+                            status: 'all'
+                        },
+                        deliverySearch: {
+                            searchType: 'orderKey',
+                            searchKeyword: '',
+                            page: 1,
+                            size: 10
+                        },
+                        deliveryList: [],
+                        deliveryCurrentPage: 1,
+                        deliveryPageSize: 10,
+                        deliveryTotalCount: 0
                     };
                 },
                 computed: {
+                    deliveryTotalPages() {
+                        return Math.ceil(this.deliveryTotalCount / this.deliveryPageSize);
+                    },
+                    deliveryDisplayedPages() {
+                        const pages = [];
+                        const startPage = Math.max(1, this.deliveryCurrentPage - 2);
+                        const endPage = Math.min(this.deliveryTotalPages, startPage + 4);
+
+                        for (let i = startPage; i <= endPage; i++) {
+                            pages.push(i);
+                        }
+                        return pages;
+                    },
+                    // 게시판 페이징 계산
+                    boardTotalPages() {
+                        return Math.ceil(this.boardTotalCount / this.boardSearch.size);
+                    },
+                    boardDisplayedPages() {
+                        const range = [];
+                        for (let i = 1; i <= this.boardTotalPages; i++) {
+                            range.push(i);
+                        }
+                        return range;
+                    },
                     totalPages() {
                         return Math.ceil(this.totalCount / this.pageSize);
                     },
@@ -1172,6 +1423,11 @@
                             this.loadDashboardData();
                         } else if (section === 'product-management') {
                             this.fetchProducts();
+                        }
+                        else if (section === 'board-management') {
+                            this.fetchBoards();
+                        } else if (section === 'inquiry-management') {
+                            this.fetchInquiries();
                         }
                     },
                     formatDateTime(dateString) {
@@ -1511,7 +1767,11 @@
                     // 날짜 포맷팅
                     formatDate(dateString) {
                         if (!dateString) return '';
-                        return dateString.split(' ')[0]; // 시간 부분 제거
+                        const date = new Date(dateString);
+                        return date.toLocaleDateString('ko-KR') + ' ' + date.toLocaleTimeString('ko-KR', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
                     },
                     fnDelete(itemNo) {
                         var self = this;
@@ -1553,6 +1813,216 @@
                             default: return status || '알 수 없음';
                         }
                     },
+                    // 게시판 관리
+                    async fetchBoards() {
+                        try {
+                            const response = await $.ajax({
+                                url: '/admin/dashboard/boards',
+                                method: 'GET',
+                                data: this.boardSearch
+                            });
+                            console.log(response);
+                            this.boardList = response.data;
+                            this.boardTotalCount = response.totalCount;
+                        } catch (error) {
+                            console.error('게시판 조회 실패:', error);
+                        }
+                    },
+                    searchBoards() {
+                        this.boardCurrentPage = 1;
+                        this.fetchBoards();
+                    },
+                    changeBoardPage(page) {
+                        this.boardCurrentPage = page;
+                        this.boardSearch.page = page;
+                        this.fetchBoards();
+                    },
+                    async deleteBoard(id) {
+                        if (confirm('정말 삭제하시겠습니까?')) {
+                            await $.ajax({
+                                url: `/admin/dashboard/boards/${id}`,
+                                method: 'DELETE'
+                            });
+                            this.fetchBoards();
+                        }
+                    },
+
+                    // 문의 관리
+                    async fetchInquiries() {
+                        try {
+                            const response = await $.ajax({
+                                url: '/admin/dashboard/inquiries',
+                                type: 'GET',
+                                data: { status: 'pending' }, // pending/completed/all
+                                success: function (inquiries) {
+                                    console.log(inquiries);
+                                    inquiries.forEach(inquiry => {
+                                        let statusBadge = inquiry.qsStatus === 'Y' ?
+                                            '<span class="badge bg-success">답변완료</span>' :
+                                            '<span class="badge bg-warning">미답변</span>';
+
+                                        $('#inquiry-table').append(`
+                <tr>
+                    <td>${inquiry.qsNo}</td>
+                    <td>${inquiry.qsTitle}</td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <button onclick="loadReplies(${inquiry.qsNo})" 
+                                class="btn btn-sm btn-info">답변보기</button>
+                    </td>
+                </tr>
+            `);
+                                    });
+                                }
+                            });
+                            this.inquiries = response.map(inquiry => ({
+                                ...inquiry,
+                                answerText: ''
+                            }));
+                        } catch (error) {
+                            console.error('문의 조회 실패:', error);
+                        }
+                    },
+                    submitReply(qsNo) {
+                        const replyContent = $('#reply-content').val();
+
+                        $.ajax({
+                            url: `/admin/dashboard/inquiries/${qsNo}/reply`,
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({
+                                replyContents: replyContent,
+                                userId: $('#inquiry-user-id').val() // 문의 작성자 ID
+                            }),
+                            success: function () {
+                                alert('답변이 등록되었습니다.');
+                                loadReplies(qsNo); // 답변 목록 갱신
+                                // 문의 상태 자동 변경됨 (서버에서 처리)
+                            }
+                        });
+                    },
+                    loadReplies(qsNo) {
+                        $.ajax({
+                            url: `/admin/inquiries/${qsNo}/replies`,
+                            type: 'GET',
+                            success: function (replies) {
+                                $('#reply-list').empty();
+                                replies.forEach(reply => {
+                                    $('#reply-list').append(`
+                    <div class="reply-item">
+                        <strong>${reply.adminId}</strong>
+                        <p>${reply.replyContents}</p>
+                        <small>${formatDate(reply.cdatetime)}</small>
+                        <button onclick="deleteReply(${reply.replyNo})" 
+                                class="btn btn-sm btn-danger">삭제</button>
+                    </div>
+                `);
+                                });
+                            }
+                        });
+                    },
+                    deleteReply(replyNo) {
+                        if (!confirm('답변을 삭제하시겠습니까?')) return;
+
+                        $.ajax({
+                            url: `/admin/inquiries/replies/${replyNo}`,
+                            type: 'DELETE',
+                            success: function () {
+                                alert('삭제되었습니다.');
+                                // 삭제 후 문의 상태를 "N"으로 변경
+                                $.ajax({
+                                    url: `/admin/inquiries/${qsNo}/status`,
+                                    type: 'PUT',
+                                    data: { status: 'N' }
+                                });
+                            }
+                        });
+                    },
+                    stripHtml(html) {
+                        const tmp = document.createElement("div");
+                        tmp.innerHTML = html;
+                        return tmp.textContent || tmp.innerText || "";
+                    },
+                    // 배송 관리 관련 메서드
+                    searchDeliveries() {
+                        this.deliveryCurrentPage = 1;
+                        this.fetchDeliveries();
+                    },
+
+                    resetDeliverySearch() {
+                        this.deliverySearch = {
+                            searchType: 'orderKey',
+                            searchKeyword: '',
+                            page: 1,
+                            size: 10
+                        };
+                        this.fetchDeliveries();
+                    },
+
+                    fetchDeliveries() {
+                        const params = {
+                            ...this.deliverySearch,
+                            page: this.deliveryCurrentPage,
+                            size: this.deliveryPageSize
+                        };
+
+                        $.ajax({
+                            url: "/admin/dashboard/delivery/list",
+                            type: "GET",
+                            dataType: "json",
+                            data: params,
+                            success: (response) => {
+                                console.log(response);
+                                this.deliveryList = response.list;
+                                this.deliveryTotalCount = response.total;
+                            }
+                        });
+                    },
+
+                    updateDeliveryStatus(deliveryNo, status) {
+                        $.ajax({
+                            url: "/admin/dashboard/delivery/updateStatus",
+                            type: "POST",
+                            data: {
+                                deliveryNo: deliveryNo,
+                                status: status
+                            },
+                            success: () => {
+                                alert("배송 상태가 업데이트되었습니다.");
+                            }
+                        });
+                    },
+
+                    updateTrackingNumber(deliveryNo, trackingNumber) {
+                        if (!trackingNumber) {
+                            alert("운송장 번호를 입력해주세요.");
+                            return;
+                        }
+
+                        $.ajax({
+                            url: "/admin/dashboard/delivery/updateTracking",
+                            type: "POST",
+                            data: {
+                                deliveryNo: deliveryNo,
+                                trackingNumber: trackingNumber
+                            },
+                            success: () => {
+                                alert("운송장 번호가 업데이트되었습니다.");
+                            }
+                        });
+                    },
+
+                    showDeliveryDetail(deliveryNo) {
+                        // 배송 상세 정보 표시 로직
+                        console.log("배송 상세 보기:", deliveryNo);
+                    },
+
+                    changeDeliveryPage(page) {
+                        if (page < 1 || page > this.deliveryTotalPages) return;
+                        this.deliveryCurrentPage = page;
+                        this.deliverySearch.page = page;
+                        this.fetchDeliveries();
+                    }
                 },
                 mounted() {
                     this.loadDashboardData();

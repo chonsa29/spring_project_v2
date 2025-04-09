@@ -110,4 +110,9 @@ public class PayService {
 		return resultMap;
 	}
 
+	public List<Product> getAll() {
+		// TODO Auto-generated method stub
+		return payMapper.selectAllProducts();
+	}
+
 }

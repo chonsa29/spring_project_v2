@@ -171,6 +171,8 @@ body {
 }
 
 .footer .container {
+	position:relative;
+	top:0;
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
@@ -353,6 +355,7 @@ body {
     outline: none;         
     width: 100%;
     box-sizing: border-box;
+    font-family: 'Pretendard', sans-serif;  
 }
 
 .chat-footer textarea:focus {
