@@ -117,7 +117,33 @@ public class DashboardController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
         
-        return dashboardService.getDeliveryList(searchType, searchKeyword, page, size);
+        Map<String, Object> result = dashboardService.getDeliveryList(searchType, searchKeyword, page, size);
+        
+        // 안전한 로깅 방식으로 변경
+        List<?> list = (List<?>) result.get("list");
+        System.out.println("Total count: " + result.get("total"));
+        System.out.println("List size: " + list.size());
+        
+        if(!list.isEmpty()) {
+            System.out.println("First item: " + list.get(0));
+        } else {
+            System.out.println("List is empty");
+        }
+        
+        return result;
+    }
+    
+    @GetMapping("/delivery/detail/{deliveryNo}")
+    public ResponseEntity<Map<String, Object>> getDeliveryDetail(
+            @PathVariable int deliveryNo) {
+        
+        Map<String, Object> deliveryDetail = dashboardService.getDeliveryDetail(deliveryNo);
+        
+        if(deliveryDetail == null || deliveryDetail.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        return ResponseEntity.ok(deliveryDetail);
     }
 
     // 배송 상태 업데이트

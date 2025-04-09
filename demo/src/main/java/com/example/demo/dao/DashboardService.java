@@ -66,23 +66,23 @@ public class DashboardService {
 
 	// 문의 목록 조회
 	public List<Question> getInquiries(String status) {
-	    Map<String, Object> params = new HashMap<>();
-	    if (!"all".equals(status)) {
-	        params.put("status", status.equals("pending") ? "1" : "0"); // "pending" → "0", "completed" → "1"
-	    }
-	    System.out.println(params);
-	    return dashboardMapper.selectInquiryList(params);
+		Map<String, Object> params = new HashMap<>();
+		if (!"all".equals(status)) {
+			params.put("status", status.equals("pending") ? "1" : "0"); // "pending" → "0", "completed" → "1"
+		}
+		System.out.println(params);
+		return dashboardMapper.selectInquiryList(params);
 	}
 
 	// 답변 등록 + 상태 변경
 	@Transactional
 	public void addReply(QuestionReply reply) {
-	    // 필수 필드 검증 추가
-	    if (reply.getAdminId() == null || reply.getAdminId().isEmpty()) {
-	        throw new IllegalArgumentException("관리자 ID는 필수입니다.");
-	    }
-	    dashboardMapper.insertReply(reply);
-	    dashboardMapper.updateInquiryStatus(reply.getQsNo(), "1"); // 상태를 '1'(완료)로 업데이트
+		// 필수 필드 검증 추가
+		if (reply.getAdminId() == null || reply.getAdminId().isEmpty()) {
+			throw new IllegalArgumentException("관리자 ID는 필수입니다.");
+		}
+		dashboardMapper.insertReply(reply);
+		dashboardMapper.updateInquiryStatus(reply.getQsNo(), "1"); // 상태를 '1'(완료)로 업데이트
 	}
 
 	// 답변 목록 조회
@@ -99,26 +99,37 @@ public class DashboardService {
 			dashboardMapper.updateInquiryStatus(qsNo, "1");
 		}
 	}
+
+	public Map<String, Object> getDeliveryDetail(int deliveryNo) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("deliveryNo", deliveryNo);
+	    
+	    return dashboardMapper.selectDeliveryDetail(params);
+	}
 	
-	   public Map<String, Object> getDeliveryList(String searchType, String searchKeyword, int page, int size) {
-	        Map<String, Object> params = new HashMap<>();
-	        params.put("searchType", searchType);
-	        params.put("searchKeyword", searchKeyword);
-	        params.put("offset", (page - 1) * size);
-	        params.put("limit", size);
+	public Map<String, Object> getDeliveryList(String searchType, String searchKeyword, int page, int size) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("searchType", searchType);
+		params.put("searchKeyword", searchKeyword);
+		params.put("offset", (page - 1) * size);
+		params.put("limit", size);
 
-	        Map<String, Object> result = new HashMap<>();
-	        result.put("list", dashboardMapper.selectDeliveryList(params));
-	        result.put("total", dashboardMapper.selectDeliveryCount(params));
-	        System.out.println(result);
-	        return result;
-	    }
+		System.out.println("Executing with params: " + params);
 
-	    public void updateDeliveryStatus(int deliveryNo, String status) {
-	        dashboardMapper.updateDeliveryStatus(deliveryNo, status);
-	    }
+		List<Map<String, Object>> list = dashboardMapper.selectDeliveryList(params);
+		int total = dashboardMapper.selectDeliveryCount(params);
 
-	    public void updateTrackingNumber(int deliveryNo, String trackingNumber) {
-	        dashboardMapper.updateTrackingNumber(deliveryNo, trackingNumber);
-	    }
+		System.out.println("Query returned " + list.size() + " items");
+		System.out.println("Total count from DB: " + total);
+
+		return Map.of("list", list, "total", total);
+	}
+
+	public void updateDeliveryStatus(int deliveryNo, String status) {
+		dashboardMapper.updateDeliveryStatus(deliveryNo, status);
+	}
+
+	public void updateTrackingNumber(int deliveryNo, String trackingNumber) {
+		dashboardMapper.updateTrackingNumber(deliveryNo, trackingNumber);
+	}
 }

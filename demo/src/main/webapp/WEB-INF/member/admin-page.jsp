@@ -616,8 +616,6 @@
                                         </div>
                                         <div class="col-md-3">
                                             <button class="btn btn-primary me-2" @click="searchDeliveries">검색</button>
-                                            <button class="btn btn-outline-secondary"
-                                                @click="resetDeliverySearch">초기화</button>
                                         </div>
                                     </div>
                                 </div>
@@ -641,30 +639,31 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr v-for="delivery in deliveryList" :key="delivery.deliveryNo">
-                                                    <td>{{ delivery.deliveryNo }}</td>
-                                                    <td>{{ delivery.orderKey }}</td>
-                                                    <td>{{ delivery.userName }}</td>
+                                                <tr v-for="delivery in deliveryList" :key="delivery.DELIVERYNO">
+                                                    <td>{{ delivery.DELIVERYNO }}</td>
+                                                    <td>{{ delivery.ORDERKEY }}</td>
+                                                    <td>{{ delivery.USERNAME }}</td>
                                                     <td>
                                                         <select class="form-select form-select-sm"
-                                                            v-model="delivery.deliveryStatus"
-                                                            @change="updateDeliveryStatus(delivery.deliveryNo, delivery.deliveryStatus)">
-                                                            <option value="READY">배송준비중</option>
-                                                            <option value="IN_PROGRESS">배송중</option>
-                                                            <option value="COMPLETED">배송완료</option>
-                                                            <option value="CANCELED">배송취소</option>
+                                                            v-model="delivery.DELIVERYSTATUS"
+                                                            @change="updateDeliveryStatus(delivery.DELIVERYNO, delivery.DELIVERYSTATUS)">
+                                                            <option value="P">배송준비중</option>
+                                                            <option value="D">배송중</option>
+                                                            <option value="S">배송완료</option>
+                                                            <option value="C">배송취소</option>
                                                         </select>
                                                     </td>
                                                     <td>
                                                         <input type="text" class="form-control form-control-sm"
-                                                            v-model="delivery.trackingNumber"
-                                                            @blur="updateTrackingNumber(delivery.deliveryNo, delivery.trackingNumber)">
+                                                            v-model="delivery.TRACKINGNUMBER"
+                                                            @blur="updateTrackingNumber(delivery.DELIVERYNO, $event.target.value)"
+                                                            @keyup.enter="updateTrackingNumber(delivery.DELIVERYNO, $event.target.value)">
                                                     </td>
-                                                    <td>{{ delivery.deliveryDate }}</td>
-                                                    <td>{{ formatCurrency(delivery.deliveryFee) }}</td>
+                                                    <td>{{ delivery.DELIVERYDATE }}</td>
+                                                    <td>{{ formatCurrency(delivery.DELIVERYFEE) }}</td>
                                                     <td>
                                                         <button class="btn btn-sm btn-outline-primary"
-                                                            @click="showDeliveryDetail(delivery.deliveryNo)">
+                                                            @click="showDeliveryDetail(delivery.DELIVERYNO)">
                                                             상세보기
                                                         </button>
                                                     </td>
@@ -972,6 +971,63 @@
                 </div>
             </div>
 
+            <!-- 배송 상세 모달 추가 -->
+            <div class="modal fade" id="deliveryDetailModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">배송 상세 정보 - {{ currentDelivery.DELIVERYNO }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" v-if="currentDelivery">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>배송 정보</h6>
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th>배송번호</th>
+                                            <td>{{ currentDelivery.DELIVERYNO }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>주문번호</th>
+                                            <td>{{ currentDelivery.ORDERKEY }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>배송상태</th>
+                                            <td>{{ getDeliveryStatusText(currentDelivery.DELIVERYSTATUS) }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>운송장번호</th>
+                                            <td>{{ currentDelivery.TRACKINGNUMBER || '-' }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>회원 정보</h6>
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th>회원명</th>
+                                            <td>{{ currentDelivery.USERNAME }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>연락처</th>
+                                            <td>{{ currentDelivery.USERPHONE }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>이메일</th>
+                                            <td>{{ currentDelivery.USEREMAIL }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
             <!-- Bootstrap JS -->
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -1079,7 +1135,16 @@
                         deliveryList: [],
                         deliveryCurrentPage: 1,
                         deliveryPageSize: 10,
-                        deliveryTotalCount: 0
+                        deliveryTotalCount: 0,
+                        currentDelivery: {  // 기본 구조 초기화
+                            DELIVERYNO: null,
+                            ORDERKEY: null,
+                            DELIVERYSTATUS: null,
+                            TRACKINGNUMBER: null,
+                            USERNAME: null,
+                            USERPHONE: null,
+                            USEREMAIL: null
+                        }
                     };
                 },
                 computed: {
@@ -1867,7 +1932,7 @@
                     <td>${inquiry.qsTitle}</td>
                     <td>${statusBadge}</td>
                     <td>
-                        <button onclick="loadReplies(${inquiry.qsNo})" 
+                        <button onclick="loadReplies(${inquiry.qsNo})"
                                 class="btn btn-sm btn-info">답변보기</button>
                     </td>
                 </tr>
@@ -1913,7 +1978,7 @@
                         <strong>${reply.adminId}</strong>
                         <p>${reply.replyContents}</p>
                         <small>${formatDate(reply.cdatetime)}</small>
-                        <button onclick="deleteReply(${reply.replyNo})" 
+                        <button onclick="deleteReply(${reply.replyNo})"
                                 class="btn btn-sm btn-danger">삭제</button>
                     </div>
                 `);
@@ -1975,6 +2040,10 @@
                                 console.log(response);
                                 this.deliveryList = response.list;
                                 this.deliveryTotalCount = response.total;
+                                return {
+                                    ...item,
+                                    originalTracking: item.trackingNumber // 원래 값 저장
+                                };
                             }
                         });
                     },
@@ -1994,8 +2063,16 @@
                     },
 
                     updateTrackingNumber(deliveryNo, trackingNumber) {
-                        if (!trackingNumber) {
+                        // 이전 값과 동일하면 API 호출 안 함
+                        const delivery = this.deliveryList.find(d => d.deliveryNo === deliveryNo);
+                        if (delivery.originalTracking === trackingNumber) {
+                            return;
+                        }
+
+                        // 유효성 검사
+                        if (!trackingNumber || trackingNumber.trim() === '') {
                             alert("운송장 번호를 입력해주세요.");
+                            delivery.trackingNumber = delivery.originalTracking; // 원래 값으로 복원
                             return;
                         }
 
@@ -2007,21 +2084,59 @@
                                 trackingNumber: trackingNumber
                             },
                             success: () => {
-                                alert("운송장 번호가 업데이트되었습니다.");
+                                // 성공 시 원래 값 업데이트
+                                delivery.originalTracking = trackingNumber;
+                                console.log("운송장 번호 업데이트 성공");
+                            },
+                            error: (xhr) => {
+                                console.error("운송장 번호 업데이트 실패:", xhr.responseText);
+                                alert("운송장 번호 업데이트에 실패했습니다.");
+                                delivery.trackingNumber = delivery.originalTracking; // 실패 시 원래 값으로 복원
                             }
                         });
                     },
 
                     showDeliveryDetail(deliveryNo) {
-                        // 배송 상세 정보 표시 로직
-                        console.log("배송 상세 보기:", deliveryNo);
+                        $.ajax({
+                            url: `/admin/dashboard/delivery/detail/${deliveryNo}`,
+                            type: "GET",
+                            dataType: "json",
+                            success: (response) => {
+                                console.log("상세 정보 응답:", response);
+                                this.currentDelivery = response;
+                                console.log(this.currentDelivery);
+                                this.showDetailModal(); // 모달 표시 메서드 호출
+                            },
+                            error: (xhr) => {
+                                console.error("상세 정보 조회 실패:", xhr.responseText);
+                                alert("배송 상세 정보를 불러오는데 실패했습니다.");
+                            }
+                        });
                     },
+                    showDetailModal() {
+                        // Bootstrap 모달 표시
+                        this.$nextTick(() => {
+                            const modal = new bootstrap.Modal(document.getElementById('deliveryDetailModal'));
+                            modal.show();
+                        });
 
+                        // 또는 직접 표시 (Bootstrap 없을 경우)
+                        // document.getElementById('deliveryDetailModal').style.display = 'block';
+                    },
                     changeDeliveryPage(page) {
                         if (page < 1 || page > this.deliveryTotalPages) return;
                         this.deliveryCurrentPage = page;
                         this.deliverySearch.page = page;
                         this.fetchDeliveries();
+                    },
+                    getDeliveryStatusText(status) {
+                        const statusMap = {
+                            'P': '배송준비중',
+                            'D': '배송중',
+                            'S': '배송완료',
+                            'C': '배송취소'
+                        };
+                        return statusMap[status] || status;
                     }
                 },
                 mounted() {
