@@ -86,7 +86,7 @@
                     <img :src="item.filePath" class="recommend-thumb">
                     <div class="recommend-info">
                         <p class="recommend-name">{{ item.itemName }}</p>
-                        <p class="recommend-price">{{ formatRecommendPrice(item.price) }}원</p>
+                        <p class="recommend-price">{{ formatPrice(item.price) }} 원</p>
                     </div>
                 </div>
                 <button class="btn" @click="loadMore">더보기</button>
@@ -124,8 +124,10 @@
         },
         methods: {
 
-            formatRecommendPrice(price) {
-                return price.toLocaleString();
+            formatPrice(value) {
+                const number = Number(value);
+                if (isNaN(number)) return value; // 숫자가 아니면 그대로 반환
+                return number.toLocaleString();
             },
             fnInfo(itemNo) {
                 pageChange("/product/info.do", { itemNo: itemNo });
