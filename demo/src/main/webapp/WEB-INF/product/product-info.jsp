@@ -45,32 +45,6 @@
                         </div>
                     </div>
                     <span v-if="allergensFlg" id="allergens-info">{{info.allergens}} 주의!</span>
-
-                    <!-- <div v-if="review.length > 0" class="review-summary">
-                        <div class="average-rating">
-                            <div id="review">
-                                별과 점수를 감싸는 wrapper
-                                <div class="star-wrapper">
-                                    <div class="stars">
-                                        <span v-for="n in 5" :key="n" class="star-container-main">
-                                            <span class="star empty">★</span>
-                                            <span class="star full" v-if="n <= Math.floor(reviewScore)">★</span>
-                                            반 별 (조건 추가)
-                                            <span class="star half"
-                                                v-else-if="n === Math.ceil(reviewScore) && (reviewScore % 1) >= 0.5">
-                                                ★
-                                            </span>
-                                        </span>
-                                    </div>
-                                    별점 숫자
-                                    <div class="review-score">
-                                        {{ reviewScore.toFixed(1) }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
-
                     <div class="discount-info">
                         <span class="product-discount-style">{{formatPrice(info.price * 3) }}원</span>
                         <span class="price">{{formattedPrice}}원</span>
