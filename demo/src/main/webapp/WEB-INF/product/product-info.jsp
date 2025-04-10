@@ -1006,7 +1006,10 @@
                                 if (self.likedItems.has(itemNo)) {
                                     self.likedItems.delete(itemNo);  // 좋아요 취소
                                     self.likeAction = 'remove';
-                                    self.showLikePopup = false;
+                                    self.showLikePopup = true;
+                                    setTimeout(() => {
+                                        self.showLikePopup = false;
+                                    }, 2000);
                                 }
                             } else {
                                 console.error("좋아요 처리 실패", data.message);
