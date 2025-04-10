@@ -1,15 +1,12 @@
 package com.example.demo.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -60,6 +57,15 @@ public class MemberController {
 
 		return "/member/admin-page";
 	}
+
+	@RequestMapping("/member/findPwd.do")
+	public String findPwd(Model model) throws Exception {
+
+		return "/member/findPwd";
+	}
+	
+	
+	
 
 	@RequestMapping(value = "/member/check.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
@@ -198,4 +204,17 @@ public class MemberController {
         HashMap<String, Object> resultMap = memberService.getInquiryList(map);
         return new Gson().toJson(resultMap);
     }
+    
+	@RequestMapping(value = "/member/find-password.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public Map<String, Object> findPassword(Model model, @RequestParam String userId, @RequestParam String email, @RequestParam HashMap<String, Object> map) throws Exception {
+		 Map<String, Object> response = new HashMap<>();
+
+	        boolean success = memberService.resetPassword(userId, email);
+
+	        response.put("success", success);
+	        response.put("message", success ? "임시 비밀번호가 이메일로 전송되었습니다." : "일치하는 회원 정보가 없습니다.");
+	        
+	        return response;
+	}
 }

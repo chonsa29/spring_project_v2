@@ -38,4 +38,6 @@ public interface MemberMapper {
     List<HashMap<String, Object>> selectCouponList(HashMap<String, Object> map);
     
     List<HashMap<String, Object>> selectInquiryList(HashMap<String, Object> map);
+
+	int updatePassword(HashMap<String, Object> map);
 }
