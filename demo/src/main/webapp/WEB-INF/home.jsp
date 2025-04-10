@@ -25,13 +25,13 @@
             <div class="swiper-container main-swiper">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide">
-                        <img src="/img/main1.jpg" alt="슬라이드 이미지 1">
+                        <img src="/img/banner1.png" alt="슬라이드 이미지 1">
                     </div>
                     <div class="swiper-slide">
-                        <img src="/img/main2.jpg" alt="슬라이드 이미지 2">
+                        <img src="/img/banner2.png" alt="슬라이드 이미지 2">
                     </div>
                     <div class="swiper-slide">
-                        <img src="/img/main3.jpg" alt="슬라이드 이미지 3">
+                        <img src="/img/banner3.png" alt="슬라이드 이미지 3">
                     </div>
                 </div>
                 <!-- 페이지네이션 -->
