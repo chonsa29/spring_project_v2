@@ -173,20 +173,27 @@ public class MemberController {
 		return new Gson().toJson(resultMap);
 	}
 
-	//주문 조회
-	@RequestMapping(value = "/member/myPage/orders.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	// 주문 목록 (페이징+정렬)
+	@RequestMapping(value = "/member/myPage/orderList.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
-	public String getRecentOrderInfo(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
-		HashMap<String, Object> resultMap = memberService.getRecentOrderInfo(map);
-		return new Gson().toJson(resultMap);
+	public String getOrderList(@RequestParam HashMap<String, Object> map) {
+	    map.put("sort", map.get("sort")); // date_desc, price_asc 등
+	    return new Gson().toJson(memberService.getOrderList(map));
 	}
-	
-	//찜목록 조회
-	@RequestMapping(value = "/member/myPage/wishList.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+
+	// 찜 목록 (페이징+정렬)
+	@RequestMapping(value = "/member/myPage/wishListAll.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
-	public String getWishListInfo(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
-		HashMap<String, Object> resultMap = memberService.getWishListInfo(map);
-		return new Gson().toJson(resultMap);
+	public String getWishListAll(@RequestParam HashMap<String, Object> map) {
+	    map.put("sort", map.get("sort"));
+	    return new Gson().toJson(memberService.getWishList(map));
+	}
+
+	// 찜 삭제
+	@RequestMapping(value = "/member/myPage/deleteWish.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String deleteWishItem(@RequestParam HashMap<String, Object> map) {
+	    return new Gson().toJson(memberService.deleteWishItem(map));
 	}
 	
     // 쿠폰함 조회
@@ -205,16 +212,5 @@ public class MemberController {
         return new Gson().toJson(resultMap);
     }
     
-	@RequestMapping(value = "/member/find-password.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	@ResponseBody
-	public Map<String, Object> findPassword(Model model, @RequestParam String userId, @RequestParam String email, @RequestParam HashMap<String, Object> map) throws Exception {
-		 Map<String, Object> response = new HashMap<>();
 
-	        boolean success = memberService.resetPassword(userId, email);
-
-	        response.put("success", success);
-	        response.put("message", success ? "임시 비밀번호가 이메일로 전송되었습니다." : "일치하는 회원 정보가 없습니다.");
-	        
-	        return response;
-	}
 }

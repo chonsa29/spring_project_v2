@@ -158,7 +158,7 @@
     <!-- 좋아요 추가 -->
     <insert id="addLike" parameterType="hashmap">
         INSERT INTO WISH
-        VALUES (WISH_SEQ.NEXTVAL, #{userId}, #{itemNo})
+        VALUES (WISH_SEQ.NEXTVAL, #{userId}, #{itemNo}, SYSDATE)
     </insert>
     
     <!-- 좋아요 취소 -->

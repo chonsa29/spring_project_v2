@@ -87,16 +87,29 @@ public class MemberService {
 		return resultMap;
 	}
 
-	public HashMap<String, Object> getMemberInfo(HashMap<String, Object> map) {
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		Member member = memberMapper.selectMemberInfo(map);
-		if (member != null) {
-			resultMap.put("member", member);
-			setGradeAndGroupNames(member);
-			calculateRemainPoint(member);
-		}
-		return resultMap;
-	}
+	 public HashMap<String, Object> getMemberGroupInfo(HashMap<String, Object> map) {
+	        HashMap<String, Object> resultMap = new HashMap<>();
+	        Member member = memberMapper.selectMemberGroupInfo(map);
+	        resultMap.put("groupInfo", member);
+	        return resultMap;
+	    }
+	    
+	    // 기존 getMemberInfo 메서드 수정
+	    public HashMap<String, Object> getMemberInfo(HashMap<String, Object> map) {
+	        HashMap<String, Object> resultMap = new HashMap<>();
+	        Member member = memberMapper.selectMemberInfo(map);
+	        
+	        // 그룹 정보 추가 로드
+	        Member groupInfo = memberMapper.selectMemberGroupInfo(map);
+	        if (groupInfo != null) {
+	            member.setGroupId(groupInfo.getGroupId());
+	            member.setGroupName(groupInfo.getGroupName());
+	            // ... 다른 그룹 필드들 설정
+	        }
+	        
+	        resultMap.put("member", member);
+	        return resultMap;
+	    }
 
 	public HashMap<String, Object> getMemberDetail(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
@@ -130,18 +143,44 @@ public class MemberService {
 		return resultMap;
 	}
 
-	public HashMap<String, Object> getRecentOrderInfo(HashMap<String, Object> map) {
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		Member orderInfo = memberMapper.selectRecentOrderInfo(map);
-		resultMap.put("orderInfo", orderInfo);
-		return resultMap;
+	// 주문 목록 조회
+	public HashMap<String, Object> getOrderList(HashMap<String, Object> map) {
+	    HashMap<String, Object> result = new HashMap<>();
+	    
+	    // 페이징 계산
+	    int page = Integer.parseInt(map.get("page").toString());
+	    int pageSize = Integer.parseInt(map.get("pageSize").toString());
+	    map.put("offset", (page - 1) * pageSize);
+	    
+	    result.put("orders", memberMapper.selectOrderList(map));
+	    result.put("totalCount", memberMapper.selectOrderCount(map));
+	    return result;
 	}
 
-	public HashMap<String, Object> getWishListInfo(HashMap<String, Object> map) {
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		Member wishInfo = memberMapper.selectWishListInfo(map);
-		resultMap.put("wishInfo", wishInfo);
-		return resultMap;
+	// 찜 목록 조회
+	public HashMap<String, Object> getWishList(HashMap<String, Object> map) {
+	    HashMap<String, Object> result = new HashMap<>();
+	    
+	    int page = Integer.parseInt(map.get("page").toString());
+	    int pageSize = Integer.parseInt(map.get("pageSize").toString());
+	    map.put("offset", (page - 1) * pageSize);
+	    
+	    result.put("wishList", memberMapper.selectWishList(map));
+	    result.put("totalCount", memberMapper.selectWishCount(map));
+	    return result;
+	}
+
+	// 찜 삭제
+	public HashMap<String, Object> deleteWishItem(HashMap<String, Object> map) {
+	    HashMap<String, Object> result = new HashMap<>();
+	    try {
+	        int affected = memberMapper.deleteWishItem(map);
+	        result.put("result", affected > 0 ? "success" : "fail");
+	    } catch (Exception e) {
+	        result.put("result", "error");
+	        result.put("message", e.getMessage());
+	    }
+	    return result;
 	}
 
 	// 등급명과 그룹명 설정

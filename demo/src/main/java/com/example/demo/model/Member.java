@@ -26,7 +26,6 @@ public class Member {
     private String recentOrderKey;
     private String orderStatus;
     private String orderDate;
-    private String recentWishProduct;
     private String wishCount;
     private String couponNo;
     private String isUsed;
@@ -41,6 +40,8 @@ public class Member {
     private String orderCount;
     private String zipCode;
     private String sale;
+    private String leaderId;
+    private String joinDate;
     
     // 추가 필드 (DB에는 없지만 화면에 표시하기 위해 사용)
     private String gradeName;

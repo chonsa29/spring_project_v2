@@ -31,13 +31,12 @@ public interface MemberMapper {
 
     Member selectMemberGradeInfo(HashMap<String, Object> map);
         
-    Member selectRecentOrderInfo(HashMap<String, Object> map);
+    List<Member> selectOrderList(HashMap<String, Object> map);      
         
-    Member selectWishListInfo(HashMap<String, Object> map);
+    List<Member> selectWishList(HashMap<String, Object> map);  
 
     List<HashMap<String, Object>> selectCouponList(HashMap<String, Object> map);
     
     List<HashMap<String, Object>> selectInquiryList(HashMap<String, Object> map);
 
-	int updatePassword(HashMap<String, Object> map);
-}
+

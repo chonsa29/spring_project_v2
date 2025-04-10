@@ -81,6 +81,10 @@
                         <li><i class="fas fa-id-card"></i> ID: {{ memberInfo.userId }}</li>
                         <li><i class="fas fa-user"></i> NAME: {{ memberInfo.userName }}</li>
                         <li><i class="fas fa-coins"></i> POINT: {{ memberInfo.point }} P</li>
+                        <li v-if="memberInfo.groupName">
+                            <i class="fas fa-users"></i> GROUP: {{ memberInfo.groupName }}
+                            <span v-if="memberInfo.leaderId === memberInfo.userId" class="group-badge">리더</span>
+                        </li>
                     </ul>
                 </aside>
 
@@ -139,7 +143,7 @@
                             </div>
                             <div class="info-row">
                                 <span class="info-label">소속 그룹</span>
-                                <span class="info-value">{{ memberInfo.groupName }}</span>
+                                <span class="info-value">{{ memberInfo.groupName || '없음' }}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">보유 포인트</span>
@@ -154,30 +158,88 @@
                                 <span class="info-value">{{ memberInfo.regDate }}</span>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- 주문내역 탭 -->
-                    <div v-if="currentTab === 'orders'">
-                        <h2 class="section-title">주문 내역</h2>
-
-                        <div class="content-card">
-                            <h3 class="card-title">최근 주문</h3>
+                        <!-- 추가된 그룹 정보 카드 -->
+                        <div class="content-card" v-if="memberInfo.groupName">
+                            <h3 class="card-title">소속 그룹 상세 정보</h3>
                             <div class="info-row">
-                                <span class="info-label">주문 번호</span>
-                                <span class="info-value">{{ orderInfo.recentOrderKey || '주문 내역이 없습니다.' }}</span>
+                                <span class="info-label">그룹명</span>
+                                <span class="info-value">{{ memberInfo.groupName }}</span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">상태</span>
-                                <span class="info-value">{{ orderInfo.orderStatus }}</span>
+                                <span class="info-label">그룹 리더</span>
+                                <span class="info-value">
+                                    {{ memberInfo.leaderId }}
+                                    <span v-if="memberInfo.leaderId === memberInfo.userId" class="group-badge"></span>
+                                </span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">주문일자</span>
-                                <span class="info-value">{{ orderInfo.orderDate }}</span>
+                                <span class="info-label">가입일</span>
+                                <span class="info-value">{{ formatDate(memberInfo.joinDate) }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">그룹 내 역할</span>
+                                <span class="info-value">{{ memberInfo.groupRole || '일반 멤버' }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">그룹 상태</span>
+                                <span class="info-value">{{ memberInfo.groupStatus === 'ACTIVE' ? '활성' : '비활성' }}</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 등급/그룹 탭 -->
+                    <!-- 주문내역 탭 (전체 수정 버전) -->
+                    <div v-if="currentTab === 'orders'">
+                        <h2 class="section-title">주문 내역 ({{ orderTotalCount }})</h2>
+
+                        <div class="sort-options">
+                            <select v-model="orderSort" @change="loadOrderList">
+                                <option value="date_desc">최신순</option>
+                                <option value="date_asc">오래된순</option>
+                                <option value="price_desc">높은금액순</option>
+                                <option value="price_asc">낮은금액순</option>
+                            </select>
+                        </div>
+
+                        <div v-if="orders.length === 0" class="empty-message">
+                            주문 내역이 없습니다.
+                        </div>
+
+                        <div v-for="order in orders" :key="order.orderKey" class="content-card">
+                            <div class="info-row">
+                                <span class="info-label">주문 번호</span>
+                                <span class="info-value">
+                                    {{ order.orderKey }}
+                                    <i class="fas fa-search action-btn" @click="viewOrderDetail(order.orderKey)"></i>
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">상태</span>
+                                <span class="info-value">{{ getOrderStatusText(order.orderStatus) }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">주문일자</span>
+                                <span class="info-value">{{ order.orderDate }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">총 금액</span>
+                                <span class="info-value">{{ formatNumber(order.totalPrice) }}원</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">상품 수</span>
+                                <span class="info-value">{{ order.itemCount }}개</span>
+                            </div>
+                        </div>
+
+                        <div class="pagination">
+                            <a v-for="page in orderPages" @click="changeOrderPage(page)"
+                                :class="{active: currentOrderPage === page}">
+                                {{ page }}
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- 등급/그룹 탭 (기존 코드 + 그룹 정보 추가) -->
                     <div v-if="currentTab === 'grade'">
                         <h2 class="section-title">등급 및 그룹 정보</h2>
 
@@ -199,11 +261,19 @@
                             </div>
                         </div>
 
-                        <div class="content-card">
+                        <div class="content-card" v-if="memberInfo.groupName">
                             <h3 class="card-title">소속 그룹</h3>
                             <div class="info-row">
                                 <span class="info-label">그룹명</span>
                                 <span class="info-value">{{ memberInfo.groupName }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">리더</span>
+                                <span class="info-value">{{ memberInfo.leaderId }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">가입 일자</span>
+                                <span class="info-value">{{ formatDate(memberInfo.joinDate) }}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">그룹 혜택</span>
@@ -212,19 +282,47 @@
                         </div>
                     </div>
 
-                    <!-- 기타 탭들 (간략화) -->
+                    <!-- 찜한상품 탭 (전체 수정 버전) -->
                     <div v-if="currentTab === 'wishlist'">
-                        <h2 class="section-title">찜한 상품</h2>
-                        <div class="content-card">
-                            <h3 class="card-title">최근 본 상품</h3>
+                        <h2 class="section-title">찜한 상품 ({{ wishTotalCount }})</h2>
+
+                        <div class="sort-options">
+                            <select v-model="wishSort" @change="loadWishList">
+                                <option value="date_desc">최신순</option>
+                                <option value="date_asc">오래된순</option>
+                                <option value="price_desc">높은가격순</option>
+                                <option value="price_asc">낮은가격순</option>
+                            </select>
+                        </div>
+
+                        <div v-if="wishList.length === 0" class="empty-message">
+                            찜한 상품이 없습니다.
+                        </div>
+
+                        <div v-for="wish in wishList" :key="wish.wishKey" class="content-card">
                             <div class="info-row">
                                 <span class="info-label">상품명</span>
-                                <span class="info-value">{{ wishInfo.recentWishProduct || '찜한 상품이 없습니다.' }}</span>
+                                <span class="info-value">
+                                    {{ wish.recentWishProduct }}
+                                    <i class="fas fa-search action-btn" @click="viewProductDetail(wish.itemNo)"></i>
+                                    <i class="fas fa-trash action-btn delete" @click="deleteWishItem(wish.wishKey)"></i>
+                                </span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">찜한 상품 수</span>
-                                <span class="info-value">{{ wishInfo.wishCount || 0 }}개</span>
+                                <span class="info-label">가격</span>
+                                <span class="info-value">{{ formatNumber(wish.price) }}원</span>
                             </div>
+                            <div class="info-row">
+                                <span class="info-label">찜한 날짜</span>
+                                <span class="info-value">{{ wish.addDate }}</span>
+                            </div>
+                        </div>
+
+                        <div class="pagination">
+                            <a v-for="page in wishPages" @click="changeWishPage(page)"
+                                :class="{active: currentWishPage === page}">
+                                {{ page }}
+                            </a>
                         </div>
                     </div>
 
@@ -287,14 +385,34 @@
                 return {
                     currentTab: 'profile',
                     memberInfo: {},
-                    orderInfo: {},
-                    wishInfo: {},
-                    coupons: [], 
+                    coupons: [],
                     inquiries: [],
                     isLoading: false,
                     error: null,
                     sessionStatus: "${sessionStatus}",
-                    userId: '${sessionId}'
+                    userId: '${sessionId}',
+                    // 주문 내역 관련
+                    orders: [],
+                    orderTotalCount: 0,
+                    currentOrderPage: 1,
+                    orderPageSize: 5,
+                    orderSort: 'date_desc',
+                    orderPages: [],
+
+                    // 찜 목록 관련
+                    wishList: [],
+                    wishTotalCount: 0,
+                    currentWishPage: 1,
+                    wishPageSize: 5,
+                    wishSort: 'date_desc',
+                    wishPages: [],
+                    // 추가된 그룹 필드
+                    groupId: '',
+                    groupName: '',
+                    leaderId: '',
+                    joinDate: '',
+                    groupRole: '',
+                    groupStatus: ''
                 };
             },
             methods: {
@@ -302,101 +420,223 @@
                     this.currentTab = tabName;
                     window.location.hash = tabName;
 
-                    // 필요한 경우 탭 변경 시 추가 데이터 로딩
-                    if (tabName === 'orders' && !this.orderInfo.recentOrderKey) {
-                        this.loadOrderInfo();
-                    } else if (tabName === 'grade' && !this.memberInfo.remainPoint) {
+                    if (tabName === 'orders' && this.orders.length === 0) {
+                        this.loadOrderList();
+                    } else if (tabName === 'wishlist' && this.wishList.length === 0) {
+                        this.loadWishList();
+                    } else if (tabName === 'profile') {
+                        this.loadMemberInfo();
+                    } else if (tabName === 'coupons') {
+                        this.loadCoupons();
+                    } else if (tabName === 'inquiries') {
+                        this.loadInquiries();
+                    } else if (tabName === 'grade') {
                         this.loadGradeInfo();
-                    } else if (tabName === 'wishlist' && !this.wishInfo.wishCount) {
-                        this.loadWishListInfo();
                     }
                 },
+
+                formatDate(date) {
+                    if (!date) return '';
+                    const d = new Date(date);
+                    return d.toLocaleDateString();
+                },
+
+                formatNumber(num) {
+                    return num?.toLocaleString() || '0';
+                },
+
+                showLoading() {
+                    this.isLoading = true;
+                },
+
+                hideLoading() {
+                    this.isLoading = false;
+                },
+
+                showError(message) {
+                    this.error = message;
+                    setTimeout(() => this.error = null, 3000);
+                },
+
+                // 회원정보 로드 (기존 코드 유지)
                 loadMemberInfo() {
                     var self = this;
-                    var nparmap = {
-                        userId: self.userId
-                    };
+                    var nparmap = { userId: self.userId };
                     $.ajax({
                         url: "/member/myPage/info.dox",
                         dataType: "json",
                         type: "POST",
                         data: nparmap,
                         success: function (data) {
-                            self.memberInfo = data.member;
+                            self.memberInfo = { ...self.memberInfo, ...data.member };
+                            self.setGradeAndGroupNames();
+                        },
+                        error: function (error) {
+                            console.error("회원 정보 로딩 실패:", error);
                         }
                     });
                 },
 
-                loadGradeInfo() {
+                loadGroupInfo() {
                     var self = this;
-                    self.isLoading = true;
-                    var nparmap = {
-                        userId: self.userId
-                    };
                     $.ajax({
-                        url: "/member/myPage/grade.dox",
+                        url: "/member/myPage/groupInfo.dox",
                         dataType: "json",
                         type: "POST",
-                        data: nparmap,
+                        data: { userId: this.userId },
                         success: function (data) {
                             console.log(data);
-                            if (data.member) {
-                                self.memberInfo.remainPoint = data.member.remainPoint;
+                            if (data.groupInfo) {
+                                self.memberInfo.groupId = data.groupInfo.groupId;
+                                self.memberInfo.groupName = data.groupInfo.groupName;
+                                self.memberInfo.leaderId = data.groupInfo.leaderId;
+                                self.memberInfo.joinDate = data.groupInfo.joinDate;
+                                self.memberInfo.groupRole = data.groupInfo.groupRole;
+                                self.memberInfo.groupStatus = data.groupInfo.groupStatus;
                             }
                         },
                         error: function (error) {
-                            console.error('등급 정보 로딩 실패:', error);
-                        },
-                        complete: function () {
-                            self.isLoading = false;
+                            console.error("그룹 정보 로딩 실패:", error);
                         }
                     });
                 },
 
-                loadOrderInfo() {
-                    var self = this;
-                    self.isLoading = true;
-                    var nparmap = {
-                        userId: self.userId
+                // 주문 내역 관련 메서드
+                loadOrderList() {
+                    this.showLoading();
+
+                    const self = this;
+                    const nparmap = {
+                        userId: this.userId,
+                        page: this.currentOrderPage,
+                        pageSize: this.orderPageSize,
+                        sort: this.orderSort
                     };
+
                     $.ajax({
-                        url: "/member/myPage/orders.dox",
+                        url: "/member/myPage/orderList.dox",
                         dataType: "json",
                         type: "POST",
                         data: nparmap,
                         success: function (data) {
                             console.log(data);
-                            self.orderInfo = data.orderInfo;
+                            self.orders = data.orders || [];
+                            self.orderTotalCount = data.totalCount || 0;
+                            self.calculateOrderPages();
                         },
                         error: function (error) {
-                            console.error('주문 정보 로딩 실패:', error);
+                            self.showError('주문 내역을 불러오는 중 오류가 발생했습니다.');
+                            console.error(error);
                         },
                         complete: function () {
-                            self.isLoading = false;
+                            self.hideLoading();
                         }
                     });
                 },
 
-                loadWishListInfo() {
-                    var self = this;
-                    self.isLoading = true;
-                    var nparmap = {
-                        userId: self.userId
+                calculateOrderPages() {
+                    const totalPages = Math.ceil(this.orderTotalCount / this.orderPageSize);
+                    this.orderPages = Array.from({ length: totalPages }, (_, i) => i + 1);
+                },
+
+                changeOrderPage(page) {
+                    this.currentOrderPage = page;
+                    this.loadOrderList();
+                },
+
+                getOrderStatusText(status) {
+                    const statusMap = {
+                        'PAY_COMPLETE': '결제완료',
+                        'PREPARING': '상품준비중',
+                        'DELIVERING': '배송중',
+                        'DELIVERED': '배송완료',
+                        'CANCELED': '취소됨'
                     };
+                    return statusMap[status] || status;
+                },
+
+                viewOrderDetail(orderKey) {
+                    window.location.href = '/order/detail.do?orderKey=' + orderKey;
+                },
+
+                // 찜 목록 관련 메서드
+                loadWishList() {
+                    this.showLoading();
+
+                    const self = this;
+                    const nparmap = {
+                        userId: this.userId,
+                        page: this.currentWishPage,
+                        pageSize: this.wishPageSize,
+                        sort: this.wishSort
+                    };
+
                     $.ajax({
-                        url: "/member/myPage/wishList.dox",
+                        url: "/member/myPage/wishListAll.dox",
                         dataType: "json",
                         type: "POST",
                         data: nparmap,
                         success: function (data) {
                             console.log(data);
-                            self.wishInfo = data.wishInfo;
+                            self.wishList = data.wishList || [];
+                            self.wishTotalCount = data.totalCount || 0;
+                            self.calculateWishPages();
                         },
                         error: function (error) {
-                            console.error('찜 목록 로딩 실패:', error);
+                            self.showError('찜 목록을 불러오는 중 오류가 발생했습니다.');
+                            console.error(error);
                         },
                         complete: function () {
-                            self.isLoading = false;
+                            self.hideLoading();
+                        }
+                    });
+                },
+
+                calculateWishPages() {
+                    const totalPages = Math.ceil(this.wishTotalCount / this.wishPageSize);
+                    this.wishPages = Array.from({ length: totalPages }, (_, i) => i + 1);
+                },
+
+                changeWishPage(page) {
+                    this.currentWishPage = page;
+                    this.loadWishList();
+                },
+
+                viewProductDetail(itemNo) {
+                    window.location.href = '/product/detail.do?itemNo=' + itemNo;
+                },
+
+                deleteWishItem(wishKey) {
+                    if (!confirm('정말 삭제하시겠습니까?')) return;
+
+                    this.showLoading();
+
+                    const self = this;
+                    const nparmap = {
+                        wishKey: wishKey,
+                        userId: this.userId
+                    };
+
+                    $.ajax({
+                        url: "/member/myPage/deleteWish.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: nparmap,
+                        success: function (data) {
+                            if (data.result === 'success') {
+                                console.log(data);
+                                self.showError('삭제되었습니다.');
+                                self.loadWishList();
+                            } else {
+                                self.showError('삭제 실패: ' + (data.message || ''));
+                            }
+                        },
+                        error: function (error) {
+                            self.showError('삭제 중 오류가 발생했습니다.');
+                            console.error(error);
+                        },
+                        complete: function () {
+                            self.hideLoading();
                         }
                     });
                 },
@@ -414,25 +654,39 @@
                         }
                     }
 
-                    // 그룹명 설정
-                    if (self.memberInfo.groupId) {
-                        switch (self.memberInfo.groupId) {
-                            case 1: self.memberInfo.groupName = "일반 그룹"; break;
-                            case 2: self.memberInfo.groupName = "프리미엄 그룹"; break;
-                            default: self.memberInfo.groupName = "기본 그룹";
-                        }
-                    }
-
                     // 다음 등급까지 남은 포인트 계산
                     if (self.memberInfo.grade && self.memberInfo.point) {
                         var requiredPoint = 0;
                         switch (self.memberInfo.grade) {
-                            case 1: requiredPoint = 2000; break; // 일반 -> VIP
-                            case 2: requiredPoint = 5000; break; // VIP -> VVIP
+                            case 1: requiredPoint = 2000; break;
+                            case 2: requiredPoint = 5000; break;
                             default: requiredPoint = 0;
                         }
-                        self.memberInfo.remainPoint = Math.max(0, requiredPoint -   self.memberInfo.point);
+                        self.memberInfo.remainPoint = Math.max(0, requiredPoint - self.memberInfo.point);
                     }
+                },
+
+                loadGradeInfo() {
+                    var self = this;
+                    self.isLoading = true;
+                    var nparmap = { userId: self.userId };
+                    $.ajax({
+                        url: "/member/myPage/grade.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: nparmap,
+                        success: function (data) {
+                            if (data.member) {
+                                self.memberInfo.remainPoint = data.member.remainPoint;
+                            }
+                        },
+                        error: function (error) {
+                            console.error('등급 정보 로딩 실패:', error);
+                        },
+                        complete: function () {
+                            self.isLoading = false;
+                        }
+                    });
                 },
                 // 쿠폰함 조회
                 loadCoupons() {
@@ -477,10 +731,6 @@
                         }
                     });
                 },
-                formatDate(date) {
-                    if (!date) return '';
-                    const d = new Date(date);
-                }
             },
             mounted() {
                 // URL 해시로부터 탭 정보 읽기
@@ -495,8 +745,8 @@
                 this.loadMemberInfo();
                 this.loadCoupons();
                 this.loadInquiries();
-                this.loadWishListInfo();
                 this.loadGradeInfo();
+                this.loadGroupInfo();
             }
         });
 
