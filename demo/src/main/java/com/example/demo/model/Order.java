@@ -19,4 +19,6 @@ public class Order {
 	private String orderCount;
 	private String pNo;
 	private String request;
+	private String itemCount;
+	private String totalPrice;
 }

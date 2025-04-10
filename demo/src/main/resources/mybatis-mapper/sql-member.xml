@@ -129,40 +129,73 @@
         WHERE 
             m.USERID = #{userId}
     </select>
-    
-    <!-- 최근 주문 정보 조회 -->
-    <select id="selectRecentOrderInfo" parameterType="hashmap" resultType="Member">
-        SELECT 
-            ORDER_KEY as recentOrderKey,
-            ORDER_STATUS as orderStatus,
-            TO_CHAR(ORDER_DATE, 'YYYY.MM.DD') as orderDate
-        FROM (
-            SELECT 
-                ORDER_KEY,
-                ORDER_STATUS,
-                ORDER_DATE
-            FROM 
-                ORDER_LIST
-            WHERE 
-                USERID = #{userId}
-            ORDER BY 
-                ORDER_DATE DESC
-        ) WHERE ROWNUM = 1
-    </select>
-    
-    <!-- 찜한 상품 정보 조회 -->
-    <select id="selectWishListInfo" parameterType="hashmap" resultType="Member">
-        SELECT 
-            COUNT(*) as wishCount,
-            NVL(MAX(p.ITEM_NAME),0) as recentWishProduct
-        FROM 
-            WISH w
-            JOIN PRODUCT p ON w.ITEM_NO = p.ITEM_NO
-        WHERE 
-            w.USERID= #{userId}
-            AND ROWNUM = 1
-    </select>
-    
+	    
+	<!-- 주문 목록 조회 -->
+	<select id="selectOrderList" resultType="Order">
+	    SELECT 
+	        o.ORDER_KEY as orderKey,
+	        o.ORDER_STATUS as orderStatus,
+	        TO_CHAR(o.ORDER_DATE, 'YYYY-MM-DD') as orderDate,
+	        NVL((
+	            SELECT SUM(d.PRICE * d.COUNT - NVL(d.DISCOUNT, 0)) 
+	            FROM order_details d 
+	            WHERE d.ORDER_ID = o.ORDER_KEY
+	        ), 0) as totalPrice,
+	        (
+	            SELECT COUNT(*) 
+	            FROM order_details d 
+	            WHERE d.ORDER_ID = o.ORDER_KEY
+	        ) as itemCount
+	    FROM ORDER_LIST o
+	    WHERE o.USERID = #{userId, jdbcType=VARCHAR}
+	        <choose>
+	            <when test="sort == 'date_desc'">ORDER BY o.ORDER_DATE DESC</when>
+	            <when test="sort == 'date_asc'">ORDER BY o.ORDER_DATE ASC</when>
+	            <when test="sort == 'price_desc'">ORDER BY totalPrice DESC</when>
+	            <when test="sort == 'price_asc'">ORDER BY totalPrice ASC</when>
+	            <otherwise>ORDER BY o.ORDER_DATE DESC</otherwise>
+	        </choose>
+	</select>
+	
+	<select id="selectOrderCount" resultType="int">
+	    SELECT COUNT(*) FROM ORDER_LIST WHERE USERID = #{userId}
+	</select>
+	
+	<!-- 찜 목록 조회 -->
+	<select id="selectWishList" resultType="Wish">
+	    SELECT *
+	    FROM (
+	        SELECT 
+	            w.WISH_KEY as wishKey,
+	            w.ITEM_NO as itemNo,
+	            p.ITEM_NAME as recentWishProduct,
+	            p.PRICE as price,
+	            TO_CHAR(w.ADD_DATE, 'YYYY.MM.DD') as addDate,
+	            ROW_NUMBER() OVER (
+	                <choose>
+	                    <when test="sort == 'date_desc'">ORDER BY w.ADD_DATE DESC</when>
+	                    <when test="sort == 'date_asc'">ORDER BY w.ADD_DATE ASC</when>
+	                    <when test="sort == 'price_desc'">ORDER BY p.PRICE DESC</when>
+	                    <when test="sort == 'price_asc'">ORDER BY p.PRICE ASC</when>
+	                    <otherwise>ORDER BY w.ADD_DATE DESC</otherwise>
+	                </choose>
+	            ) AS rn
+	        FROM WISH w
+	        JOIN PRODUCT p ON w.ITEM_NO = p.ITEM_NO
+	        WHERE w.USERID = #{userId}
+	    )
+	    WHERE rn BETWEEN #{offset} + 1 AND #{offset} + #{pageSize}
+	</select>
+		
+	<select id="selectWishCount" resultType="int">
+	    SELECT COUNT(*) FROM WISH WHERE USERID = #{userId}
+	</select>
+	
+	<!-- 찜 삭제 -->
+	<delete id="deleteWishItem">
+	    DELETE FROM WISH 	
+	    WHERE WISH_KEY = #{wishKey} AND USERID = #{userId}
+	</delete>
 	    <!-- 쿠폰 목록 조회 -->
 	<select id="selectCouponList" parameterType="hashmap" resultType="Member">
 	    SELECT 
@@ -193,5 +226,21 @@
 	        USERID = #{userId}
 	    ORDER BY 
 	        CDATETIME DESC
+	</select>
+	<!-- 사용자 그룹 정보 조회 -->
+	<select id="selectMemberGroupInfo" resultType="Member">
+	    SELECT 
+	        g.GROUP_ID as groupId,
+	        d.GROUP_NAME as groupName,
+	        d.LEADER_ID as leaderId,
+	        g.JOIN_DATE as joinDate,
+	        g.ROLE as groupRole,
+	        g.STATUS as groupStatus
+	    FROM 
+	        GROUP_INFO d
+	        JOIN GROUP_USER g ON g.GROUP_ID = d.GROUP_ID
+	    WHERE 
+	        g.USERID = #{userId}
+	        AND g.STATUS = 'ACTIVE'
 	</select>
 </mapper>
