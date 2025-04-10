@@ -46,11 +46,14 @@
                         <label>주문자 정보와 동일</label>
                     </div>
                     
-                    <input type="text" class="pay_ordererName" v-model="receiverName" placeholder="수령인">
-                    <input type="text" class="pay_ordererPhone" v-model="receiverPhone" placeholder="연락처">
-                    <input type="text" class="pay_zipcode" v-model="memberInfo.zipCode" placeholder="우편번호">
-                    <input type="text" class="pay_address" v-model="memberInfo.address" placeholder="주소">
-                    <input type="text" class="pay_detailAddress" v-model="detailAddress" placeholder="상세 주소">
+                    <form autocomplete="off">
+                        <input type="text" class="pay_ordererName" v-model="receiverName" placeholder="수령인">
+                        <input type="text" class="pay_ordererPhone" v-model="receiverPhone" placeholder="연락처">
+                        <input type="text" class="pay_zipcode" v-model="memberInfo.zipCode" placeholder="우편번호">
+                        <input type="text" class="pay_address" v-model="memberInfo.address" placeholder="주소">
+                        <input type="text" class="pay_detailAddress" v-model="detailAddress" placeholder="상세 주소">
+                    </form>
+                    
                 </section>  
 
                 <section class="shipping-memo">

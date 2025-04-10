@@ -29,7 +29,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="/js/pageChange.js"></script>
-    <link rel="stylesheet" href="/css/pay.css">
+    <link rel="stylesheet" href="/css/paySuccess.css">
     <script type="application/json" id="order-data">
         <%= "{" %>
           "items": <%= orderItemsJson %>,
@@ -45,25 +45,32 @@
     <jsp:include page="/WEB-INF/common/header.jsp" />
 	<div id="app">
         <div class="complete-wrapper">
-            <div class="complete-container">
+            <div class="top-message">
                 <h1 class="txt">결제가 완료되었습니다!</h1>
-
-                <ul class="item-details">
-                    <h2 class="txthree">구매 상품</h2>
-                    <li class="item-detail" v-for="(item, index) in orderItems" :key="index">
-                        <img :src="item.filePath" class="item-img">
-                        <div class="item-info">
-                            <p class="item-name">{{ item.itemName }}</p><br>
-                            <p class="item-quantity">
-                                <span class="required-label">필수</span> {{ item.quantity }} 개
-                            </p>
-                            <p class="item-price">{{ totalProductPrice.toLocaleString() }} 원</p>
-                        </div>
-                    </li>
-                </ul>
-
                 <p class="txtwo">구매해 주셔서 감사합니다.</p>
-
+            </div>
+            <div class="complete-container">
+                <div class="purchase-section">
+                    <h2 class="txthree">구매 상품</h2>
+                    <ul class="item-details">
+                        <li class="item-detail" v-for="(item, index) in orderItems" :key="index">
+                            <img :src="item.filePath" class="item-img">
+                            <div class="item-info">
+                                <p class="item-name">{{ item.itemName }}</p><br>
+                                <p class="item-quantity">
+                                    <span class="required-label">필수</span> {{ item.quantity }} 개
+                                </p>
+                                <p class="item-price">{{ totalProductPrice.toLocaleString() }} 원</p>
+                            </div>
+                        </li>
+                    </ul>
+                    <button v-if="orderItems.length > 3" @click="showAll = true" class="btn">더보기</button>
+                    <div class="some-wrapper">
+                        <a href="/member/mypage" class="btn view-orders">구매 내역 보러가기</a>
+                        <a href="/home.do" class="btn">메인으로 가기</a>
+                    </div>
+                    
+                </div>
                 <div class="payment-summary">
                     <h2 class="txtfour">결제 정보</h2>
                     <p>총 상품 금액: {{ totalProductPrice.toLocaleString() }} 원</p>
@@ -73,12 +80,8 @@
                     <p>배송비: + {{ shippingFee.toLocaleString() }} 원</p>
                     <p class="item-finalPrice"><strong>최종 결제 금액: {{ finalPayment.toLocaleString() }} 원</strong></p>
                 </div>
-
-                <a href="/home.do" class="btn">메인으로 가기</a>
             </div>
-
-            <!-- 오른쪽 추천 상품 -->
-            <div class="recommend-side">
+            <div class="recommend-section">
                 <h3 class="recommend-title">이런 상품은 어때요?</h3>
                 <div class="recommend-vertical">
                     <div class="recommend-item" v-for="(item, index) in recommendedItems" :key="index"
@@ -89,7 +92,6 @@
                         <p class="recommend-price">{{ formatPrice(item.price) }} 원</p>
                     </div>
                 </div>
-                <button class="btn" @click="loadMore">더보기</button>
             </div>
         </div>
 	</div>
@@ -109,10 +111,14 @@
                 memberSale: 0,
                 likedItems: new Set(),
                 showLikePopup: false,
-                likeAction: ''
+                likeAction: '',
+                showAll: false
             };
         },
         computed: {
+            visibleItems() {
+                return this.showAll ? this.orderItems : this.orderItems.slice(0, 3);
+            },
             totalProductPrice() {
                 return this.orderItems.reduce((sum, item) => {
                     return sum + (item.price * item.quantity);
@@ -132,9 +138,6 @@
             fnInfo(itemNo) {
                 pageChange("/product/info.do", { itemNo: itemNo });
             },
-            loadMore() {
-                location.href="/product.do"
-            }
    
         },
         mounted() {
@@ -167,15 +170,14 @@
 
             const container = document.querySelector('.recommend-vertical');
             setInterval(() => {
-                const maxScroll = container.scrollHeight - container.clientHeight;
-                const currentScroll = container.scrollTop;
+                const maxScroll = container.scrollWidth - container.clientWidth;
+                const currentScroll = container.scrollLeft;
 
                 if (currentScroll >= maxScroll) {
-                    container.scrollTo({ top: 0, behavior: 'smooth' }); // 다시 위로
-                    return;
+                    container.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    container.scrollBy({ left: 160, behavior: 'smooth' });
                 }
-
-                container.scrollBy({ top: 160, behavior: 'smooth' });
             }, 3000);
 
         }

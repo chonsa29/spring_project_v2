@@ -10,6 +10,6 @@ public class Notice {
 	private String noticeContents;
 	private String noticeDate;
 	private String noticeCategory;
-	private String viewCnt;
+	private int viewCnt;
 
 }
