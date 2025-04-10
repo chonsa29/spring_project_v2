@@ -227,20 +227,5 @@
 	    ORDER BY 
 	        CDATETIME DESC
 	</select>
-	<!-- 사용자 그룹 정보 조회 -->
-	<select id="selectMemberGroupInfo" resultType="Member">
-	    SELECT 
-	        g.GROUP_ID as groupId,
-	        d.GROUP_NAME as groupName,
-	        d.LEADER_ID as leaderId,
-	        g.JOIN_DATE as joinDate,
-	        g.ROLE as groupRole,
-	        g.STATUS as groupStatus
-	    FROM 
-	        GROUP_INFO d
-	        JOIN GROUP_USER g ON g.GROUP_ID = d.GROUP_ID
-	    WHERE 
-	        g.USERID = #{userId}
-	        AND g.STATUS = 'ACTIVE'
-	</select>
+
 </mapper>

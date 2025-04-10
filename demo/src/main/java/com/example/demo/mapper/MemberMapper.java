@@ -39,11 +39,4 @@ public interface MemberMapper {
     
     List<HashMap<String, Object>> selectInquiryList(HashMap<String, Object> map);
 
-	Object selectOrderCount(HashMap<String, Object> map);
 
-	Object selectWishCount(HashMap<String, Object> map);
-
-	int deleteWishItem(HashMap<String, Object> map);
-
-	Member selectMemberGroupInfo(HashMap<String, Object> map);
-}

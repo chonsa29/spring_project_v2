@@ -260,4 +260,7 @@ public class MemberService {
         resultMap.put("inquiries", inquiries);
         return resultMap;
     }
+
+   
+
 }

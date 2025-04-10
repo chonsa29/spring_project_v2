@@ -31,7 +31,7 @@
         <div class="bottom-links">
             <a href="#" @click="fnTermPg()">회원가입 </a> 
         
-            <a href="#">비밀번호 찾기</a>
+            <a href="#" @click="fnFindPassword()">비밀번호 찾기</a>
         </div>
         
         <div style="margin-top: 10px; text-align: center;">
@@ -75,6 +75,9 @@ const app = Vue.createApp({
     methods: {
         fnTermPg() {
             window.location.href = "/member/term.do";
+        },
+        fnFindPassword(){
+            window.location.href = "/member/findPwd.do";
         },
         fnLogin(){
 				var self = this;
