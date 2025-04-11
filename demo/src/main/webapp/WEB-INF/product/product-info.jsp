@@ -187,15 +187,13 @@
                     <div :class="['Inquiry', selectedTab === 'inquiry' ? 'active-tab' : '']"
                         @click="changeTab('inquiry')">상품 문의 ({{QuestionCount}})</div>
                     <div :class="['Exchange-Return', selectedTab === 'exchange' ? 'active-tab' : '']"
-                        @click="changeTab('exchange')">교환/환불</div>
-
+                        @click="changeTab('exchange')" id="Exchange">교환/환불</div>
                 </div>
-
+                <div id="product-menu-placeholder"></div> <!-- 이게 있어야 점프 안 함 -->
                 <div id="product-view">
                     <!-- 상세정보 -->
                     <div v-show="selectedTab === 'info'" class="preparing-info">
-                        <p>아직 준비중인 상품입니다.</p>
-
+                        <img src="../img/파스타 상세정보(연습용).jpg" alt="" class="preparing-info-img">
                     </div>
 
 
@@ -943,6 +941,23 @@
                     self.selectedTab = tab;
                 },
 
+                handleScroll() {
+                    var self = this;
+                    var tabMenu = document.getElementById('product-menu');
+                    var stickyOffset = tabMenu.offsetTop;
+
+                    if (window.scrollY >= stickyOffset) {
+                        tabMenu.classList.add('sticky');
+                    } else {
+                        tabMenu.classList.remove('sticky');
+                    }
+                },
+                initScrollEvent: function () {
+                    var self = this;
+                    window.addEventListener('scroll', self.handleScroll);
+                },
+
+
 
                 // 좋아요 표시
                 fnLike(itemNo) {
@@ -1047,6 +1062,8 @@
                 self.fnGetReview();
                 self.fetchLikedItems();
                 self.fnInquiry();
+                self.initScrollEvent(); // 스크롤
+                window.addEventListener('scroll', self.handleScroll);
 
                 // 초기화
                 self.showLikePopup = false;
