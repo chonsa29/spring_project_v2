@@ -108,7 +108,7 @@
                 userId : "${sessionId}",
                 count : "",
                 selectList : [],
-                discount: 10000, // 기본 할인 금액
+                discount: 0, // 기본 할인 금액
                 shippingFee: 3000 // 기본 배송비
             };
         },
@@ -146,6 +146,12 @@
                 var params = {
                     userId : self.userId
                 };
+
+                const checkedMap = {};
+                self.list.forEach(item => {
+                    checkedMap[item.itemNo] = item.checked;
+                });
+
                 // Ajax로 서버에서 데이터 가져오기
                 $.ajax({
                     url: "/cart/list.dox",
@@ -158,7 +164,7 @@
                             ...item,
                             price: Number(item.price),
                             cartCount: Number(item.cartCount),
-                            checked: false, // 초기 상태는 선택되지 않음
+                            checked: checkedMap[item.itemNo] || false, // 초기 상태는 선택되지 않음
                         }));
 
                         console.log(this.list);

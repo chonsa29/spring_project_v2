@@ -172,6 +172,8 @@
                 }
             },
             mounted() {
+                let self = this;
+
                 stompClient.connect({}, () => {
                     stompClient.subscribe("/topic/groupChat/" + groupId, (message) => {
                         const receivedMessage = JSON.parse(message.body);
@@ -179,21 +181,21 @@
                         console.log("📩 수신된 메시지:", receivedMessage);
                         
                         // messages가 배열인지 확인 후 push 실행
-                        if (!Array.isArray(this.messages)) {
-                            this.messages = [];
+                        if (!Array.isArray(self.messages)) {
+                            self.messages = [];
                         }
-                        this.messages.push(receivedMessage);
-                        this.scrollToBottom(); // ✅ 메시지 추가될 때 스크롤 내리기
+                        self.messages.push(receivedMessage);
+                        self.scrollToBottom(); // ✅ 메시지 추가될 때 스크롤 내리기
                     });
 
-                    const userId = this.userId; 
+                    const userId = self.userId; 
                     // ✅ 입장 여부 확인 후 JOIN 메시지 전송
                     fetch(`/chatting/joinStatus?groupId=${groupId}&userId=` + userId)
                         .then(res => res.json())
                         .then(joined => {
                             console.log("✅ joinStatus API 응답:", joined);
                             if (!joined) {
-                                this.sendJoinMessage();
+                                self.sendJoinMessage();
                             }
                         })
                         .catch(error => console.error("❌ joinStatus API 호출 오류:", error));
@@ -205,18 +207,18 @@
                         .then(data => {
                             console.log("✅ 서버에서 받아온 채팅 기록:", data); // 응답 확인
                             if (Array.isArray(data)) {
-                                this.messages = data;
+                                self.messages = data;
                             } else {
-                                this.messages = []; // 만약 데이터가 배열이 아니라면 빈 배열 할당
+                                self.messages = []; // 만약 데이터가 배열이 아니라면 빈 배열 할당
                             }
-                            this.scrollToBottom(); // ✅ 메시지 추가될 때 스크롤 내리기
+                            self.scrollToBottom(); // ✅ 메시지 추가될 때 스크롤 내리기
 
                         })
                         .catch(error => console.error("❌ 채팅 기록 로드 실패:", error));
 
                 });
 
-                this.fnGroup();
+                self.fnGroup();
             }
         });
 
