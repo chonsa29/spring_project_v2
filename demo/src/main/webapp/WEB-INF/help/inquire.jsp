@@ -129,20 +129,20 @@
 				<div class="notice-navigation">
 				  <div class="nav-item">
 					<span class="nav-label">이전글</span>
-					<span class="nav-title" @click="fnPrevNotice">
+					<span class="nav-title" @click="fnPrevNotice(selectedNotice.prevNoticeNo)">
 					  {{ selectedNotice.prevTitle ? selectedNotice.prevTitle : '[이전글 없음]' }}
 					</span>
 				  </div>
 				  <div class="nav-item">
 					<span class="nav-label">다음글</span>
-					<span class="nav-title" @click="fnNextNotice">
+					<span class="nav-title" @click="fnNextNotice(selectedNotice.nextNoticeNo)">
 					  {{ selectedNotice.nextTitle ? selectedNotice.nextTitle : '[다음글 없음]' }}
 					</span>
 				  </div>
 				</div>
 			  
 				<!-- 목록보기 버튼 -->
-				<button class="btn-list" @click="noticeViewMode = 'list'">목록보기</button>
+				<button @click="noticeViewMode = 'list'">목록보기</button>
 			  </div>
 			
 			<div v-else>
@@ -196,6 +196,8 @@
 				<div class="writing" v-if="sessionStatus == 'A'">
 					<button @click="fnNoticeWriting">글쓰기</button>
 				</div>
+				<!-- 이전 버튼 -->
+				<button @click="noticeViewMode = 'view'">이전</button>
 			</div>
 			
 		</section>
@@ -226,7 +228,9 @@ const app = Vue.createApp({
 			faqList: [
 				{ id: 1, question: '배송 기간은 얼마나 걸리나요?', answer: '보통 2~3일 소요됩니다.', open: false },
 				{ id: 2, question: '교환/환불은 어떻게 하나요?', answer: '고객센터를 통해 요청 가능합니다.', open: false },
-				{ id: 3, question: '회원 탈퇴는 어디서 하나요?', answer: '마이페이지에서 탈퇴 가능합니다.', open: false }
+				{ id: 3, question: '회원 탈퇴는 어디서 하나요?', answer: '마이페이지에서 탈퇴 가능합니다.', open: false },
+				{ id: 4, question: '배송이 가능한가요?', answer: '네 가능합니다.', open: false },
+				{ id: 5, question: '그룹 가입 시 혜택은 뭔가요?', answer: '할인.', open: false }
             ],
 			selectedCategory: 'all',
 			selectedNotice: {
@@ -454,7 +458,7 @@ const app = Vue.createApp({
 					}
 				}
 			});
-		}
+		},
 
     },
     mounted() {

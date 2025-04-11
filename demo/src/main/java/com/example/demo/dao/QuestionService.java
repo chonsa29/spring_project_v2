@@ -243,6 +243,21 @@ public class QuestionService {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
 			Notice notice = noticeMapper.noticePrev(map);
+			if (notice != null) {
+				HashMap<String, Object> tempMap = new HashMap<>();
+				tempMap.put("noticeNo", notice.getNoticeNo());
+
+				// 이전글의 이전글 = prevNotice
+				Notice prev = noticeMapper.noticePrev(tempMap);
+				// 이전글의 다음글 = nextNotice
+				Notice next = noticeMapper.noticeNext(tempMap);
+
+				// 현재 Notice에 추가 정보 삽입
+				notice.setPrevNoticeNo(prev != null ? prev.getNoticeNo() : null);
+				notice.setPrevTitle(prev != null ? prev.getNoticeTitle() : null);
+				notice.setNextNoticeNo(next != null ? next.getNoticeNo() : null);
+				notice.setNextTitle(next != null ? next.getNoticeTitle() : null);
+			}
 			resultMap.put("notice", notice);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
@@ -258,6 +273,21 @@ public class QuestionService {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
 			Notice notice = noticeMapper.noticeNext(map);
+			if (notice != null) {
+				HashMap<String, Object> tempMap = new HashMap<>();
+				tempMap.put("noticeNo", notice.getNoticeNo());
+
+				// 다음글의 이전글
+				Notice prev = noticeMapper.noticePrev(tempMap);
+				// 다음글의 다음글
+				Notice next = noticeMapper.noticeNext(tempMap);
+
+				// 현재 Notice에 이전/다음 정보 삽입
+				notice.setPrevNoticeNo(prev != null ? prev.getNoticeNo() : null);
+				notice.setPrevTitle(prev != null ? prev.getNoticeTitle() : null);
+				notice.setNextNoticeNo(next != null ? next.getNoticeNo() : null);
+				notice.setNextTitle(next != null ? next.getNoticeTitle() : null);
+			}
 			resultMap.put("notice", notice);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
