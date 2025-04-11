@@ -11,5 +11,9 @@ public class Notice {
 	private String noticeDate;
 	private String noticeCategory;
 	private int viewCnt;
+	private String prevNoticeNo;
+	private String prevTitle;
+	private String nextNoticeNo;
+	private String nextTitle;
 
 }
