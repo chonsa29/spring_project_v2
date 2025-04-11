@@ -139,8 +139,21 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-webflux</artifactId>
    </dependency>
-
    
+<!--email 인증-->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-mail</artifactId>
+</dependency>
+   
+   <!--Sms 의존성-->
+       <dependency>
+        <groupId>net.nurigo</groupId>
+        <artifactId>sdk</artifactId>
+        <version>4.2.7</version>
+    </dependency>
+    
+    
    </dependencies>
 
    <build>
