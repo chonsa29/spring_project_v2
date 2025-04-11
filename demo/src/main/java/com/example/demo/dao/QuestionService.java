@@ -223,4 +223,49 @@ public class QuestionService {
 		return resultMap;
 	}
 
+	public HashMap<String, Object> noticeViewMode(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			Notice notice = noticeMapper.noticeViewMode(map);
+			resultMap.put("notice", notice);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+		}
+		
+		return resultMap;
+	}
+
+	public HashMap<String, Object> noticePrev(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			Notice notice = noticeMapper.noticePrev(map);
+			resultMap.put("notice", notice);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+		}
+		
+		return resultMap;
+	}
+
+	public HashMap<String, Object> noticeNext(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			Notice notice = noticeMapper.noticeNext(map);
+			resultMap.put("notice", notice);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+		}
+		
+		return resultMap;
+	}
+
 }

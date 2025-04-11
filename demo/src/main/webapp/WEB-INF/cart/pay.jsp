@@ -225,6 +225,7 @@
 
                         if (quantity > 1) {
                             self.productInfo = [{
+                                itemNo: data.productInfo.itemNo,
                                 itemName: data.productInfo.itemName,
                                 filePath: data.productInfo.filePath,
                                 price: parseInt(data.productInfo.price, 10), 
@@ -233,12 +234,14 @@
                         } else {
                             self.productInfo = Array.isArray(data.productInfo) 
                                 ? data.productInfo.map(item => ({
+                                    itemNo: item.itemNo,
                                     itemName: item.itemName,
                                     filePath: item.filePath,
                                     price: parseInt(item.price, 10), 
                                     quantity: parseInt(item.quantity, 10)
                                 }))
                                 : [{
+                                    itemNo: data.productInfo.itemNo,
                                     itemName: data.productInfo.itemName,
                                     filePath: data.productInfo.filePath,
                                     price: parseInt(data.productInfo.price, 10), 
@@ -322,6 +325,7 @@
                     totalPriceBeforePoint += itemTotalPrice;
 
                     return {
+                        itemNo: item.itemNo,
                         itemName: item.itemName,
                         price: item.price,
                         quantity: quantity,
@@ -411,6 +415,7 @@
             if (orderData && orderData.length > 0 && !(self.itemNo && self.quantity)) {
                 // 장바구니 결제
                 self.productInfo = orderData.map(item => ({
+                    itemNo: item.itemNo,
                     itemName: item.itemName,
                     filePath: item.filePath,
                     price: item.price,

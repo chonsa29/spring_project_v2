@@ -24,4 +24,10 @@ public interface NoticeMapper {
 
 	void noticeInsert(HashMap<String, Object> map);
 
+	Notice noticeViewMode(HashMap<String, Object> map);
+
+	Notice noticePrev(HashMap<String, Object> map);
+
+	Notice noticeNext(HashMap<String, Object> map);
+
 }

@@ -190,4 +190,34 @@ public class QuestionController {
 		return new Gson().toJson(resultMap);
 	}
 	
+	@RequestMapping(value = "/notice/noticeViewMode.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String noticeViewMode(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+				
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = questionService.noticeViewMode(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/notice/noticePrev.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String noticePrev(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+				
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = questionService.noticePrev(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/notice/noticeNext.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String noticeNext(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+				
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = questionService.noticeNext(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
 }

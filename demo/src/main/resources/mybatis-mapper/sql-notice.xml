@@ -69,8 +69,35 @@
 		VALUES(NOTICE_SEQ.NEXTVAL, #{noticeTitle}, #{noticeContents}, SYSDATE, 0)
 	</insert>
 	
+	<select id="noticeViewMode" parameterType="hashmap" resultType="com.example.demo.model.Notice">
+	    SELECT *
+	    FROM (
+	        SELECT notice.*, ROWNUM AS rn
+	        FROM (
+	            SELECT *
+	            FROM NOTICE
+	            ORDER BY NOTICE_DATE DESC
+	        ) notice
+	        WHERE ROWNUM &lt;= 2
+	    )
+	    WHERE rn = 2
+	</select>
+	
+	<select id="noticePrev" parameterType="hashmap" resultType="com.example.demo.model.Notice">
+	 	SELECT *
+	    FROM NOTICE
+	    WHERE NOTICE_NO &lt; #{noticeNo}
+	    ORDER BY NOTICE_NO DESC
+	    FETCH FIRST 1 ROWS ONLY
+	</select>
+	
+	<select id="noticeNext" parameterType="hashmap" resultType="com.example.demo.model.Notice">
+	 	SELECT *
+	    FROM NOTICE
+	    WHERE NOTICE_NO &gt; #{noticeNo}
+	    ORDER BY NOTICE_NO ASC
+	    FETCH FIRST 1 ROWS ONLY
+	</select>
+	
 </mapper>
-
-
-
 
