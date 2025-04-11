@@ -60,13 +60,6 @@ public class MemberController {
 
 		return "/member/admin-page";
 	}
-	
-	@RequestMapping("/member/findPwd.do")
-	public String findPwd(Model model) throws Exception {
-
-		return "/member/findPwd";
-	}
-
 
 	@RequestMapping(value = "/member/check.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
