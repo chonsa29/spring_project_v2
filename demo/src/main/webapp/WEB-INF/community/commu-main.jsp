@@ -55,9 +55,9 @@
 			</table>
 			<!-- 레시피 페이징 -->
 			<div class="pagination">
-				<a v-if="page != 1" id="index" href="javascript:;" @click="fnPageMove('prev')"> < </a>
+				<a v-if="page != 1" id="index" href="javascript:;" @click="fnRecipePageMove('prev')"> < </a>
 				<a href="javascript:;" v-for="num in index" @click="fnRecipePage(num)" :class="{active: page === num}">{{ num }}</a>
-				<a v-if="page != index" id="index" href="javascript:;" @click="fnPageMove('next')"> > </a>
+				<a v-if="page != index" id="index" href="javascript:;" @click="fnRecipePageMove('next')"> > </a>
 			</div>
 				<div class="writing">
 				    <button @click="fnAddRecipe">글쓰기</button>
@@ -73,7 +73,7 @@
 					<option value="title">제목</option>
 					<option value="contents">내용</option>
 				</select>
-				<input type="text" v-model="searchKeyword" @keyup.enter="fnRecipeList" placeholder="검색어를 입력하세요">
+				<input type="text" v-model="searchKeyword" @keyup.enter="fnGroupList" placeholder="검색어를 입력하세요">
 				<button @click="fnGroupList">검색</button>
 			</div>
 			<table class="recipe-table">
@@ -102,9 +102,9 @@
 			</table>
 			<!-- 그룹 페이징 -->
 			<div class="pagination">
-				<a v-if="groupPage != 1" id="index" href="javascript:;" @click="fnPageMove('prev')"> < </a>
+				<a v-if="groupPage != 1" id="index" href="javascript:;" @click="fnGroupPageMove('prev')"> < </a>
 				<a href="javascript:;" v-for="num in groupIndex" @click="fnGroupPage(num)" :class="{ active: groupPage === num }">{{ num }}</a>
-				<a v-if="groupPage != groupIndex" id="index" href="javascript:;" @click="fnPageMove('next')"> > </a>
+				<a v-if="groupPage != groupIndex" id="index" href="javascript:;" @click="fnGroupPageMove('next')"> > </a>
 			</div>
 				
 				<div class="writing">
