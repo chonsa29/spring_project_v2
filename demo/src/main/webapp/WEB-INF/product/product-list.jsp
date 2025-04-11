@@ -261,6 +261,7 @@
                                 if (self.likedItems.has(itemNo)) {
                                     self.likedItems.delete(itemNo);  // 좋아요 취소
                                     self.likeAction = 'remove';
+                                    self.showLikePopup = true; // 👉 이거 꼭 필요함!
                                     setTimeout(() => {
                                         self.showLikePopup = false;
                                     }, 2000);
@@ -307,7 +308,7 @@
                         return; // 이후 코드 실행 방지
                     }
                     var nparmap = {
-                        count: 1,
+                        cartCount: 1,
                         userId: self.userId,
                         itemNo: itemNo
                     };

@@ -87,6 +87,10 @@
                         <span id="delicery-total">3,000원 </span>
                         <span> / 30,000원 이상 구매시 배송비 무료</span>
                     </div>
+                    <div class="origin">
+                        <span id="origin-title">원산지</span>
+                        <span>상품 설명 및 상품 이미지 참고</span>
+                    </div>
 
                     <div id="delivery-info">
                         <div id="delivery-day">
@@ -103,7 +107,8 @@
                             <span>구매 수량</span>
                             <div class="quantity-controls">
                                 <button class="quantity-btn" @click="fnquantity('sub')">-</button>
-                                <input type="text" class="quantity-input" v-model="quantity" @input="checkQuantity">
+                                <input type="text" class="quantity-input" v-model="quantity" @input="removeNonNumeric"
+                                    @blur="checkQuantity" />
                                 <button class="quantity-btn" @click="fnquantity('sum')">+</button>
                             </div>
                         </div>
@@ -189,7 +194,7 @@
                     <div :class="['Exchange-Return', selectedTab === 'exchange' ? 'active-tab' : '']"
                         @click="changeTab('exchange')" id="Exchange">교환/환불</div>
                 </div>
-                <div id="product-menu-placeholder"></div> <!-- 이게 있어야 점프 안 함 -->
+
                 <div id="product-view">
                     <!-- 상세정보 -->
                     <div v-show="selectedTab === 'info'" class="preparing-info">
@@ -261,6 +266,7 @@
                             <p class="inquiry-notice">★ 상품 문의사항이 아닌 반품/교환관련 문의는 1:1 채팅, 또는 고객센터(1800-1234)를 이용해주세요.
                                 <button @click="openInquiryPopup" class="inquiry-button">상품 문의하기</button>
                             </p>
+                            
                             <!-- 상품 문의하기 버튼 -->
                             <div>
                                 <!-- 상품 문의 팝업 -->
@@ -336,108 +342,55 @@
                     <!-- 교환/환불 내용 -->
                     <div v-show="selectedTab === 'exchange'" class="exchange">
 
-                        <!-- 1 -->
-                        <div>
-                            <h3>주문 취소</h3>
-                            <ul>
-                                <li>입금확인 단계 : 마이페이지 > 주문/배송 조회·변경에서 직접 변경 및 취소하실 수 있습니다.</li>
-                                <li>상품 준비중 단계부터는 주문 취소/변경이 제한됩니다.</li>
-                                <li>카드 환불은 카드사 정책에 따르며, 운영일 기준으로 3~5일 정도 소요됩니다.</li>
-                                <li>결제 취소시, 사용기한이 남은 적립금과 쿠폰은 다시 사용하실 수 있습니다.</li>
-                                <li>환불이 지연될 경우 환불지연배상금 지급을 요청하실 수 있으며, 환불대상 여부는 고객지원센터(1800-1234)에서 확인 가능합니다.</li>
-                                <li>기타 이상이 있는 경우 고객지원센터(1800-1234)로 문의 부탁드립니다.</li>
-                            </ul>
+                        <div id="product-view">
+                            <div class="exchange-guide-title">교환 및 반품 안내</div>
+
+                            <div class="exchange-section">
+                                <div class="exchange-label">교환/반품 신청기간</div>
+                                <div class="exchange-content">
+                                    교환/반품 신청은 배송완료 후 7일 이내에 가능합니다.<br>
+                                    상품이 표시/광고내용과 다르거나 계약내용과 다를 경우 상품을 받은 날부터 3개월 이내 또는 사실을 안 날부터 30일 이내에 신청 가능합니다.
+                                </div>
+                            </div>
+
+                            <div class="exchange-section">
+                                <div class="exchange-label">교환/반품 배송비</div>
+                                <div class="exchange-content">
+                                    제품의 불량/오배송 또는 표시내용과 상이할 경우 해당 배송비는 무료이나, 단순변심 등의 고객 사유인 경우 왕복 배송비가 발생합니다.<br>
+                                    (교환 배송비: 4,900원)
+                                </div>
+                            </div>
+
+                            <div class="exchange-section">
+                                <div class="exchange-label">교환/반품 불가 안내</div>
+                                <div class="exchange-content">
+                                    <ul>
+                                        <li>전자상거래 등에서 소비자보호에 관한 법률에 따라 다음의 경우 청약철회가 제한될 수 있습니다.</li>
+                                        <li>고객님의 책임 있는 사유로 상품 등이 멸실 또는 훼손된 경우</li>
+                                        <li>포장을 개봉하였거나 포장이 훼손되어 상품가치가 현저히 상실된 경우</li>
+                                        <li>기타 전자상거래법에 의한 청약철회 제한 사유에 해당되는 경우</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="exchange-section">
+                                <div class="exchange-label">환불 안내</div>
+                                <div class="exchange-content">
+                                    <ul>
+                                        <li>환불시 반품 확인여부를 확인한 후 3영업일 이내에 결제 금액을 환불해 드립니다.</li>
+                                        <li>신용카드로 결제하신 경우는 신용카드 승인을 취소하여 결제 대금이 청구되지 않게 합니다.</li>
+                                        <li>(단, 신용카드 결제일자에 맞추어 대금이 청구될 수 있으며 이 경우 익월 신용카드 대금청구시 카드사에서 환급처리 됩니다.)</li>
+                                    </ul>
+                                </div>
+                            </div>
+
                         </div>
 
-                        <!-- 2 -->
-                        <div>
-                            <h3>교환/반품</h3>
-                            <ul>
-                                <li>상품이 고시된 내용 및 광고와 다를 때, 그 정도에 따라 재배송, 일부 환불, 전액 환불 처리가 진행됩니다.</li>
-                            </ul>
-
-                            <h4>신선/냉장/냉동 식품</h4>
-                            <ol type="1">
-                                <li>상품을 받은 날로부터 7일 이내에 상품의 상태를 확인할 수 있는 사진을 첨부해 1:1채팅, 카카오톡 상담 및 고객지원센터(1800-1234)에
-                                    접수해주세요. </li>
-                                <li>상품 및 배송 문제로 인한 교환/반품 배송비는 MEALPICK에서 부담합니다.</li>
-                                <li>상품 섭취 후 치료가 필요한 경우, 고객지원센터는 증빙(진료확인서, 진단서 등)을 요청할 수 있으며, 사실 확인 후 내부 보상기준에 따라 진행됩니다.
-                                </li>
-                                <li>단순변심, 주문실수에 의한 교환/반품 처리는 어렵습니다.</li>
-                            </ol>
-
-                            <h4>상온식품 및 기타상품</h4>
-                            <ol TYPE="1">
-                                <li>다음과 같은 경우 문제가 발생했다면, 상품의 상태를 확인할 수 있는 사진과 함께 1:1문의, 카카오톡 상담, 유선접수(1800-1234) 문자접수를
-                                    남겨주세요.</li>
-                                <div>- 상품을 받은 날로부터 3개월 이내 문제가 발생한 경우</div>
-                                <div>- 상품에 문제가 있다는 사실을 알았거나 알 수 있었던 날로부터 30일 이내인 경우</div>
-                                <li>단순 변심, 주문실수에 의한 교환/반품 신청의 경우, 배송비(상품별 배송비 정책에 따라 상이)는 고객님 본인이 부담하게 됩니다.</li>
-                                <li>배송비 추가결제가 완료되면 해당 상품을 회수하여 상태를 확인한 후 교환/반품 절차가 진행됩니다.</li>
-                                <li>고객님의 사정으로 회수가 지연될 경우, 교환/반품이 제한 또는 지연될 수 있습니다.</li>
-                            </ol>
-
-                            <h4>교환/반품 불가</h4>
-                            <ol type="1">
-                                <li>신선/냉장/냉동 식품의 주관적인 맛에 대한 불만</li>
-                                <li>고객님의 실수로 오기재된 주소지에 배송된 경우</li>
-                                <li>고객님의 사정에 의한 수취거부</li>
-                                <li>고객님의 상품 포장 배공 및 사용으로 상품의 가치가 훼손된 경우(단, 내용 확인을 위한 포장 개봉인 경우는 제외)</li>
-                                <li>고객님의 단순변심, 주문실수로 인한 교환/반품 신청이 상품을 받은 날로부터 7일이 경과한 경우</li>
-                                <li>시간 경과에 따라 상품 등의 가치가 현저히 감소하여 재판매가 불가능한 경우</li>
-                                <li>구매한 상품의 구성품이 누락된 경우</li>
-                                <li>고객님이 이상 여부를 확인할 수 설치가 완료된 상품일 경우</li>
-                                <li>가격변동으로 발생한 금액 차이에 대한 반품 및 보상 불가</li>
-                                <li>설치 또는 사용하여 재판매가 어려운 경우, 액정이 있는 상품의 전원을 켠 경우</li>
-                            </ol>
-                        </div>
-
-                        <!-- 3 -->
-                        <div>
-                            <h3>후환불 제도</h3>
-                            <ul>
-                                <li>단순변심, 주문실수에 의한 반품의 경우, 반품된 상품을 수령하여 상태를 점검한 후 환불처리 됩니다.</li>
-                                <li>반품된 상품 점검 시 교환/반품불가 사유에 해당될 경우, 반품을 불가합니다 <br>
-                                    이 때, 고객님께 별도로 안내되며, 배송비 추가결제가 완료되면 해당 상품을 다시 배송해 드립니다.
-                                </li>
-                            </ul>
-                        </div>
-
-                        <!-- 4 -->
-                        <div>
-                            <h3>미성년자 권리 보호</h3>
-                            <ul>
-                                <li>구매자가 미성년자일 경우, 법정대리인이 그 계약에 동의하지 아니하면 미성년자 본인 또는 법정대리인이 그 계약을 취소할 수 있습니다.</li>
-                            </ul>
-                        </div>
-
-                        <!-- 5 -->
-                        <div>
-                            <h3>소비자 피해 보상,재화 등에 대한 불만 및 소비자와 사업자의 분쟁 처리에 관한 사항</h3>
-                            <ul>
-                                <li>소비자 불만 신청 : MEALPICK 고객지원센터(1800-1234) 또는 1:1문의, 카카오톡 상담</li>
-                                <li>소비자 피해 분쟁 조정 : 공정거래위원회 및 공정거래위원회가 지정한 분쟁 조정기구</li>
-                                <li>고객님께서 제기하는 정당한 의견이나 불만을 반영하고 그 피해를 보상처리하기 위해서 피해보상처리 기구를 설치, 운영합니다.</li>
-                            </ul>
-                        </div>
-
-                        <!-- 6 -->
-                        <div>
-                            <h3>구매안전서비스 설명</h3>
-                            <ul>
-                                <li>전자상거래 등에서 소비자 보호에 관한 법률 제 13조 결제대금예치 또는 같은 법 제 24조 소비사피해보상보험 계약 등을 해결하여 <br>
-                                    고객님께서 현금 결제한 금액에 대해 안전거래를 보장하고 있음을 다음과 같이 증명합니다.
-                                    <br>
-                                    서비스 제공자: 나이스페이먼즈 서비스등록번호 제 A07-20200629-0023호
-                                </li>
-                            </ul>
-                        </div>
                     </div>
-                </div>
 
+                </div>
             </div>
-        </div>
-        <jsp:include page="/WEB-INF/common/footer.jsp" />
+            <jsp:include page="/WEB-INF/common/footer.jsp" />
     </body>
 
     </html>
@@ -863,13 +816,27 @@
                 // 수량 조절 메소드(직접 입력)
                 checkQuantity() {
                     var self = this;
-                    if (self.quantity > self.count) {
+
+                    // 숫자가 아닌 값 입력 방지
+                    self.quantity = self.quantity.toString().replace(/[^0-9]/g, '');
+
+                    // 공백이거나 숫자 아님 → 최소 1개
+                    if (self.quantity === '' || isNaN(self.quantity)) {
+                        self.quantity = 1;
+                        alert("최소 수량은 1개입니다.");
+                    } else if (self.quantity > self.count) {
                         self.quantity = self.count;
                         alert("최대 수량으로 수정되었습니다.");
                     } else if (self.quantity < 1) {
                         self.quantity = 1;
                         alert("최소 수량은 1개입니다.");
                     }
+                },
+
+                // 숫자가 아닌 값 지우기
+                removeNonNumeric() {
+                    var self = this;
+                    self.quantity = self.quantity.toString().replace(/[^0-9]/g, '');
                 },
 
                 // 장바구니에 담기

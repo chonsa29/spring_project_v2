@@ -248,8 +248,6 @@
     display: flex;
     font-size: 14px;
     color: #ccc;
-    margin-bottom: 5px;
-    border-bottom: 1px solid #ddd;
     padding-bottom: 10px;
 	margin-top: 10px;
 }
@@ -262,6 +260,22 @@
 
 #delivery-price {
     margin-right: 30px;
+	font-weight: bold;
+}
+
+.origin {
+    display: flex;
+    font-size: 14px;
+    color: #ccc;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+#origin-title {
+	color: #ccc;
+	margin-right: 30px;
+	font-weight: bold;
+
 }
 
 #delivery-info {
@@ -544,19 +558,21 @@
 .recommend-name {
 	font-size: 14px;
 	line-height: 1.4;
-	margin-top: 30px;
+	margin-top: 10px;
 	min-height: 38px;
+	margin-bottom : -10px;
 	font-weight: bold;
 }
 
 .recommend-price {
-	font-size: 14px;
+	font-size: 18px;
 	margin-bottom: 8px;
 	color: #e02020;
 	font-weight: bold;
 }
 
 .recommend-discount-style {
+	font-size: 14px;
 	margin-right: 4px;
 	color: #bbb;	
   	text-decoration: line-through;
@@ -625,7 +641,6 @@
     justify-content: space-between;
     margin-bottom: 30px;
     background-color: white;
-    z-index: 1000;
 }
 
 #product-menu > div {
@@ -637,53 +652,20 @@
     text-overflow: ellipsis;
     font-size: 15px;
     cursor: pointer;
-	color: #bbb;
-	border-bottom: 1px solid #ccc;
-	border-left: 1px solid #ccc;
+	color: #aaa;
 	background-color: rgb(250, 250, 250);
 }
 
-#Exchange {
-	flex: 1;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-	padding: 30px 0;
-    text-overflow: ellipsis;
-    font-size: 15px;
-    cursor: pointer;
-	color: #bbb;
-	border-right: 1px solid #ccc;
-	background-color: rgb(250, 250, 250);
-}
 
 #product-menu > div.active-tab {
     background-color: white;
     color: #6EB98A; /* 여기에 글자 색 설정 */
     font-weight: bold;
     position: relative;
-	border-bottom: none;
+	border: 2px solid #6EB98A;
 }
 
 /* 스크롤 고정 클래스 */
-#product-menu.sticky {
-	position: fixed;
-	top: 78px; /* ← 헤더 높이보다 5px 아래 */
-	left: 50%;
-	transform: translateX(-50%);
-	width: 1200px;
-	background-color: white;
-	z-index: 999; /* 헤더 아래에 있도록 */
-}
-
-
-#product-menu-placeholder {
-    height: 0;
-}
-
-#product-menu.sticky + #product-menu-placeholder {
-    height: 90px; /* sticky일 때 생기는 공간만큼 */
-}
 
 
 #product-view-img {
@@ -1107,9 +1089,12 @@ a {
 
 
 .inquiry-notice {
-	text-align: left;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 	padding-bottom: 15px;
 }
+
 
 /* 문의 리스트 스타일 */
 .inquiry-list {
@@ -1133,6 +1118,7 @@ a {
 	border-radius: 5px;
 	margin-left: 30px;
 	cursor: pointer;
+	width: 150px;
 }
 
 /* 문의 제목 스타일 */
@@ -1212,78 +1198,54 @@ a {
     border-top: 1px solid #ddd;
 }
 
-
-
-/* 교환/환불 문의 */
-#product-view .exchange {
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
-	text-align: left;
-	margin-bottom: 30px;
+#product-view {
+  padding: 30px;
+  background: #fff;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #333;
+	max-width: 800px; /* 원하는 너비로 조절 가능 */
+  margin: 0 auto; /* 중앙 정렬 */
 }
 
-#product-view .exchange h3 {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 10px;
+.exchange-guide-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 25px;
+  border-bottom: 2px solid #000;
+  padding-bottom: 10px;
+  text-align: left;
 }
 
-#product-view .exchange ul {
-    list-style-type: none;
-    padding-left: 20px;
-    margin-top: 10px;
+/* 여기서부터 내부 텍스트만 왼쪽 정렬 */
+.exchange-section {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 20px;
+  border-top: 1px solid #ddd;
+  padding: 20px 0;
+  align-items: start;
+  text-align: left; /* 이게 핵심 */
 }
 
-#product-view .exchange ul li {
-    font-size: 14px;
-    color: #555;
-    line-height: 1.6;
-    margin-bottom: 8px;
+.exchange-label {
+  font-weight: bold;
+  font-size: 15px;
+  color: #111;
 }
 
-#product-view .exchange ol {
-    padding-left: 20px;
-    margin-top: 10px;
+.exchange-content {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #555;
+  text-align: left;
 }
 
-#product-view .exchange ol li {
-    font-size: 14px;
-    color: #555;
-    line-height: 1.6;
-    margin-bottom: 8px;
+.exchange-content ul {
+  padding-left: 20px;
+  list-style-type: disc;
+  text-align: left;
 }
 
-#product-view .exchange ol div {
-    font-size: 14px;
-    color: #555;
-    line-height: 1.6;
-    margin-bottom: 8px;
-}
-
-#product-view .exchange h4 {
-    font-size: 16px;
-    font-weight: bold;
-    margin-top: 20px;
-    color: #333;
-}
-
-#product-view .exchange .exchange-info {
-    margin-top: 20px;
-    font-size: 14px;
-    color: #666;
-}
-
-#product-view .exchange .exchange-info ul li {
-    margin-bottom: 5px;
-}
-
-#product-view .exchange h3, #product-view .exchange h4 {
-    color: black;
-}
 
 /* 장바구니 팝업 */
 .cart-popup-title {
