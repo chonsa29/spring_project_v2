@@ -114,56 +114,90 @@
 
 		<!-- 공지사항 -->
 		<section id="notice" class="tab-content" v-show="activeTab === 'notice'">
-			<h2>공지사항</h2>
-			<div class="search-bar">
-				<select v-model="noticeSearchOption">
-					<option value="nAll">:: 전체 ::</option>
-					<option value="nTitle">제목</option>
-					<option value="nContents">내용</option>
-				</select>
-				<input type="text" v-model="noticeSearchKeyword" placeholder="검색어를 입력하세요" @keyup.enter="fnNoticeList">
-				<button @click="fnNoticeList">검색</button>
-				<select v-model="noticePageSize" @change="fnNoticeList">
-					<option value="5">5개씩</option>
-					<option value="10">10개씩</option>
-					<option value="15">15개씩</option>
-					<option value="20">20개씩</option>
-				</select>
+			<div v-if="noticeViewMode === 'view'" class="notice-detail-view">
+				<!-- 공지사항 헤더 (카테고리, 제목, 구분선) -->
+				<div class="notice-header">
+				  <span class="notice-category">공지사항</span>
+				  <h2 class="notice-title">{{ selectedNotice.noticeTitle }}</h2>
+				  <hr class="notice-separator" />
+				</div>
+			  
+				<!-- 공지사항 본문 -->
+				<div class="notice-content" v-html="selectedNotice.noticeContents"></div>
+			  
+				<!-- 이전글 / 다음글 네비게이션 -->
+				<div class="notice-navigation">
+				  <div class="nav-item">
+					<span class="nav-label">이전글</span>
+					<span class="nav-title" @click="fnPrevNotice">
+					  {{ selectedNotice.prevTitle ? selectedNotice.prevTitle : '[이전글 없음]' }}
+					</span>
+				  </div>
+				  <div class="nav-item">
+					<span class="nav-label">다음글</span>
+					<span class="nav-title" @click="fnNextNotice">
+					  {{ selectedNotice.nextTitle ? selectedNotice.nextTitle : '[다음글 없음]' }}
+					</span>
+				  </div>
+				</div>
+			  
+				<!-- 목록보기 버튼 -->
+				<button class="btn-list" @click="noticeViewMode = 'list'">목록보기</button>
+			  </div>
+			
+			<div v-else>
+				<h2>공지사항</h2>
+				<div class="search-bar">
+					<select v-model="noticeSearchOption">
+						<option value="nAll">:: 전체 ::</option>
+						<option value="nTitle">제목</option>
+						<option value="nContents">내용</option>
+					</select>
+					<input type="text" v-model="noticeSearchKeyword" placeholder="검색어를 입력하세요" @keyup.enter="fnNoticeList">
+					<button @click="fnNoticeList">검색</button>
+					<select v-model="noticePageSize" @change="fnNoticeList">
+						<option value="5">5개씩</option>
+						<option value="10">10개씩</option>
+						<option value="15">15개씩</option>
+						<option value="20">20개씩</option>
+					</select>
+				</div>
+				<table class="notice-table">
+					<thead>
+						<tr>
+							<th>번호</th>
+							<th>제목</th>
+							<th>내용</th>
+							<th>날짜</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="(notice, noticeIndex) in noticeList">
+							<td @click="fnNoticeView(notice.noticeNo)">{{ (noticePage - 1) * noticePageSize + noticeIndex + 1 }}</td>
+							<td @click="fnNoticeView(notice.noticeNo)">{{ notice.noticeTitle }}</td>
+							<td @click="fnNoticeView(notice.noticeNo)"><span v-html="notice.noticeContents"></span></td>
+							<td>{{ notice.noticeDate }}</td>
+							<td class="gray-text">{{ notice.viewCnt }}</td>
+						</tr>
+					</tbody>
+				</table>
+				<!-- 페이징 -->
+				<div class="pagination" v-if="noticeList.length > 0">
+					<a v-if="noticePage !=1" id="noticeIndex" href="javascript:;"
+					@click="fnNoticePageMove('prev')"> < </a>
+					<a href="javascript:;" v-for="number in noticeIndex" @click="fnNoticePage(number)" :class="{active: noticePage === number}">
+						{{ number }}
+					</a>
+					<a v-if="noticePage!=noticeIndex" id="noticeIndex" href="javascript:;"
+						@click="fnNoticePageMove('next')"> >
+					</a>
+				</div>
+				<div class="writing" v-if="sessionStatus == 'A'">
+					<button @click="fnNoticeWriting">글쓰기</button>
+				</div>
 			</div>
-			<table class="notice-table">
-				<thead>
-					<tr>
-						<th>번호</th>
-						<th>제목</th>
-						<th>내용</th>
-						<th>날짜</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr v-for="(notice, noticeIndex) in noticeList">
-						<td @click="fnNoticeView(notice.noticeNo)">{{ (noticePage - 1) * noticePageSize + noticeIndex + 1 }}</td>
-						<td @click="fnNoticeView(notice.noticeNo)">{{ notice.noticeTitle }}</td>
-						<td @click="fnNoticeView(notice.noticeNo)"><span v-html="notice.noticeContents"></span></td>
-						<td>{{ notice.noticeDate }}</td>
-						<td class="gray-text">{{ notice.viewCnt }}</td>
-					</tr>
-				</tbody>
-			</table>
-			<!-- 페이징 -->
-			<div class="pagination" v-if="noticeList.length > 0">
-				<a v-if="noticePage !=1" id="noticeIndex" href="javascript:;"
-				@click="fnNoticePageMove('prev')"> < </a>
-				<a href="javascript:;" v-for="number in noticeIndex" @click="fnNoticePage(number)" :class="{active: noticePage === number}">
-					{{ number }}
-				</a>
-				<a v-if="noticePage!=noticeIndex" id="noticeIndex" href="javascript:;"
-					@click="fnNoticePageMove('next')"> >
-				</a>
-			</div>
-			<div class="writing" v-if="sessionStatus == 'A'">
-				<button @click="fnNoticeWriting">글쓰기</button>
-			</div>
+			
 		</section>
 	</div>
 	<jsp:include page="/WEB-INF/common/footer.jsp" />
@@ -173,6 +207,7 @@ const app = Vue.createApp({
     data() {
         return {
             activeTab: 'faq', // 기본으로 '자주 묻는 질문' 탭 활성화
+			noticeViewMode: 'view',
             searchOption: "all",
 			noticeSearchOption: "nAll",
             searchKeyword: '',
@@ -193,13 +228,23 @@ const app = Vue.createApp({
 				{ id: 2, question: '교환/환불은 어떻게 하나요?', answer: '고객센터를 통해 요청 가능합니다.', open: false },
 				{ id: 3, question: '회원 탈퇴는 어디서 하나요?', answer: '마이페이지에서 탈퇴 가능합니다.', open: false }
             ],
-			selectedCategory: 'all'
+			selectedCategory: 'all',
+			selectedNotice: {
+				noticeNo: '',
+				noticeTitle: '',
+				noticeContents: '',
+				noticeDate: '',
+			}
         };
     },
     methods: {
         // 탭 변경
         showSection(tab) {
             this.activeTab = tab;
+			if (tab === 'notice') {
+				this.noticeViewMode = 'view'; // 탭 클릭 시 무조건 view 먼저
+				this.fnLoadNotice();
+			}
         },
 
 		changeCategory(category) {
@@ -362,6 +407,55 @@ const app = Vue.createApp({
 			});
     	},
 
+		fnLoadNotice() {
+			let self = this;
+			$.ajax({
+				url: "/notice/noticeViewMode.dox",  
+				type: "POST",
+				dataType: "json",
+				success: function (data) {
+					self.selectedNotice = data.notice;
+				},
+				error: function () {
+					console.error("실패");
+					self.noticeViewMode = 'list';
+				}
+			});
+		},
+
+		fnPrevNotice() {
+			let self = this;
+			$.ajax({
+				url: "/notice/noticePrev.dox",
+				type: "POST",
+				data: { noticeNo: self.selectedNotice.noticeNo },
+				dataType: "json",
+				success: function(data) {
+					if (data.notice) {
+						self.selectedNotice = data.notice;
+					} else {
+						alert("이전 글이 없습니다.");
+					}
+				}
+			});
+		},
+		fnNextNotice() {
+			let self = this;
+			$.ajax({
+				url: "/notice/noticeNext.dox",
+				type: "POST",
+				data: { noticeNo: self.selectedNotice.noticeNo },
+				dataType: "json",
+				success: function(data) {
+					if (data.notice) {
+						self.selectedNotice = data.notice;
+					} else {
+						alert("다음 글이 없습니다.");
+					}
+				}
+			});
+		}
+
     },
     mounted() {
 
@@ -372,6 +466,10 @@ const app = Vue.createApp({
 		// 'tab' 파라미터 값이 있으면 해당 탭을 활성화
 		if (tabParam && ['faq', 'qna', 'notice'].includes(tabParam)) {
 			this.activeTab = tabParam;
+			if (tabParam === 'notice') {
+                this.noticeViewMode = 'view';
+                this.fnLoadNotice();
+            }
 		}
 
         this.inquireList();

@@ -32,11 +32,11 @@
     <link rel="stylesheet" href="/css/paySuccess.css">
     <script type="application/json" id="order-data">
         <%= "{" %>
-          "items": <%= orderItemsJson %>,
           "discountAmount": <%= discountAmount %>,
           "usedPoint": <%= usedPoint %>,
           "shippingFee": <%= shippingFee %>,
-          "memberSale": <%= memberSale %>
+          "memberSale": <%= memberSale %>,
+          "items": <%= orderItemsJson %>
         <%= "}" %>
     </script>
 	<title>결제 완료</title>
@@ -52,8 +52,8 @@
             <div class="complete-container">
                 <div class="purchase-section">
                     <h2 class="txthree">구매 상품</h2>
-                    <ul class="item-details">
-                        <li class="item-detail" v-for="(item, index) in orderItems" :key="index">
+                    <ul class="item-details" >
+                        <li class="item-detail" @click="itemDetails(item.itemNo)" v-for="(item, index) in visibleItems" :key="index">
                             <img :src="item.filePath" class="item-img">
                             <div class="item-info">
                                 <p class="item-name">{{ item.itemName }}</p><br>
@@ -73,12 +73,15 @@
                 </div>
                 <div class="payment-summary">
                     <h2 class="txtfour">결제 정보</h2>
-                    <p>총 상품 금액: {{ totalProductPrice.toLocaleString() }} 원</p>
-                    <p>할인 금액: - {{ discountAmount.toLocaleString() }} 원</p>
-                    <p>사용한 포인트: - {{ usedPoint.toLocaleString() }} 원</p>
-                    <p>회원 등급 할인: - {{ memberSale.toLocaleString() }} 원</p>
-                    <p>배송비: + {{ shippingFee.toLocaleString() }} 원</p>
-                    <p class="item-finalPrice"><strong>최종 결제 금액: {{ finalPayment.toLocaleString() }} 원</strong></p>
+                    <div class="pay-item">
+                        <p>총 상품 금액: {{ totalProductPrice.toLocaleString() }} 원</p>
+                        <p>할인 금액: - {{ discountAmount.toLocaleString() }} 원</p>
+                        <p>사용한 포인트: - {{ usedPoint.toLocaleString() }} 원</p>
+                        <p>회원 등급 할인: - {{ memberSale.toLocaleString() }} 원</p>
+                        <p>배송비: + {{ shippingFee.toLocaleString() }} 원</p>
+                        <p class="item-finalPrice"><strong>최종 결제 금액: {{ finalPayment.toLocaleString() }} 원</strong></p>
+                    </div>
+                    
                 </div>
             </div>
             <div class="recommend-section">
@@ -138,12 +141,18 @@
             fnInfo(itemNo) {
                 pageChange("/product/info.do", { itemNo: itemNo });
             },
+            itemDetails(itemNo) {
+                console.log("itemDetails 호출됨:", itemNo);
+                pageChange("/product/info.do", { itemNo: itemNo });
+            }
    
         },
         mounted() {
             const jsonData = document.getElementById("order-data").textContent.trim();
             try {
                 const parsed = JSON.parse(jsonData);
+                console.log("파싱된 주문 데이터:", parsed);
+                console.log("orderItems 확인:", this.orderItems);
                 this.orderItems = parsed.items;
                 this.discountAmount = parsed.discountAmount;
                 this.usedPoint = parsed.usedPoint;

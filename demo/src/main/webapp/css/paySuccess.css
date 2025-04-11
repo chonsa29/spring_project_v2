@@ -60,7 +60,7 @@
 }
 
 .payment-summary p {
-    margin: 8px 0;
+    margin: 12px 0;
 }
 
 .purchase-section {
@@ -73,7 +73,7 @@
     align-items: center;
     /* border: 1px solid #9baca0; */
     border-radius: 12px;
-    padding: 10px;
+    padding: 25px;
     margin-bottom: 20px;
     background-color: #fff;
     display: flex;
@@ -84,6 +84,7 @@
     overflow: hidden;
     list-style: none;
     margin-top: 30px;
+    cursor: pointer;
 }
 
 .item-price .item-quantity {
@@ -104,7 +105,7 @@
     border-radius: 10px;
     align-items: center;
     border-bottom: 1px solid #ddd;
-    padding: 30px 20px;
+    padding: 30px 15px;
     background-color: #fff;
     box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     transition: transform 0.3s;
@@ -121,8 +122,7 @@
     height: 130px;
     flex-shrink: 0; /* 이미지 크기 고정 */
     object-fit: cover;
-    border-radius: 10px;
-    display: block;          
+    border-radius: 10px;    
     margin-left: 35px;       
     margin-right: auto;
 }
@@ -140,6 +140,7 @@
     font-size: 16px;
     line-height: 1.6;
     text-align: center;
+    margin-right: 35px;
 }
 
 /* 상품명 강조 */
@@ -204,6 +205,10 @@
     margin-top: 30px;       
 }  
 
+.pay-item {
+    margin-top: 65px;
+}
+
 .recommend-section {
     position: relative;
     flex: none;
@@ -223,6 +228,7 @@
     cursor: pointer;
     width: 100%;
     max-width: 1000px;
+    margin-bottom: 50px;
 }
 
 .recommend-title {
@@ -247,7 +253,7 @@
 
 .recommend-item {
     flex: 0 0 auto;
-    width: 150px;
+    width: 180px;
     background: white;
     padding: 10px;
     border: 1px solid #ddd;
@@ -325,15 +331,48 @@
     margin-top: 4px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 913px) {
     .complete-wrapper {
         flex-direction: column;
-        padding: 20px;
+        padding: 20px 10px;
+        gap: 20px;
     }
     .recommend-section {
         max-width: 100%;
         padding-left: 0;
         border-left: none;
         margin-top: 30px;
+    }
+    .item-details {
+        padding: 10px;
+        max-height: none;
+        overflow: visible;
+    }
+
+    .item-detail {
+        flex-direction: column !important;
+        align-items: center;
+        padding: 15px;
+        text-align: center;
+    }
+
+    .item-img {
+        order: 0 !important;
+        width: 160px;
+        height: 130px;
+        margin: 0 auto 10px auto;
+    }
+
+    .item-info {
+        order: 1 !important;
+        margin: 0;
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .item-info .item-name {
+        margin-left: 0;
+        font-size: 1.1rem;
     }
 }
