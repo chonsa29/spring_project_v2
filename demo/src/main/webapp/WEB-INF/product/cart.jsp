@@ -52,7 +52,13 @@
                         <div class="product-details">
                             <div class="price-row">
                                 <h3>PRICE</h3>
-                                <span>{{ (item.price * item.cartCount).toLocaleString() }}원</span>
+    <span style="color: gray; text-decoration: line-through;">
+        {{ (item.price * item.cartCount).toLocaleString() }}원
+    </span>
+    <br />
+    <span style="font-weight: bold; color: #000;">
+        → {{ (item.price * item.cartCount).toLocaleString() }}원
+    </span><span style="color: red;">(30% 할인)</span>
                             </div>
                             <div class="quantity">
                                 <span>수량</span>
@@ -109,15 +115,22 @@
                 count : "",
                 selectList : [],
                 discount: 0, // 기본 할인 금액
-                shippingFee: 3000 // 기본 배송비
+                shippingFee: 3000, // 기본 배송비
             };
         },
         computed: { // computed 속성 추가
-            // 할인 금액: 선택된 상품이 있을 때만 적용
-            totalDiscount() {
-                return this.list.some(item => item.checked) ? this.discount : 0;
+            // 할인 전 총 금액
+            totalOriginalAmount() {
+                return this.list
+                    .filter(item => item.checked)
+                    .reduce((sum, item) => sum + ((item.price / 0.7) * item.cartCount), 0);
             },
-            // 배송비: 선택된 상품이 있을 때만 적용
+            // 실제 할인된 금액
+            totalDiscount() {
+                const discount = this.totalOriginalAmount - this.totalAmount;
+                return discount > 0 ? Math.floor(discount) : 0;
+            },
+                    // 배송비: 선택된 상품이 있을 때만 적용
             totalShippingFee() {
                 return this.totalAmount >= 30000 ? 0 : this.shippingFee;
             },

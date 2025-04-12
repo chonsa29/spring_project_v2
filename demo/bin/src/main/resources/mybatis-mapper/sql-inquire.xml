@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.QuestionMapper">
+
+	<select id="qnaInquire" parameterType="hashmap" resultType="com.example.demo.model.Question">
+		SELECT  ROW_NUMBER() OVER (ORDER BY QS_NO DESC) AS row_num,
+				QS_NO, QS_TITLE, QS_CONTENTS, QS_STATUS, 
+				TO_CHAR(CDATETIME, 'YYYY-MM-DD') AS CDATETIME, VIEW_CNT, QS_CATEGORY
+		FROM QUESTION
+		WHERE 1=1
+	    <if test="category != null and category != 'all' and category != 'etc' and category != 'delivery' and category != 'payment' and category != 'member' and category != 'product'">
+	        AND QS_CATEGORY = #{category}
+	    </if>
+	
+	    <!-- 배송을 선택한 경우 -->
+	    <if test="category == 'delivery'">
+	        AND (QS_TITLE LIKE '%배송%' OR QS_CONTENTS LIKE '%배송%')
+	    </if>
+	
+	    <!-- 결제를 선택한 경우 -->
+	    <if test="category == 'payment'">
+	        AND (QS_TITLE LIKE '%결제%' OR QS_CONTENTS LIKE '%결제%')
+	    </if>
+	
+	    <!-- 회원을 선택한 경우 -->
+	    <if test="category == 'member'">
+	        AND (QS_TITLE LIKE '%회원%' OR QS_CONTENTS LIKE '%회원%')
+	    </if>
+	
+	    <!-- 제품을 선택한 경우 -->
+	    <if test="category == 'product'">
+	         AND (QS_TITLE LIKE '%제품%' OR QS_CONTENTS LIKE '%제품%' 
+        	 OR QS_TITLE LIKE '%상품%' OR QS_CONTENTS LIKE '%상품%')
+	    </if>
+	
+	    <!-- 기타를 선택한 경우: '배송', '결제', '회원', '제품'이 포함되지 않은 데이터 -->
+	    <if test="category == 'etc'">
+	        AND (QS_TITLE NOT LIKE '%배송%' AND QS_CONTENTS NOT LIKE '%배송%')
+	        AND (QS_TITLE NOT LIKE '%결제%' AND QS_CONTENTS NOT LIKE '%결제%')
+	        AND (QS_TITLE NOT LIKE '%회원%' AND QS_CONTENTS NOT LIKE '%회원%')
+	        AND (QS_TITLE NOT LIKE '%제품%' AND QS_CONTENTS NOT LIKE '%제품%')
+	    </if>
+	    
+		<if test="searchOption != null and searchOption == 'all'">
+			AND (QS_TITLE LIKE '%' || #{searchKeyword} || '%'
+			OR QS_CONTENTS LIKE '%' || #{searchKeyword} || '%')
+		</if>
+		<if test="searchOption != null and searchOption == 'title'">
+			AND QS_TITLE LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		<if test="searchOption != null and searchOption == 'contents'">
+			AND QS_CONTENTS LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		ORDER BY CDATETIME DESC
+		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+	</select>
+	
+	<select id="selectQna" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*)
+		FROM QUESTION
+		WHERE 1=1
+		
+		 <if test="category != null and category != 'all' and category != 'etc' and category != 'delivery' and category != 'payment' and category != 'member' and category != 'product'">
+	        AND QS_CATEGORY = #{category}
+	    </if>
+	
+	    <!-- 배송 카테고리 -->
+	    <if test="category == 'delivery'">
+	        AND (QS_TITLE LIKE '%배송%' OR QS_CONTENTS LIKE '%배송%')
+	    </if>
+	
+	    <!-- 결제 카테고리 -->
+	    <if test="category == 'payment'">
+	        AND (QS_TITLE LIKE '%결제%' OR QS_CONTENTS LIKE '%결제%')
+	    </if>
+	
+	    <!-- 회원 카테고리 -->
+	    <if test="category == 'member'">
+	        AND (QS_TITLE LIKE '%회원%' OR QS_CONTENTS LIKE '%회원%')
+	    </if>
+	
+	    <!-- 제품 카테고리 -->
+	    <if test="category == 'product'">
+	        AND (QS_TITLE LIKE '%제품%' OR QS_CONTENTS LIKE '%제품%' 
+	        OR QS_TITLE LIKE '%상품%' OR QS_CONTENTS LIKE '%상품%')
+	    </if>
+	
+	    <!-- 기타 카테고리 -->
+	    <if test="category == 'etc'">
+	        AND (QS_TITLE NOT LIKE '%배송%' AND QS_CONTENTS NOT LIKE '%배송%')
+	        AND (QS_TITLE NOT LIKE '%결제%' AND QS_CONTENTS NOT LIKE '%결제%')
+	        AND (QS_TITLE NOT LIKE '%회원%' AND QS_CONTENTS NOT LIKE '%회원%')
+	        AND (QS_TITLE NOT LIKE '%제품%' AND QS_CONTENTS NOT LIKE '%제품%')
+	    </if>
+		
+		<if test="searchOption != null and searchOption == 'all'">
+			AND (QS_TITLE LIKE '%' || #{searchKeyword} || '%'
+			OR QS_CONTENTS LIKE '%' || #{searchKeyword} || '%')
+		</if>
+		<if test="searchOption != null and searchOption == 'title'">
+			AND QS_TITLE LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		<if test="searchOption != null and searchOption == 'contents'">
+			AND QS_CONTENTS LIKE '%' || #{searchKeyword} || '%'
+		</if>
+	</select>
+	
+	<insert id="qnaInsert" parameterType="map">
+	    INSERT INTO QUESTION (QS_NO, USERID, QS_TITLE, QS_CONTENTS, QS_STATUS, CDATETIME, VIEW_CNT, QS_CATEGORY) 
+	    VALUES (QUESTION_SEQ.NEXTVAL, #{userId}, #{qsTitle}, #{qsContents}, 
+	            0, SYSDATE, 0, #{qsCategory, jdbcType=VARCHAR}) 
+	</insert>
+	
+	<select id="qnaSelect" parameterType="hashmap" resultType="com.example.demo.model.Question">
+		SELECT *
+		FROM QUESTION
+		WHERE QS_NO = #{qsNo}
+	</select>
+	
+	<update id="qnaUpdate" parameterType="hashmap">
+		UPDATE QUESTION
+		SET
+			QS_TITLE = #{qsTitle},
+			QS_CONTENTS = #{qsContents}
+		WHERE QS_NO = #{qsNo}
+	</update>
+	
+	<delete id="qnaDelete" parameterType="hashmap">
+		DELETE FROM QUESTION
+		WHERE QS_NO = #{qsNo}
+	</delete>
+	
+	<update id="updateCnt" parameterType="hashmap">
+		UPDATE QUESTION
+		SET
+			VIEW_CNT = VIEW_CNT + 1
+		WHERE QS_NO = #{qsNo}
+	</update>
+	
+	<update id="qnaStatusUpdate" parameterType="hashmap">
+		UPDATE QUESTION
+		SET
+			QS_STATUS = #{qsStatus}
+		WHERE QS_NO = #{qsNo}
+	</update>
+	
+	<select id="qnaReply"  parameterType="hashmap" resultType="com.example.demo.model.QuestionReply">
+		SELECT * FROM REPLY
+		WHERE QS_NO = #{qsNo}
+		ORDER BY REPLY_NO DESC
+		FETCH FIRST 1 ROWS ONLY
+	</select>
+	
+	<insert id="qnaSaveReply" parameterType="hashmap">
+	    INSERT INTO REPLY 
+	    VALUES (REPLY_SEQ.NEXTVAL, #{qsNo}, #{userId}, #{replyContents}, #{adminId})
+	</insert>
+	
+</mapper>
+
+
+
+

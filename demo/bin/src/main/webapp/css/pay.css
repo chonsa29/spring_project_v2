@@ -1,0 +1,347 @@
+/* 전체 페이지 정렬 */
+main {
+    display: flex;
+    max-width: 820px;
+    min-height: 116vh;
+    margin: 40px auto 100px auto;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    /* align-items: stretch; */
+    align-items: flex-start;
+}
+
+.pay-text {
+    text-align: center;
+    max-width: 820px; 
+    margin: 0 auto;
+    margin-top: 50px;
+    margin-bottom: 80px; 
+    font-size: 28px; /* 글자 크기 조정 */
+    font-weight: bold; /* 글자 굵게 */
+}
+
+/* 왼쪽(주문 정보) - 스크롤 가능 */
+.order-section {
+    flex: 1;
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox에서 스크롤바 숨김 */
+    -ms-overflow-style: none; /* IE 및 Edge에서 스크롤바 숨김 */
+    padding: 5px;
+    background: white;
+    display: flex;
+    gap: 100px;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: auto; 
+    position: sticky;
+    top: 0;
+    margin-right: 15px;
+}
+
+.order-section::-webkit-scrollbar {
+    display: none;
+}
+
+/* 오른쪽(결제 정보) - 고정 */
+.payment-section {
+    display: flex;
+    flex-direction: column;
+    width: 350px;
+    padding: 5px;
+    gap: 100px;
+    background: white;
+    position: sticky;
+    top: 20px; 
+    height: fit-content; 
+    align-self: flex-start;
+    margin-left: 15px;
+}
+
+.text {
+    text-align: center;
+    margin: 0 auto;
+    margin-bottom: 30px; 
+    font-size: 20px; /* 글자 크기 조정 */
+    font-weight: bold; /* 글자 굵게 */
+}
+
+.shipping {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 내부 요소를 왼쪽 정렬 */
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%; /* 부모 요소의 전체 너비를 차지 */
+}
+
+.check {
+    margin-bottom: 13px;
+    margin-right: 5px; /* 체크박스와 텍스트 간격 */
+}
+
+/* 주문 상품 정보 섹션 스타일 */
+.order-info {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+/* 상품 정보 컨테이너 */
+.product {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 20px;
+}
+
+/* 상품 이미지 */
+.product img {
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+/* 상품 정보 스타일 */
+.product-details {
+    flex-grow: 1;
+}
+
+.product-name {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.product-price {
+    margin-top: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #000;
+}
+
+.product-quantity {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #000;
+}
+
+/* 배송비 스타일 */
+.delivery-info {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #555;
+    display: flex;
+    padding-top: 5px;
+    text-align: center;
+    display: block;
+}
+
+/* 상품 정보 스타일 */
+.product {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 20px;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.product img {
+    width: 100px;
+    border-radius: 8px;
+}
+
+.required-label {
+    display: inline-block;
+    background-color: #b3f3cc; 
+    color: #0b7d36; 
+    font-size: 12px; /* 글자 크기 */
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 5px; /* 둥근 모서리 */
+    margin-right: 8px; /* 수량과의 간격 */
+}
+
+.point {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.point div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pay_point {
+    flex: 1;
+    height: 44px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.point_text {
+    font-size: 14px;
+    color: #777;
+    position: absolute;
+    right: 120px;
+    bottom: -20px;
+}
+
+/* 주문 요약 스타일 */
+.order-summary .summary-details p {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.color {
+    color: #0b7d36;
+}
+
+.free-shipping {
+    color: #0b7d36;
+    font-weight: bold;
+    font-size: 1.05em;
+}
+
+.free-shipping::before {
+    content: "🚚 ";
+    margin-right: 4px;
+}
+
+/* 총 주문 금액 강조 */
+.total-price {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* 기본 input 스타일 */
+input.pay_address,
+input.pay_detailAddress,
+input.pay_shippingMessage,
+input.pay_point,
+input.pay_ordererName,
+input.pay_ordererPhone,
+input.pay_zipcode {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    transition: 0.3s;
+    margin-bottom: 10px;
+}
+
+/* input focus 스타일 */
+input.pay_address:focus,
+input.pay_detailAddress:focus,
+input.pay_shippingMessage:focus,
+input.pay_point:focus,
+input.pay_ordererName:focus,
+input.pay_ordererPhone:focus,
+input.pay_zipcode:focus {
+    border-color: #0DA043;
+    box-shadow: 0 2 3px rgba(0, 0, 0, 0.5);
+}
+
+/* select 스타일 */
+select.pay_memo,
+select.pay_coupon,
+select.pay_way {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fff;
+    outline: none;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-bottom: 10px;
+    padding-right: 30px;
+}
+
+/* select focus & hover 스타일 */
+select.pay_memo:hover,
+select.pay_coupon:hover,
+select.pay_way:hover,
+select.pay_memo:focus,
+select.pay_coupon:focus,
+select.pay_way:focus {
+    border-color: #0DA043;
+    box-shadow: 0 2 3px rgba(0, 0, 0, 0.5);
+}
+
+/* 포인트 버튼 */
+.point_btn {
+    background-color: #0DA043;
+    color: #fff;
+    border: none;
+    font-size: 14px;
+    width: 100px; 
+    height: 42px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -10px;
+}
+
+.point_btn:hover {
+    background: #0b7d36;
+    transform: scale(1.01);
+}
+
+/* 결제하기 버튼 */
+.pay-btn {
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    border: none;
+    background: #0DA043;
+    border-radius: 16px;
+    padding: 12px;
+    height: 48px; 
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.pay-btn:hover {
+    background: #0b7d36;
+    transform: scale(1.01);
+}
+
+/* 반응형 처리 (작은 화면에서 세로 정렬) */
+@media screen and (max-width: 768px) {
+    main {
+        flex-direction: column;
+    }
+    
+    .payment-section {
+        width: 100%;
+        position: relative; /* 고정 해제 */
+        top: unset;
+    }
+}

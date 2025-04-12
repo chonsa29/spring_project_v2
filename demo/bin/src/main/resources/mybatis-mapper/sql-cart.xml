@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.CartMapper">
+	<select id="selectCartList" parameterType="hashmap" resultType="com.example.demo.model.Cart">
+		SELECT * FROM CART C
+		LEFT JOIN PRODUCT_IMG I ON C.ITEM_NO = I.ITEM_NO
+		INNER JOIN PRODUCT P ON C.ITEM_NO = P.ITEM_NO
+		WHERE C.USERID = #{userId}
+	</select>
+	
+	<insert id="insertCart" parameterType="hashmap" useGeneratedKeys="true" keyColumn="ITEM_NO" keyProperty="itemNo">
+		INSERT INTO CART(CART_KEY, USERID, ITEM_NO, CART_COUNT)
+		VALUES(CART_SEQ.NEXTVAL, #{userId}, #{itemNo}, #{cartCount})
+	</insert>
+	
+	<update id="updateCount" parameterType="hashmap">
+		UPDATE CART
+		SET
+			CART_COUNT = #{count}
+		WHERE ITEM_NO = #{itemNo}
+			AND USERID = #{userId}
+	</update>
+	
+	<select id="checkCart" parameterType="hashmap" resultType="hashmap">
+	    SELECT CART_COUNT 
+	    FROM CART 
+	    WHERE USERID = #{userId} 
+	      AND ITEM_NO = #{itemNo}
+	</select>
+	
+	<update id="updateCartQuantity" parameterType="hashmap">
+	    UPDATE CART 
+	    SET CART_COUNT = CART_COUNT + #{cartCount} 
+	    WHERE ITEM_NO = #{itemNo} 
+	      AND USERID = #{userId}
+	</update>
+	
+	<delete id="deleteCart" parameterType="hashmap">
+		DELETE
+		FROM CART
+		WHERE ITEM_NO = #{itemNo} AND USERID = #{userId}
+	</delete>
+
+	<delete id="deleteCartList" parameterType="hashmap">
+		DELETE
+		FROM CART
+		WHERE ITEM_NO IN
+		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+			#{item}
+		</foreach> 
+		AND USERID = #{userId}
+	</delete>
+	
+</mapper>
+
+
+
+

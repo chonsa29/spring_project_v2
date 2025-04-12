@@ -217,6 +217,11 @@ const app = Vue.createApp({
                 nextEl: '.main-next',
                 prevEl: '.main-prev',
             },
+            on: {
+        imagesReady: function () {
+            this.update(); // ✅ 이미지 로딩 후 Swiper 높이 재계산
+        }
+    }
         });
 
         // 상품 리스트 가져와서 Swiper 적용
