@@ -1,6 +1,5 @@
 package com.example.demo.dao;
 
-import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -8,14 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.mapper.PayMapper;
-import com.example.demo.model.Delivery;
 import com.example.demo.model.Member;
 import com.example.demo.model.Pay;
 import com.example.demo.model.Product;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 
 @Service
 public class PayService {
@@ -42,6 +39,8 @@ public class PayService {
  		// TODO Auto-generated method stub
  	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
  	    try {
+ 	    	
+ 	    	//dbtransation 	    	
  	        payMapper.paymentSell(map);
  
  	        if (map.get("orderItems") != null) {
@@ -65,6 +64,8 @@ public class PayService {
  	        } else {
  	            session.setAttribute("shippingFee", "3000");
  	        }
+ 	        
+ 	       System.out.println("결제 정보: " + map.toString());
  
  	        resultMap.put("result", "success");
  	    } catch (Exception e) {

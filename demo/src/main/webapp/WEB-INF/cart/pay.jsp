@@ -92,7 +92,11 @@
                        <h2 class="text">포인트</h2> 
                     </div>
                     <div>
-                        <input type="text" class="pay_point" v-model.number="displayPoint" placeholder="포인트 입력">
+                        <input type="text" 
+                        class="pay_point" 
+                        v-model.number="displayPoint" 
+                        placeholder="포인트 입력" 
+                        @input="onPointInput">
                         <button class="point_btn" @click="applyPoint">전액 사용</button>
                     </div>
                     <div class="point_text">
@@ -156,7 +160,9 @@
                 receiverPhone: '',
                 detailAddress: '',
                 shippingMessage: '',
-                payWay: '신용카드'
+                payWay: '신용카드',
+                cartKey: '',
+                productNumber: ''
             };
         },
         computed: {
@@ -234,6 +240,9 @@
                                 price: parseInt(data.productInfo.price, 10), 
                                 quantity: quantity // 수량 반영
                             }];
+
+                            self.productNumber = data.productInfo.itemNo
+
                         } else {
                             self.productInfo = Array.isArray(data.productInfo) 
                                 ? data.productInfo.map(item => ({
@@ -250,6 +259,11 @@
                                     price: parseInt(data.productInfo.price, 10), 
                                     quantity: parseInt(data.productInfo.quantity, 10) || 1
                                 }];
+
+                                self.productNumber = Array.isArray(data.productInfo)
+                                    ? data.productInfo[0]?.itemNo
+                                    : data.productInfo.itemNo;
+
                         }
                         console.log("상품 정보:", self.productInfo);
                     }
@@ -285,6 +299,11 @@
                     return;
                 }
 
+                if (self.paymentMethod === 'five' && !self.shippingMessage.trim()) {
+                    alert("배송 메모를 입력해 주세요.");
+                    return;
+                }
+
                 const originalPrice = this.productInfo.reduce((total, item) => total + item.price * item.quantity, 0);
                 const discount = this.discountRate * originalPrice;
                 const gradeDiscount = this.gradeDiscountAmount;
@@ -295,52 +314,34 @@
                     pg: "html5_inicis",
                     pay_method: "card",
                     merchant_uid: "merchant_" + new Date().getTime(),
-                    name: self.productInfo.length > 1 
-                        ? `${self.productInfo[0].itemName} 외 ${self.productInfo.length - 1}건`
-                        : self.productInfo[0].itemName,
+                    name:  (function () {
+                        if (!self.productInfo || self.productInfo.length === 0) return "상품 없음";
+
+                        var firstItemName = self.productInfo[0] && self.productInfo[0].itemName ? self.productInfo[0].itemName : "상품";
+                        var count = self.productInfo.length;
+
+                        return count > 1 
+                            ? firstItemName + " 외 " + (count - 1) + "건"
+                            : firstItemName;
+                    })(),
                     amount: totalPrice,
-                    buyer_tel: "010-0000-0000",
+                    buyer_tel: self.memberInfo.phone,
                     }	, function (rsp) { // callback
                     if (rsp.success) {
                         // 결제 성공 시
                         console.log(rsp);
                         self.fnSave(rsp.merchant_uid);
-                        // const orderData = {
-                        //     imp_uid: rsp.imp_uid,
-                        //     merchant_uid: rsp.merchant_uid,
-                        //     shippingMessage: self.shippingMessage,
-                        //     payWay: self.payWay,
-                        //     zipcode: self.memberInfo.zipCode,
-                        //     address: self.memberInfo.address,
-                        //     phone: self.receiverPhone,
-                        //     userName: self.receiverName,
-                        //     itemNo: self.itemNo,
-                        //     quantity: self.quantity,
-                        //     userId: self.sessionId,  // JSP에서 세션 아이디 넘기기
-                        //     isCartOrder: self.isCartOrder,
-                        // };
-
-                        // // 결제 성공 후 주문 저장 API 호출
-                        // axios.post('/payment.dox', orderData)
-                        //     .then(res => {
-                        //         alert('결제가 완료되었습니다!');
-                        //         setTimeout(() => {
-                        //             location.href = "/paySuccess.do";  
-                        //         }, 1000);
-                        //     })
-                        //     .catch(err => {
-                        //         console.error(err);
-                        //         alert('주문 저장 중 오류가 발생했습니다.');
-                        //     });
                     } else {
                         // 결제 실패 시
                         console.log(rsp);
+                        alert("결제가 실패했습니다: " + rsp.error_msg);
                     }
                 });
             },
             fnSave(merchant_uid) {
                 var self = this;
-                let totalPriceBeforePoint = 0; 
+                let totalPriceBeforePoint = 0;  
+                let totalQuantity = 0;
 
                 const discountRate = Number(self.discountRate); // computed 사용 가능
                 const usedPoint = parseInt(self.memberInfo.usedPoint) || 0;
@@ -351,10 +352,11 @@
                     const itemTotalPrice = Number(item.price) * quantity;
                     const discount = itemTotalPrice * discountRate;
 
-                    totalPriceBeforePoint += itemTotalPrice;
+                    totalPriceBeforePoint += itemTotalPrice
+                    totalQuantity += quantity;
 
                     return {
-                        itemNo: item.itemNo,
+                        itemNo: Number(item.itemNo),
                         itemName: item.itemName,
                         price: item.price,
                         quantity: quantity,
@@ -362,19 +364,24 @@
                     };
                 });
 
-                shippingMessage: self.paymentMethod === 'five' 
-                    ? self.shippingMessage 
-                    : self.getShippingMemoText(self.paymentMethod)
-
                 const gradeDiscount = self.gradeDiscountAmount; // computed에서 계산됨
                 const discountAmount = isNaN(totalPriceBeforePoint * discountRate)
                     ? 0
                     : Math.floor(totalPriceBeforePoint * discountRate); // 쿠폰 할인
 
                 const finalPrice = Math.max(0, (totalPriceBeforePoint - discountAmount - gradeDiscount + this.shippingFee - usedPoint));
-                const shippingFee = this.shippingFee;
+                const shippingFee = self.shippingFee;
+                const now = new Date();
+                const orderDate = now.getFullYear() + '-' + 
+                    ('0' + (now.getMonth() + 1)).slice(-2) + '-' + 
+                    ('0' + now.getDate()).slice(-2) + ' ' + 
+                    ('0' + now.getHours()).slice(-2) + ':' + 
+                    ('0' + now.getMinutes()).slice(-2) + ':' + 
+                    ('0' + now.getSeconds()).slice(-2);
 
                 var nparmap = { 
+                    itemNo : Number(self.itemNo),
+                    cartKey: self.cartKey,
                     pWay : merchant_uid,
                     userId : self.sessionId,
                     price: finalPrice,
@@ -384,12 +391,24 @@
                     usedPoint: usedPoint,
                     shippingFee: shippingFee,
                     card: this.payWay,
+                    orderCount: totalQuantity,
                     zipCode: self.memberInfo.zipCode,
                     address: self.memberInfo.address + ' ' + self.detailAddress,
                     phone: self.receiverPhone,
-                    request: self.paymentMethod === 'five' ? self.shippingMessage : self.getShippingMemoText(self.paymentMethod)
+                    request: self.paymentMethod === 'five' ? self.shippingMessage : self.getShippingMemoText(self.paymentMethod),
+                    pNo: Number(self.productNumber),
+                    userName: self.memberInfo.userName,
+                    orderDate: orderDate, 
                     // cartList: JSON.stringify(this.orderItems)
                 };
+
+                if (!self.productInfo.cartKey || self.productInfo.cartKey === "") {
+                    nparmap.cartKey = 12345; // 또는 유의미한 값
+                    } else {
+                    nparmap.cartKey = self.productInfo.cartKey;
+                    }
+
+                console.log("전송되는 nparmap:", nparmap);
 
                 $.ajax({
                     url: "/payment.dox",  
@@ -398,19 +417,35 @@
                     data: nparmap,
                     success: function (data) {
                         console.log(data);
-                        setTimeout(function() {
-                            window.location.href = "/paySuccess.do?orderId=" + data.orderId;
-                        }, 500);
+                        if (data.result === "success") {
+                            setTimeout(function() {
+                                window.location.href = "/paySuccess.do?orderId=" + data.orderId;
+                            }, 500);
+                            console.log("itemNo:", itemNo);
+                            console.log("cartKey:", cartKey);
+                            console.log("productNumber:", productNumber);
+                            console.log("quantity:", totalQuantity);
+                        } else {
+                            alert("결제 저장 실패: " + data.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("결제 저장 AJAX 에러:", error);
+                        alert("서버와 통신 중 오류가 발생했습니다.");
                     }
                 });
             },
 
+            onPointInput(event) {
+                const val = parseInt(event.target.value.replace(/[^\d]/g, '')) || 0;
+                this.displayPoint = val;
+            },
             getShippingMemoText(code) {
                 switch(code) {
                     case 'two': return '배송 전에 미리 연락 바랍니다.';
                     case 'three': return '부재 시 경비실에 맡겨 주세요.';
                     case 'four': return '부재 시 전화나 문자 남겨 주세요.';
-                    default: return '';
+                    default: return '배송 메모 없음';
                 }
             },
             applyPoint() {
