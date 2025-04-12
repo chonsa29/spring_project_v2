@@ -124,7 +124,7 @@
               
                 <section class="payment">
                     <h2 class="text">결제 수단</h2>
-                    <select class="pay_way">
+                    <select class="pay_way" v-model="payWay">
                         <option>신용카드</option>
                         <option>실시간 계좌이체</option>
                     </select>
@@ -153,7 +153,8 @@
                 sameAsOrderer: false,
                 receiverName: '',
                 receiverPhone: '',
-                detailAddress: ''
+                detailAddress: '',
+                shippingMessage: ''
             };
         },
         computed: {
@@ -292,17 +293,42 @@
                     pg: "html5_inicis",
                     pay_method: "card",
                     merchant_uid: "merchant_" + new Date().getTime(),
-                    name: "테스트 결제",
+                    name: self.productInfo.length > 1 
+                        ? `${self.productInfo[0].itemName} 외 ${self.productInfo.length - 1}건`
+                        : self.productInfo[0].itemName,
                     amount: totalPrice,
                     buyer_tel: "010-0000-0000",
                     }	, function (rsp) { // callback
                     if (rsp.success) {
                         // 결제 성공 시
                         console.log(rsp);
-                        self.fnSave(rsp.merchant_uid);
-                        setTimeout(() => {
-                            location.href = "paySuccess.do";  
-                        }, 1000);
+                        const orderData = {
+                            imp_uid: rsp.imp_uid,
+                            merchant_uid: rsp.merchant_uid,
+                            shippingMessage: self.shippingMessage,
+                            payWay: self.payWay,
+                            zipcode: self.zipcode,
+                            address: self.address,
+                            phone: self.phone,
+                            userName: self.ordererName,
+                            itemNo: self.itemNo,
+                            quantity: self.quantity,
+                            userId: self.sessionId,  // JSP에서 세션 아이디 넘기기
+                            isCartOrder: self.isCartOrder,
+                        };
+
+                        // 결제 성공 후 주문 저장 API 호출
+                        axios.post('/payment.dox', orderData)
+                            .then(res => {
+                                alert('결제가 완료되었습니다!');
+                                setTimeout(() => {
+                                    location.href = "paySuccess.do";  
+                                }, 1000);
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                alert('주문 저장 중 오류가 발생했습니다.');
+                            });
                     } else {
                         // 결제 실패 시
                         console.log(rsp);
@@ -333,6 +359,10 @@
                     };
                 });
 
+                nparmap.shippingMessage = self.paymentMethod === 'five' 
+                    ? self.shippingMessage 
+                    : self.paymentMethod;
+
                 const gradeDiscount = self.gradeDiscountAmount; // computed에서 계산됨
                 const discountAmount = isNaN(totalPriceBeforePoint * discountRate)
                     ? 0
@@ -349,7 +379,13 @@
                     discountAmount: Math.floor(discountAmount),
                     gradeDiscount: gradeDiscount,
                     usedPoint: usedPoint,
-                    shippingFee: shippingFee
+                    shippingFee: shippingFee,
+                    card: this.card,
+                    zipCode: this.zipCode,
+                    address: this.address,
+                    phone: this.phone,
+                    request: this.request,
+                    cartList: JSON.stringify(this.orderItems)
                 };
 
                 $.ajax({

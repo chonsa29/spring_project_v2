@@ -10,10 +10,13 @@
 	    WHERE P_NO = #{pNo}
 	</select>
 	
-	<insert id="paymentSell" parameterType="hashmap">
-		INSERT INTO PAY (pNo, pWay, price, pDate)
-		VALUES (#{pNo}, #{pWay}, #{price}, SYSDATE)
-	</insert>
+	<insert id="paymentSell" parameterType="map">
+        INSERT INTO order_list (
+            user_id, price, discount_amount, used_point, shipping_fee, pway, order_items
+        ) VALUES (
+            #{userId}, #{price}, #{discountAmount}, #{usedPoint}, #{shippingFee}, #{pWay}, #{orderItems}
+        )
+    </insert>
 	
 	<select id="payProductInfo" parameterType="hashmap" resultType="com.example.demo.model.Product">
 		SELECT *
@@ -38,5 +41,9 @@
 	    FROM product P
 	    LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
 	</select>
+	
+	<delete id="deleteCartItem">
+	    DELETE FROM CART WHERE CART_KEY = #{cartKey}
+	</delete>
 	
 </mapper>
