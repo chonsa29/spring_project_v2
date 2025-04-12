@@ -27,19 +27,19 @@ public interface PayMapper {
 
 	List<Product> selectAllProducts();
 
-	void paymentSell(
-		    @Param("userId") String userId,
-		    @Param("price") int price,
-		    @Param("orderDate") Date orderDate,
-		    @Param("card") String card,
-		    @Param("userName") String userName,
-		    @Param("zipCode") String zipCode,
-		    @Param("address") String address,
-		    @Param("phone") String phone,
-		    @Param("pNo") int pNo,
-		    @Param("request") String request,
-		    @Param("itemNo") int itemNo
-		);
+//	void paymentSell(
+//		    @Param("userId") String userId,
+//		    @Param("price") int price,
+//		    @Param("orderDate") Date orderDate,
+//		    @Param("card") String card,
+//		    @Param("userName") String userName,
+//		    @Param("zipCode") String zipCode,
+//		    @Param("address") String address,
+//		    @Param("phone") String phone,
+//		    @Param("pNo") int pNo,
+//		    @Param("request") String request,
+//		    @Param("itemNo") int itemNo
+//		);
 
 	void deleteCartItems(int cartKey);
 
