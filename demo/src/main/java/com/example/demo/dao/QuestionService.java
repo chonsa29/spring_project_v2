@@ -48,6 +48,25 @@ public class QuestionService {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
+			String contents = (String) map.get("qsContents");
+	        String qsCategory = "기타";  // 기본값을 기타로 설정
+
+	        if (contents != null) {
+	            if (contents.contains("환불")) {
+	                qsCategory = "환불";
+	            } else if (contents.contains("배송")) {
+	                qsCategory = "배송";
+	            } else if (contents.contains("결제")) {
+	                qsCategory = "결제";
+	            } else if (contents.contains("회원")) {
+	                qsCategory = "회원";
+	            } else if (contents.contains("제품") || contents.contains("상품")) {
+	                qsCategory = "제품";
+	            }
+	        }
+	        
+	        map.put("qsCategory", qsCategory);
+		    
 			questionMapper.qnaInsert(map);
 			System.out.println("key =>" + map.get("qsNo"));
 			resultMap.put("qsNo", map.get("qsNo"));
@@ -242,6 +261,9 @@ public class QuestionService {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
+			int noticeNo = Integer.parseInt(map.get("noticeNo").toString());
+			map.put("noticeNo", noticeNo);
+			
 			Notice notice = noticeMapper.noticePrev(map);
 			if (notice != null) {
 				HashMap<String, Object> tempMap = new HashMap<>();
@@ -272,6 +294,9 @@ public class QuestionService {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
+			int noticeNo = Integer.parseInt(map.get("noticeNo").toString());
+			map.put("noticeNo", noticeNo);
+			
 			Notice notice = noticeMapper.noticeNext(map);
 			if (notice != null) {
 				HashMap<String, Object> tempMap = new HashMap<>();

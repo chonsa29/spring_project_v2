@@ -41,12 +41,12 @@
 		<section id="qna" class="tab-content" v-show="activeTab === 'qna'">
 			<h2>문의게시판</h2>
 			<div class="qna-category">
-				<button class="category-btn" :class="{ active: selectedCategory === 'all' }" @click="changeCategory('all')">전체</button>
-				<button class="category-btn" :class="{ active: selectedCategory === 'delivery' }" @click="changeCategory('delivery')">배송</button>
-				<button class="category-btn" :class="{ active: selectedCategory === 'payment' }" @click="changeCategory('payment')">결제</button>
-				<button class="category-btn" :class="{ active: selectedCategory === 'member' }" @click="changeCategory('member')">회원</button>
-				<button class="category-btn" :class="{ active: selectedCategory === 'product' }" @click="changeCategory('product')">제품</button>
-				<button class="category-btn" :class="{ active: selectedCategory === 'etc' }" @click="changeCategory('etc')">기타</button>
+				<button class="category-btn" :class="{ active: qsCategory  === '전체' }" @click="changeCategory('전체')">전체</button>
+				<button class="category-btn" :class="{ active: qsCategory  === '배송' }" @click="changeCategory('배송')">배송</button>
+				<button class="category-btn" :class="{ active: qsCategory  === '결제' }" @click="changeCategory('결제')">결제</button>
+				<button class="category-btn" :class="{ active: qsCategory  === '회원' }" @click="changeCategory('회원')">회원</button>
+				<button class="category-btn" :class="{ active: qsCategory  === '제품' }" @click="changeCategory('제품')">제품</button>
+				<button class="category-btn" :class="{ active: qsCategory  === '기타' }" @click="changeCategory('기타')">기타</button>
 			</div>
 			<div class="search-bar">
 				<select v-model="searchOption">
@@ -129,14 +129,18 @@
 				<div class="notice-navigation">
 				  <div class="nav-item">
 					<span class="nav-label">이전글</span>
-					<span class="nav-title" @click="fnPrevNotice(selectedNotice.prevNoticeNo)">
-					  {{ selectedNotice.prevTitle ? selectedNotice.prevTitle : '[이전글 없음]' }}
+					<span class="nav-title" 
+					@click="fnPrevNotice(selectedNotice.noticeNo)"
+					v-if="prevNotice && prevNotice.noticeNo">
+						{{ selectedNotice.prevTitle ? selectedNotice.prevTitle : '[이전글 없음]' }}
 					</span>
 				  </div>
 				  <div class="nav-item">
 					<span class="nav-label">다음글</span>
-					<span class="nav-title" @click="fnNextNotice(selectedNotice.nextNoticeNo)">
-					  {{ selectedNotice.nextTitle ? selectedNotice.nextTitle : '[다음글 없음]' }}
+					<span class="nav-title"  
+					@click="fnNextNotice(selectedNotice.noticeNo)"
+					v-if="nextNotice && nextNotice.noticeNo">
+						{{ selectedNotice.nextTitle ? selectedNotice.nextTitle : '[다음글 없음]' }}
 					</span>
 				  </div>
 				</div>
@@ -232,13 +236,15 @@ const app = Vue.createApp({
 				{ id: 4, question: '배송이 가능한가요?', answer: '네 가능합니다.', open: false },
 				{ id: 5, question: '그룹 가입 시 혜택은 뭔가요?', answer: '할인.', open: false }
             ],
-			selectedCategory: 'all',
+			qsCategory: '전체',
 			selectedNotice: {
 				noticeNo: '',
 				noticeTitle: '',
 				noticeContents: '',
 				noticeDate: '',
-			}
+			},
+			prevNotice: null,
+			nextNotice: null,
         };
     },
     methods: {
@@ -246,13 +252,13 @@ const app = Vue.createApp({
         showSection(tab) {
             this.activeTab = tab;
 			if (tab === 'notice') {
-				this.noticeViewMode = 'view'; // 탭 클릭 시 무조건 view 먼저
+				this.noticeViewMode = 'list'; // 탭 클릭 시 무조건 view 먼저
 				this.fnLoadNotice();
 			}
         },
 
-		changeCategory(category) {
-			this.selectedCategory = category;  // 선택한 카테고리 설정
+		changeCategory(qsCategory) {
+			this.qsCategory = qsCategory;  // 선택한 카테고리 설정
 			this.inquireList(); // 선택된 카테고리에 맞게 Q&A 목록 다시 불러오기
 		},
 
@@ -263,7 +269,7 @@ const app = Vue.createApp({
 				searchOption: self.searchOption,
 				pageSize: self.pageSize,
 				page: (self.page - 1) * self.pageSize,
-				category: self.selectedCategory
+				qsCategory: self.qsCategory
 			};
             $.ajax({
                 url: "/inquire/qna.dox",
@@ -419,6 +425,8 @@ const app = Vue.createApp({
 				dataType: "json",
 				success: function (data) {
 					self.selectedNotice = data.notice;
+					self.prevNotice = data.prevNotice;
+					self.nextNotice = data.nextNotice;
 				},
 				error: function () {
 					console.error("실패");
@@ -427,38 +435,49 @@ const app = Vue.createApp({
 			});
 		},
 
-		fnPrevNotice() {
+		fnPrevNotice(currentNoticeNo) {
 			let self = this;
 			$.ajax({
 				url: "/notice/noticePrev.dox",
 				type: "POST",
-				data: { noticeNo: self.selectedNotice.noticeNo },
+				data: { noticeNo: currentNoticeNo  },
 				dataType: "json",
 				success: function(data) {
 					if (data.notice) {
-						self.selectedNotice = data.notice;
+						self.prevNotice = data.notice;
+						self.prevNotice = data.prevNotice;
+						self.nextNotice = data.nextNotice;
 					} else {
 						alert("이전 글이 없습니다.");
 					}
 				}
 			});
 		},
-		fnNextNotice() {
+		fnNextNotice(currentNoticeNo ) {
 			let self = this;
 			$.ajax({
 				url: "/notice/noticeNext.dox",
 				type: "POST",
-				data: { noticeNo: self.selectedNotice.noticeNo },
+				data: { noticeNo: currentNoticeNo  },
 				dataType: "json",
 				success: function(data) {
 					if (data.notice) {
-						self.selectedNotice = data.notice;
+						self.nextNotice = data.notice;
+						self.prevNotice = data.prevNotice;
+						self.nextNotice = data.nextNotice;
 					} else {
 						alert("다음 글이 없습니다.");
 					}
 				}
 			});
 		},
+
+		fnNoticeDetailView(noticeDetail) {
+			this.selectedNotice = noticeDetail;
+			this.noticeViewMode = 'view';
+			this.prevNotice = this.getPrevNotice(noticeDetail.noticeNo);
+			this.nextNotice = this.getNextNotice(noticeDetail.noticeNo);
+		}
 
     },
     mounted() {
