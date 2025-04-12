@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.CommunityMapper">
+
+	<!-- recipe 부분 -->
+	<resultMap id="recipeResultMap" type="map">
+	    <result property="contents" column="contents" jdbcType="CLOB"/>
+	</resultMap>
+
+	
+	<select id="selectRecipetList" parameterType="hashmap" resultType="com.example.demo.model.Recipe">
+		SELECT RP.POST_ID, RP.TITLE, RP.CDATETIME, RP.CNT, NVL(L.LIKES, 0) AS likes, NVL(C.COMMENT_COUNT, 0) AS commentCount
+		FROM RECIPE_POST RP
+		LEFT JOIN (
+	        SELECT POST_ID, COUNT(*) AS LIKES
+	        FROM RECIPE_LIKES
+	        GROUP BY POST_ID
+	    ) L ON RP.POST_ID = L.POST_ID
+	    LEFT JOIN (
+	        SELECT POST_ID, COUNT(*) AS COMMENT_COUNT
+	        FROM POST_COMMENT
+	        GROUP BY POST_ID
+	    ) C ON RP.POST_ID = C.POST_ID
+		WHERE 1=1
+		<if test="searchOption != null and searchOption == 'all'">
+			AND (TITLE LIKE '%' || #{searchKeyword} || '%'
+			OR CONTENTS LIKE '%' || #{searchKeyword} || '%')
+		</if>
+		<if test="searchOption != null and searchOption == 'title'">
+			AND TITLE LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		<if test="searchOption != null and searchOption == 'contents'">
+			AND CONTENTS LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		<!--GROUP BY RP.POST_ID, RP.TITLE, RP.CDATETIME, RP.CNT-->
+		ORDER BY RP.CDATETIME DESC
+		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+	</select>
+	
+	<select id="selectRecipe" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*)
+		FROM RECIPE_POST
+		WHERE 1=1
+		<if test="searchOption != null and searchOption == 'all'">
+			AND (TITLE LIKE '%' || #{searchKeyword} || '%'
+			OR CONTENTS LIKE '%' || #{searchKeyword} || '%')
+		</if>
+		<if test="searchOption != null and searchOption == 'title'">
+			AND TITLE LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		<if test="searchOption != null and searchOption == 'contents'">
+			AND CONTENTS LIKE '%' || #{searchKeyword} || '%'
+		</if>
+	</select>
+	
+	<select id="selectRecipeView" parameterType="hashmap" resultType="com.example.demo.model.Recipe">
+		SELECT MAIN.*, (SELECT CONTENTS 
+		                FROM RECIPE_POST 
+		                WHERE POST_ID = MAIN.POST_ID) AS CONTENTS, NICKNAME
+		FROM (
+		    SELECT 
+		        RP.POST_ID, 
+		        RP.TITLE, 
+		        RP.COOKING_TIME, 
+		        RP.SERVINGS, 
+		        RP.DIFFICULTY, 
+		        RP.INSTRUCTIONS, 
+		        RP.CNT,
+		        RP.CDATETIME,
+		        RP.USERID,
+		        COUNT(RL.USER_ID) AS LIKES
+		    FROM RECIPE_POST RP
+		    LEFT JOIN RECIPE_LIKES RL ON RP.POST_ID = RL.POST_ID
+		    WHERE RP.POST_ID = #{postId}
+		    GROUP BY RP.POST_ID, RP.TITLE, RP.COOKING_TIME, RP.SERVINGS, RP.DIFFICULTY, RP.INSTRUCTIONS, 
+		    					RP.CNT, RP.CDATETIME, RP.USERID
+		) MAIN LEFT JOIN MEMBER M ON MAIN.USERID = M.USERID
+	</select>
+	
+	<select id="recipeEditView" parameterType="hashmap" resultType="com.example.demo.model.Recipe">
+		SELECT * FROM RECIPE_POST
+		WHERE POST_ID = #{postId}
+	</select>
+	
+	<update id="updateCnt" parameterType="hashmap">
+		UPDATE RECIPE_POST
+		SET
+			CNT = CNT + 1
+		WHERE POST_ID = #{postId}
+	</update>
+	
+	<insert id="insertRecipe" parameterType="hashmap">
+        INSERT INTO RECIPE_POST
+        VALUES (RECIPE_SEQ.NEXTVAL, #{instructions}, #{cookingTime}, #{servings}, 
+        		#{difficulty}, #{title}, #{userId}, 0, SYSDATE, 0, 1, #{contents, jdbcType=CLOB})
+    </insert>
+    
+    <select id="checkLike" parameterType="hashmap" resultType="int">
+	    SELECT COUNT(*)
+	    FROM RECIPE_LIKES
+	    WHERE POST_ID = #{postId} AND USER_ID = #{userId}
+	</select>
+	
+	<insert id="insertLike" parameterType="hashmap">
+	    INSERT INTO RECIPE_LIKES (POST_ID, USER_ID)
+	    VALUES (#{postId}, #{userId})
+	</insert>
+	
+	<delete id="deleteLike" parameterType="hashmap">
+	    DELETE FROM RECIPE_LIKES
+	    WHERE POST_ID = #{postId} AND USER_ID = #{userId}
+	</delete>
+	
+	<select id="selectLikes" parameterType="string" resultType="int">
+	    SELECT COUNT(*)
+	    FROM RECIPE_LIKES
+	    WHERE POST_ID = #{postId}
+	</select>
+	
+	<delete id="deleteRecipe" parameterType="hashmap">
+		DELETE
+		FROM RECIPE_POST
+		WHERE POST_ID = #{postId}
+	</delete>
+	
+	<update id="updateRecipe" parameterType="com.example.demo.model.Recipe">
+	    UPDATE RECIPE_POST
+	    SET 
+	        INSTRUCTIONS = #{instructions}, 
+	        COOKING_TIME = #{cookingTime}, 
+	        SERVINGS = #{servings}, 
+	        DIFFICULTY = #{difficulty}, 
+	        TITLE = #{title},  
+	        CONTENTS = #{contents, jdbcType=CLOB} 
+	    WHERE POST_ID = #{postId} <!-- 수정할 레시피를 식별하는 postId -->
+	</update>
+	
+	<!-- 댓글 -->
+	<select id="selectCommentList" parameterType="hashmap" resultType="com.example.demo.model.Comment">
+		SELECT *
+		FROM POST_COMMENT PC
+		LEFT JOIN MEMBER M ON PC.USERID = M.USERID
+		WHERE PC.POST_ID = #{postId}
+		ORDER BY NVL(PC.PARENT_ID, PC.COMMENT_ID) DESC, PC.CDATETIME ASC
+	</select>
+	
+	<!-- 댓글 등록 -->
+	<insert id="insertComment" parameterType="hashmap">
+        INSERT INTO POST_COMMENT
+        VALUES (COMMENT_SEQ.NEXTVAL, #{postId}, #{userId}, #{contents}, SYSDATE, null)
+    </insert>
+    
+    <!-- 댓글 수정 -->
+    <update id="updateComment" parameterType="hashmap">
+    	UPDATE POST_COMMENT
+    	SET
+    		CONTENTS = #{contents}
+    	WHERE COMMENT_ID = #{commentId}
+    </update>
+    
+    <!-- 댓글 삭제 -->
+    <delete id="deleteComment">
+    	DELETE
+    	FROM POST_COMMENT
+    	WHERE COMMENT_ID = #{commentId}
+    </delete>
+    
+    <!-- 대댓글 추가 -->
+    <insert id="insertRecomment" parameterType="hashmap">
+        INSERT INTO POST_COMMENT
+        VALUES (COMMENT_SEQ.NEXTVAL, #{postId}, #{userId}, #{contents}, SYSDATE, #{commentId})
+    </insert>
+    
+	
+	<!-- group 부분 -->
+	<select id="selectGroupList" parameterType="hashmap" resultType="com.example.demo.model.Group">
+		SELECT *
+		FROM GROUP_POST GP
+		INNER JOIN GROUP_INFO GI ON GP.POST_ID = GI.POST_ID
+		WHERE 1=1
+		<if test="searchOption != null and searchOption == 'all'">
+			AND (TITLE LIKE '%' || #{searchKeyword} || '%'
+			OR CONTENTS LIKE '%' || #{searchKeyword} || '%')
+		</if>
+		<if test="searchOption != null and searchOption == 'title'">
+			AND TITLE LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		<if test="searchOption != null and searchOption == 'contents'">
+			AND CONTENTS LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		ORDER BY CDATETIME DESC
+		OFFSET #{groupPage} ROWS FETCH NEXT #{groupPageSize} ROWS ONLY
+	</select>
+	
+	<select id="selectGroup" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*)
+		FROM GROUP_POST
+		WHERE 1=1
+		<if test="searchOption != null and searchOption == 'all'">
+			AND (TITLE LIKE '%' || #{searchKeyword} || '%'
+			OR CONTENTS LIKE '%' || #{searchKeyword} || '%')
+		</if>
+		<if test="searchOption != null and searchOption == 'title'">
+			AND TITLE LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		<if test="searchOption != null and searchOption == 'contents'">
+			AND CONTENTS LIKE '%' || #{searchKeyword} || '%'
+		</if>
+	</select>
+	
+	<select id="selectGroupView" parameterType="hashmap" resultType="com.example.demo.model.Group">
+		SELECT * 
+		FROM GROUP_POST GP
+		INNER JOIN GROUP_INFO GI ON GP.POST_ID = GI.POST_ID
+		WHERE GP.POST_ID = #{postId}
+	</select>
+	
+	<update id="updateGroupCnt" parameterType="hashmap">
+		UPDATE GROUP_POST
+		SET
+			VIEW_CNT = VIEW_CNT + 1
+		WHERE POST_ID = #{postId}
+	</update>
+	
+	<!-- 그룹 신청자 리스트-->
+	<select id="selectMembers" parameterType="hashmap" resultType="com.example.demo.model.Group">
+		SELECT *
+		FROM GROUP_USER GU
+		INNER JOIN GROUP_INFO GI ON GU.GROUP_ID = GI.GROUP_ID
+		WHERE POST_ID = #{postId}
+	</select>
+	
+	<!-- 그룹 속한 거 확인 -->
+	<select id="groupMemberCkeck" parameterType="hashmap" resultType="string">
+		SELECT *
+		FROM GROUP_USER
+		WHERE USERID = #{userId}
+	</select>
+	
+	<!-- 리더 확인 -->
+	<select id="groupLeaderCkeck" parameterType="hashmap" resultType="string">
+		SELECT *
+		FROM GROUP_INFO
+		WHERE LEADER_ID = #{userId}
+	</select>
+	
+	<!-- 그룹 신청 -->
+	<insert id="insertGroupJoin" parameterType="hashmap">
+		INSERT INTO GROUP_USER(GROUP_ID, USERID, JOIN_DATE, STATUS, ROLE, GROUP_NAME, LEADER_ID)
+		VALUES(#{groupId}, #{userId}, SYSDATE, 'PENDING', 'MEMBER', #{groupName}, #{leaderId})
+	</insert>
+	
+	<!-- 그룹 게시글 추가 -->
+	<insert id="insertGroupPost" parameterType="hashmap" useGeneratedKeys="true">
+		INSERT INTO GROUP_POST(POST_ID, USERID, TITLE, CONTENTS)
+		VALUES(GROUP_POST_SEQ.NEXTVAL, #{userId}, #{title}, #{contents, jdbcType=CLOB})
+	</insert>
+	
+	<!-- 그룹 아이디 불러오기 -->
+	<select id="selectGroupId" parameterType="hashmap">
+		SELECT *
+		FROM GROUP_INFO
+		WHERE LEADER_ID = #{userId}
+	</select>
+	
+	<!-- 그룹 생성 시 POST_ID 추가 -->
+	<select id="selectLastPostId" parameterType="hashmap" resultType="int">
+	    SELECT POST_ID FROM GROUP_POST 
+	    WHERE USERID = #{userId}
+	    ORDER BY POST_ID DESC 
+	    FETCH FIRST 1 ROWS ONLY
+	</select>
+	<update id="updatePostId" parameterType="hashmap" keyColumn="POST_ID" keyProperty="postId">
+		UPDATE GROUP_INFO
+		SET
+			POST_ID = #{postId}
+		WHERE GROUP_ID = #{groupId}
+	</update>
+	
+	<!-- 그룹 생성 -->
+	<insert id="insertGroup" parameterType="hashmap">
+		INSERT INTO GROUP_INFO(GROUP_ID, GROUP_NAME, LEADER_ID, STATUS, MONTH_STATUS)
+		VALUES(GROUP_INFO_SEQ.NEXTVAL, #{groupName}, #{userId}, 'PENDING', 'ACTIVE')
+	</insert>
+	
+	<!-- 그룹 생성 시 멤버도 추가 -->
+	<insert id="insertGroupMember" parameterType="hashmap">
+		INSERT INTO GROUP_USER(GROUP_ID, USERID, STATUS, ROLE, GROUP_NAME, LEADER_ID)
+		VALUES(#{groupId}, #{userId}, 'ACTIVE', 'LEADER', #{groupName}, #{userId})
+	</insert>
+
+	<!-- 멤버 수락하기 -->
+	<update id="updateMemberJoin" parameterType="hashmap">
+		UPDATE GROUP_USER
+		SET
+			STATUS = 'ACTIVE',
+			JOIN_DATE = SYSDATE
+		WHERE USERID = #{userId}
+	</update>
+	
+	<!-- 멤버 삭제/거절 -->
+	<delete id="deleteMemberReject" parameterType="hashmap">
+		DELETE
+		FROM GROUP_USER
+		WHERE USERID = #{userId}
+	</delete>
+	
+	<!-- 그룹 상태 마감 -->
+	<update id="updateGroupStatus" parameterType="hashmap">
+		UPDATE GROUP_INFO
+		SET
+			STATUS = 'CLOSE'
+		WHERE GROUP_ID = #{groupId}
+	</update>
+	
+	<!-- 그룹 활성화 -->
+	<update id="updateGroupStatusActive" parameterType="hashmap">
+		UPDATE GROUP_INFO
+		SET
+			STATUS = 'PENDING'
+		WHERE GROUP_ID = #{groupId}
+	</update>
+	
+	<!-- 헤더에서 그룹 채팅 -->
+	<select id="selectGroupChat" parameterType="hashmap">
+		SELECT *
+		FROM GROUP_USER
+		WHERE USERID = #{userId}
+	</select>
+	
+	<!-- 그룹 마감 시 신청자 PENDING 삭제-->
+	<delete id="deleteMember" parameterType="hashmap">
+		DELETE
+		FROM GROUP_USER
+		WHERE STATUS = 'PENDING'
+	</delete>
+	
+	<!-- 그룹 삭제 전 알림 -->
+	<select id="selectGroupsToNotify" resultType="com.example.demo.model.Group">
+	    SELECT GROUP_ID, GROUP_NAME AS groupName, CREATE_DATE,
+           (ADD_MONTHS(CREATE_DATE, 1) - TRUNC(SYSDATE)) AS DAYS_LEFT
+	    FROM GROUP_INFO
+	    WHERE MONTH_STATUS = 'ACTIVE'
+	      AND (ADD_MONTHS(CREATE_DATE, 1) - TRUNC(SYSDATE)) IN (1, 2, 3)
+	</select>
+	
+	<!-- 생긴 지 한 달 된 그룹 삭제 -->
+	<delete id="deleteGroupsOlderThanOneMonth" parameterType="hashmap">
+		DELETE FROM GROUP_INFO
+		WHERE ADD_MONTHS(CREATE_DATE, 1) &lt;= SYSDATE;
+	</delete>
+	
+	<select id="selectGroupMembersByGroupId" resultType="com.example.demo.model.GroupUser">
+	    SELECT USERID
+	    FROM GROUP_USER
+	    WHERE GROUP_ID = #{groupId}
+	    AND STATUS = 'ACTIVE'
+	</select>
+	
+	<insert id="insertGroupDeleteNotification">
+	    INSERT INTO NOTIFICATION (
+	        NOTI_ID,
+	        USERID,
+	        GROUP_ID,
+	        TITLE,
+	        MESSAGE,
+	        TYPE,
+	        CREATED_AT
+	    ) VALUES (
+	        NOTIFICATION_SEQ.NEXTVAL,
+	        #{userId},
+	        #{groupId},
+	        #{title},
+	        #{message},
+	        #{type},
+	        SYSDATE
+	    )
+	</insert>
+	
+	<select id="selectUserNotifications" resultType="com.example.demo.model.Notification">
+	    SELECT NOTI_ID, USERID, GROUP_ID, TITLE, MESSAGE, TYPE, CREATED_AT
+	    FROM NOTIFICATION
+	    WHERE USERID = #{userId}
+	    ORDER BY CREATED_AT DESC
+	</select>
+	
+	<select id="checkDuplicateNotification" resultType="int">
+	    SELECT COUNT(*)
+	    FROM NOTIFICATION
+	    WHERE USERID = #{userId}
+	      AND GROUP_ID = #{groupId}
+	      AND TYPE = #{type}
+	</select>
+	
+	<!-- 그룹 게시글 삭제 -->
+	<delete id="deleteGroupPost" parameterType="hashmap">
+		DELETE
+		FROM GROUP_POST
+		WHERE POST_ID = #{postId}
+	</delete>
+	
+	<!-- 그룹 게시글 수정 -->
+	<update id="updateGroupPost" parameterType="com.example.demo.model.Group">
+	    UPDATE GROUP_POST
+	    SET 
+	        TITLE = #{title},
+	        CONTENTS = #{contents, jdbcType=CLOB} 
+	    WHERE POST_ID = #{postId}
+	</update>
+	
+	<select id="groupEditView" parameterType="hashmap" resultType="com.example.demo.model.Group">
+		SELECT * FROM GROUP_POST
+		WHERE POST_ID = #{postId}
+	</select>
+	
+	
+</mapper>
+
+
+
+
