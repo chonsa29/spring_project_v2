@@ -79,9 +79,9 @@
 	    LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
 	</select>
 	
-	<delete id="deleteCartItems" parameterType="map">
-	    DELETE FROM CART 
-	    WHERE ITEM_NO = #{itemNo}
+	<delete id="deleteOrderedCart" parameterType="hashmap">
+		DELETE FROM CART
+		WHERE ITEM_NO = #{itemNo} AND USERID = #{userId}
 	</delete>
 	
 </mapper>

@@ -208,4 +208,24 @@ public class PayService {
 		return payMapper.selectAllProducts();
 	}
 
+	public HashMap<String, Object> deleteOrderedItems(HashMap<String, Object> map) {
+	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	    try {
+	        List<HashMap<String, Object>> items = (List<HashMap<String, Object>>) map.get("items");
+	        String userId = (String) map.get("userId");
+
+	        for (HashMap<String, Object> item : items) {
+	            item.put("userId", userId); // 각 item에 userId 넣어줌
+	            payMapper.deleteOrderedCart(item);
+	        }
+
+	        resultMap.put("result", "success");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        resultMap.put("result", "fail");
+	    }
+	    return resultMap;
+	}
+
+
 }

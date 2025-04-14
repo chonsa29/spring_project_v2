@@ -201,7 +201,7 @@
 					<button @click="fnNoticeWriting">글쓰기</button>
 				</div>
 				<!-- 이전 버튼 -->
-				<button @click="noticeViewMode = 'view'">이전</button>
+				<!-- <button @click="noticeViewMode = 'view'">이전</button> -->
 			</div>
 			
 		</section>
