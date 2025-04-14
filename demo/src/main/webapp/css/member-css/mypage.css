@@ -103,6 +103,7 @@ body {
 
 .card-title {
 	color: var(--dark-green);
+	margin-left: 150px;
 	margin-top: 0;
 	padding-bottom: 10px;
 	font-size: 18px;
@@ -134,14 +135,47 @@ body {
 	font-weight: bold;
 }
 
-.grade-badge {
-	background-color: var(--accent-color);
-	color: white;
-	padding: 4px 12px;
-	border-radius: 15px;
-	font-size: 13px;
-	font-weight: bold;
-	display: inline-block;
+/* 등급 배지 공통 스타일 */
+.my-page-content .grade-badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 0.9em;
+    color: white;
+    display: inline-block;
+    min-width: 60px;
+    text-align: center;
+}
+
+/* 등급별 색상 - 클래스 기반으로 변경 */
+.my-page-content .grade-badge.grade-newpick,
+.my-page-content .grade-badge[data-grade="뉴픽"],
+.my-page-content .grade-badge[data-grade="1"] {
+    background-color: #9e9e9e;
+}
+
+.my-page-content .grade-badge.grade-lightpick,
+.my-page-content .grade-badge[data-grade="라이트픽"],
+.my-page-content .grade-badge[data-grade="2"] {
+    background-color: #4caf50;
+}
+
+.my-page-content .grade-badge.grade-goodpick,
+.my-page-content .grade-badge[data-grade="굿픽"],
+.my-page-content .grade-badge[data-grade="3"] {
+    background-color: #2196f3;
+}
+
+.my-page-content .grade-badge.grade-toppick,
+.my-page-content .grade-badge[data-grade="탑픽"],
+.my-page-content .grade-badge[data-grade="4"] {
+    background-color: #ff9800;
+}
+
+.my-page-content .grade-badge.grade-vvipick,
+.my-page-content .grade-badge[data-grade="VVIPICK"],
+.my-page-content .grade-badge[data-grade="5"] {
+    background-color: #9c27b0;
 }
 
 .loading-spinner {
@@ -187,7 +221,7 @@ body {
 }
 
 .pagination {
-	margin: 20px 0;
+	margin-left: 50%;
 	text-align: center;
 }
 
@@ -215,4 +249,58 @@ body {
 
 .action-btn.delete {
 	color: #dc3545;
+}
+
+/* 주소 검색 버튼 스타일 */
+#memberAddress {
+	background-color: #fff;
+	cursor: pointer;
+}
+
+.address-search-btn {
+	border-radius: 0 4px 4px 0 !important;
+}
+
+.inquiry-title {
+	color: #333;
+	text-decoration: none;
+	margin-right: 10px;
+}
+
+.inquiry-title:hover {
+	color: #0066cc;
+	text-decoration: underline;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.close-btn {
+    margin-top: 1rem;
+    background: #4caf50;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
 }

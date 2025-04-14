@@ -42,10 +42,11 @@ public class Member {
     private String sale;
     private String leaderId;
     private String joinDate;
-    
-    // 추가 필드 (DB에는 없지만 화면에 표시하기 위해 사용)
     private String gradeName;
     private String groupName;
     private int notiId;
-
+    private String groupStatus;
+    private String monthSpent;
+    private Integer groupDiscountRate; 
+ 
 }

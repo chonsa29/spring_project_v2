@@ -146,6 +146,14 @@ public class ProductService {
 	    return resultMap;
 	}
 
+	public void saveProductContentImage(HashMap<String, Object> map) throws Exception {
+	    productMapper.insertContentImage(map); // DAO 호출
+	}
+	
+	public void updateProductContentImage(HashMap<String, Object> map) throws Exception {
+	    productMapper.updateContentImage(map);
+	}
+	
 	public HashMap<String, Object> productDeleteImg(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
 	    HashMap<String, Object> resultMap = new HashMap<>();
