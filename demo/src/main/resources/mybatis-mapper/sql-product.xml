@@ -126,14 +126,17 @@
 	    SET ITEM_CONTENTS = #{contentImagePath}
 	    WHERE ITEM_NO = #{itemNo}
 	</update>
-	<update id="updateProduct" parameterType="hashmap"  useGeneratedKeys="true" keyColumn="ITEM_NO" keyProperty="itemNo">
-		UPDATE PRODUCT
-		SET ITEM_NAME = #{name},
-			PRICE = #{price},
-			ITEM_COUNT = #{quantity},
-			ITEM_INFO = #{info},
-			ALLERGENS = #{allergens}
-		WHERE ITEM_NO = #{itemNo}
+
+	<update id="updateProduct" parameterType="hashmap">
+	    UPDATE PRODUCT
+	    SET ITEM_NAME = #{name},
+	        PRICE = #{price},
+	        ITEM_COUNT = #{quantity},
+	        CATEGORY = #{category},
+	        ITEM_INFO = #{info},
+	        ALLERGENS = #{allergens},
+	        STATUS = #{status}
+	    WHERE ITEM_NO = #{itemNo}
 	</update>
 	
 	<!-- 추가 이미지 전용 쿼리 -->  

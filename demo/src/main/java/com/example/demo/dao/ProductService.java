@@ -12,6 +12,8 @@ import com.example.demo.model.ProductQuestion;
 import com.example.demo.model.Review;
 import com.example.demo.model.Wish;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class ProductService {
 	@Autowired
@@ -104,24 +106,35 @@ public class ProductService {
 		}
 	}
 
+	@Transactional
 	public HashMap<String, Object> productUpdate(HashMap<String, Object> map) {
-        HashMap<String, Object> resultMap = new HashMap<>();
-
-        try {
-            int num = productMapper.updateProduct(map);
-            if (num > 0) {
-    			resultMap.put("itemNo", map.get("itemNo"));
-                resultMap.put("result", "success");
-            } else {
-                resultMap.put("result", "fail");
-            }
-        } catch (Exception e) {
-            resultMap.put("result", "fail");
-            System.out.println(e.getMessage());
-        }
-
-        return resultMap;
-    }
+	    HashMap<String, Object> resultMap = new HashMap<>();
+	    try {
+	        // 1. 상품 기본 정보 업데이트
+	        int num = productMapper.updateProduct(map);
+	        
+	        // 2. 이미지 처리
+	        if(map.containsKey("file1")) {
+	            if("Y".equals(map.get("thumbNail"))) {
+	                productMapper.updateThumbnail(map);
+	            } else {
+	                productMapper.insertAdditionalImage(map);
+	            }
+	        }
+	        
+	        if (num > 0) {
+	            resultMap.put("itemNo", map.get("itemNo"));
+	            resultMap.put("result", "success");
+	        } else {
+	            resultMap.put("result", "fail");
+	        }
+	    } catch (Exception e) {
+	        resultMap.put("result", "fail");
+	        System.out.println(e.getMessage());
+	        throw e; // 트랜잭션 롤백을 위해 예외 다시 던짐
+	    }
+	    return resultMap;
+	}
 	
 	public void updateProductFile(HashMap<String, Object> map) {  
 	    if ("Y".equals(map.get("thumbNail"))) {  
