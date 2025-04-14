@@ -66,5 +66,9 @@ public interface ProductMapper {
 
 	List<Product> RecommendProduct(HashMap<String, Object> map);
 
+	void insertContentImage(HashMap<String, Object> map);
+
+	void updateContentImage(HashMap<String, Object> map);
+
 
 }

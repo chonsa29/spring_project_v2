@@ -31,7 +31,7 @@
                     </a>
                     <!-- nav를 logo-container 내부에 포함 -->
                     <nav class="nav">
-                        <a href="/home.do">MAIN</a>
+                        <a href="/home.do">HOME</a>
                         <a href="/product.do">PRODUCT</a>
                         <a href="/brand.do">BRAND</a>
                         <a href="/commu-main.do">COMMUNITY</a>

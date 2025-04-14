@@ -1,0 +1,243 @@
+.cart-item {
+  width: 640px; /* 원하는 크기로 설정 */
+  height: 210px;
+  margin: 0 auto; /* 가운데 정렬 */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 내부 요소를 세로 중앙 정렬 */
+  border: 1px solid #ddd; /* 시각적으로 확인할 수 있는 테두리 */
+  padding: 25px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* 약간의 그림자 추가 */
+  border-radius: 15px;
+  background-color: #C1E8C7;
+  margin-bottom: 15px;
+}
+
+.cart-check {
+  display: flex; /* flexbox로 정렬 설정 */
+  justify-content: flex-start; /* 왼쪽으로 정렬 */
+  align-items: center; /* 수직 중앙 정렬 */
+  margin: 20px auto; /* 상하 여백과 수평 중앙 정렬 */
+  width: 37%; /* div 크기 설정 */
+  gap: 10px;
+}
+
+
+.product-header {
+  display: flex;
+  align-items: center; /* 체크박스와 텍스트 세로 정렬 */
+  margin-bottom: 10px;
+  justify-content: flex-start; /* 왼쪽으로 정렬 */
+  width: 100%;
+}
+
+.product-header input[type="checkbox"] {
+  margin-right: 10px; /* 체크박스와 이름 사이 간격 */
+}
+
+.product-content {
+  display: flex;
+  align-items: center; /* 이미지와 세부 정보 정렬 */
+  margin-left: -150px;
+  margin-top: 5px;
+  width: 600px; /* 원하는 고정 크기 */
+  margin: 0 auto; /* 수평 중앙 정렬 */
+}
+
+.product-image {
+  width: 160px;
+  height: 120px;
+  margin-right: 30px;
+  margin-left: 10px;
+  border-radius: 15px;
+  flex-shrink: 0;
+}
+
+.product-details {
+  display: flex;
+  flex-direction: column; /* 세부 정보를 세로로 정렬 */
+  width: 300px;
+  flex-shrink: 0;
+}
+
+.price-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.price-row h3 {
+  margin-right: 10px; /* PRICE 텍스트와 금액 사이 간격 */
+}
+
+.quantity {
+  display: flex; /* 수평으로 정렬 */
+  flex-direction: row; /* 요소를 가로로 배치 */
+  align-items: center; /* 세로 정렬 */
+  justify-content: flex-start; /* 왼쪽 정렬 */
+  gap: 10px; /* 요소 간 간격 */
+}
+
+.quantity span {
+  display: inline; /* 텍스트가 세로로 나오지 않도록 설정 */
+}
+
+.quantity input {
+  width: 60px; /* 입력 필드 크기 제한 */
+}
+
+
+.checkout-summary {
+  border-top: 1px solid #ddd;
+  margin-top: 20px;
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 가운데 정렬 */
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  width: 300px;
+  margin: 5px 0;
+}
+
+.summary-item.total {
+  font-weight: bold;
+}
+
+.q-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 20%; /* 버튼 크기 조정 가능 */
+  height: 25px;
+  
+}
+
+.q-button:hover {
+  background-color: #45a049;
+}
+
+.r-button {
+  background-color: rgb(240, 43, 48);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 20%; /* 버튼 크기 조정 가능 */
+  height: 25px;
+  
+}
+
+.r-button:hover {
+  background-color: rgb(216, 16, 21);
+}
+
+.order-button {
+  margin-top: 15px;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 150px; /* 버튼 크기 조정 가능 */
+}
+
+.order-button:hover {
+  background-color: #45a049;
+}
+
+.remove-button {
+  margin-top: 15px;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  background-color: rgb(240, 43, 48);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 150px; /* 버튼 크기 조정 가능 */
+}
+
+.remove-button:hover {
+  background-color: rgb(216, 16, 21);
+}
+
+.orbutton {
+	display: flex;
+	gap: 10px;
+}
+
+/* 결제 금액 막대바 */
+.progress-container {
+  width: 100%;
+  max-width: 700px; /* 컨테이너의 최대 크기 */
+  height: 20px;
+  background-color: #ddd; /* 배경색 */
+  border-radius: 5px;
+  margin: 20px auto; /* 상하 여백 및 수평 가운데 정렬 */
+  position: relative; /* 텍스트 위치를 조정하기 위해 추가 */
+  margin-bottom: 50px;
+}
+
+.progress-bar {
+  width: 20%; /* 기본 너비, 결제 금액에 따라 변경됨 */
+  height: 100%;
+  background-color: #C1E8C7; /* 막대바 색상 */
+  border-radius: 5px;
+  transition: width 0.3s ease-in-out, background-color 0.3s ease-in-out; /* 애니메이션 부드럽게 */
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between; /* 왼쪽과 오른쪽에 텍스트 배치 */
+  position: absolute; /* 막대바 위에 텍스트 위치 */
+  top: 25px; /* 막대바 아래쪽에 여백 추가 */
+  width: 100%; /* 막대바와 동일한 너비 설정 */
+}
+
+.label-left, .label-right {
+  font-size: 14px; /* 텍스트 크기 설정 */
+  color: #333; /* 텍스트 색상 */
+}
+
+
+.shipping-info {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: rgb(0, 0, 0);
+	margin-bottom: 50px;
+}
+
+.notCart {
+	margin: 50px;
+}
+
+.n-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 10%; /* 버튼 크기 조정 가능 */
+  height: 25px;
+  padding: 10px;
+  padding-bottom: 30px;
+  margin-top: 30px;
+}
+
+.n-button:hover {
+  background-color: #45a049;
+}
+
+
+.material-symbols-outlined {
+    color: #000; /* 원하는 기본 색상 */
+}

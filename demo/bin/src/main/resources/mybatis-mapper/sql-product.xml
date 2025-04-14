@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.ProductMapper">
+	<!-- product 리스트 가져오기 -->
+	<select id="SelectProduct" parameterType="hashmap" resultType="com.example.demo.model.Product">
+		SELECT *
+	    FROM PRODUCT P
+	    LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
+	    WHERE THUMBNAIL = 'Y'
+	    <if test="searchOption == '전체메뉴'">
+	        AND ITEM_NAME LIKE '%' || #{keyword} || '%' 
+	    </if>
+	    <if test="searchOption != '전체메뉴'">
+	        AND CATEGORY = #{searchOption}
+	    </if>
+	    <if test="sortOption == 'newest'"> <!--최신순-->
+	        ORDER BY P.RDATE DESC
+	    </if>
+	    <if test="sortOption == 'popularity'"> <!--인기순-->
+	        ORDER BY P.SELL_COUNT DESC
+	    </if>
+	    <if test="sortOption == 'lowPrice'"> <!--낮은 가격순-->
+	        ORDER BY P.PRICE ASC
+	    </if>
+	    <if test="sortOption == 'highPrice'"> <!--높은 가격순-->
+	        ORDER BY P.PRICE DESC
+	    </if>
+	    OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+	</select>
+	
+	<select id="SelectCategory" parameterType="hashmap" resultType="com.example.demo.model.Product">
+		SELECT DISTINCT CATEGORY
+		FROM PRODUCT
+	</select>
+	
+	
+	<!-- product 리스트 가져오기 -->
+	<select id="SelectProduct2" parameterType="hashmap" resultType="com.example.demo.model.Product">
+		SELECT DISTINCT *
+		FROM PRODUCT P
+		LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
+        WHERE THUMBNAIL IS NULL OR THUMBNAIL='Y'
+	</select>
+	
+	<!-- product 전체 개수 구하기 -->
+	<select id="CountProduct" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*)
+		FROM PRODUCT P
+		LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
+		WHERE THUMBNAIL = 'Y'
+		<if test="searchOption == '전체메뉴'">
+			AND ITEM_NAME LIKE '%' || #{keyword} || '%' 
+		</if>
+		<if test="searchOption != '전체메뉴'">
+        	AND CATEGORY = #{searchOption} <!-- 카테고리 필터링 -->
+    	</if>
+	</select>
+	
+	<!-- product 상세정보 가져오기 -->
+	<select id="SelectProductInfo" parameterType="hashmap" resultType="com.example.demo.model.Product">
+		SELECT *
+		FROM PRODUCT P
+		LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
+		WHERE P.ITEM_NO = #{itemNo} AND (THUMBNAIL = 'Y' OR THUMBNAIL IS NULL)
+		
+	</select>
+	
+	<!-- product의 재고개수 가져오기 -->
+	<select id="SelectProductCount" parameterType="hashmap" resultType="int">
+		SELECT ITEM_COUNT
+		FROM PRODUCT
+		WHERE ITEM_NO = #{itemNo}
+	</select>
+	
+	<!-- product_img 리스트 가져오기 -->
+	<select id="SelectProductImgList" parameterType="hashmap" resultType="com.example.demo.model.Product">
+		SELECT *
+		FROM PRODUCT_IMG
+		WHERE ITEM_NO = #{itemNo} AND THUMBNAIL ='N'
+	</select>
+	
+	<!-- product review 가져오기 -->
+	<select id="SelectProductReview" parameterType="hashmap" resultType="com.example.demo.model.Review">
+		SELECT *
+		FROM REVIEW R
+		INNER JOIN PRODUCT P ON P.ITEM_NO = R.ITEM_NO
+		INNER JOIN MEMBER M ON R.USERID = M.USERID
+		WHERE P.ITEM_NO = #{itemNo}
+	</select>
+	
+	<select id="RecommendProduct" parameterType="hashmap" resultType="com.example.demo.model.Product">
+		SELECT *
+	    FROM PRODUCT P
+	    LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
+	    WHERE THUMBNAIL = 'Y'
+	</select>
+	
+	
+	<!--product 추가-->
+	<insert id="addProduct" parameterType="hashmap"  useGeneratedKeys="true" keyColumn="ITEM_NO" keyProperty="itemNo">
+		INSERT INTO PRODUCT (ITEM_NO, PRICE, ITEM_NAME, ITEM_COUNT, CATEGORY, RDATE, ITEM_INFO, ALLERGENS)
+		VALUES (PRODUCT_SEQ.NEXTVAL, #{price}, #{name}, #{quantity}, #{category}, SYSDATE, #{info}, #{allergens})
+	</insert>
+	
+	<!--product 이미지 추가-->
+	<insert id="insertProductFile" parameterType="hashmap">
+		INSERT INTO PRODUCT_IMG
+		VALUES(#{itemNo}, #{filename},#{path}, #{thumbNail})
+	</insert>
+	
+	<update id="updateProduct" parameterType="hashmap"  useGeneratedKeys="true" keyColumn="ITEM_NO" keyProperty="itemNo">
+		UPDATE PRODUCT
+		SET ITEM_NAME = #{name},
+			PRICE = #{price},
+			ITEM_COUNT = #{quantity},
+			ITEM_INFO = #{info},
+			ALLERGENS = #{allergens}
+		WHERE ITEM_NO = #{itemNo}
+	</update>
+	
+	<!-- 추가 이미지 전용 쿼리 -->  
+	<insert id="insertAdditionalImage">  
+	  INSERT INTO PRODUCT_IMG  
+	  VALUES(#{itemNo}, #{filename}, #{path}, 'N')  
+	</insert>  
+	
+	<!-- 썸네일 수정 전용 쿼리 -->  
+	<update id="updateThumbnail">  
+	  UPDATE PRODUCT_IMG  
+	  SET FILENAME=#{filename}, FILEPATH=#{path}  
+	  WHERE ITEM_NO=#{itemNo} AND THUMBNAIL='Y'  
+	</update>  
+	
+	<delete id="deleteProduct" parameterType="hashmap">
+	    DELETE FROM PRODUCT
+	    WHERE ITEM_NO = #{itemNo}
+	</delete>
+	
+	<delete id="deleteProductImages" parameterType="hashmap">
+	    DELETE FROM PRODUCT_IMG
+	    WHERE ITEM_NO = #{itemNo}
+	</delete>
+	
+	<delete id="deleteProductImg" parameterType="hashmap">
+		DELETE FROM PRODUCT_IMG
+		WHERE FILENAME = #{fileName}
+	</delete>
+	
+	
+	<!-- 좋아요 상태 확인 -->
+    <select id="checkIfLiked" parameterType="hashmap" resultType="int">
+        SELECT COUNT(*)
+        FROM WISH
+        WHERE USERID = #{userId} AND ITEM_NO = #{itemNo}
+    </select>
+    
+    <!-- 좋아요 추가 -->
+    <insert id="addLike" parameterType="hashmap">
+        INSERT INTO WISH
+        VALUES (WISH_SEQ.NEXTVAL, #{userId}, #{itemNo}, SYSDATE)
+    </insert>
+    
+    <!-- 좋아요 취소 -->
+    <delete id="removeLike" parameterType="hashmap">
+        DELETE FROM WISH
+        WHERE USERID = #{userId} AND ITEM_NO = #{itemNo}
+    </delete>
+    
+    <!-- 유저별 좋아요 목록 가져오기 -->
+    <select id="SelectproductWish" parameterType="hashmap" resultType="com.example.demo.model.Wish">
+    	SELECT *
+    	FROM WISH
+    	WHERE USERID = #{userId}
+    </select>
+    
+    <!-- item_no당 리뷰의 총 개수 가져오기 -->
+    <select id="CountProductReview" parameterType="hashmap" resultType="int">
+    	SELECT COUNT(*)
+    	FROM REVIEW
+    	WHERE ITEM_NO = #{itemNo}
+    </select>
+    
+    
+    <!-- item_no당 상품의 문의 내역 가져오기 -->
+    <select id="SelectproductQuestion" parameterType="hashmap" resultType="com.example.demo.model.ProductQuestion">
+    	SELECT *
+    	FROM ITEM_QUESTION
+    	WHERE ITEM_NO = #{itemNo}
+    	ORDER BY CDATETIME
+    </select>
+    
+    <select id="CountProductQuestion" parameterType="hashmap" resultType="int">
+    	SELECT COUNT(*)
+    	FROM ITEM_QUESTION
+    	WHERE ITEM_NO = #{itemNo}
+    </select>
+    
+    <!-- item_no당 상품에 문의 내역 추가하기 -->
+    <insert id="InsertproductQuestion" parameterType="hashmap">
+    	INSERT INTO ITEM_QUESTION
+    	VALUES (ITEM_QUESTION_SEQ.NEXTVAL, #{userId}, #{iqTitle}, #{iqContents}, 'N', #{itemNo}, SYSDATE)
+    </insert>
+    
+</mapper>
+
+
+
+

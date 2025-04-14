@@ -634,3 +634,43 @@ textarea {
 .status-canceled {
 	color: #dc3545;
 }
+
+/* 상품 상태 토글 버튼 */
+.status-toggle-btn {
+  min-width: 80px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-toggle-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.status-toggle-btn:active {
+  transform: translateY(0);
+}
+
+.status-toggle-btn.active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.status-toggle-btn.inactive {
+  background-color: #F44336;
+  color: white;
+}
+
+.status-toggle-btn.loading {
+  background-color: #FFC107;
+  color: #333;
+  cursor: not-allowed;
+}

@@ -252,7 +252,7 @@ const app = Vue.createApp({
         showSection(tab) {
             this.activeTab = tab;
 			if (tab === 'notice') {
-				this.noticeViewMode = 'view'; // 탭 클릭 시 무조건 view 먼저
+				this.noticeViewMode = 'list'; // 탭 클릭 시 무조건 view 먼저
 				this.fnLoadNotice();
 			}
         },

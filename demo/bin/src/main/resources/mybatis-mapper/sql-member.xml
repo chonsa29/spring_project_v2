@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.MemberMapper">
+	<select id="selectMember" parameterType="hashmap" resultType="com.example.demo.model.Member">
+		SELECT *
+		FROM MEMBER
+		WHERE USERID = #{userId}
+	</select>
+	
+	<select id="loginMember" parameterType="hashmap" resultType="com.example.demo.model.Member">
+		SELECT *
+		FROM MEMBER M
+		LEFT JOIN NOTIFICATION N ON M.USERID = N.USERID 
+		WHERE M.USERID = #{userId} AND PASSWORD = #{password}
+	</select>
+	
+	<insert id="addMember" parameterType="hashmap">
+		INSERT INTO MEMBER(USERID, PASSWORD, USERNAME, ADDRESS, EMAIL, EMAIL_VER, BIRTH, GENDER, PHONE, STATUS, CDATETIME, IS_DELETED)
+		VALUES(#{userId},#{pwd},#{userName},#{address},#{email},#{emailVer},#{birth},#{gender},#{phoneNum},#{status},SYSDATE,'N')
+	</insert>
+	
+	<!-- 회원 목록 조회 -->
+    <select id="selectMemberList" resultType="java.util.LinkedHashMap">
+        SELECT 
+            USERID AS userId,
+            USERNAME AS userName,
+            EMAIL AS email,
+            PHONE AS phone,
+            CDATETIME AS cDate,
+            STATUS AS status,
+            (SELECT COUNT(*) FROM ORDER_LIST O WHERE O.USERID = M.USERID) AS orderCount
+        FROM MEMBER M
+        <where>
+            <if test="status != null and status != ''">
+                AND STATUS = #{status}
+            </if>
+            <if test="searchType == 'memberId' and searchValue != null">
+                AND USERID LIKE '%' || #{searchValue} || '%'
+            </if>
+            <if test="searchType == 'userName' and searchValue != null">
+                AND USERNAME LIKE '%' || #{searchValue} || '%'
+            </if>
+            <if test="searchType == 'email' and searchValue != null">
+                AND EMAIL LIKE '%' || #{searchValue} || '%'
+            </if>
+        </where>
+        ORDER BY CDATETIME DESC
+    </select>
+
+    <!-- 회원 상세 정보 -->
+    <select id="selectMemberDetail" parameterType="hashmap" resultType="com.example.demo.model.Member">
+        SELECT 
+           USERID AS userId,
+            USERNAME AS userName,
+            EMAIL AS email,
+            PHONE AS phone,
+            ADDRESS AS address,
+            CDATETIME AS cDateTime,
+            STATUS AS status,
+            POINT AS point
+          
+        FROM MEMBER
+        WHERE USERID = #{memberId}
+    </select>
+
+    <!-- 회원 주문 이력 -->
+    <select id="selectMemberOrderHistory" resultType="java.util.LinkedHashMap">
+        SELECT 
+            ORDER_KEY AS orderKey,
+            ORDER_DATE AS orderDate,
+            PRICE AS price,
+            ORDER_STATUS AS orderStatus
+        FROM ORDER_LIST
+        WHERE USERID = #{memberId}
+        ORDER BY ORDER_DATE DESC
+    </select>
+
+    <!-- 회원 정보 수정 -->
+    <update id="updateMember">
+        UPDATE MEMBER
+        SET 
+            USERNAME = #{userName},
+            EMAIL = #{email},
+            PHONE = #{phone},
+            ADDRESS = #{address},
+        WHERE USERID = #{memberId}
+    </update>
+
+    <!-- 회원 상태 변경 -->
+    <update id="updateMemberStatus">
+        UPDATE MEMBER
+        SET STATUS = #{status}
+        WHERE USERID = #{memberId}
+    </update>
+    
+<select id="selectMemberInfo" parameterType="hashmap" resultType="Member">
+        SELECT 
+            USERID as userId,
+            GROUP_ID as groupId,
+            USERNAME as userName,
+            ADDRESS,
+            EMAIL,
+            BIRTH,
+            GENDER,
+            PHONE,
+            STATUS,
+            NICKNAME,
+            GRADE,
+            ALLERGY,
+            POINT,
+            CDATETIME as regDate
+        FROM 
+            MEMBER
+        WHERE 
+            USERID = #{userId}
+            AND IS_DELETED = 'N'
+    </select>
+    
+    <!-- 회원 등급 정보 조회 -->
+    <select id="selectMemberGradeInfo" parameterType="hashmap" resultType="Member">
+        SELECT 
+            m.GRADE,
+            m.GROUP_ID as groupId,
+            m.POINT
+        FROM 
+            MEMBER m
+        WHERE 
+            m.USERID = #{userId}
+    </select>
+	    
+	<!-- 주문 목록 조회 -->
+	<select id="selectOrderList" resultType="Order">
+	    SELECT 
+	        o.ORDER_KEY as orderKey,
+	        o.ORDER_STATUS as orderStatus,
+	        TO_CHAR(o.ORDER_DATE, 'YYYY-MM-DD') as orderDate,
+	        NVL((
+	            SELECT SUM(d.PRICE * d.COUNT - NVL(d.DISCOUNT, 0)) 
+	            FROM order_details d 
+	            WHERE d.ORDER_ID = o.ORDER_KEY
+	        ), 0) as totalPrice,
+	        (
+	            SELECT COUNT(*) 
+	            FROM order_details d 
+	            WHERE d.ORDER_ID = o.ORDER_KEY
+	        ) as itemCount
+	    FROM ORDER_LIST o
+	    WHERE o.USERID = #{userId, jdbcType=VARCHAR}
+	        <choose>
+	            <when test="sort == 'date_desc'">ORDER BY o.ORDER_DATE DESC</when>
+	            <when test="sort == 'date_asc'">ORDER BY o.ORDER_DATE ASC</when>
+	            <when test="sort == 'price_desc'">ORDER BY totalPrice DESC</when>
+	            <when test="sort == 'price_asc'">ORDER BY totalPrice ASC</when>
+	            <otherwise>ORDER BY o.ORDER_DATE DESC</otherwise>
+	        </choose>
+	</select>
+	
+	<select id="selectOrderCount" resultType="int">
+	    SELECT COUNT(*) FROM ORDER_LIST WHERE USERID = #{userId}
+	</select>
+	
+	<!-- 찜 목록 조회 -->
+	<select id="selectWishList" resultType="Wish">
+	    SELECT *
+	    FROM (
+	        SELECT 
+	            w.WISH_KEY as wishKey,
+	            w.ITEM_NO as itemNo,
+	            p.ITEM_NAME as recentWishProduct,
+	            p.PRICE as price,
+	            TO_CHAR(w.ADD_DATE, 'YYYY.MM.DD') as addDate,
+	            ROW_NUMBER() OVER (
+	                <choose>
+	                    <when test="sort == 'date_desc'">ORDER BY w.ADD_DATE DESC</when>
+	                    <when test="sort == 'date_asc'">ORDER BY w.ADD_DATE ASC</when>
+	                    <when test="sort == 'price_desc'">ORDER BY p.PRICE DESC</when>
+	                    <when test="sort == 'price_asc'">ORDER BY p.PRICE ASC</when>
+	                    <otherwise>ORDER BY w.ADD_DATE DESC</otherwise>
+	                </choose>
+	            ) AS rn
+	        FROM WISH w
+	        JOIN PRODUCT p ON w.ITEM_NO = p.ITEM_NO
+	        WHERE w.USERID = #{userId}
+	    )
+	    WHERE rn BETWEEN #{offset} + 1 AND #{offset} + #{pageSize}
+	</select>
+		
+	<select id="selectWishCount" resultType="int">
+	    SELECT COUNT(*) FROM WISH WHERE USERID = #{userId}
+	</select>
+	
+	<!-- 찜 삭제 -->
+	<delete id="deleteWishItem">
+	    DELETE FROM WISH 	
+	    WHERE WISH_KEY = #{wishKey} AND USERID = #{userId}
+	</delete>
+	    <!-- 쿠폰 목록 조회 -->
+	<select id="selectCouponList" parameterType="hashmap" resultType="Member">
+	    SELECT 
+	        COUPON_NO,
+	        COUPON_NAME,
+	        DISCOUNT_AMOUNT,
+	        EXPIRE_DATE,
+	        IS_USED
+	    FROM 
+	        COUPON
+	    WHERE 
+	        USERID = #{userId}
+	    ORDER BY 
+	        EXPIRE_DATE DESC
+	</select>
+	
+	<!-- 문의내역 조회 -->
+	<select id="selectInquiryList" parameterType="hashmap" resultType="Member">
+	    SELECT 
+	        QS_NO,
+	        QS_TITLE,
+	        QS_CONTENTS,
+	        CDATETIME,
+	        QS_STATUS
+	    FROM 
+	        QUESTION
+	    WHERE 
+	        USERID = #{userId}
+	    ORDER BY 
+	        CDATETIME DESC
+	</select>
+	<!-- 사용자 그룹 정보 조회 -->
+	<select id="selectMemberGroupInfo" resultType="Member">
+	    SELECT 
+	        g.GROUP_ID as groupId,
+	        d.GROUP_NAME as groupName,
+	        d.LEADER_ID as leaderId,
+	        g.JOIN_DATE as joinDate,
+	        g.ROLE as groupRole,
+	        g.STATUS as groupStatus
+	    FROM 
+	        GROUP_INFO d
+	        JOIN GROUP_USER g ON g.GROUP_ID = d.GROUP_ID
+	    WHERE 
+	        g.USERID = #{userId}
+	        AND g.STATUS = 'ACTIVE'
+	</select>
+</mapper>

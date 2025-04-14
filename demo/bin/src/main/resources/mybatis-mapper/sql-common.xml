@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.CommonMapper">
+	<select id="selectNewProductList" parameterType="hashmap" resultType="com.example.demo.model.Product">
+		SELECT * FROM PRODUCT P
+		LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO AND I.THUMBNAIL = 'Y'
+	</select>
+	
+	<select id="selectBestProductList" parameterType="hashmap" resultType="com.example.demo.model.Product">
+		SELECT *
+		FROM (
+		    SELECT *
+		    FROM PRODUCT P
+		    LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO AND I.THUMBNAIL = 'Y'
+		    ORDER BY P.SELL_COUNT DESC
+		)
+		WHERE ROWNUM &lt;= 7
+	</select>
+	
+	<select id="selectMonthlyProductList" parameterType="hashmap" resultType="com.example.demo.model.Product">
+		SELECT *
+		FROM (
+		    SELECT *
+		    FROM PRODUCT P
+		    LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO AND I.THUMBNAIL = 'Y'
+		    ORDER BY P.RDATE DESC
+		)
+		WHERE ROWNUM &lt;= 9
+	</select>
+	
+</mapper>
+
+
+
+

@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.DashboardMapper">
+
+    <!-- 오늘의 주문 수 -->
+    <select id="selectTodayOrderCount" resultType="int">
+        SELECT COUNT(*) FROM ORDER_LIST
+        WHERE TRUNC(ORDER_DATE) = TRUNC(SYSDATE)
+    </select>
+
+    <!-- 오늘의 취소 요청 수 -->
+    <select id="selectTodayCancelRequestCount" resultType="int">
+        SELECT COUNT(*) FROM ORDER_LIST
+        WHERE TRUNC(ORDER_DATE) = TRUNC(SYSDATE) AND ORDER_STATUS = 'D'
+    </select>
+
+    <!-- 오늘의 배송 관리 수 -->
+    <select id="selectTodayDeliveryCount" resultType="int">
+        SELECT COUNT(*) FROM ORDER_LIST 
+        WHERE TRUNC(ORDER_DATE) = TRUNC(SYSDATE) AND ORDER_STATUS IN ('P')
+    </select>
+
+    <!-- 답변 대기 중인 문의 수 -->
+    <select id="selectPendingInquiryCount" resultType="int">
+        SELECT COUNT(*) FROM QUESTION
+        WHERE QS_STATUS = '0'
+    </select>
+
+    <!-- 최근 7일 매출 추이 -->
+    <select id="selectWeeklySales" resultType="java.util.LinkedHashMap">
+        SELECT 
+            TO_CHAR(TRUNC(ORDER_DATE), 'YYYY-MM-DD') AS "date",
+            SUM(PRICE) AS "sales"
+        FROM ORDER_LIST
+        WHERE ORDER_DATE BETWEEN TRUNC(SYSDATE) - 6 AND TRUNC(SYSDATE) + 1
+        GROUP BY TO_CHAR(TRUNC(ORDER_DATE), 'YYYY-MM-DD')
+        ORDER BY "date" ASC
+    </select>
+
+    <!-- 최근 주문 목록 (최근 5건) -->
+    <select id="selectRecentOrders" resultType="java.util.LinkedHashMap">
+        SELECT * FROM (
+            SELECT 
+                O.ORDER_KEY AS "orderKey",
+                M.USERID AS "userId",
+                O.PRICE AS "price",
+                O.ORDER_STATUS AS "orderStatus"
+            FROM ORDER_LIST O
+            JOIN MEMBER M ON O.USERID = M.USERID
+            ORDER BY O.ORDER_DATE DESC
+        ) WHERE ROWNUM &lt;= 5
+    </select>
+
+    <!-- 인기 상품 TOP 3 -->
+    <select id="selectTopProducts" resultType="java.util.LinkedHashMap">
+        SELECT * FROM (
+            SELECT 
+                P.ITEM_NO AS "itemNo",
+                P.ITEM_NAME AS "itemName",
+                P.PRICE AS "price",
+                SUM(OD.COUNT) AS "totalCount",
+                I.FILEPATH AS "imageUrl"
+            FROM ORDER_DETAILS OD
+            JOIN PRODUCT P ON OD.ITEM_NO = P.ITEM_NO
+            JOIN PRODUCT_IMG I ON I.ITEM_NO = P.ITEM_NO
+            GROUP BY P.ITEM_NO, P.ITEM_NAME, P.PRICE, I.FILEPATH
+            ORDER BY "totalCount" DESC
+        ) WHERE ROWNUM &lt;= 3
+    </select>
+    
+    <select id="selectRecipeList" resultType="Recipe">
+        SELECT POST_ID as postId, TITLE, CONTENTS, USERID as userId, 
+               CDATETIME as cdatetime, CNT as cnt, POST_CATEGORY as postCategory
+        FROM RECIPE_POST
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (TITLE LIKE '%' || #{keyword} || '%' OR CONTENTS LIKE '%' || #{keyword} || '%')
+            </if>
+            <if test="boardType != null and boardType != ''">
+                AND POST_CATEGORY = #{boardType}
+            </if>
+        </where>
+        ORDER BY POST_ID DESC
+        OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <select id="selectRecipeCount" resultType="int">
+        SELECT COUNT(*) FROM RECIPE_POST
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (TITLE LIKE '%' || #{keyword} || '%' OR CONTENTS LIKE '%' || #{keyword} || '%')
+            </if>
+            <if test="boardType != null and boardType != ''">
+                AND POST_CATEGORY = #{boardType}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteRecipe">
+        DELETE FROM RECIPE_POST WHERE POST_ID = #{postId}
+    </delete>
+    
+ <!-- 1. 답변 등록 -->
+	 <insert id="insertReply" parameterType="QuestionReply">
+	    INSERT INTO REPLY (
+	        QS_NO, USERID, REPLY_CONTENTS, ADMIN_ID
+	    ) VALUES (
+	        #{qsNo}, #{userId}, #{replyContents}, #{adminId}
+	    )
+	</insert>
+
+    <!-- 2. 문의별 답변 조회 -->
+    <select id="selectRepliesByQsNo" resultType="QuestionReply">
+        SELECT 
+            REPLY_NO as replyNo,
+            QS_NO as qsNo,
+            USERID as userId,
+            REPLY_CONTENTS as replyContents,
+            ADMIN_ID as adminId
+        FROM REPLY
+        WHERE QS_NO = #{qsNo}
+        ORDER BY REPLY_NO DESC
+    </select>
+
+    <!-- 3. 답변 수정 -->
+    <update id="updateReply" parameterType="QuestionReply">
+        UPDATE REPLY SET
+            REPLY_CONTENTS = #{replyContents},
+            ADMIN_ID = #{adminId}
+        WHERE REPLY_NO = #{replyNo}
+    </update>
+
+    <!-- 4. 답변 삭제 -->
+    <delete id="deleteReply">
+        DELETE FROM REPLY WHERE REPLY_NO = #{replyNo}
+    </delete>
+
+    <!-- [기존 문의 조회 쿼리] -->
+    <select id="selectInquiryList" resultType="Question">
+        SELECT 
+            QS_NO as qsNo, 
+            USERID as userId,
+            QS_TITLE as qsTitle,
+            QS_CONTENTS as qsContents,
+            QS_STATUS as qsStatus,
+            CDATETIME as cdatetime,
+            VIEW_CNT as viewCnt,
+            QS_CATEGORY as qsCategory
+        FROM QUESTION
+        <where>
+            <if test="status != null and status != ''">
+                QS_STATUS = #{status}
+            </if>
+        </where>
+        ORDER BY QS_NO DESC
+    </select>
+    
+    <!-- 문의 상태 업데이트 -->
+	<update id="updateInquiryStatus">
+	    UPDATE QUESTION SET 
+	        QS_STATUS = #{status}
+	    WHERE QS_NO = #{qsNo}
+	</update>
+	
+	<select id="selectDeliveryList" resultType="map">
+	    SELECT 
+	        d.DELIVERY_NO as deliveryNo,
+	        d.ORDER_KEY as orderKey,
+	        d.DELIVERY_STATUS as deliveryStatus,
+	        d.TRACKING_NUMBER as trackingNumber,
+	        TO_CHAR(d.DELIVERY_DATE, 'YYYY-MM-DD') as deliveryDate,
+	        d.DELIVERY_FEE as deliveryFee,
+	        o.ORDER_DATE as orderDate,
+	        m.USERNAME as userName
+	    FROM DELIVERY d
+	    INNER JOIN ORDER_LIST o ON d.ORDER_KEY = o.ORDER_KEY
+	    INNER JOIN MEMBER m ON o.USERID = m.USERID
+	    ORDER BY d.DELIVERY_NO DESC
+	    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	<select id="selectDeliveryDetail" resultType="map">
+   	 SELECT 
+	        d.DELIVERY_NO as deliveryNo,
+	        d.ORDER_KEY as orderKey,
+	        d.CART_KEY as cartKey,
+	        d.DELIVERY_STATUS as deliveryStatus,
+	        d.TRACKING_NUMBER as trackingNumber,
+	        TO_CHAR(d.DELIVERY_DATE, 'YYYY-MM-DD HH24:MI') as deliveryDate,
+	        d.DELIVERY_FEE as deliveryFee,
+	        o.ORDER_DATE as orderDate,
+	        m.USERNAME as userName,
+	        m.PHONE as userPhone,
+	        m.EMAIL as userEmail,
+	        o.PRICE as orderPrice
+	    FROM DELIVERY d
+	    LEFT JOIN ORDER_LIST o ON d.ORDER_KEY = o.ORDER_KEY
+	    LEFT JOIN MEMBER m ON o.USERID = m.USERID
+	    WHERE d.DELIVERY_NO = #{deliveryNo}
+	</select>
+	
+	<select id="selectDeliveryCount" resultType="int">
+	    SELECT COUNT(*)
+	    FROM DELIVERY d
+	    LEFT JOIN ORDER_LIST o ON d.ORDER_KEY = o.ORDER_KEY
+	    LEFT JOIN MEMBER m ON o.USERID = m.USERID
+	    <where>
+	        <if test="searchType == 'orderKey' and searchKeyword != null">
+	            AND d.ORDER_KEY = #{searchKeyword}
+	        </if>
+	        <if test="searchType == 'trackingNumber' and searchKeyword != null">
+	            AND d.TRACKING_NUMBER LIKE '%' || #{searchKeyword} || '%'
+	        </if>
+	        <if test="searchType == 'userName' and searchKeyword != null">
+	            AND m.USERNAME LIKE '%' || #{searchKeyword} || '%'
+	        </if>
+	    </where>
+	</select>
+
+    <update id="updateDeliveryStatus">
+        UPDATE DELIVERY SET
+            DELIVERY_STATUS = #{status}
+        WHERE DELIVERY_NO = #{deliveryNo}
+    </update>
+
+    <update id="updateTrackingNumber">
+        UPDATE DELIVERY SET
+            TRACKING_NUMBER = #{trackingNumber}
+        WHERE DELIVERY_NO = #{deliveryNo}
+    </update>
+</mapper>

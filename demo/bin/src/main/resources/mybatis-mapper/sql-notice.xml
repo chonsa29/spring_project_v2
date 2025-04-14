@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.NoticeMapper">
+
+	<select id="qnaNotice" parameterType="hashmap" resultType="com.example.demo.model.Notice">
+		SELECT NOTICE_NO, NOTICE_TITLE, NOTICE_CONTENTS, TO_CHAR(NOTICE_DATE, 'YYYY-MM-DD') AS NOTICE_DATE, VIEW_CNT
+		FROM NOTICE
+		WHERE 1=1
+		<if test="noticeSearchOption != null and noticeSearchOption == 'nAll'">
+			AND (NOTICE_TITLE LIKE '%' || #{noticeSearchKeyword} || '%'
+			OR NOTICE_CONTENTS LIKE '%' || #{noticeSearchKeyword} || '%')
+		</if>
+		<if test="noticeSearchOption != null and noticeSearchOption == 'nTitle'">
+			AND NOTICE_TITLE LIKE '%' || #{noticeSearchKeyword} || '%'
+		</if>
+		<if test="noticeSearchOption != null and noticeSearchOption == 'nContents'">
+			AND NOTICE_CONTENTS LIKE '%' || #{noticeSearchKeyword} || '%'
+		</if>
+		ORDER BY NOTICE_DATE DESC
+		OFFSET #{noticePage} ROWS FETCH NEXT #{noticePageSize} ROWS ONLY
+	</select>
+	
+	<select id="selectNotice" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*)
+		FROM NOTICE
+		WHERE 1=1
+		<if test="noticeSearchOption != null and noticeSearchOption == 'nAll'">
+			AND (NOTICE_TITLE LIKE '%' || #{noticeSearchKeyword} || '%'
+			OR NOTICE_CONTENTS LIKE '%' || #{noticeSearchKeyword} || '%')
+		</if>
+		<if test="noticeSearchOption != null and noticeSearchOption == 'nTitle'">
+			AND NOTICE_TITLE LIKE '%' || #{noticeSearchKeyword} || '%'
+		</if>
+		<if test="noticeSearchOption != null and noticeSearchOption == 'nContents'">
+			AND NOTICE_CONTENTS LIKE '%' || #{noticeSearchKeyword} || '%'
+		</if>
+	</select> 
+	
+	<select id="noticeSelect" parameterType="hashmap" resultType="com.example.demo.model.Notice">
+		SELECT *
+		FROM NOTICE
+		WHERE NOTICE_NO = #{noticeNo}
+	</select>
+	
+	<update id="noticeUpdate" parameterType="hashmap">
+		UPDATE NOTICE
+		SET
+			NOTICE_TITLE = #{noticeTitle},
+			NOTICE_CONTENTS = #{noticeContents}
+		WHERE NOTICE_NO = #{noticeNo}
+	</update>
+	
+	<delete id="noticeDelete" parameterType="hashmap">
+		DELETE FROM NOTICE
+		WHERE NOTICE_NO = #{noticeNo}
+	</delete>
+	
+	<update id="updateNoticeCnt" parameterType="hashmap">
+		UPDATE NOTICE
+		SET
+			VIEW_CNT = VIEW_CNT + 1
+		WHERE NOTICE_NO = #{noticeNo}
+	</update>
+	
+	<insert id="noticeInsert" parameterType="hashmap">
+		INSERT INTO NOTICE
+		VALUES(NOTICE_SEQ.NEXTVAL, #{noticeTitle}, #{noticeContents}, SYSDATE, 0)
+	</insert>
+	
+	<select id="noticeViewMode" parameterType="hashmap" resultType="com.example.demo.model.Notice">
+	    SELECT *
+	    FROM (
+	        SELECT notice.*, ROWNUM AS rn
+	        FROM (
+	            SELECT *
+	            FROM NOTICE
+	            ORDER BY NOTICE_DATE DESC
+	        ) notice
+	        WHERE ROWNUM &lt;= 2
+	    )
+	    WHERE rn = 2
+	</select>
+	
+	<select id="noticePrev" parameterType="hashmap" resultType="com.example.demo.model.Notice">
+	 	SELECT *
+	    FROM NOTICE
+	    WHERE NOTICE_NO &lt; #{noticeNo}
+	    ORDER BY NOTICE_NO DESC
+	    FETCH FIRST 1 ROWS ONLY
+	</select>
+	
+	<select id="noticeNext" parameterType="hashmap" resultType="com.example.demo.model.Notice">
+	 	SELECT *
+	    FROM NOTICE
+	    WHERE NOTICE_NO &gt; #{noticeNo}
+	    ORDER BY NOTICE_NO ASC
+	    FETCH FIRST 1 ROWS ONLY
+	</select>
+	
+</mapper>
+

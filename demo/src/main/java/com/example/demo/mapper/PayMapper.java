@@ -41,6 +41,6 @@ public interface PayMapper {
 		    @Param("itemNo") int itemNo
 		);
 
-	void deleteCartItem(int cartKey);
+	void deleteCartItems(int cartKey);
 
 }

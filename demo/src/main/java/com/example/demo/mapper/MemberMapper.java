@@ -46,4 +46,12 @@ public interface MemberMapper {
 	int deleteWishItem(HashMap<String, Object> map);
 
 	Member selectMemberGroupInfo(HashMap<String, Object> map);
+
+	int updateMemberInfo(HashMap<String, Object> map);
+
+	int countActiveOrders(HashMap<String, Object> map);
+
+	String selectPassword(HashMap<String, Object> map);
+
+	int updateMemberStatus2(HashMap<String, Object> map);
 }

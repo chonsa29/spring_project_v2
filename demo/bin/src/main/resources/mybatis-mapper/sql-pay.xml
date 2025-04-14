@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.PayMapper">
+
+	<select id="paySell" parameterType="hashmap" resultType="com.example.demo.model.Pay">
+		SELECT P_NO, P_WAY
+	    FROM PAY 
+	    WHERE P_NO = #{pNo}
+	</select>
+	
+	<insert id="paymentSell" parameterType="hashmap">
+		INSERT INTO PAY (pNo, pWay, price, pDate)
+		VALUES (#{pNo}, #{pWay}, #{price}, SYSDATE)
+	</insert>
+	
+	<select id="payProductInfo" parameterType="hashmap" resultType="com.example.demo.model.Product">
+		SELECT *
+	    FROM PRODUCT P
+	    LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
+	    WHERE P.ITEM_NO = #{itemNo}
+	</select>
+	
+	<select id="payMemberInfo" parameterType="map" resultType="com.example.demo.model.Member">
+        SELECT 
+        	M.GROUP_ID, M.USERID, M.USERNAME, M.GRADE, G.GRADE_NAME, G.SALE, O.ZIPCODE,
+        	M.ADDRESS, M.PHONE, M.POINT, C.COUPON_NAME, C.DISCOUNT_AMOUNT
+		FROM MEMBER M
+		INNER JOIN ORDER_LIST O ON O.USERID = M.USERID
+		INNER JOIN COUPON C ON M.USERID = C.USERID AND C.IS_USED = 'N' 
+        INNER JOIN GRADE G ON G.GRADE_ID = M.GRADE
+	    WHERE M.USERID = #{userId}
+	</select>
+	
+	<select id="selectAllProducts" resultType="com.example.demo.model.Product">
+	    SELECT P.ITEM_NO, P.ITEM_NAME, P.PRICE, I.FILEPATH
+	    FROM product P
+	    LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
+	</select>
+	
+</mapper>
