@@ -17,4 +17,5 @@ public class Product {
 	private String fileName;
 	private String thumbNail;
 	private String status;
+	private String itemContents;
 }

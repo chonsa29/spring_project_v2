@@ -32,13 +32,14 @@
                 </div>
                 <div id="product-Info">
                     <div id="item-Info">{{info.itemInfo}}</div>
-                    <div id="product-name">{{info.itemName}}
-                        <!-- 좋아요 활성화 버튼 -->
+                    <div id="product-name-wrapper">
+                        <div id="product-name">{{info.itemName}}</div>
                         <button class="product-like" :class="{ active: likedItems.has(info.itemNo) }"
                             @click="fnLike(info.itemNo)">
                             ❤
                         </button>
                     </div>
+                    
                     <div v-if="showLikePopup" class="like-popup-overlay">
                         <div class="like-popup">
                             {{ likeAction === 'add' ? '좋아요 항목에 추가되었습니다' : '좋아요 항목에서 취소되었습니다.' }}
@@ -198,9 +199,8 @@
                 <div id="product-view">
                     <!-- 상세정보 -->
                     <div v-show="selectedTab === 'info'" class="preparing-info">
-                        {{info.itemContents}}
+                        <img :src="info.itemContents" alt="" id="product-view-img">
                     </div>
-
 
                     <!-- 상품 리뷰 -->
                     <div v-show="selectedTab === 'review'" class="review-container">
@@ -266,7 +266,7 @@
                             <p class="inquiry-notice">★ 상품 문의사항이 아닌 반품/교환관련 문의는 1:1 채팅, 또는 고객센터(1800-1234)를 이용해주세요.
                                 <button @click="openInquiryPopup" class="inquiry-button">상품 문의하기</button>
                             </p>
-                            
+
                             <!-- 상품 문의하기 버튼 -->
                             <div>
                                 <!-- 상품 문의 팝업 -->
@@ -467,6 +467,8 @@
                 // 상세 정보 가져오기
                 fngetInfo() {
                     var self = this;
+
+
                     self.showLikePopup = false;
                     if (!self.likedItemsLoaded) {
                         return;
@@ -485,6 +487,12 @@
                                 // 단일 상세 정보
                                 self.info = data.info;
 
+                                if (self.info.status != 'Y') {
+                                    alert("판매가 종료된 상품입니다.");
+                                    location.href = "/product.do";
+                                }
+
+
                                 // 재고
                                 self.count = data.count;
 
@@ -495,6 +503,8 @@
                                 self.imgList = data.imgList;
 
                                 self.filterAndPrepareRecommend(data.recommend);
+
+                                console.log(self.info.itemContents);
 
                                 // 알레르기 표시 여부
                                 if (data.info.allergens != "없음") {
