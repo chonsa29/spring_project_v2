@@ -564,7 +564,6 @@
                     userId: '${sessionId}',
                     // 주문 내역 관련
                     orders: [],
-                    currentTab: 'orders',
                     orderSort: 'date_desc',
                     orderTotalCount: 0,
                     currentOrderPage: 1,

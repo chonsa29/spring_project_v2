@@ -72,5 +72,7 @@ public interface ProductMapper {
 
 	void updateProductContentImage(HashMap<String, Object> map);
 
+	void deleteProductImagesByType(HashMap<String, Object> map);
+
 
 }

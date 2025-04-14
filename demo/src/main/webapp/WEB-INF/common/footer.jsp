@@ -19,8 +19,7 @@
                     <p>건강과 편리를 위한 최고의 선택</p>
                     <nav>
                         <ul>
-                            <li><a href="/about">회사 소개</a></li>ㅣ
-                            <li><a href="/community">고객센터</a></li>ㅣ
+                            <li><a href="/brand.do">회사 소개</a></li>ㅣ
                             <li><a href="/inquire.do?tab=faq">자주 묻는 질문</a></li>ㅣ
                             <li><a href="/inquire.do?tab=qna">문의하기</a></li>
                         </ul>

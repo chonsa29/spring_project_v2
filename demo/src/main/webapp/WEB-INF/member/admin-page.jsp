@@ -137,13 +137,13 @@
                                             <input type="text" class="form-control" v-model="productSearch.keyword"
                                                 @keyup.enter="searchProducts">
                                         </div>
-                                        <div class="col-md-3">
+                                        <!-- <div class="col-md-3">
                                             <label class="form-label">카테고리</label>
                                             <select class="form-select" v-model="productSearch.category">
                                                 <option value="">전체 카테고리</option>
                                                 <option v-for="cat in categories" :value="cat">{{ cat }}</option>
                                             </select>
-                                        </div>
+                                        </div> -->
                                         <div class="col-md-3">
                                             <label class="form-label">상품 상태</label>
                                             <select class="form-select" v-model="productSearch.status">
@@ -281,8 +281,10 @@
                                     </div>
                                     <input type="file" id="additionalPhotos"
                                         @change="handleFileChange('additionalPhotos')" multiple>
+                                    <!-- 설명 이미지 업로드 필드 -->
                                     <label for="contentImage">설명 이미지</label>
                                     <input type="file" id="contentImage" @change="handleFileChange('contentImage')">
+
 
                                     <!-- 설명 이미지 미리보기 -->
                                     <div v-if="contentImagePreview">
@@ -367,7 +369,7 @@
                                                     <td>{{ formatDate(order.ORDERDATE) }}</td>
                                                     <td>{{ order.USERNAME }} ({{ order.USERID }})</td>
                                                     <td>{{ formatCurrency(order.PRICE) }}</td>
-                                                    <td>{{ getPaymentMethod(order.PWAY) }}</td>
+                                                    <td>신용카드</td>
                                                     <td>
                                                         <span :class="'status-badge ' + getStatusClass(order.status)">
                                                             {{ getStatusText(order.ORDERSTATUS) }}
@@ -607,7 +609,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="inq in generalInquiries" :key="inq.qsNo">
+                                        <tr v-for="inq in generalInquiries" :key="inq.QSNO">
                                             <td>{{ inq.QSNO }}</td>
                                             <td>
                                                 <a @click="showInquiryDetail(inq)">{{ inq.QSTITLE }}</a>
@@ -621,9 +623,9 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <button @click="showReplyModal(inq)" class="btn btn-sm btn-primary">
-                                                    답변 관리
-                                                </button>
+                                                <button @click="showInquiryDetail(inq)"
+                                                    class="btn btn-sm btn-primary">답변
+                                                    관리</button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -929,7 +931,7 @@
                                             </tr>
                                             <tr>
                                                 <th>결제방법</th>
-                                                <td>{{ getPaymentMethod(currentOrder.order.PWAY) }}
+                                                <td>신용카드
                                                 </td>
                                             </tr>
                                         </table>
@@ -1248,7 +1250,8 @@
                             USERNAME: null,
                             USERPHONE: null,
                             USEREMAIL: null
-                        }
+                        },
+                        deleteContentImage: false,
                     };
                 },
                 computed: {
@@ -1332,20 +1335,20 @@
                 },
                 methods: {
                     // 일반 문의 상세 보기
-                    showInquiryDetail(inquiry) {
-                        this.selectedInquiry = inquiry;
-                        this.fetchReplies(inquiry.qsNo, 'general');
+                    showInquiryDetail(inq) {
+                        this.selectedInquiry = inq;
+                        this.fetchReplies(inq.QSNO, 'general'); // <- 반드시 대문자 QSNO 사용!
                         this.showReplyModal = true;
                     },
 
                     // 상품 문의 상세 보기
                     showProductInquiryDetail(inquiry) {
-                        if (!inquiry.qsNo) {
-                            console.error("qsNo is missing in inquiry:", inquiry);
+                        if (!inq.QSNO) {
+                            console.error("qsNo is missing in inquiry:", inq);
                             return;
                         }
-                        this.selectedInquiry = inquiry;
-                        this.fetchReplies(inquiry.qsNo, 'product');
+                        this.selectedInquiry = inq;
+                        this.fetchReplies(inq.QSNO, 'product'); // ✅ 반드시 대문자 QSNO 사용
                         this.showReplyModal = true;
                     },
 
@@ -1916,6 +1919,10 @@
                             self.itemNo = "",
                                 self.item = {};
                             thumbnail = null;
+                            this.thumbnail = null;
+                            this.additionalPhotos = [];
+                            this.contentImage = null;
+                            this.contentImagePreview = null;
                         } else {
                             this.showProductForm = false;
                             this.showTable = true;
@@ -1943,50 +1950,73 @@
                             }
                         }
                     },
-                    submitForm() {
-                        var self = this;
-                        var nparmap = {
-                            itemNo: self.itemNo,
-                            name: self.name,
-                            price: self.price,
-                            quantity: self.quantity,
-                            category: self.category,
-                            info: self.info,
-                            allergens: self.allergens,
-                        };
+                    async submitForm() {
+                        // 입력값 유효성 검사
+                        if (!this.name || !this.price || !this.quantity || !this.category || !this.info || !this.allergens) {
+                            alert("모든 입력란을 작성해 주세요.");
+                            return;
+                        }
+                        if (this.price <= 0 || this.quantity <= 0) {
+                            alert("가격과 수량은 0보다 커야 합니다.");
+                            return;
+                        }
+                        const formData = new FormData();
 
-                        if (self.item.itemNo == null) {
-                            // 신규 등록
-                            $.ajax({
-                                url: "/product/add.dox",
-                                dataType: "json",
-                                type: "POST",
-                                data: nparmap,
-                                success: function (data) {
-                                    const form = self.makeUploadForm(data.itemNo);
-                                    if (form) {
-                                        self.upload(form);
-                                    }
-                                }
-                            });
-                        } else {
-                            // 수정
-                            $.ajax({
-                                url: "/product/update.dox",
-                                dataType: "json",
-                                type: "POST",
-                                data: nparmap,
-                                success: function (data) {
-                                    const form = self.makeUploadForm(data.itemNo);
-                                    if (form) {
-                                        self.update(form);
-                                    }
-
-                                }
-                            });
+                        if (this.itemNo) {
+                            formData.append("itemNo", this.itemNo);
                         }
 
-                        this.showProductForm = false;
+                        formData.append("name", this.name);
+                        formData.append("price", this.price);
+                        formData.append("quantity", this.quantity);
+                        formData.append("category", this.category);
+                        formData.append("info", this.info);
+                        formData.append("allergens", this.allergens);
+
+                        try {
+                            // 1. 상품 기본 정보 업데이트
+                            const updateResponse = await $.ajax({
+                                url: "/product/fileUpdate.dox",
+                                type: "POST",
+                                data: formData,
+                                processData: false,
+                                contentType: false
+                            });
+
+                            // 2. 이미지 처리
+                            const uploadForm = this.makeUploadForm(this.itemNo);
+                            if (uploadForm) {
+                                await $.ajax({
+                                    url: "/product/fileUpload.dox",
+                                    type: "POST",
+                                    data: uploadForm,
+                                    processData: false,
+                                    contentType: false
+                                });
+                            }
+
+                            // 3. 설명 이미지 처리
+                            if (this.contentImage) {
+                                const contentForm = new FormData();
+                                contentForm.append("itemNo", this.itemNo);
+                                contentForm.append("contentImage", this.contentImage);
+
+                                await $.ajax({
+                                    url: "/product/updateContentImage",
+                                    type: "POST",
+                                    data: contentForm,
+                                    processData: false,
+                                    contentType: false
+                                });
+                            }
+
+                            alert("상품이 수정되었습니다.");
+                            this.showProductForm = false;
+                            this.fetchProducts();
+                        } catch (error) {
+                            console.error("수정 실패:", error);
+                            alert("상품 수정 중 오류가 발생했습니다.");
+                        }
                     },
                     makeUploadForm(itemNo) {
                         if (!this.thumbnail && this.additionalPhotos.length === 0 && !this.contentImage) {
@@ -2023,15 +2053,16 @@
                     upload(form) {
                         var self = this;
                         $.ajax({
-                            url: "/product/fileUpload.dox",
-                            type: "POST",
-                            processData: false,
+                            url: '/product/fileUpload.dox',
+                            type: 'POST',
+                            data: formData,
                             contentType: false,
-                            data: form,
+                            processData: false,
                             success: function (response) {
-                                alert("저장되었습니다!");
-                                location.href = "/product.do";
-                                self.showProductForm = false;
+                                // 파일 업로드 성공
+                            },
+                            error: function (error) {
+                                alert("파일 업로드 실패: " + error.responseJSON.message);
                             }
                         });
                     },
@@ -2077,10 +2108,19 @@
                                 self.category = self.item.category;
                                 self.info = self.item.itemInfo;
                                 self.allergens = self.item.allergens;
-                                self.imgList = data.imgList;
+
+                                // 이미지 리스트 초기화
+                                self.imgList = data.imgList || [];
+
+                                // 썸네일 이미지 설정
+                                if (data.info.filePath) {
+                                    self.item.filePath = data.info.filePath;
+                                }
+
                                 self.itemNo = self.item.itemNo;
                                 self.showProductForm = true;
                                 self.showTable = false;
+                                self.formType = 'edit';
                             }
                         });
                     },
@@ -2159,8 +2199,13 @@
                             data: nparmap,
                             success: function (data) {
                                 alert("삭제되었습니다.");
-                                // imgList에서 삭제된 파일 제거
+                                // 화면에서만 제거
                                 self.imgList = self.imgList.filter(img => img.fileName !== fileName);
+
+                                // 만약 썸네일이 삭제된 경우
+                                if (self.item.filePath && self.item.filePath.includes(fileName)) {
+                                    self.item.filePath = '';
+                                }
                             }
                         });
                     },
