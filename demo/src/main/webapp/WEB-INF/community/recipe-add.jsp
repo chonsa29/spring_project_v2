@@ -29,7 +29,7 @@
                 <input type="number" id="cookingTime" v-model="cookingTime" min="1">
             </div>
             <div class="info-item">
-                <label for="servings">몇 인분:</label>
+                <label for="servings">양:</label>
                 <input type="number" id="servings" v-model="servings" min="1">
             </div>
             <div class="info-item">
