@@ -198,7 +198,7 @@
                 <div id="product-view">
                     <!-- 상세정보 -->
                     <div v-show="selectedTab === 'info'" class="preparing-info">
-                        <img src="../img/파스타 상세정보(연습용).jpg" alt="" class="preparing-info-img">
+                        {{info.itemContents}}
                     </div>
 
 

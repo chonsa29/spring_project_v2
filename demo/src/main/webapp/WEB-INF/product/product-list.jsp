@@ -86,8 +86,7 @@
             </div>
             <div id="indexnum">
                 <a v-if="page !=1" id="index" href="javascript:;" class="color-black" @click="fnPageMove('prev')">
-                    < 
-                </a>
+                    < </a>
                         <a id="index" href="javascript:;" v-for="num in index" @click="fnPage(num)">
                             <span v-if="page == num">
                                 {{num}}
@@ -96,10 +95,10 @@
                                 {{num}}
                             </span>
                         </a>
-                <a v-if="page!=index" id="index" href="javascript:;" class="color-black"
-                    @click="fnPageMove('next')"> 
-                    > 
-                </a>
+                        <a v-if="page!=index" id="index" href="javascript:;" class="color-black"
+                            @click="fnPageMove('next')">
+                            >
+                        </a>
             </div>
         </div>
         </div>
@@ -168,6 +167,25 @@
                                 self.allCategory = [{ category: "전체메뉴" }, ...data.category];
                                 console.log(self.allCategory);
                                 self.index = Math.ceil(data.count / self.pageSize);
+
+                                // 상품 리스트에 이미지 추가
+                                self.list.forEach(function (product) {
+                                    if (product.itemContents) {
+                                        var binaryData = new Uint8Array(product.itemContents);
+                                        var blob = new Blob([binaryData], { type: 'image/png' }); // 이미지 타입 지정
+                                        var url = URL.createObjectURL(blob); // 이미지 URL 생성
+
+                                        // 이미지 태그 생성
+                                        var imgTag = document.createElement('img');
+                                        imgTag.src = url;
+                                        imgTag.alt = 'product image';
+
+                                        // #product-list 요소에 이미지 태그 추가
+                                        document.getElementById('product-list').appendChild(imgTag);
+                                    }
+                                });
+
+
                             } else {
                                 console.log("실패");
                             }

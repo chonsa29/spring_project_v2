@@ -250,7 +250,8 @@
                                     itemName: item.itemName,
                                     filePath: item.filePath,
                                     price: parseInt(item.price, 10), 
-                                    quantity: parseInt(item.quantity, 10)
+                                    quantity: parseInt(item.quantity, 10),
+                                    cartKey: item.cartKey 
                                 }))
                                 : [{
                                     itemNo: data.productInfo.itemNo,
@@ -286,8 +287,32 @@
 					}
 				});
             },
+            removeItemsFromCart(orderItems) {
+                var self = this;
+				var nparmap = { 
+                    userId : self.sessionId,
+                    quantity : self.quantity,
+                    itemNo : self.itemNo,
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/deleteOrderedItems.dox", 
+                    data: JSON.stringify(orderItems),
+                    contentType: "application/json",
+                    success: function(response) {
+                        console.log("장바구니에서 삭제 성공", response);
+                    },
+                    error: function(error) {
+                        console.error("장바구니 삭제 실패", error);
+                        alert("장바구니 처리 중 오류가 발생했습니다.");
+                    }
+                });
+            },
             fnPayment(){
                 var self = this;
+
+                localStorage.setItem("orderData", JSON.stringify(self.productInfo));
+                sessionStorage.setItem("orderTempData", JSON.stringify(this.productInfo));
 
                 if(!self.memberInfo.userName || !self.memberInfo.phone) {
                     alert("주문자 정보를 입력해주세요");
@@ -309,6 +334,12 @@
                 const gradeDiscount = this.gradeDiscountAmount;
                 const usedPoint = parseInt(this.memberInfo.usedPoint) || 0;
                 const totalPrice = originalPrice - discount - gradeDiscount + this.shippingFee - usedPoint;
+
+                // 결제 직전에
+                const orderData = JSON.parse(localStorage.getItem("orderData"));
+                if (orderData) {
+                    localStorage.setItem("lastOrderData", JSON.stringify(orderData));
+                }
 
                 IMP.request_pay({
                     pg: "html5_inicis",
@@ -392,12 +423,12 @@
                     shippingFee: shippingFee,
                     card: this.payWay,
                     orderCount: totalQuantity,
-                    zipCode: self.memberInfo.zipCode,
-                    address: self.memberInfo.address + ' ' + self.detailAddress,
+                    zipCode: self.memberInfo.zipCode || self.inputZipCode, // 수동 입력 값
+                    address: (self.memberInfo.address || '') + ' ' + self.detailAddress,
+                    userName: self.memberInfo.userName || self.inputUserName,
                     phone: self.receiverPhone,
                     request: self.paymentMethod === 'five' ? self.shippingMessage : self.getShippingMemoText(self.paymentMethod),
                     pNo: Number(self.productNumber),
-                    userName: self.memberInfo.userName,
                     orderDate: orderDate, 
                     // cartList: JSON.stringify(this.orderItems)
                 };
@@ -417,14 +448,19 @@
                     data: nparmap,
                     success: function (data) {
                         console.log(data);
-                        if (data.result === "success") {
+                            if (data.result === "success") {
+                                const orderData = JSON.parse(localStorage.getItem("orderData")) || self.productInfo;
+
+                                const orderItems = orderData.map(item => ({
+                                    itemNo: item.itemNo,
+                                    quantity: item.quantity,
+                                    userId: self.sessionId,
+                                }));
+                                self.removeItemsFromCart(orderItems);
+
                             setTimeout(function() {
                                 window.location.href = "/paySuccess.do?orderId=" + data.orderId;
                             }, 500);
-                            console.log("itemNo:", itemNo);
-                            console.log("cartKey:", cartKey);
-                            console.log("productNumber:", productNumber);
-                            console.log("quantity:", totalQuantity);
                         } else {
                             alert("결제 저장 실패: " + data.message);
                         }
@@ -492,7 +528,7 @@
             }, { passive: false });
 
             // orderData 확인 후 상품 정보 불러오기
-            const orderData = JSON.parse(localStorage.getItem("orderData"));
+            const orderData = JSON.parse(localStorage.getItem("orderData")) || JSON.parse(localStorage.getItem("lastOrderData") ||  JSON.parse(sessionStorage.getItem("orderTempData")));
 
             if (orderData && orderData.length > 0 && !(self.itemNo && self.quantity)) {
                 // 장바구니 결제
