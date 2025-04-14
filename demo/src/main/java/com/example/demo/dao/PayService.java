@@ -2,6 +2,7 @@ package com.example.demo.dao;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,9 +11,9 @@ import com.example.demo.mapper.PayMapper;
 import com.example.demo.model.Member;
 import com.example.demo.model.Pay;
 import com.example.demo.model.Product;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.servlet.http.HttpSession;
-import jakarta.transaction.Transactional;
 
 @Service
 public class PayService {
@@ -42,6 +43,21 @@ public class PayService {
  	    	
  	    	//dbtransation 	    	
  	        payMapper.paymentSell(map);
+ 	        
+ 	        String orderItemsJson = (String) map.get("orderItems");
+	 	      List<Map<String, Object>> itemList = new ObjectMapper().readValue(orderItemsJson, new TypeReference<List<Map<String, Object>>>(){});
+	
+	 	      for (Map<String, Object> item : itemList) {
+	 	          Map<String, Object> detailMap = new HashMap<>();
+	 	          detailMap.put("orderKey", map.get("orderKey")); // 생성된 키
+	 	          detailMap.put("itemNo", item.get("itemNo"));
+	 	          detailMap.put("count", item.get("quantity"));
+	 	          detailMap.put("price", item.get("price"));
+	
+	 	          detailMap.put("discount", 0);  // 할인 계산도 가능
+	
+	 	          payMapper.insertOrderDetail(detailMap);
+	 	      }
  
  	        if (map.get("orderItems") != null) {
  	            session.setAttribute("orderItems", map.get("orderItems"));
