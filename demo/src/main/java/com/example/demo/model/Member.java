@@ -1,6 +1,6 @@
 package com.example.demo.model;
 
-import java.util.Date;
+import java.util.List;
 
 import lombok.Data;
 
@@ -48,5 +48,6 @@ public class Member {
     private String groupStatus;
     private String monthSpent;
     private Integer groupDiscountRate; 
- 
+    private String groupRole;
+    private List<Member> groupMembers; 
 }

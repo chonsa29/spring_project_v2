@@ -66,4 +66,10 @@ public interface DashboardMapper {
 	List<Map<String, Object>> selectInquiryList2(Map<String, Object> params);
 	
 	int selectInquiryCount(Map<String, Object> params);
+
+	void insertProductInquiryReply(QuestionReply reply);
+
+	void updateProductInquiryStatus(int qsNo, String string);
+
+	Map<String, Object> selectProductInquiryDetail(int iqNo);
 }

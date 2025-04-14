@@ -156,4 +156,22 @@ public class DashboardService {
 	public int selectInquiryCount(Map<String, Object> params) {
 	    return dashboardMapper.selectInquiryCount(params);
 	}
+	
+	// 상품 문의 답변 추가
+	@Transactional
+	public void addProductInquiryReply(QuestionReply reply) {
+	    dashboardMapper.insertProductInquiryReply(reply);
+	    dashboardMapper.updateProductInquiryStatus(reply.getQsNo(), "1");
+	}
+
+	// 답변 수정
+	@Transactional
+	public void updateReply(QuestionReply reply) {
+	    dashboardMapper.updateReply(reply);
+	}
+
+	// 상품 문의 상세 조회 추가
+	public Map<String, Object> getProductInquiryDetail(int iqNo) {
+	    return dashboardMapper.selectProductInquiryDetail(iqNo);
+	}
 }

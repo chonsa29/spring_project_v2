@@ -1,19 +1,26 @@
+.body{
+	margin:0;
+}
+
+/* 이미지 컨테이너 */
 .image-container {
     position: relative;
     width: 100%;
+    overflow: hidden;
 }
 
 .image-container img {
     width: 100%;
     height: auto;
     display: block;
+    object-fit: cover;
 }
 
 .logo-wrapper {
     position: absolute;
-    top: 10%;
+    top: 20%;
     left: 50%;
-    transform: translate(-50%, 0);
+    transform: translateX(-50%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -23,74 +30,211 @@
 
 .logo3 img,
 .logo4 img {
-    width: 200px;
+    width: 180px;
     height: auto;
+    object-fit: contain;
 }
 
 .text-overlay {
     position: absolute;
-    top: 350px;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     color: white;
-    font-size: 24px;
+    font-size: 36px;
     font-weight: bold;
-    text-shadow: 2px 2px 5px black;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.6);
     text-align: center;
     z-index: 10;
+    max-width: 80%;
 }
 
 .text-overlay2 {
     position: absolute;
-    top: 420px;
+    top: 60%;
     left: 50%;
     transform: translate(-50%, -50%);
     color: white;
     font-size: 18px;
     font-weight: bold;
-    text-shadow: 2px 2px 5px black;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
     text-align: center;
     z-index: 10;
+    max-width: 80%;
 }
 
 .image-container2 {
-    display: flex; /* 자식 요소를 가로로 정렬 */
-    justify-content: center; /* 요소들을 중앙 정렬 */
-    align-items: center; /* 요소들을 수직 중앙 정렬 */
-    gap: -30px;
-    margin-top: 70px; /* 상단 여백 추가 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    margin-top: 80px;  /* 섹션 간 여백 증가 */
+    padding: 0 5px;  /* 좌우 여백 줄임 */
+    flex-wrap: wrap;
 }
 
 .image-container2 div {
-    text-align: center; /* 텍스트 중앙 정렬 */
-    flex: 1; /* 각 요소가 동일한 공간을 차지하도록 설정 (optional) */
+    text-align: center;
+    flex: 1;
+    max-width: 600px;
 }
 
 .image-container2 img {
-	width: 600px;
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
 }
 
-.intro{
-	margin-left: -100px;
+.image-container2 img:hover {
+    transform: scale(1.05);
+}
+
+.intro {
+    font-size: 20px;
+    color: #555;
+    line-height: 1.6;
+    margin-top: 20px;
 }
 
 .image-container3 {
-    display: flex; /* 자식 요소를 가로로 정렬 */
-    justify-content: center; /* 요소들을 중앙 정렬 */
-    align-items: center; /* 요소들을 수직 중앙 정렬 */
-    gap: -30px;
-    margin-top: 70px; /* 상단 여백 추가 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    margin-top: 80px;  /* 섹션 간 여백 증가 */
+    padding: 0 5px;  /* 좌우 여백 줄임 */
+    flex-wrap: wrap;
 }
 
 .image-container3 div {
-    text-align: center; /* 텍스트 중앙 정렬 */
-    flex: 1; /* 각 요소가 동일한 공간을 차지하도록 설정 (optional) */
+    text-align: center;
+    flex: 1;
+    max-width: 600px;
 }
 
 .image-container3 img {
-	width: 600px;
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
 }
 
-.intro2{
-	margin-right: -100px;
+.image-container3 img:hover {
+    transform: scale(1.05);
+}
+
+.intro2 {
+    font-size: 20px;
+    color: #555;
+    line-height: 1.6;
+    margin-top: 20px;
+}
+
+/* 차트 크기 및 레이아웃 */
+.mychart {
+    display: flex;
+    justify-content: flex-start;  /* 차트 왼쪽 정렬 */
+    align-items: center;
+    margin-top: 70px;
+    padding: 40px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    gap: 40px;  /* 차트와 문구 사이에 여백 */
+}
+
+#chart {
+    width: 30vw;  /* 화면 너비의 30% 차지 */
+    height: 400px;
+    margin: 0 auto;
+}
+
+.chart-text {
+    font-size: 20px;
+    color: #555;
+    line-height: 1.8;
+    max-width: 500px;
+}
+
+/* 문구 위치와 정렬 */
+.chart-text h3 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.chart-text p {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+/* 회사 소개 섹션 */
+.company-info {
+    text-align: center;
+    margin-top: 100px;  /* 섹션 간 여백 증가 */
+    padding: 0 10px;  /* 좌우 여백 줄임 */
+    max-width: 900px;  /* 최대 너비를 설정하여 너무 넓지 않게 제한 */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.company-info h2 {
+    font-size: 32px;
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.company-info p {
+    font-size: 18px;
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.company-info .highlight {
+    font-weight: bold;
+    color: #2d7f62;
+}
+
+.company-info .intro-text {
+    font-size: 20px;
+    color: #555;
+    line-height: 1.6;
+    margin-top: 20px;
+}
+
+.company-info .values {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.company-info .values div {
+    text-align: center;
+    max-width: 250px;
+}
+
+.company-info .values i {
+    font-size: 40px;
+    color: #2d7f62;
+    margin-bottom: 10px;
+}
+
+.company-info .values h3 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.company-info .values p {
+    font-size: 16px;
+    color: #555;
 }

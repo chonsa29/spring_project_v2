@@ -258,19 +258,23 @@
 	
 	<!-- 일반 문의 조회 -->
 	<select id="selectInquiryList2" resultType="map">
-	    SELECT 
-	        QS_NO as qsNo,
-	        USERID as userId,
-	        QS_TITLE as qsTitle,
-	        QS_CONTENTS as qsContents,
-	        QS_STATUS as qsStatus,
-	        TO_CHAR(CDATETIME, 'YYYY-MM-DD HH24:MI') as cdatetime,
-	        VIEW_CNT as viewCnt,
-	        QS_CATEGORY as qsCategory
-	    FROM QUESTION
+    SELECT 
+        QS_NO as qsNo,
+        USERID as userId,
+        QS_TITLE as qsTitle,
+        QS_CONTENTS as qsContents,
+        QS_STATUS as qsStatus,
+        TO_CHAR(CDATETIME, 'YYYY-MM-DD HH24:MI') as cdatetime,
+        VIEW_CNT as viewCnt,
+        QS_CATEGORY as qsCategory
+   	 FROM QUESTION
 	    <where>
 	        <if test="type != null and type != 'all'">
-	            AND QS_STATUS = #{type == 'pending' ? '0' : '1'}
+	            AND QS_STATUS = 
+	                <choose>
+	                    <when test="type == 'pending'">0</when>
+	                    <otherwise>1</otherwise>
+	                </choose>
 	        </if>
 	        <if test="searchKeyword != null and searchKeyword != ''">
 	            AND (QS_TITLE LIKE '%' || #{searchKeyword} || '%' 
@@ -280,7 +284,7 @@
 	    ORDER BY QS_NO DESC
 	    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
-	
+		
 	<!-- 일반 문의 카운트 -->
 	<select id="selectInquiryCount" resultType="int">
 	    SELECT COUNT(*) FROM QUESTION
@@ -289,5 +293,37 @@
 	            AND QS_STATUS = #{type == 'pending' ? '0' : '1'}
 	        </if>
 	    </where>
+	</select>
+	
+	<!-- 상품 문의 답변 추가 -->
+	<insert id="insertProductInquiryReply" parameterType="QuestionReply">
+	    INSERT INTO ITEM_QUESTION_REPLY (
+	        IQ_NO, USERID, REPLY_CONTENTS, ADMIN_ID
+	    ) VALUES (
+	        #{qsNo}, #{userId}, #{replyContents}, #{adminId}
+	    )
+	</insert>
+	
+	<!-- 상품 문의 상태 업데이트 -->
+	<update id="updateProductInquiryStatus">
+	    UPDATE ITEM_QUESTION SET 
+	        IQ_STATUS = #{status}
+	    WHERE IQ_NO = #{qsNo}
+	</update>
+	
+	<!-- 상품 문의 상세 조회 -->
+	<select id="selectProductInquiryDetail" resultType="map">
+	    SELECT 
+	        iq.IQ_NO as qsNo,
+	        iq.ITEM_NO as itemNo,
+	        p.ITEM_NAME as itemName,
+	        iq.USERID as userId,
+	        iq.IQ_TITLE as qsTitle,
+	        iq.IQ_CONTENTS as qsContents,
+	        iq.IQ_STATUS as qsStatus,
+	        TO_CHAR(iq.CDATETIME, 'YYYY-MM-DD HH24:MI') as cdatetime
+	    FROM ITEM_QUESTION iq
+	    LEFT JOIN PRODUCT p ON iq.ITEM_NO = p.ITEM_NO
+	    WHERE iq.IQ_NO = #{iqNo}
 	</select>
 </mapper>

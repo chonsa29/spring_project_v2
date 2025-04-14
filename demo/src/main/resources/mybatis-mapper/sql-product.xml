@@ -71,14 +71,6 @@
     	</if>
 	</select>
 	
-	<!-- product 상세정보 가져오기 -->
-	<select id="SelectProductInfo" parameterType="hashmap" resultType="com.example.demo.model.Product">
-		SELECT *
-		FROM PRODUCT P
-		LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
-		WHERE P.ITEM_NO = #{itemNo} AND (THUMBNAIL = 'Y' OR THUMBNAIL IS NULL)
-		
-	</select>
 	
 	<!-- product의 재고개수 가져오기 -->
 	<select id="SelectProductCount" parameterType="hashmap" resultType="int">
@@ -113,8 +105,8 @@
 	
 	<!--product 추가-->
 	<insert id="addProduct" parameterType="hashmap"  useGeneratedKeys="true" keyColumn="ITEM_NO" keyProperty="itemNo">
-		INSERT INTO PRODUCT (ITEM_NO, PRICE, ITEM_NAME, ITEM_COUNT, CATEGORY, RDATE, ITEM_INFO, ALLERGENS)
-		VALUES (PRODUCT_SEQ.NEXTVAL, #{price}, #{name}, #{quantity}, #{category}, SYSDATE, #{info}, #{allergens})
+		INSERT INTO PRODUCT (ITEM_NO, PRICE, ITEM_NAME, ITEM_COUNT, CATEGORY, RDATE, ITEM_INFO, ALLERGENS, STATUS)
+		VALUES (PRODUCT_SEQ.NEXTVAL, #{price}, #{name}, #{quantity}, #{category}, SYSDATE, #{info}, #{allergens}, 'Y')
 	</insert>
 	
 	<!--product 이미지 추가-->
@@ -125,12 +117,26 @@
 	
 	<insert id="insertContentImage" parameterType="hashmap">
 	    INSERT INTO PRODUCT (ITEM_NO, ITEM_CONTENTS)
-	    VALUES (#{itemNo}, #{contentBlob})
+	    VALUES (#{itemNo}, #{contentImagePath})
 	</insert>
+		
+		<!-- PRODUCT 테이블의 ITEM_CONTENTS 업데이트 -->
+	<update id="updateProductContentImage" parameterType="hashmap">
+	    UPDATE PRODUCT
+	    SET ITEM_CONTENTS = #{contentImagePath}
+	    WHERE ITEM_NO = #{itemNo}
+	</update>
 	
+	<!-- 상품 정보 조회 시 ITEM_CONTENTS도 함께 가져오도록 수정 -->
+	<select id="SelectProductInfo" parameterType="hashmap" resultType="com.example.demo.model.Product">
+	    SELECT P.*, I.FILENAME, I.FILEPATH, I.THUMBNAIL
+	    FROM PRODUCT P
+	    LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO AND (I.THUMBNAIL = 'Y' OR I.THUMBNAIL IS NULL)
+	    WHERE P.ITEM_NO = #{itemNo}
+	</select>
 	<update id="updateContentImage" parameterType="hashmap">
 	    UPDATE PRODUCT
-	    SET ITEM_CONTENTS = #{contentBlob}
+	    SET ITEM_CONTENTS = #{contentImagePath}
 	    WHERE ITEM_NO = #{itemNo}
 	</update>
 	
