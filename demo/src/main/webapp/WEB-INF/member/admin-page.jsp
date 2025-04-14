@@ -593,7 +593,7 @@
                             </div>
 
                             <div v-if="currentInquiryTab === 'general'">
-                                <div v-for="inquiry in inquiries" :key="inquiry.qsNo" class="inquiry-item">
+                                <div v-for="inquiry in inquiries" :key="inquiry.QSNO" class="inquiry-item">
                                     <div class="inquiry-header">
                                         <span>[{{ inquiry.qsCategory }}] {{ inquiry.qsTitle }}</span>
                                         <span>{{ inquiry.userId }} | {{ formatDate(inquiry.cdatetime) }}</span>
@@ -611,13 +611,13 @@
                                             <strong>{{ reply.adminId }}</strong>
                                             <p v-html="stripHtml(reply.replyContents)"></p>
                                             <small>{{ formatDate(reply.cdatetime) }}</small>
-                                            <button @click="deleteReply(reply.replyNo, inquiry.qsNo)"
+                                            <button @click="deleteReply(reply.replyNo, inquiry.QSNO)"
                                                 class="btn btn-sm btn-danger">삭제</button>
                                         </div>
                                     </div>
                                     <div v-else class="reply-form">
                                         <textarea v-model="inquiry.newReply" placeholder="답변 내용 입력"></textarea>
-                                        <button @click="submitReply(inquiry.qsNo, inquiry.newReply)"
+                                        <button @click="submitReply(inquiry.QSNO, inquiry.newReply)"
                                             class="btn btn-primary">답변 등록</button>
                                     </div>
                                 </div>
@@ -635,20 +635,28 @@
                                             <th>상태</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr v-for="(inq, index) in productInquiries" :key="inq.qsNo">
-                                            <td>{{ inq.qsNo }}</td>
+                                    <tbody v-if="productInquiries.length > 0">
+                                        <tr v-for="(inq, index) in productInquiries" :key="inq.QSNO">
+                                            <td>{{ inq.QSNO }}</td>
                                             <td>
-                                                <a @click="showProductDetail(inq.itemNo)">{{ inq.itemName }}</a>
+                                                <a @click="showProductDetail(inq.ITEMNO)">{{ inq.ITEMNAME }}</a>
                                             </td>
-                                            <td>{{ inq.qsTitle }}</td>
-                                            <td>{{ inq.userId }}</td>
-                                            <td>{{ inq.cdatetime }}</td>
+                                            <td>{{ inq.QSTITLE }}</td>
+                                            <td>{{ inq.USERID }}</td>
+                                            <td>{{ formatDate(inq.CDATETIME) }}</td>
                                             <td>
                                                 <span
-                                                    :class="'status-badge ' + (inq.qsStatus === '1' ? 'completed' : 'pending')">
-                                                    {{ inq.qsStatus === '1' ? '답변완료' : '답변대기' }}
+                                                    :class="'status-badge ' + (inq.QSSTATUS === '1' ? 'completed' : 'pending')">
+                                                    {{ inq.QSSTATUS === '1' ? '답변완료' : '답변대기' }}
                                                 </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tbody v-else>
+                                        <tr>
+                                            <td colspan="6" class="text-center">
+                                                <div v-if="isLoading">로딩 중...</div>
+                                                <div v-else>조회된 문의가 없습니다.</div>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -1292,15 +1300,22 @@
                                 page: this.currentPage,
                                 size: this.pageSize
                             },
-                            success(response) {
-                                console.log(response);
-                                this.productInquiries = response.list;
+                            success: (response) => {
+                                // 응답 데이터 구조 확인
+                                console.log("API 응답 데이터:", response);
+
+                                // productInquiries에 직접 할당
+                                this.productInquiries = response.list || response.data || response;
+
+                                // 할당 후 데이터 확인
+                                console.log("할당 후 productInquiries:", this.productInquiries);
                             }
                         });
                     },
                     showProductDetail(itemNo) {
                         // 상품 상세 보기 구현
                         console.log("상품 조회:", itemNo);
+                        window.location.href = '/product/info.do?itemNo=' + itemNo;
                     },
                     toggleProductStatus(item) {
                         if (!confirm(`정말 ${item.status === 'Y' ? '판매중지' : '판매재개'} 하시겠습니까?`)) {
@@ -2066,11 +2081,11 @@
 
                                         $('#inquiry-table').append(`
                 <tr>
-                    <td>${inquiry.qsNo}</td>
-                    <td>${inquiry.qsTitle}</td>
+                    <td>${inquiry.QSNO}</td>
+                    <td>${inquiry.QSTITLE}</td>
                     <td>${statusBadge}</td>
                     <td>
-                        <button onclick="loadReplies(${inquiry.qsNo})"
+                        <button onclick="loadReplies(${inquiry.QSNO})"
                                 class="btn btn-sm btn-info">답변보기</button>
                     </td>
                 </tr>
@@ -2086,11 +2101,11 @@
                             console.error('문의 조회 실패:', error);
                         }
                     },
-                    submitReply(qsNo) {
+                    submitReply(QSNO) {
                         const replyContent = $('#reply-content').val();
 
                         $.ajax({
-                            url: `/admin/dashboard/inquiries/${qsNo}/reply`,
+                            url: `/admin/dashboard/inquiries/${QSNO}/reply`,
                             type: 'POST',
                             contentType: 'application/json',
                             data: JSON.stringify({
@@ -2099,14 +2114,14 @@
                             }),
                             success: function () {
                                 alert('답변이 등록되었습니다.');
-                                loadReplies(qsNo); // 답변 목록 갱신
+                                loadReplies(QSNO); // 답변 목록 갱신
                                 // 문의 상태 자동 변경됨 (서버에서 처리)
                             }
                         });
                     },
-                    loadReplies(qsNo) {
+                    loadReplies(QSNO) {
                         $.ajax({
-                            url: `/admin/inquiries/${qsNo}/replies`,
+                            url: `/admin/inquiries/${QSNO}/replies`,
                             type: 'GET',
                             success: function (replies) {
                                 $('#reply-list').empty();
@@ -2134,7 +2149,7 @@
                                 alert('삭제되었습니다.');
                                 // 삭제 후 문의 상태를 "N"으로 변경
                                 $.ajax({
-                                    url: `/admin/inquiries/${qsNo}/status`,
+                                    url: `/admin/inquiries/${QSNO}/status`,
                                     type: 'PUT',
                                     data: { status: 'N' }
                                 });
