@@ -101,10 +101,20 @@ public class MemberService {
 	}
 
 	public HashMap<String, Object> getMemberGroupInfo(HashMap<String, Object> map) {
-		HashMap<String, Object> resultMap = new HashMap<>();
-		Member member = memberMapper.selectMemberGroupInfo(map);
-		resultMap.put("groupInfo", member);
-		return resultMap;
+	    HashMap<String, Object> resultMap = new HashMap<>();
+
+	    // 그룹 기본 정보 조회
+	    Member groupInfo = memberMapper.selectMemberGroupInfo(map);
+	    resultMap.put("groupInfo", groupInfo);
+
+	    // 그룹 멤버 목록 조회 (groupId가 있을 경우에만)
+	    if (groupInfo != null && groupInfo.getGroupId() != null) {
+	        map.put("groupId", groupInfo.getGroupId()); // 멤버 조회용 groupId 설정
+	        List<Member> members = memberMapper.selectGroupMembers(map);
+	        resultMap.put("groupMembers", members);
+	    }
+
+	    return resultMap;
 	}
 
 	// 기존 getMemberInfo 메서드 수정
@@ -208,18 +218,18 @@ public class MemberService {
 
 	// 주문 목록 조회
 	public HashMap<String, Object> getOrderList(HashMap<String, Object> map) {
-		HashMap<String, Object> result = new HashMap<>();
+	    HashMap<String, Object> result = new HashMap<>();
 
-		// 페이징 계산
-		int page = Integer.parseInt(map.get("page").toString());
-		int pageSize = Integer.parseInt(map.get("pageSize").toString());
-		map.put("offset", (page - 1) * pageSize);
+	    int page = map.get("page") != null ? Integer.parseInt(map.get("page").toString()) : 1;
+	    int pageSize = map.get("pageSize") != null ? Integer.parseInt(map.get("pageSize").toString()) : 10;
 
-		result.put("orders", memberMapper.selectOrderList(map));
-		result.put("totalCount", memberMapper.selectOrderCount(map));
-		return result;
+	    map.put("offset", (page - 1) * pageSize);
+
+	    result.put("orders", memberMapper.selectOrderList(map));
+	    result.put("totalCount", memberMapper.selectOrderCount(map));
+
+	    return result;
 	}
-
 	// 찜 목록 조회
 	public HashMap<String, Object> getWishList(HashMap<String, Object> map) {
 		HashMap<String, Object> result = new HashMap<>();
@@ -379,4 +389,7 @@ public class MemberService {
 		map.put("withdrawDate", new Date()); // java.util.Date 사용
 		return memberMapper.updateMemberStatus2(map);
 	}
+	
+	
+	
 }

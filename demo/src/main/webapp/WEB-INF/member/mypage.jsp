@@ -235,7 +235,7 @@
                             </div>
                             <div class="info-row">
                                 <span class="info-label">총 금액</span>
-                                <span class="info-value">{{ formatNumber(order.totalPrice) }}원</span>
+                                <span class="info-value">{{ formatNumber(order.price) }}원</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">상품 수</span>
@@ -282,8 +282,26 @@
                                 <span class="info-value">{{ memberInfo.groupName }}</span>
                             </div>
                             <div class="info-row">
+                                <span class="info-label">나의 역할</span>
+                                <span class="info-value">
+                                    {{ memberInfo.groupRole === 'LEADER' ? '리더' : '멤버' }}
+
+                            </div>
+                            <div class="info-row">
                                 <span class="info-label">리더</span>
                                 <span class="info-value">{{ memberInfo.leaderId }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">그룹 멤버</span>
+                                <div class="member-list">
+                                    <div v-for="member in memberInfo.groupMembers" :key="member.userId"
+                                        class="member-item" :class="{ leader: member.groupRole === 'LEADER' }">
+                                        {{ member.userName }} ({{ member.userId }})
+                                        <span class="role-badge">
+                                            {{ member.groupRole === 'LEADER' ? '리더' : '멤버' }}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">가입 일자</span>
@@ -296,8 +314,8 @@
                                     <small v-if="memberInfo.gradeName">({{ memberInfo.gradeName }} 등급 적용)</small>
                                 </span>
                             </div>
-
                         </div>
+
                         <div v-else>
                             <h4>현재 소속된 그룹이 없습니다. <br>그룹 가입시 더 많은 혜택을 받으실 수 있습니다.</h4>
                         </div>
@@ -403,90 +421,131 @@
                     </div>
                 </main>
             </div>
-        </div>
-
-        <div class="modal fade" id="editMemberModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">회원정보 수정</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="editForm">
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">이름</label>
-                                    <input type="text" class="form-control" :value="memberInfo.userName"
-                                        v-model="memberInfo.userName" readonly>
+            <!--정보 수정-->
+            <div class="modal fade" id="editMemberModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">회원정보 수정</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editForm">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">이름</label>
+                                        <input type="text" class="form-control" :value="memberInfo.userName"
+                                            v-model="memberInfo.userName" disabled>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">닉네임</label>
+                                        <input type="text" class="form-control" v-model="editData.nickname" required>
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">닉네임</label>
-                                    <input type="text" class="form-control" v-model="editData.nickname" required>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">전화번호</label>
+                                        <input type="tel" class="form-control" v-model="editData.phone"
+                                            placeholder="010-1234-5678" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">이메일</label>
+                                        <input type="email" class="form-control" v-model="editData.email" required>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">전화번호</label>
-                                    <input type="tel" class="form-control" v-model="editData.phone"
-                                        placeholder="010-1234-5678" required>
+                                <div class="mb-3">
+                                    <label class="form-label">주소</label>
+                                    <div class="input-group">
+                                        <!-- 주소를 한 번에 입력할 수 있도록 설정 -->
+                                        <input type="text" class="form-control" v-model="editData.address"
+                                            id="memberAddress" readonly>
+                                        <button class="btn btn-outline-secondary" type="button"
+                                            @click="searchAddress">주소 검색</button>
+                                    </div>
+                                    <!-- 상세주소 입력 필드 -->
+                                    <input type="text" class="form-control mt-2" v-model="editData.addressDetail"
+                                        placeholder="상세주소">
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">이메일</label>
-                                    <input type="email" class="form-control" v-model="editData.email" required>
+
+                                <div class="mb-3">
+                                    <label class="form-label">새 비밀번호 (변경시만 입력)</label>
+                                    <input type="password" class="form-control" v-model="editData.newPassword">
+                                    <small class="text-muted">8자 이상, 영문+숫자 조합</small>
                                 </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">주소</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" v-model="editData.address"
-                                        id="memberAddress" readonly>
-                                    <button class="btn btn-outline-secondary" type="button" @click="searchAddress">주소
-                                        검색</button>
-                                </div>
-                                <input type="text" class="form-control mt-2" v-model="editData.addressDetail"
-                                    placeholder="상세주소">
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">새 비밀번호 (변경시만 입력)</label>
-                                <input type="password" class="form-control" v-model="editData.newPassword">
-                                <small class="text-muted">8자 이상, 영문+숫자 조합</small>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                        <button type="button" class="btn btn-primary" @click="updateMemberInfo">저장하기</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
-        <!-- 모달 추가 -->
-        <div class="modal fade" id="withdrawModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title">회원 탈퇴</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>정말 탈퇴하시겠습니까? 모든 정보가 삭제됩니다.</p>
-                        <a href="/member/withdraw.do" class="btn btn-danger">탈퇴 페이지 이동</a>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                            <button type="button" class="btn btn-primary" @click="updateMemberInfo">저장하기</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div id="addressSearchContainer" style="display:none;"></div>
-        <jsp:include page="/WEB-INF/common/footer.jsp" />
-        <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+            <!-- 주문 상세 모달 -->
+            <div class="modal-overlay" v-if="showOrderModal" @click.self="closeOrderModal">
+                <div class="modal-content">
+                    <button class="modal-close" @click="closeOrderModal">×</button>
+
+                    <h3>주문 상세 정보</h3>
+                    <div class="info-row">
+                        <span class="info-label">주문 번호</span>
+                        <span class="info-value">{{ selectedOrder.orderKey }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">주문일자</span>
+                        <span class="info-value">{{ selectedOrder.orderDate }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">배송 상태</span>
+                        <span class="info-value">{{ getOrderStatusText(selectedOrder.orderStatus) }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">총 금액</span>
+                        <span class="info-value">{{ formatNumber(selectedOrder.totalPrice) }}원</span>
+                    </div>
+
+                    <!-- 리뷰 작성 폼 -->
+                    <div class="review-section" v-if="selectedOrder.orderStatus === 'DELIVERED'">
+                        <h4>리뷰 작성</h4>
+                        <div v-for="item in selectedOrder.items" :key="item.itemId" class="item-review-block">
+                            <div class="info-row">
+                                <span class="info-label">{{ item.productName }}</span>
+                            </div>
+                            <textarea v-model="item.reviewContent" placeholder="리뷰를 작성해 주세요."></textarea>
+                            <button @click="submitReview(item)">리뷰 등록</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+            <!-- 모달 추가 -->
+            <div class="modal fade" id="withdrawModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title">회원 탈퇴</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>정말 탈퇴하시겠습니까? 모든 정보가 삭제됩니다.</p>
+                            <a href="/member/withdraw.do" class="btn btn-danger">탈퇴 페이지 이동</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="addressSearchContainer" style="display:none;"></div>
+            <jsp:include page="/WEB-INF/common/footer.jsp" />
+            <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </body>
 
     </html>
@@ -505,11 +564,13 @@
                     userId: '${sessionId}',
                     // 주문 내역 관련
                     orders: [],
+                    currentTab: 'orders',
+                    orderSort: 'date_desc',
                     orderTotalCount: 0,
                     currentOrderPage: 1,
-                    orderPageSize: 5,
-                    orderSort: 'date_desc',
                     orderPages: [],
+                    showOrderModal: false,
+                    selectedOrder: null, // 선택된 주문 저장
 
                     // 찜 목록 관련
                     wishList: [],
@@ -527,16 +588,56 @@
                     groupStatus: '',
                     monthSpent: '',
                     editData: {
-                        nickname: '',
-                        phone: '',
-                        email: '',
-                        address: '',
-                        newPassword: ''
+                        nickname: '1234',
+                        phone: '1234',
+                        email: '1234',
+                        address: '1234',
+                        newPassword: '1234'
                     },
                     editModal: null // 모달 인스턴스 저장용
                 };
             },
             methods: {
+                async submitReview(item) {
+                    if (!item.reviewContent || item.reviewContent.trim() === '') {
+                        alert('리뷰 내용을 입력해 주세요.');
+                        return;
+                    }
+
+                    try {
+                        const response = await $.ajax({
+                            url: '/review/write.do',
+                            method: 'POST',
+                            data: {
+                                orderKey: this.selectedOrder.orderKey,
+                                itemId: item.itemId,
+                                content: item.reviewContent
+                            }
+                        });
+
+                        if (response.success) {
+                            alert('리뷰가 등록되었습니다.');
+                            item.reviewContent = ''; // 초기화
+                        } else {
+                            alert('리뷰 등록에 실패했습니다.');
+                        }
+                    } catch (error) {
+                        console.error('리뷰 등록 오류:', error);
+                        alert('리뷰 등록 중 오류가 발생했습니다.');
+                    }
+                },
+                viewOrderDetail(orderKey) {
+                    const order = this.orders.find(o => o.orderKey === orderKey);
+                    if (order) {
+                        this.selectedOrder = order;
+                        this.showOrderModal = true;
+                    }
+                },
+                closeOrderModal() {
+                    console.log('모달 닫기 호출됨');
+                    this.showOrderModal = false;
+                    this.selectedOrder = null;
+                },
                 openWithdrawModal() {
                     new bootstrap.Modal(document.getElementById('withdrawModal')).show();
                 },
@@ -565,7 +666,7 @@
                         this.loadCoupons();
                     } else if (tabName === 'inquiries') {
                         this.loadInquiries();
-                    } 
+                    }
                 },
 
                 formatDate(date) {
@@ -597,58 +698,61 @@
 
                 // 회원정보 로드 (기존 코드 유지)
                 // loadMemberInfo() 수정
-                loadMemberInfo(callback) {
+                loadMemberInfo() {
                     const self = this;
+                    this.isLoading = true;
+
+                    // 1. 회원 기본 정보 로드
                     $.ajax({
                         url: "/member/myPage/info.dox",
                         type: "POST",
-                        data: { userId: this.userId },
-                        success: function (data) {
-                            if (data.member) {
-                                // monthSpent가 숫자로 오는 경우 문자열로 변환
-                                if (typeof data.member.monthSpent === 'number') {
-                                    data.member.monthSpent = data.member.monthSpent.toString();
-                                }
-
-                                // 등급 정보 계산
-                                const spent = parseInt(data.member.monthSpent) || 0;
+                        data: { userId: this.userId, groupId: this.groupId },
+                        success: function (memberData) {
+                            if (memberData.member) {
+                                // 2. 등급 계산
+                                const spent = parseInt(memberData.member.monthSpent || 0);
                                 const gradeInfo = self.calculateGrade(spent);
 
-                                // Vue 반응성 유지를 위해 모든 데이터 한 번에 병합
-                                self.memberInfo = {
-                                    ...data.member,
-                                    ...gradeInfo
-                                };
+                                // 3. 그룹 정보 로드
+                                $.ajax({
+                                    url: "/member/myPage/groupInfo.dox",
+                                    type: "POST",
+                                    data: { userId: self.userId, groupId: self.groupId },
+                                    success: function (groupData) {
+                                        if (typeof groupData === 'string') {
+                                            groupData = JSON.parse(groupData);
+                                        }
 
-                                console.log("통합 회원정보 로드 완료:", self.memberInfo);
-                            }
-                            if (callback) callback();
-                        },
-                        error: function (error) {
-                            console.error("회원 정보 로딩 실패:", error);
-                        }
-                    });
-                },
-                loadGroupInfo() {
-                    var self = this;
-                    $.ajax({
-                        url: "/member/myPage/groupInfo.dox",
-                        dataType: "json",
-                        type: "POST",
-                        data: { userId: this.userId },
-                        success: function (data) {
-                            console.log(data);
-                            if (data.groupInfo) {
-                                self.memberInfo.groupId = data.groupInfo.groupId;
-                                self.memberInfo.groupName = data.groupInfo.groupName;
-                                self.memberInfo.leaderId = data.groupInfo.leaderId;
-                                self.memberInfo.joinDate = data.groupInfo.joinDate;
-                                self.memberInfo.groupStatus = data.groupInfo.groupStatus;
-                                self.memberInfo.monthSpent = data.groupInfo.monthSpent;
+                                        // 그룹 정보 로드 후 memberInfo를 업데이트
+                                        const groupInfo = groupData.groupInfo;
+                                        const groupMembers = groupData.groupMembers || [];
+
+                                        self.memberInfo = {
+                                            ...memberData.member,
+                                            ...gradeInfo,
+                                            groupId: groupInfo.groupId,
+                                            groupName: groupInfo.groupName,
+                                            leaderId: groupInfo.leaderId,
+                                            joinDate: groupInfo.joinDate,
+                                            groupStatus: groupInfo.groupStatus,
+                                            groupRole: groupInfo.groupRole || 'MEMBER',
+                                            groupMembers: groupMembers
+                                        };
+
+                                        // memberInfo가 업데이트된 후에 loadEditForm 호출
+                                        self.loadEditForm();
+                                    },
+                                    error: function (error) {
+                                        console.error("그룹 정보 로드 실패:", error);
+                                    }
+                                });
                             }
                         },
                         error: function (error) {
-                            console.error("그룹 정보 로딩 실패:", error);
+                            console.error("회원 정보 로드 실패:", error);
+                        },
+                        complete: function () {
+                            self.isLoading = false;
                         }
                     });
                 },
@@ -696,6 +800,7 @@
                 },
 
                 getOrderStatusText(status) {
+
                     const statusMap = {
                         'PAY_COMPLETE': '결제완료',
                         'P': '상품준비중',
@@ -704,10 +809,6 @@
                         'C': '취소됨'
                     };
                     return statusMap[status] || status;
-                },
-
-                viewOrderDetail(orderKey) {
-                    window.location.href = '/order/detail.do?orderKey=' + orderKey;
                 },
 
                 // 찜 목록 관련 메서드
@@ -891,6 +992,7 @@
                 // 폼 데이터 로드
                 loadEditForm() {
                     // editData 객체를 완전히 새로 생성
+                    console.log(this.memberInfo);
                     this.editData = {
                         userName: this.memberInfo.userName || '',
                         nickname: this.memberInfo.nickname || '',
@@ -956,33 +1058,25 @@
                             let fullAddr = '';
                             let extraAddr = '';
 
-                            // 도로명 주소인 경우
                             if (data.userSelectedType === 'R') {
                                 fullAddr = data.roadAddress;
-
-                                // 법정동명이 있을 경우 추가
                                 if (data.bname !== '') {
                                     extraAddr += data.bname;
                                 }
-                                // 건물명이 있을 경우 추가
                                 if (data.buildingName !== '') {
                                     extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
                                 }
-                                // 조합된 참고항목 추가
                                 fullAddr += (extraAddr !== '' ? ' (' + extraAddr + ')' : '');
-                            } else { // 지번 주소인 경우
+                            } else {
                                 fullAddr = data.jibunAddress;
                             }
 
-                            this.editData.address = fullAddr;
-                            document.getElementById('memberAddress').focus();
+                            this.editData.address = fullAddr;  // 주소 입력란에 반영
+                            document.getElementById('memberAddress').focus();  // 입력란에 포커스
                         },
                         width: '100%',
                         height: '100%'
-                    }).embed({
-                        q: '#addressSearchContainer', // 임시 컨테이너 (옵션)
-                        autoClose: true
-                    });
+                    }).open();  // 팝업 방식으로 주소 찾기
                 },
 
             },
@@ -1001,7 +1095,7 @@
                 this.loadMemberInfo();
                 this.loadCoupons();
                 this.loadInquiries();
-                this.loadGroupInfo();
+
             }
         });
 

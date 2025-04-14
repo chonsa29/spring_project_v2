@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +42,7 @@ public class DashboardController {
 			params.put("offset", (page - 1) * size);
 			params.put("limit", size);
 
+			System.out.println(params);
 			// 문의 타입별 분기 처리
 			if ("product".equals(type)) {
 				result.put("list", dashboardService.selectProductInquiryList(params));
@@ -148,11 +150,6 @@ public class DashboardController {
 		return dashboardService.getReplies(qsNo);
 	}
 
-	// 답변 삭제
-	@DeleteMapping("/replies/{replyNo}")
-	public void deleteReply(@PathVariable int replyNo, @RequestParam int qsNo) {
-		dashboardService.deleteReply(replyNo, qsNo);
-	}
 
 	// 배송 목록 조회
 	@GetMapping("/delivery/list")
@@ -202,5 +199,34 @@ public class DashboardController {
 
 		dashboardService.updateTrackingNumber(deliveryNo, trackingNumber);
 		return ResponseEntity.ok().build();
+	}
+	
+	// 일반 문의 답변 등록
+	@PostMapping("/inquiry/reply")
+	public ResponseEntity<?> addInquiryReply(@RequestBody QuestionReply reply) {
+	    dashboardService.addReply(reply);
+	    return ResponseEntity.ok().build();
+	}
+
+	// 상품 문의 답변 등록 
+	@PostMapping("/productInquiry/reply")
+	public ResponseEntity<?> addProductInquiryReply(@RequestBody QuestionReply reply) {
+	    dashboardService.addProductInquiryReply(reply);
+	    return ResponseEntity.ok().build();
+	}
+
+	// 답변 수정 (공통)
+	@PutMapping("/reply/{replyNo}")
+	public ResponseEntity<?> updateReply(@PathVariable int replyNo, @RequestBody QuestionReply reply) {
+	    reply.setReplyNo(replyNo);
+	    dashboardService.updateReply(reply);
+	    return ResponseEntity.ok().build();
+	}
+
+	// 답변 삭제 (공통)
+	@DeleteMapping("/reply/{replyNo}")
+	public ResponseEntity<?> deleteReply(@PathVariable int replyNo) {
+	    dashboardService.deleteReply(replyNo);
+	    return ResponseEntity.ok().build();
 	}
 }

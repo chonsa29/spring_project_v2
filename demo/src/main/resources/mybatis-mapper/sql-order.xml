@@ -56,20 +56,27 @@
     </select>
 
     <!-- 주문 상품 목록 -->
-    <select id="selectOrderItems" resultType="java.util.LinkedHashMap">
-        SELECT 
-            O.ITEM_NO AS itemNo,
-            O.ORDER_COUNT AS orderCount,
-            P.ITEM_NAME AS itemName,
-            O.PRICE AS price,
-            (O.ORDER_COUNT * O.PRICE) AS itemTotal,
-            I.FILEPATH AS imageUrl
-        FROM ORDER_LIST O
-        JOIN PRODUCT P ON O.ITEM_NO = P.ITEM_NO
-        JOIN PRODUCT_IMG I ON I.ITEM_NO = P.ITEM_NO
-        WHERE O.ORDER_KEY = #{orderId}
-    </select>
-
+	<select id="selectOrderItems" resultType="java.util.LinkedHashMap">
+	    SELECT 
+	        O.ITEM_NO AS itemNo,
+	        O.ORDER_COUNT AS orderCount,
+	        P.ITEM_NAME AS itemName,
+	        O.PRICE AS price,
+	        (O.ORDER_COUNT * O.PRICE) AS itemTotal,
+	        (
+	            SELECT FILEPATH 
+	            FROM (
+	                SELECT I.FILEPATH 
+	                FROM PRODUCT_IMG I 
+	                WHERE I.ITEM_NO = P.ITEM_NO 
+	                ORDER BY I.ITEM_NO
+	            ) 
+	            WHERE ROWNUM = 1
+	        ) AS imageUrl
+	    FROM ORDER_LIST O
+	    JOIN PRODUCT P ON O.ITEM_NO = P.ITEM_NO
+	    WHERE O.ORDER_KEY = #{orderId}
+	</select>
     <!-- 주문 상태 업데이트 -->
     <update id="updateOrderStatus">
         UPDATE ORDER_LIST

@@ -103,56 +103,65 @@ public class ProductController {
 
 	// 파일 업로드
 	@RequestMapping("/product/fileUpload.dox")
-	public String result(@RequestParam("file1") List<MultipartFile> files, @RequestParam("itemNo") int itemNo,
-			@RequestParam(value = "contentImage", required = false) MultipartFile contentImage,
-			HttpServletRequest request, HttpServletResponse response, Model model) {
+	public String result(@RequestParam("file1") List<MultipartFile> files, 
+	                     @RequestParam("itemNo") int itemNo,
+	                     @RequestParam(value = "contentImage", required = false) MultipartFile contentImage,
+	                     HttpServletRequest request, HttpServletResponse response, Model model) {
 
-		String path = "c:\\img";
-		boolean thumbFlg = true;
+	    String path = "c:\\img";
+	    String webappPath = System.getProperty("user.dir") + "\\src\\main\\webapp\\img";
 
-		try {
-			// 기존 썸네일/추가이미지 업로드
-			for (MultipartFile multi : files) {
-				String originFilename = multi.getOriginalFilename();
-				String extName = originFilename.substring(originFilename.lastIndexOf("."), originFilename.length());
-				long size = multi.getSize();
-				String saveFileName = Common.genSaveFileName(extName);
+	    try {
+	        // 1. 썸네일 및 추가 이미지 처리 (기존 방식 유지)
+	        boolean thumbFlg = true;
+	        for (MultipartFile multi : files) {
+	            if (!multi.isEmpty()) {
+	                String originFilename = multi.getOriginalFilename();
+	                String extName = originFilename.substring(originFilename.lastIndexOf("."));
+	                String saveFileName = Common.genSaveFileName(extName);
+	                
+	                // 파일 저장
+	                File file = new File(webappPath, saveFileName);
+	                multi.transferTo(file);
+	                
+	                // DB 저장 (PRODUCT_IMG 테이블)
+	                HashMap<String, Object> map = new HashMap<>();
+	                map.put("filename", saveFileName);
+	                map.put("path", "../img/" + saveFileName);
+	                map.put("itemNo", itemNo);
+	                map.put("thumbNail", thumbFlg ? "Y" : "N");
+	                
+	                productService.addProductFile(map);
+	                thumbFlg = false;
+	            }
+	        }
 
-				String path2 = System.getProperty("user.dir");
-				if (!multi.isEmpty()) {
-					File file = new File(path2 + "\\src\\main\\webapp\\img", saveFileName);
-					multi.transferTo(file);
+	        // 2. 설명 이미지 처리 (ITEM_CONTENTS에 경로 저장)
+	        if (contentImage != null && !contentImage.isEmpty()) {
+	            String originFilename = contentImage.getOriginalFilename();
+	            String extName = originFilename.substring(originFilename.lastIndexOf("."));
+	            String saveFileName = Common.genSaveFileName(extName);
+	            
+	            // 파일 저장 (다른 이미지와 동일한 위치에 저장)
+	            File file = new File(webappPath, saveFileName);
+	            contentImage.transferTo(file);
+	            
+	            // DB 저장 (PRODUCT 테이블의 ITEM_CONTENTS에 경로 저장)
+	            String contentImagePath = "../img/" + saveFileName;
+	            HashMap<String, Object> contentMap = new HashMap<>();
+	            contentMap.put("itemNo", itemNo);
+	            contentMap.put("contentImagePath", contentImagePath);
+	            
+	            productService.saveProductContentImage(contentMap);
+	        }
 
-					HashMap<String, Object> map = new HashMap<String, Object>();
-					map.put("filename", saveFileName);
-					map.put("path", "../img/" + saveFileName);
-					map.put("itemNo", itemNo);
-					map.put("thumbNail", thumbFlg ? "Y" : "N");
-
-					productService.addProductFile(map);
-					thumbFlg = false;
-				}
-			}
-
-			// ✅ 설명용 이미지(contentImage) BLOB 저장
-			if (contentImage != null && !contentImage.isEmpty()) {
-				byte[] blobData = contentImage.getBytes();
-
-				HashMap<String, Object> blobMap = new HashMap<>();
-				blobMap.put("itemNo", itemNo);
-				blobMap.put("contentBlob", blobData);
-
-				// BLOB 저장용 service 호출
-				productService.saveProductContentImage(blobMap);
-			}
-
-			return "redirect:/product.do";
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-		return "redirect:/product.do";
+	        return "redirect:/product.do";
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        model.addAttribute("error", "파일 업로드 중 오류 발생");
+	        return "redirect:/product.do";
+	    }
 	}
-
 	// 상품 수정
 	@RequestMapping("/product/fileUpdate.dox")
 	public String update(@RequestParam("file1") List<MultipartFile> files,
@@ -164,15 +173,13 @@ public class ProductController {
 	    String path = "c:\\img";
 
 	    try {
-	        for (MultipartFile multi : files) {
-	            String originFilename = multi.getOriginalFilename();
-	            String extName = originFilename.substring(originFilename.lastIndexOf("."), originFilename.length());
-	            long size = multi.getSize();
-	            String saveFileName = Common.genSaveFileName(extName);
-
-	            String path2 = System.getProperty("user.dir");
-	            if (!multi.isEmpty()) {
-	                File file = new File(path2 + "\\src\\main\\webapp\\img", saveFileName);
+	        // 파일이 있는 경우에만 처리
+	        if (!files.isEmpty()) {
+	            for (MultipartFile multi : files) {
+	                String originFilename = multi.getOriginalFilename();
+	                String extName = originFilename.substring(originFilename.lastIndexOf("."), originFilename.length());
+	                String saveFileName = Common.genSaveFileName(extName);
+	                File file = new File(path + saveFileName);
 	                multi.transferTo(file);
 
 	                HashMap<String, Object> map = new HashMap<>();
@@ -181,20 +188,17 @@ public class ProductController {
 	                map.put("itemNo", itemNo);
 	                map.put("thumbNail", isThumbnail);
 
+	                // 파일 업로드 처리
 	                productService.updateProductFile(map);
 	            }
 	        }
 
-	        // ✅ 설명 이미지 BLOB 업데이트
+	        // 설명 이미지 처리
 	        if (contentImage != null && !contentImage.isEmpty()) {
 	            byte[] blobData = contentImage.getBytes();
-
 	            HashMap<String, Object> blobMap = new HashMap<>();
 	            blobMap.put("itemNo", itemNo);
 	            blobMap.put("contentBlob", blobData);
-	            
-	            System.out.println(blobMap);
-	            
 	            productService.updateProductContentImage(blobMap);
 	        }
 
@@ -204,7 +208,7 @@ public class ProductController {
 	    }
 	    return "redirect:/member/admin.do";
 	}
-
+	
 	@RequestMapping(value = "/product/delete.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String delete(Model model, @RequestParam HashMap<String, Object> map) throws Exception {

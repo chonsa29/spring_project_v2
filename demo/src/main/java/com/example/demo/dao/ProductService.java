@@ -147,7 +147,8 @@ public class ProductService {
 	}
 
 	public void saveProductContentImage(HashMap<String, Object> map) throws Exception {
-	    productMapper.insertContentImage(map); // DAO 호출
+	    // PRODUCT 테이블의 ITEM_CONTENTS 컬럼 업데이트
+	    productMapper.updateProductContentImage(map);
 	}
 	
 	public void updateProductContentImage(HashMap<String, Object> map) throws Exception {

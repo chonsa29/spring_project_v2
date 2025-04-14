@@ -54,4 +54,6 @@ public interface MemberMapper {
 	String selectPassword(HashMap<String, Object> map);
 
 	int updateMemberStatus2(HashMap<String, Object> map);
+
+	List<Member> selectGroupMembers(HashMap<String, Object> map);
 }

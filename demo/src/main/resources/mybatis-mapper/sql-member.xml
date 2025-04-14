@@ -250,6 +250,25 @@
 	        g.USERID = #{userId}
 	</select>
 	
+	<!-- 그룹 멤버 조회 쿼리 추가 -->
+	<select id="selectGroupMembers" resultType="Member">
+	    SELECT 
+	        m.USERID as userId,
+	        m.USERNAME as userName,
+	        m.EMAIL as email,
+	        gu.ROLE as groupRole,
+	        CASE WHEN gu.USERID = d.LEADER_ID THEN '리더' ELSE '멤버' END as groupRoleName
+	    FROM 
+	        GROUP_USER gu
+	        JOIN MEMBER m ON gu.USERID = m.USERID
+	        JOIN GROUP_INFO d ON gu.GROUP_ID = d.GROUP_ID
+	    WHERE 
+	        gu.GROUP_ID = #{groupId}
+	    ORDER BY
+	        CASE WHEN gu.USERID = d.LEADER_ID THEN 0 ELSE 1 END,
+	        m.USERNAME
+	</select>
+	
 	<!-- 회원정보 업데이트 쿼리 -->
 	<update id="updateMemberInfo" parameterType="hashmap">
 	    UPDATE MEMBER
@@ -258,8 +277,7 @@
 	        <if test="phone != null">PHONE = #{phone},</if>
 	        <if test="email != null">EMAIL = #{email},</if>
 	        <if test="address != null">ADDRESS = #{address},</if>
-	        <if test="password != null">PASSWORD = #{password},</if>
-	        UDATETIME = SYSDATE
+	        <if test="password != null">PASSWORD = #{password},</if>	
 	    </set>
 	    WHERE USERID = #{userId}
 	</update>

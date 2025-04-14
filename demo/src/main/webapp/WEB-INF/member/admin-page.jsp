@@ -274,7 +274,8 @@
                                             </tr>
                                             <tr v-for="(img,index) in imgList">
                                                 <td><img :src="img.filePath"></td>
-                                                <td><button @click="fnDeleteImg(img.fileName)">삭제</button></td>
+                                                <td><button type="button" @click="fnDeleteImg(img.fileName)">삭제</button>
+                                                </td>
                                             </tr>
                                         </table>
                                     </div>
@@ -576,11 +577,11 @@
                             </nav>
                         </div>
 
-                        <!-- 문의 관리 섹션 -->
+                        <!--문의 관리-->
                         <div v-if="currentSection === 'inquiry-management'" class="section">
                             <h3>문의 관리</h3>
 
-                            <!-- 상태 필터 -->
+                            <!-- 상태 필터 탭 -->
                             <div class="inquiry-tabs">
                                 <button @click="currentInquiryTab = 'general'"
                                     :class="{ active: currentInquiryTab === 'general' }">
@@ -592,38 +593,45 @@
                                 </button>
                             </div>
 
+                            <!-- 일반 문의 탭 -->
                             <div v-if="currentInquiryTab === 'general'">
-                                <div v-for="inquiry in inquiries" :key="inquiry.QSNO" class="inquiry-item">
-                                    <div class="inquiry-header">
-                                        <span>[{{ inquiry.qsCategory }}] {{ inquiry.qsTitle }}</span>
-                                        <span>{{ inquiry.userId }} | {{ formatDate(inquiry.cdatetime) }}</span>
-                                        <span class="badge"
-                                            :class="inquiry.qsStatus === '1' ? 'bg-success' : 'bg-warning'">
-                                            {{ inquiry.qsStatus === '1' ? '답변완료' : '답변대기' }}
-                                        </span>
-                                    </div>
-                                    <!-- HTML 태그 이스케이프 처리 -->
-                                    <div class="inquiry-content" v-html="stripHtml(inquiry.qsContents)"></div>
-
-                                    <!-- 답변 영역 -->
-                                    <div v-if="inquiry.replies && inquiry.replies.length > 0" class="answer-section">
-                                        <div v-for="reply in inquiry.replies" :key="reply.replyNo" class="reply-item">
-                                            <strong>{{ reply.adminId }}</strong>
-                                            <p v-html="stripHtml(reply.replyContents)"></p>
-                                            <small>{{ formatDate(reply.cdatetime) }}</small>
-                                            <button @click="deleteReply(reply.replyNo, inquiry.QSNO)"
-                                                class="btn btn-sm btn-danger">삭제</button>
-                                        </div>
-                                    </div>
-                                    <div v-else class="reply-form">
-                                        <textarea v-model="inquiry.newReply" placeholder="답변 내용 입력"></textarea>
-                                        <button @click="submitReply(inquiry.QSNO, inquiry.newReply)"
-                                            class="btn btn-primary">답변 등록</button>
-                                    </div>
-                                </div>
+                                <table class="inquiry-table">
+                                    <thead>
+                                        <tr>
+                                            <th>번호</th>
+                                            <th>제목</th>
+                                            <th>작성자</th>
+                                            <th>작성일</th>
+                                            <th>상태</th>
+                                            <th>관리</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="inq in generalInquiries" :key="inq.qsNo">
+                                            <td>{{ inq.QSNO }}</td>
+                                            <td>
+                                                <a @click="showInquiryDetail(inq)">{{ inq.QSTITLE }}</a>
+                                            </td>
+                                            <td>{{ inq.USERID }}</td>
+                                            <td>{{ inq.CDATETIME }}</td>
+                                            <td>
+                                                <span
+                                                    :class="'status-badge ' + (inq.qsStatus === '1' ? 'completed' : 'pending')">
+                                                    {{ inq.QSSTATUS === '1' ? '답변완료' : '답변대기' }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <button @click="showReplyModal(inq)" class="btn btn-sm btn-primary">
+                                                    답변 관리
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
 
-                            <div v-if="currentInquiryTab === 'product'">
+                            <!-- 상품 문의 탭 -->
+                            <div v-else>
                                 <table class="inquiry-table">
                                     <thead>
                                         <tr>
@@ -633,37 +641,65 @@
                                             <th>작성자</th>
                                             <th>작성일</th>
                                             <th>상태</th>
+                                            <th>관리</th>
                                         </tr>
                                     </thead>
-                                    <tbody v-if="productInquiries.length > 0">
-                                        <tr v-for="(inq, index) in productInquiries" :key="inq.QSNO">
+                                    <tbody>
+                                        <tr v-for="inq in productInquiries" :key="inq.qsNo">
                                             <td>{{ inq.QSNO }}</td>
-                                            <td>
-                                                <a @click="showProductDetail(inq.ITEMNO)">{{ inq.ITEMNAME }}</a>
-                                            </td>
+                                            <td> <a href="javascript:;" @click="showProductDetail(inq.ITEMNO)">
+                                                    {{ inq.ITEMNAME }}
+                                                </a></td>
                                             <td>{{ inq.QSTITLE }}</td>
                                             <td>{{ inq.USERID }}</td>
-                                            <td>{{ formatDate(inq.CDATETIME) }}</td>
+                                            <td>{{ inq.CDATETIME }}</td>
                                             <td>
                                                 <span
-                                                    :class="'status-badge ' + (inq.QSSTATUS === '1' ? 'completed' : 'pending')">
-                                                    {{ inq.QSSTATUS === '1' ? '답변완료' : '답변대기' }}
+                                                    :class="'status-badge ' + (inq.qsStatus === '1' ? 'completed' : 'pending')">
+                                                    {{ inq.qsStatus === '1' ? '답변완료' : '답변대기' }}
                                                 </span>
                                             </td>
-                                        </tr>
-                                    </tbody>
-                                    <tbody v-else>
-                                        <tr>
-                                            <td colspan="6" class="text-center">
-                                                <div v-if="isLoading">로딩 중...</div>
-                                                <div v-else>조회된 문의가 없습니다.</div>
+                                            <td>
+                                                <button @click="showProductInquiryDetail(inq)"
+                                                    class="btn btn-sm btn-primary">
+                                                    답변 관리
+                                                </button>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                <!-- 페이징 추가 -->
+                            </div>
+
+                            <!-- 답변 관리 모달 -->
+                            <div class="modal" v-if="showReplyModal" @click.self="closeModal">
+                                <div class="modal-content">
+                                    <h4>{{ selectedInquiry.qsTitle }}</h4>
+                                    <p>{{ selectedInquiry.qsContents }}</p>
+
+                                    <!-- 답변 목록 -->
+                                    <div v-for="reply in replies" :key="reply.replyNo" class="reply-item">
+                                        <p>{{ reply.replyContents }}</p>
+                                        <small>{{ reply.adminId }} - {{ formatDate(reply.cdatetime) }}</small>
+                                        <div class="reply-actions">
+                                            <button @click="editReply(reply)" class="btn btn-sm btn-warning">수정</button>
+                                            <button @click="deleteReply(reply.replyNo)"
+                                                class="btn btn-sm btn-danger">삭제</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- 답변 작성/수정 폼 -->
+                                    <textarea v-model="replyContent" placeholder="답변 내용을 입력하세요"></textarea>
+                                    <div class="modal-actions">
+                                        <button @click="submitReply" class="btn btn-primary">
+                                            {{ isEditing ? '답변 수정' : '답변 등록' }}
+                                        </button>
+                                        <button @click="closeModal" class="btn btn-secondary">닫기</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
+                        <!--배송관리-->
                         <div v-if="currentSection === 'delivery-management'" class="section">
                             <h3>배송 관리</h3>
 
@@ -1023,64 +1059,66 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- 배송 상세 모달 추가 -->
-            <div class="modal fade" id="deliveryDetailModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">배송 상세 정보 - {{ currentDelivery.DELIVERYNO }}</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body" v-if="currentDelivery">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6>배송 정보</h6>
-                                    <table class="table table-bordered">
-                                        <tr>
-                                            <th>배송번호</th>
-                                            <td>{{ currentDelivery.DELIVERYNO }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>주문번호</th>
-                                            <td>{{ currentDelivery.ORDERKEY }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>배송상태</th>
-                                            <td>{{ getDeliveryStatusText(currentDelivery.DELIVERYSTATUS) }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>운송장번호</th>
-                                            <td>{{ currentDelivery.TRACKINGNUMBER || '-' }}</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6>회원 정보</h6>
-                                    <table class="table table-bordered">
-                                        <tr>
-                                            <th>회원명</th>
-                                            <td>{{ currentDelivery.USERNAME }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>연락처</th>
-                                            <td>{{ currentDelivery.USERPHONE }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>이메일</th>
-                                            <td>{{ currentDelivery.USEREMAIL }}</td>
-                                        </tr>
-                                    </table>
+                <!-- 배송 상세 모달 추가 -->
+                <div class="modal fade" id="deliveryDetailModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">배송 상세 정보 - {{ currentDelivery.DELIVERYNO }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" v-if="currentDelivery">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>배송 정보</h6>
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <th>배송번호</th>
+                                                <td>{{ currentDelivery.DELIVERYNO }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>주문번호</th>
+                                                <td>{{ currentDelivery.ORDERKEY }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>배송상태</th>
+                                                <td>{{ getDeliveryStatusText(currentDelivery.DELIVERYSTATUS) }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>운송장번호</th>
+                                                <td>{{ currentDelivery.TRACKINGNUMBER || '-' }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>회원 정보</h6>
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <th>회원명</th>
+                                                <td>{{ currentDelivery.USERNAME }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>연락처</th>
+                                                <td>{{ currentDelivery.USERPHONE }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>이메일</th>
+                                                <td>{{ currentDelivery.USEREMAIL }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+
 
 
             <!-- Bootstrap JS -->
@@ -1181,7 +1219,7 @@
                         boardCurrentPage: 1,
                         boardTotalCount: 0,
                         // 문의 관리 데이터
-                        inquiries: [],
+                        generalInquiries: [],
                         inquiryFilter: {
                             status: 'all'
                         },
@@ -1287,10 +1325,103 @@
                     currentInquiryTab(newVal) {
                         if (newVal === 'product') {
                             this.fetchProductInquiries();
+                        } else if (newVal === 'general') {
+                            this.fetchInquiries();
                         }
                     }
                 },
                 methods: {
+                    // 일반 문의 상세 보기
+                    showInquiryDetail(inquiry) {
+                        this.selectedInquiry = inquiry;
+                        this.fetchReplies(inquiry.qsNo, 'general');
+                        this.showReplyModal = true;
+                    },
+
+                    // 상품 문의 상세 보기
+                    showProductInquiryDetail(inquiry) {
+                        if (!inquiry.qsNo) {
+                            console.error("qsNo is missing in inquiry:", inquiry);
+                            return;
+                        }
+                        this.selectedInquiry = inquiry;
+                        this.fetchReplies(inquiry.qsNo, 'product');
+                        this.showReplyModal = true;
+                    },
+
+                    // 답변 목록 가져오기
+                    fetchReplies(qsNo, type) {
+                        // qsNo가 숫자인지 확인
+                        if (isNaN(qsNo)) {
+                            console.error("Invalid qsNo:", qsNo);
+                            return;
+                        }
+
+                        const url = type === 'general'
+                            ? '/admin/dashboard/inquiry/replies'
+                            : '/admin/dashboard/productInquiry/replies';
+
+                        $.ajax({
+                            url: url,
+                            type: "GET",
+                            data: {
+                                qsNo: qsNo,
+                                type: type // 타입도 명시적으로 전달
+                            },
+                            success: (response) => {
+                                this.replies = response;
+                            },
+                            error: (xhr, status, error) => {
+                                console.error("Failed to fetch replies:", error);
+                                alert("답변 목록을 불러오는 데 실패했습니다.");
+                            }
+                        });
+                    },
+
+                    // 답변 제출
+                    submitReply() {
+                        const reply = {
+                            qsNo: this.selectedInquiry.qsNo,
+                            replyContents: this.replyContent,
+                            adminId: 'admin' // 실제로는 로그인한 관리자 ID 사용
+                        };
+
+                        const url = this.currentInquiryTab === 'general'
+                            ? '/admin/dashboard/inquiry/reply'
+                            : '/admin/dashboard/productInquiry/reply';
+
+                        $.ajax({
+                            url: url,
+                            type: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify(reply),
+                            success: () => {
+                                this.fetchReplies(this.selectedInquiry.qsNo, this.currentInquiryTab);
+                                this.replyContent = '';
+                                this.isEditing = false;
+                            }
+                        });
+                    },
+
+                    // 답변 수정
+                    editReply(reply) {
+                        this.replyContent = reply.replyContents;
+                        this.isEditing = true;
+                        this.editingReplyId = reply.replyNo;
+                    },
+
+                    // 답변 삭제
+                    deleteReply(replyNo) {
+                        if (confirm('정말 삭제하시겠습니까?')) {
+                            $.ajax({
+                                url: '/admin/dashboard/reply/' + replyNo,
+                                type: "DELETE",
+                                success: () => {
+                                    this.fetchReplies(this.selectedInquiry.qsNo, this.currentInquiryTab);
+                                }
+                            });
+                        }
+                    },
                     fetchProductInquiries() {
                         $.ajax({
                             url: "/admin/dashboard/inquiryList.dox",
@@ -1302,7 +1433,7 @@
                             },
                             success: (response) => {
                                 // 응답 데이터 구조 확인
-                                console.log("API 응답 데이터:", response);
+                                console.log(response);
 
                                 // productInquiries에 직접 할당
                                 this.productInquiries = response.list || response.data || response;
@@ -1622,11 +1753,11 @@
                             this.loadDashboardData();
                         } else if (section === 'product-management') {
                             this.fetchProducts();
-                        }
-                        else if (section === 'board-management') {
+                        } else if (section === 'board-management') {
                             this.fetchBoards();
                         } else if (section === 'inquiry-management') {
-                            this.fetchInquiries();
+                            this.fetchInquiries(); // 일반 문의 로드
+                            this.fetchProductInquiries(); // 상품 문의 로드
                         }
                     },
                     formatDateTime(dateString) {
@@ -1850,6 +1981,7 @@
                                     if (form) {
                                         self.update(form);
                                     }
+
                                 }
                             });
                         }
@@ -1866,6 +1998,9 @@
                         if (this.thumbnail) {
                             form.append("file1", this.thumbnail);
                             form.append("isThumbnail", "Y");
+                        } else {
+                            // 썸네일이 없을 경우 빈 file1 추가 (해결책)
+                            form.append("file1", "");
                         }
 
                         if (this.additionalPhotos.length > 0) {
@@ -1875,14 +2010,16 @@
                             });
                         }
 
+                        // 설명 이미지 경로를 보내는 부분
                         if (this.contentImage) {
-                            form.append("contentImage", this.contentImage); // 설명용 이미지도 같이 보냄
+                            form.append("contentImage", this.contentImage); // 설명용 이미지 경로
                         }
 
                         form.append("itemNo", itemNo);
 
                         return form;
                     },
+
                     upload(form) {
                         var self = this;
                         $.ajax({
@@ -1899,7 +2036,6 @@
                         });
                     },
                     update(form) {
-                        // 수정용 업로드 로직도 위와 동일하게 처리
                         var self = this;
                         $.ajax({
                             url: "/product/fileUpdate.dox",
@@ -1911,9 +2047,13 @@
                                 alert("수정되었습니다!");
                                 location.href = "/product.do";
                                 self.showProductForm = false;
+                            },
+                            error: function (xhr, status, error) {
+                                console.log("에러 발생: " + error);
                             }
                         });
                     },
+
                     cancelForm() {
                         this.showProductForm = false;
                         if (this.formType == 'edit') {
@@ -2019,6 +2159,8 @@
                             data: nparmap,
                             success: function (data) {
                                 alert("삭제되었습니다.");
+                                // imgList에서 삭제된 파일 제거
+                                self.imgList = self.imgList.filter(img => img.fileName !== fileName);
                             }
                         });
                     },
@@ -2066,40 +2208,28 @@
                     },
 
                     // 문의 관리
-                    async fetchInquiries() {
-                        try {
-                            const response = await $.ajax({
-                                url: '/admin/dashboard/inquiries',
-                                type: 'GET',
-                                data: { status: 'pending' }, // pending/completed/all
-                                success: function (inquiries) {
-                                    console.log(inquiries);
-                                    inquiries.forEach(inquiry => {
-                                        let statusBadge = inquiry.qsStatus === 'Y' ?
-                                            '<span class="badge bg-success">답변완료</span>' :
-                                            '<span class="badge bg-warning">미답변</span>';
-
-                                        $('#inquiry-table').append(`
-                <tr>
-                    <td>${inquiry.QSNO}</td>
-                    <td>${inquiry.QSTITLE}</td>
-                    <td>${statusBadge}</td>
-                    <td>
-                        <button onclick="loadReplies(${inquiry.QSNO})"
-                                class="btn btn-sm btn-info">답변보기</button>
-                    </td>
-                </tr>
-            `);
-                                    });
-                                }
-                            });
-                            this.inquiries = response.map(inquiry => ({
-                                ...inquiry,
-                                answerText: ''
-                            }));
-                        } catch (error) {
-                            console.error('문의 조회 실패:', error);
-                        }
+                    fetchInquiries() {
+                        console.log("일반 문의 조회 시작");
+                        $.ajax({
+                            url: "/admin/dashboard/inquiryList.dox",
+                            type: "POST",
+                            dataType: "json",
+                            data: {
+                                type: "general",
+                                page: this.currentPage,
+                                size: this.pageSize
+                            },
+                            success: (response) => {
+                                console.log("API 응답 데이터:", response);
+                                this.generalInquiries = response.list || [];
+                                console.log("할당 후 generalInquiries:", this.generalInquiries);
+                            },
+                            error: (xhr, status, error) => {
+                                console.error("문의 목록 조회 실패:", error);
+                                console.log("상태 코드:", xhr.status);
+                                console.log("응답 텍스트:", xhr.responseText);
+                            }
+                        });
                     },
                     submitReply(QSNO) {
                         const replyContent = $('#reply-content').val();
@@ -2295,6 +2425,7 @@
                 mounted() {
                     this.loadDashboardData();
                     this.fetchProducts();
+                    this.fetchInquiries();
                 }
             });
             app.mount('#app');

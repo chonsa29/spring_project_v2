@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.example.demo.dao.CommunityService;
 import com.example.demo.dao.MemberService;
 import com.example.demo.model.Member;
+import com.example.demo.model.Review;
 import com.google.gson.Gson;
 
 import jakarta.servlet.http.HttpSession;
@@ -255,4 +257,30 @@ public class MemberController {
         }
         return new Gson().toJson(resultMap);
     }
+    
+    @PostMapping("/review/write.do")
+    @ResponseBody
+    public Map<String, Object> writeReview(@RequestParam String orderKey,
+                                           @RequestParam String itemId,
+                                           @RequestParam String content,
+                                           HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        String userId = (String) session.getAttribute("userId");
+
+        try {
+            Review review = new Review();
+            review.setOrderKey(orderKey);
+            review.setItemId(itemId);
+            review.setUserId(userId);
+            review.setContent(content);
+
+            reviewService.insertReview(review);
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+  
 }
