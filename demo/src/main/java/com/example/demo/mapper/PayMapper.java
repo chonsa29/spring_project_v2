@@ -46,4 +46,6 @@ public interface PayMapper {
 
 	void insertOrderDetail(Map<String, Object> detailMap);
 
+	void deleteOrderedCart(HashMap<String, Object> map);
+
 }

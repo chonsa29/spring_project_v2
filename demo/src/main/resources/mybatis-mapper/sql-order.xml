@@ -11,10 +11,9 @@
             M.USERID AS userId,
             O.PRICE AS price,
             O.ORDER_STATUS AS orderStatus,
-            P.P_WAY AS pWay
+            O.CARD AS card
         FROM ORDER_LIST O
         JOIN MEMBER M ON O.USERID = M.USERID
-        JOIN PAY P ON P.P_NO = O.P_NO
         <where>
             <if test="startDate != null and endDate != null">
                 AND O.ORDER_DATE BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD') 
@@ -47,11 +46,10 @@
             M.EMAIL AS email,
             O.PRICE AS price,
             O.ORDER_STATUS AS orderStatus,
-            P.P_WAY AS pWay,
+            O.CARD AS card,
             O.REQUEST AS request
         FROM ORDER_LIST O
         JOIN MEMBER M ON O.USERID = M.USERID
-        JOIN PAY P ON P.P_NO = O.P_NO
         WHERE O.ORDER_KEY = #{orderId}
     </select>
 
