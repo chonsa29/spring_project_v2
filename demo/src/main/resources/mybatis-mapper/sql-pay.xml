@@ -11,41 +11,29 @@
 	</select>
 	
 	<insert id="paymentSell" parameterType="map">
-	    INSERT INTO order_list (
-	        ORDER_KEY,
-	        CART_KEY,
-	        ITEM_NO,
-	        USERID,
-	        PRICE,
-	        ORDER_DATE,
-	        CARD,
-	        ORDER_STATUS,
-	        USERNAME,
-	        ZIPCODE,
-	        ADDRESS,
-	        PHONE,
-	        ORDER_COUNT,
-	        P_NO,
-	        REQUEST
+	    INSERT INTO ORDER_LIST (
+	        ORDER_KEY, CART_KEY, ITEM_NO, USERID, PRICE, ORDER_DATE, CARD,
+	        ORDER_STATUS, USERNAME, ZIPCODE, ADDRESS, PHONE, ORDER_COUNT, P_NO, REQUEST, CANCEL_REASON
 	    ) VALUES (
 	        ORDER_SEQ.NEXTVAL,
-	        #{cartKey},
-	        #{itemNo},
-	        #{userId},
-	        #{price},
-	        #{orderDate},
-	        #{card},
+	        #{cartKey, jdbcType=NUMERIC},     
+	        #{itemNo, jdbcType=NUMERIC},    
+	        #{userId, jdbcType=VARCHAR},
+	        #{price, jdbcType=NUMERIC},    
+	        TO_DATE(#{orderDate}, 'YYYY-MM-DD HH24:MI:SS'),
+	        #{card, jdbcType=VARCHAR},
 	        'P',
-	        #{userName},
-	        #{zipCode},
-	        #{address},
-	        #{phone},
-	        #{orderCount},
-	        #{pNo},
-	        #{request}
+	        #{userName, jdbcType=VARCHAR},
+	        #{zipCode, jdbcType=VARCHAR},
+	        #{address, jdbcType=VARCHAR},
+	        #{phone, jdbcType=VARCHAR},
+	        #{orderCount, jdbcType=NUMERIC}, 
+	        #{pNo, jdbcType=NUMERIC},       
+	        #{request, jdbcType=VARCHAR},
+	        NULL
 	    )
 	</insert>
-	
+
 	<select id="payProductInfo" parameterType="hashmap" resultType="com.example.demo.model.Product">
 		SELECT *
 	    FROM PRODUCT P
@@ -55,7 +43,7 @@
 	
 	<select id="payMemberInfo" parameterType="map" resultType="com.example.demo.model.Member">
         SELECT 
-        	M.GROUP_ID, M.USERID, M.USERNAME, M.GRADE, G.GRADE_NAME, G.SALE, O.ZIPCODE,
+        	M.GROUP_ID, M.USERID, M.USERNAME, M.GRADE, G.GRADE_NAME, G.SALE, O.*,
         	M.ADDRESS, M.PHONE, M.POINT, C.COUPON_NAME, C.DISCOUNT_AMOUNT
 		FROM MEMBER M
 		INNER JOIN ORDER_LIST O ON O.USERID = M.USERID
