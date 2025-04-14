@@ -1,19 +1,32 @@
 package com.example.demo.dao;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.mapper.MemberMapper;
 import com.example.demo.model.Member;
 
+import jakarta.servlet.http.HttpSession;
+
 @Service
 public class MemberService {
 	@Autowired
 	MemberMapper memberMapper;
+
+	@Autowired
+	HttpSession session;
+
+	private final PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	public MemberService(PasswordEncoder passwordEncoder) {
+		this.passwordEncoder = passwordEncoder;
+	}
 
 	public HashMap<String, Object> searchMember(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
@@ -87,29 +100,79 @@ public class MemberService {
 		return resultMap;
 	}
 
-	 public HashMap<String, Object> getMemberGroupInfo(HashMap<String, Object> map) {
-	        HashMap<String, Object> resultMap = new HashMap<>();
-	        Member member = memberMapper.selectMemberGroupInfo(map);
-	        resultMap.put("groupInfo", member);
-	        return resultMap;
-	    }
-	    
-	    // 기존 getMemberInfo 메서드 수정
-	    public HashMap<String, Object> getMemberInfo(HashMap<String, Object> map) {
-	        HashMap<String, Object> resultMap = new HashMap<>();
-	        Member member = memberMapper.selectMemberInfo(map);
-	        
-	        // 그룹 정보 추가 로드
-	        Member groupInfo = memberMapper.selectMemberGroupInfo(map);
-	        if (groupInfo != null) {
-	            member.setGroupId(groupInfo.getGroupId());
-	            member.setGroupName(groupInfo.getGroupName());
-	            // ... 다른 그룹 필드들 설정
-	        }
-	        
-	        resultMap.put("member", member);
-	        return resultMap;
-	    }
+	public HashMap<String, Object> getMemberGroupInfo(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<>();
+		Member member = memberMapper.selectMemberGroupInfo(map);
+		resultMap.put("groupInfo", member);
+		return resultMap;
+	}
+
+	// 기존 getMemberInfo 메서드 수정
+	public HashMap<String, Object> getMemberInfo(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<>();
+		Member member = memberMapper.selectMemberInfo(map);
+
+		// 그룹 정보 추가 로드
+		Member groupInfo = memberMapper.selectMemberGroupInfo(map);
+		if (groupInfo != null) {
+			member.setGroupId(groupInfo.getGroupId());
+			member.setGroupName(groupInfo.getGroupName());
+			member.setLeaderId(groupInfo.getLeaderId());
+			member.setJoinDate(groupInfo.getJoinDate());
+			member.setGroupStatus(groupInfo.getGroupStatus());
+			member.setMonthSpent(groupInfo.getMonthSpent());
+		}
+		if (member != null && member.getMonthSpent() != null) {
+			int spent = Integer.parseInt(member.getMonthSpent());
+			calculateGrade(member, spent); // 등급 계산 메서드 호출
+		}
+		if (member != null) {
+			// 등급별 할인율 계산 추가
+			int discountRate = calculateDiscountRate(member.getGrade());
+			member.setGroupDiscountRate(discountRate);
+		}
+		resultMap.put("member", member);
+		return resultMap;
+	}
+
+	private int calculateDiscountRate(Integer grade) {
+		if (grade == null)
+			return 3; // 기본값
+
+		switch (grade) {
+		case 1:
+			return 3; // 뉴픽: 3%
+		case 2:
+			return 4; // 라이트픽: 4%
+		case 3:
+			return 5; // 굿픽: 5%
+		case 4:
+			return 6; // 탑픽: 6%
+		case 5:
+			return 7; // VVIPICK: 7%
+		default:
+			return 3;
+		}
+	}
+
+	private void calculateGrade(Member member, int spent) {
+		if (spent >= 200000) {
+			member.setGrade(5);
+			member.setGradeName("VVIPICK");
+		} else if (spent >= 100000) {
+			member.setGrade(4);
+			member.setGradeName("탑픽");
+		} else if (spent >= 50000) {
+			member.setGrade(3);
+			member.setGradeName("굿픽");
+		} else if (spent >= 10000) {
+			member.setGrade(2);
+			member.setGradeName("라이트픽");
+		} else {
+			member.setGrade(1);
+			member.setGradeName("뉴픽");
+		}
+	}
 
 	public HashMap<String, Object> getMemberDetail(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
@@ -145,42 +208,42 @@ public class MemberService {
 
 	// 주문 목록 조회
 	public HashMap<String, Object> getOrderList(HashMap<String, Object> map) {
-	    HashMap<String, Object> result = new HashMap<>();
-	    
-	    // 페이징 계산
-	    int page = Integer.parseInt(map.get("page").toString());
-	    int pageSize = Integer.parseInt(map.get("pageSize").toString());
-	    map.put("offset", (page - 1) * pageSize);
-	    
-	    result.put("orders", memberMapper.selectOrderList(map));
-	    result.put("totalCount", memberMapper.selectOrderCount(map));
-	    return result;
+		HashMap<String, Object> result = new HashMap<>();
+
+		// 페이징 계산
+		int page = Integer.parseInt(map.get("page").toString());
+		int pageSize = Integer.parseInt(map.get("pageSize").toString());
+		map.put("offset", (page - 1) * pageSize);
+
+		result.put("orders", memberMapper.selectOrderList(map));
+		result.put("totalCount", memberMapper.selectOrderCount(map));
+		return result;
 	}
 
 	// 찜 목록 조회
 	public HashMap<String, Object> getWishList(HashMap<String, Object> map) {
-	    HashMap<String, Object> result = new HashMap<>();
-	    
-	    int page = Integer.parseInt(map.get("page").toString());
-	    int pageSize = Integer.parseInt(map.get("pageSize").toString());
-	    map.put("offset", (page - 1) * pageSize);
-	    
-	    result.put("wishList", memberMapper.selectWishList(map));
-	    result.put("totalCount", memberMapper.selectWishCount(map));
-	    return result;
+		HashMap<String, Object> result = new HashMap<>();
+
+		int page = Integer.parseInt(map.get("page").toString());
+		int pageSize = Integer.parseInt(map.get("pageSize").toString());
+		map.put("offset", (page - 1) * pageSize);
+
+		result.put("wishList", memberMapper.selectWishList(map));
+		result.put("totalCount", memberMapper.selectWishCount(map));
+		return result;
 	}
 
 	// 찜 삭제
 	public HashMap<String, Object> deleteWishItem(HashMap<String, Object> map) {
-	    HashMap<String, Object> result = new HashMap<>();
-	    try {
-	        int affected = memberMapper.deleteWishItem(map);
-	        result.put("result", affected > 0 ? "success" : "fail");
-	    } catch (Exception e) {
-	        result.put("result", "error");
-	        result.put("message", e.getMessage());
-	    }
-	    return result;
+		HashMap<String, Object> result = new HashMap<>();
+		try {
+			int affected = memberMapper.deleteWishItem(map);
+			result.put("result", affected > 0 ? "success" : "fail");
+		} catch (Exception e) {
+			result.put("result", "error");
+			result.put("message", e.getMessage());
+		}
+		return result;
 	}
 
 	// 등급명과 그룹명 설정
@@ -188,27 +251,29 @@ public class MemberService {
 		if (member == null)
 			return;
 
-		// 등급명 설정 (1: 일반, 2: VIP, 3: VVIP)
-		if (member.getGrade() != null) {
-			switch (member.getGrade()) {
-			case 1:
-				member.setGradeName("라이트픽");
-				break;
-			case 2:
-				member.setGradeName("굿픽");
-				break;
-			case 3:
-				member.setGradeName("탑픽");
-				break;
-			case 4:
+		// monthSpent 기반 등급 설정
+		if (member.getMonthSpent() != null) {
+			int spent = Integer.parseInt(member.getMonthSpent());
+
+			if (spent >= 200000) {
+				member.setGrade(5);
 				member.setGradeName("VVIPICK");
-				break;
-			default:
+			} else if (spent >= 100000) {
+				member.setGrade(4);
+				member.setGradeName("탑픽");
+			} else if (spent >= 50000) {
+				member.setGrade(3);
+				member.setGradeName("굿픽");
+			} else if (spent >= 10000) {
+				member.setGrade(2);
+				member.setGradeName("라이트픽");
+			} else {
+				member.setGrade(1);
 				member.setGradeName("뉴픽");
 			}
 		}
 
-		// 그룹명 설정 (1: 일반, 2: 프리미엄)
+		// 그룹명 설정 (기존 로직 유지)
 		if (member.getGroupId() != null) {
 			switch (member.getGroupId()) {
 			case 1:
@@ -225,39 +290,93 @@ public class MemberService {
 
 	// 다음 등급까지 남은 포인트 계산
 	private void calculateRemainPoint(Member member) {
-		if (member == null || member.getGrade() == null || member.getPoint() == null) {
+		if (member == null || member.getGrade() == null || member.getMonthSpent() == null) {
 			if (member != null) {
 				member.setRemainPoint(0);
 			}
 			return;
 		}
 
-		int requiredPoint;
+		int currentSpent = Integer.parseInt(member.getMonthSpent());
+		int nextGradeRequirement;
+
 		switch (member.getGrade()) {
-		case 1:
-			requiredPoint = 2000;
-			break; // 일반->VIP
-		case 2:
-			requiredPoint = 5000;
-			break; // VIP->VVIP
-		default:
-			requiredPoint = 0;
+		case 1: // 뉴픽 → 라이트픽
+			nextGradeRequirement = 10000;
+			break;
+		case 2: // 라이트픽 → 굿픽
+			nextGradeRequirement = 50000;
+			break;
+		case 3: // 굿픽 → 탑픽
+			nextGradeRequirement = 100000;
+			break;
+		case 4: // 탑픽 → VVIPICK
+			nextGradeRequirement = 200000;
+			break;
+		default: // VVIPICK 이상
+			nextGradeRequirement = 0;
 		}
 
-		member.setRemainPoint(Math.max(0, requiredPoint - member.getPoint()));
+		member.setRemainPoint(Math.max(0, nextGradeRequirement - currentSpent));
 	}
-	
-    public HashMap<String, Object> getCouponList(HashMap<String, Object> map) {
-        HashMap<String, Object> resultMap = new HashMap<>();
-        List<HashMap<String, Object>> coupons = memberMapper.selectCouponList(map);
-        resultMap.put("coupons", coupons);
-        return resultMap;
-    }
 
-    public HashMap<String, Object> getInquiryList(HashMap<String, Object> map) {
-        HashMap<String, Object> resultMap = new HashMap<>();
-        List<HashMap<String, Object>> inquiries = memberMapper.selectInquiryList(map);
-        resultMap.put("inquiries", inquiries);
-        return resultMap;
-    }
+	public HashMap<String, Object> getCouponList(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<>();
+		List<HashMap<String, Object>> coupons = memberMapper.selectCouponList(map);
+		resultMap.put("coupons", coupons);
+		return resultMap;
+	}
+
+	public HashMap<String, Object> getInquiryList(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<>();
+		List<HashMap<String, Object>> inquiries = memberMapper.selectInquiryList(map);
+		resultMap.put("inquiries", inquiries);
+		return resultMap;
+	}
+
+	public HashMap<String, Object> updateMemberInfo(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<>();
+		try {
+			// 비밀번호 변경 여부 확인
+			if (map.containsKey("newPassword") && !map.get("newPassword").toString().isEmpty()) {
+				map.put("password", map.get("newPassword"));
+			}
+
+			int affectedRows = memberMapper.updateMemberInfo(map);
+			if (affectedRows > 0) {
+				resultMap.put("result", "success");
+				// 세션 정보 갱신 (선택적)
+				Member updatedMember = memberMapper.selectMember(map);
+				session.setAttribute("sessionName", updatedMember.getUserName());
+			} else {
+				resultMap.put("result", "fail");
+				resultMap.put("message", "변경된 내용이 없습니다.");
+			}
+		} catch (Exception e) {
+			resultMap.put("result", "error");
+			resultMap.put("message", e.getMessage());
+		}
+		return resultMap;
+	}
+
+	public boolean checkPassword(HashMap<String, Object> map) {
+		String inputPw = (String) map.get("password");	
+		String dbPw = memberMapper.selectPassword(map);
+		System.out.println(inputPw);
+		System.out.println(dbPw);
+		return inputPw.equals(dbPw);
+	}
+
+	public int withdrawMember(HashMap<String, Object> map) {
+		// 1. 주문 내역 등 연결 데이터 확인
+		int activeOrders = memberMapper.countActiveOrders(map);
+		if (activeOrders > 0) {
+			throw new RuntimeException("처리 중인 주문이 존재합니다");
+		}
+
+		// 2. 소프트 삭제 처리 (실제 삭제 대신 상태 변경)
+		map.put("status", "WITHDRAWN");
+		map.put("withdrawDate", new Date()); // java.util.Date 사용
+		return memberMapper.updateMemberStatus2(map);
+	}
 }

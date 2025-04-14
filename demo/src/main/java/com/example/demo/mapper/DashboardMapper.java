@@ -56,4 +56,14 @@ public interface DashboardMapper {
     void updateTrackingNumber(@Param("deliveryNo") int deliveryNo, @Param("trackingNumber") String trackingNumber);
 
 	Map<String, Object> selectDeliveryDetail(Map<String, Object> params);
+	
+	void updateProductStatus(Map<String, Object> params);
+	
+	List<Map<String, Object>> selectProductInquiryList(Map<String, Object> params);
+	
+	int selectProductInquiryCount(Map<String, Object> params);
+	
+	List<Map<String, Object>> selectInquiryList2(Map<String, Object> params);
+	
+	int selectInquiryCount(Map<String, Object> params);
 }

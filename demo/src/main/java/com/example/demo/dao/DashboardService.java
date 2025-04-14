@@ -132,4 +132,28 @@ public class DashboardService {
 	public void updateTrackingNumber(int deliveryNo, String trackingNumber) {
 		dashboardMapper.updateTrackingNumber(deliveryNo, trackingNumber);
 	}
+	
+	@Transactional
+	public void updateProductStatus(int itemNo, String status) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("itemNo", itemNo);
+	    params.put("status", status);
+	    dashboardMapper.updateProductStatus(params);
+	}
+	
+	public List<Map<String, Object>> selectProductInquiryList(Map<String, Object> params) {
+	    return dashboardMapper.selectProductInquiryList(params);
+	}
+
+	public int selectProductInquiryCount(Map<String, Object> params) {
+	    return dashboardMapper.selectProductInquiryCount(params);
+	}
+	
+	public List<Map<String, Object>> selectInquiryList2(Map<String, Object> params) {
+	    return dashboardMapper.selectInquiryList2(params);
+	}
+
+	public int selectInquiryCount(Map<String, Object> params) {
+	    return dashboardMapper.selectInquiryCount(params);
+	}
 }

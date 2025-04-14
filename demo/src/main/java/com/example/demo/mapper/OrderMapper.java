@@ -9,6 +9,6 @@ public interface OrderMapper {
     List<Map<String, Object>> selectOrderList(Map<String, Object> params);
     Map<String, Object> selectOrderDetail(String orderId);
     List<Map<String, Object>> selectOrderItems(String orderId);
-    int updateOrderStatus(Map<String, Object> params);
+    int updateOrderStatus(Map<String, Object> pzarams);
     int cancelOrder(Map<String, Object> params);
 }

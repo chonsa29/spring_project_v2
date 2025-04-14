@@ -1,15 +1,13 @@
 package com.example.demo.controller;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,7 +30,12 @@ public class MemberController {
 
 	@Autowired
 	HttpSession session;
-
+	
+	// GET 요청 처리 추가
+	@GetMapping("/member/withdraw.do")
+	public String withdrawPage(Model model) {
+	    return "/member/withdraw"; // 탈퇴 페이지 뷰 반환
+	}
 	@RequestMapping("/member/login.do")
 	public String login(Model model) throws Exception {
 		return "/member/login";
@@ -210,5 +213,46 @@ public class MemberController {
     @ResponseBody
     public String getMemberGroupInfo(Model model, @RequestParam HashMap<String, Object> map) {
         return new Gson().toJson(memberService.getMemberGroupInfo(map));
+    }
+    
+    @RequestMapping(value = "/member/updateInfo.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String updateMemberInfo(@RequestParam HashMap<String, Object> map) {
+        HashMap<String, Object> resultMap = memberService.updateMemberInfo(map);
+        return new Gson().toJson(resultMap);
+    }
+
+    @RequestMapping(value = "/member/withdraw.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String withdrawMember(
+        @RequestParam HashMap<String, Object> map,
+        HttpSession session) {
+        
+        HashMap<String, Object> resultMap = new HashMap<>();
+        try {
+            // 1. 비밀번호 확인
+            boolean isValid = memberService.checkPassword(map);
+            if (!isValid) {
+                resultMap.put("result", "fail");
+                resultMap.put("message", "비밀번호가 일치하지 않습니다.");
+                return new Gson().toJson(resultMap);
+            }
+
+            // 2. 탈퇴 처리 (소프트 삭제 방식)
+            int result = memberService.withdrawMember(map);
+            
+            if (result > 0) {
+                // 3. 세션 무효화
+                session.invalidate();
+                resultMap.put("result", "success");
+            } else {
+                resultMap.put("result", "fail");
+                resultMap.put("message", "탈퇴 처리 중 오류가 발생했습니다.");
+            }
+        } catch (Exception e) {
+            resultMap.put("result", "error");
+            resultMap.put("message", "시스템 오류: " + e.getMessage());
+        }
+        return new Gson().toJson(resultMap);
     }
 }
