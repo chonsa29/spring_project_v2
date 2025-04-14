@@ -4,6 +4,7 @@ package com.example.demo.mapper;
 import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -42,5 +43,7 @@ public interface PayMapper {
 //		);
 
 	void deleteCartItems(int cartKey);
+
+	void insertOrderDetail(Map<String, Object> detailMap);
 
 }

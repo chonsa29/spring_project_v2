@@ -38,23 +38,10 @@
 	
 	<!-- product 리스트 가져오기 -->
 	<select id="SelectProduct2" parameterType="hashmap" resultType="com.example.demo.model.Product">
-	    SELECT DISTINCT 
-	        P.ITEM_NO,
-	        P.PRICE,
-	        P.ITEM_NAME,
-	        P.ITEM_COUNT,
-	        P.CATEGORY,
-	        P.RDATE,
-	        P.ITEM_INFO,
-	        P.ALLERGENS,
-	        P.SELL_COUNT,
-	        P.STATUS,
-	        I.FILEPATH,
-	        I.FILENAME,
-	        I.THUMBNAIL
-	    FROM PRODUCT P
-	    LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
-	    WHERE I.THUMBNAIL IS NULL OR I.THUMBNAIL='Y'
+		SELECT DISTINCT *
+		FROM PRODUCT P
+		LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
+        WHERE THUMBNAIL IS NULL OR THUMBNAIL='Y'
 	</select>
 	
 	<!-- product 전체 개수 구하기 -->
@@ -114,7 +101,7 @@
 		INSERT INTO PRODUCT_IMG
 		VALUES(#{itemNo}, #{filename},#{path}, #{thumbNail})
 	</insert>
-	
+
 	<insert id="insertContentImage" parameterType="hashmap">
 	    INSERT INTO PRODUCT (ITEM_NO, ITEM_CONTENTS)
 	    VALUES (#{itemNo}, #{contentImagePath})
@@ -139,7 +126,6 @@
 	    SET ITEM_CONTENTS = #{contentImagePath}
 	    WHERE ITEM_NO = #{itemNo}
 	</update>
-	
 	<update id="updateProduct" parameterType="hashmap"  useGeneratedKeys="true" keyColumn="ITEM_NO" keyProperty="itemNo">
 		UPDATE PRODUCT
 		SET ITEM_NAME = #{name},
