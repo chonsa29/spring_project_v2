@@ -565,9 +565,7 @@
                         this.loadCoupons();
                     } else if (tabName === 'inquiries') {
                         this.loadInquiries();
-                    } else if (tabName === 'grade') {
-                        this.loadGradeInfo();
-                    }
+                    } 
                 },
 
                 formatDate(date) {
@@ -598,6 +596,7 @@
                 },
 
                 // 회원정보 로드 (기존 코드 유지)
+                // loadMemberInfo() 수정
                 loadMemberInfo(callback) {
                     const self = this;
                     $.ajax({
@@ -611,10 +610,17 @@
                                     data.member.monthSpent = data.member.monthSpent.toString();
                                 }
 
-                                // Vue 반응성 유지를 위해 Object.assign 사용
-                                self.memberInfo = Object.assign({}, self.memberInfo, data.member);
+                                // 등급 정보 계산
+                                const spent = parseInt(data.member.monthSpent) || 0;
+                                const gradeInfo = self.calculateGrade(spent);
 
-                                console.log("회원정보 로드 완료:", self.memberInfo);
+                                // Vue 반응성 유지를 위해 모든 데이터 한 번에 병합
+                                self.memberInfo = {
+                                    ...data.member,
+                                    ...gradeInfo
+                                };
+
+                                console.log("통합 회원정보 로드 완료:", self.memberInfo);
                             }
                             if (callback) callback();
                         },
@@ -784,60 +790,28 @@
                     });
                 },
 
-                loadGradeInfo() {
-                    const self = this;
-                    self.isLoading = true;
-
-                    $.ajax({
-                        url: "/member/myPage/grade.dox",
-                        type: "POST",
-                        data: { userId: this.userId },
-                        success: function (data) {
-                            if (data.member) {
-                                // 등급 정보 계산
-                                const spent = parseInt(data.member.monthSpent) || 0;
-                                let gradeInfo = self.calculateGrade(spent);
-
-                                // Vue 반응성 유지하며 데이터 병합
-                                self.memberInfo = {
-                                    ...self.memberInfo,
-                                    ...data.member,
-                                    ...gradeInfo
-                                };
-
-                                console.log("최종 memberInfo:", self.memberInfo);
-                            }
-                        },
-                        error: function (error) {
-                            console.error("등급 정보 조회 실패:", error);
-                        },
-                        complete: function () {
-                            self.isLoading = false;
-                        }
-                    });
-                },
-
                 calculateGrade(spent) {
-                    let grade, gradeName, nextGradeReq;
+                    let grade, gradeName, remainPoint;
 
                     if (spent >= 200000) {
-                        grade = 5; gradeName = "VVIPICK"; nextGradeReq = 0;
+                        grade = 5; gradeName = "VVIPICK"; remainPoint = 0;
                     } else if (spent >= 100000) {
-                        grade = 4; gradeName = "탑픽"; nextGradeReq = 200000 - spent;
+                        grade = 4; gradeName = "탑픽"; remainPoint = 200000 - spent;
                     } else if (spent >= 50000) {
-                        grade = 3; gradeName = "굿픽"; nextGradeReq = 100000 - spent;
+                        grade = 3; gradeName = "굿픽"; remainPoint = 100000 - spent;
                     } else if (spent >= 10000) {
-                        grade = 2; gradeName = "라이트픽"; nextGradeReq = 50000 - spent;
+                        grade = 2; gradeName = "라이트픽"; remainPoint = 50000 - spent;
                     } else {
-                        grade = 1; gradeName = "뉴픽"; nextGradeReq = 10000 - spent;
+                        grade = 1; gradeName = "뉴픽"; remainPoint = 10000 - spent;
                     }
 
                     return {
                         grade: grade,
                         gradeName: gradeName,
-                        remainPoint: Math.max(0, nextGradeReq)
+                        remainPoint: Math.max(0, remainPoint)
                     };
                 },
+
                 // 쿠폰함 조회
                 loadCoupons() {
                     var self = this;
@@ -1027,7 +1001,6 @@
                 this.loadMemberInfo();
                 this.loadCoupons();
                 this.loadInquiries();
-                this.loadGradeInfo();
                 this.loadGroupInfo();
             }
         });
