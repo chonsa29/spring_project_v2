@@ -250,7 +250,8 @@
                                     itemName: item.itemName,
                                     filePath: item.filePath,
                                     price: parseInt(item.price, 10), 
-                                    quantity: parseInt(item.quantity, 10)
+                                    quantity: parseInt(item.quantity, 10),
+                                    cartKey: item.cartKey 
                                 }))
                                 : [{
                                     itemNo: data.productInfo.itemNo,
@@ -289,6 +290,9 @@
             fnPayment(){
                 var self = this;
 
+                localStorage.setItem("orderData", JSON.stringify(self.productInfo));
+                sessionStorage.setItem("orderTempData", JSON.stringify(this.productInfo));
+
                 if(!self.memberInfo.userName || !self.memberInfo.phone) {
                     alert("주문자 정보를 입력해주세요");
                     return;
@@ -309,6 +313,12 @@
                 const gradeDiscount = this.gradeDiscountAmount;
                 const usedPoint = parseInt(this.memberInfo.usedPoint) || 0;
                 const totalPrice = originalPrice - discount - gradeDiscount + this.shippingFee - usedPoint;
+
+                // 결제 직전에
+                const orderData = JSON.parse(localStorage.getItem("orderData"));
+                if (orderData) {
+                    localStorage.setItem("lastOrderData", JSON.stringify(orderData));
+                }
 
                 IMP.request_pay({
                     pg: "html5_inicis",
@@ -392,12 +402,12 @@
                     shippingFee: shippingFee,
                     card: this.payWay,
                     orderCount: totalQuantity,
-                    zipCode: self.memberInfo.zipCode,
-                    address: self.memberInfo.address + ' ' + self.detailAddress,
+                    zipCode: self.memberInfo.zipCode || self.inputZipCode, // 수동 입력 값
+                    address: (self.memberInfo.address || '') + ' ' + self.detailAddress,
+                    userName: self.memberInfo.userName || self.inputUserName,
                     phone: self.receiverPhone,
                     request: self.paymentMethod === 'five' ? self.shippingMessage : self.getShippingMemoText(self.paymentMethod),
                     pNo: Number(self.productNumber),
-                    userName: self.memberInfo.userName,
                     orderDate: orderDate, 
                     // cartList: JSON.stringify(this.orderItems)
                 };
@@ -417,7 +427,24 @@
                     data: nparmap,
                     success: function (data) {
                         console.log(data);
-                        if (data.result === "success") {
+                            if (data.result === "success") {
+                                // localStorage에서 장바구니 정보 가져오기
+                                let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+
+                                if (Array.isArray(self.productInfo)) {
+                                self.productInfo.forEach(item => {
+                                    let index = cartItems.findIndex(cartItem => cartItem.itemNo === item.itemNo);
+                                    if (index !== -1) {
+                                        cartItems[index].quantity -= item.quantity;
+                                        if (cartItems[index].quantity <= 0) {
+                                            cartItems.splice(index, 1);
+                                            }
+                                        }
+                                    });
+                                    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+                                }
+                                localStorage.removeItem("orderData");
+
                             setTimeout(function() {
                                 window.location.href = "/paySuccess.do?orderId=" + data.orderId;
                             }, 500);
@@ -492,7 +519,7 @@
             }, { passive: false });
 
             // orderData 확인 후 상품 정보 불러오기
-            const orderData = JSON.parse(localStorage.getItem("orderData"));
+            const orderData = JSON.parse(localStorage.getItem("orderData")) || JSON.parse(localStorage.getItem("lastOrderData") ||  JSON.parse(sessionStorage.getItem("orderTempData")));
 
             if (orderData && orderData.length > 0 && !(self.itemNo && self.quantity)) {
                 // 장바구니 결제
