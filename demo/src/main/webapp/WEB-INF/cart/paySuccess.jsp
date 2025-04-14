@@ -66,7 +66,7 @@
                     </ul>
                     <button v-if="orderItems.length > 3" @click="showAll = true" class="btn">더보기</button>
                     <div class="some-wrapper">
-                        <a href="/member/mypage" class="btn view-orders">구매 내역 보러가기</a>
+                        <a href="/member/mypage.do?tab=orders" class="btn view-orders">구매 내역 보러가기</a>
                         <a href="/home.do" class="btn">메인으로 가기</a>
                     </div>
                     
