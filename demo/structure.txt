@@ -1,0 +1,1302 @@
+폴더 PATH의 목록입니다.
+볼륨 일련 번호는 DC90-47EE입니다.
+C:.
+│  .classpath
+│  .factorypath
+│  .gitattributes
+│  .gitignore
+│  .project
+│  hs_err_pid6512.log
+│  mvnw
+│  mvnw.cmd
+│  pom.xml
+│  structure.txt
+│  
+├─.mvn
+│  └─wrapper
+│          maven-wrapper.properties
+│          
+├─.settings
+│      org.eclipse.core.resources.prefs
+│      org.eclipse.jdt.apt.core.prefs
+│      org.eclipse.jdt.core.prefs
+│      org.springframework.ide.eclipse.prefs
+│      
+├─bin
+│  │  .gitattributes
+│  │  .gitignore
+│  │  hs_err_pid6512.log
+│  │  mvnw
+│  │  mvnw.cmd
+│  │  pom.xml
+│  │  
+│  ├─.mvn
+│  │  └─wrapper
+│  │          maven-wrapper.properties
+│  │          
+│  └─src
+│      ├─main
+│      │  ├─java
+│      │  │  └─com
+│      │  │      └─example
+│      │  │          └─demo
+│      │  │              │  DemoApplication.class
+│      │  │              │  GroupScheduler.class
+│      │  │              │  WebSocketConfig.class
+│      │  │              │  
+│      │  │              ├─common
+│      │  │              │      Common.class
+│      │  │              │      GeminiRestTemplateConfig.class
+│      │  │              │      
+│      │  │              ├─controller
+│      │  │              │      CartController.class
+│      │  │              │      ChatController.class
+│      │  │              │      CommonController.class
+│      │  │              │      CommunityController.class
+│      │  │              │      CouponController.class
+│      │  │              │      DashboardController.class
+│      │  │              │      DeliveryController.class
+│      │  │              │      EmailController.class
+│      │  │              │      GeminiController.class
+│      │  │              │      InquireChatController.class
+│      │  │              │      MemberController.class
+│      │  │              │      OrderController.class
+│      │  │              │      PayController.class
+│      │  │              │      ProductController.class
+│      │  │              │      QuestionController.class
+│      │  │              │      ReviewController.class
+│      │  │              │      SmsController.class
+│      │  │              │      
+│      │  │              ├─dao
+│      │  │              │      CartService.class
+│      │  │              │      ChatService.class
+│      │  │              │      CommonService.class
+│      │  │              │      CommunityService.class
+│      │  │              │      CouponService.class
+│      │  │              │      DashboardService.class
+│      │  │              │      DeliveryService.class
+│      │  │              │      EmailService.class
+│      │  │              │      GeminiService.class
+│      │  │              │      InquireChatService.class
+│      │  │              │      MemberService.class
+│      │  │              │      OrderService.class
+│      │  │              │      PayService.class
+│      │  │              │      ProductService.class
+│      │  │              │      QuestionService.class
+│      │  │              │      ReviewService.class
+│      │  │              │      SmsService.class
+│      │  │              │      
+│      │  │              ├─mapper
+│      │  │              │      CartMapper.class
+│      │  │              │      ChatMessageMapper.class
+│      │  │              │      CommonMapper.class
+│      │  │              │      CommunityMapper.class
+│      │  │              │      CouponMapper.class
+│      │  │              │      DashboardMapper.class
+│      │  │              │      DeliveryMapper.class
+│      │  │              │      MemberMapper.class
+│      │  │              │      NoticeMapper.class
+│      │  │              │      OrderMapper.class
+│      │  │              │      PayMapper.class
+│      │  │              │      ProductMapper.class
+│      │  │              │      QuestionMapper.class
+│      │  │              │      ReviewMapper.class
+│      │  │              │      
+│      │  │              └─model
+│      │  │                      Cart.class
+│      │  │                      ChatMessage$MessageType.class
+│      │  │                      ChatMessage.class
+│      │  │                      ChatRequest$Content.class
+│      │  │                      ChatRequest$GenerationConfig.class
+│      │  │                      ChatRequest$Parts.class
+│      │  │                      ChatRequest.class
+│      │  │                      ChatResponse$Candidate.class
+│      │  │                      ChatResponse$Content.class
+│      │  │                      ChatResponse$Parts.class
+│      │  │                      ChatResponse$PromptFeedback.class
+│      │  │                      ChatResponse$SafetyRating.class
+│      │  │                      ChatResponse.class
+│      │  │                      Comment.class
+│      │  │                      Delivery.class
+│      │  │                      Group.class
+│      │  │                      GroupInfo.class
+│      │  │                      GroupUser.class
+│      │  │                      InquireChatMessage.class
+│      │  │                      Member.class
+│      │  │                      Notice.class
+│      │  │                      Notification.class
+│      │  │                      Order.class
+│      │  │                      Pay.class
+│      │  │                      Product.class
+│      │  │                      ProductQuestion.class
+│      │  │                      Question.class
+│      │  │                      QuestionReply.class
+│      │  │                      Recipe.class
+│      │  │                      Review.class
+│      │  │                      Wish.class
+│      │  │                      
+│      │  ├─resources
+│      │  │  │  application.properties
+│      │  │  │  
+│      │  │  ├─META-INF
+│      │  │  │      additional-spring-configuration-metadata.json
+│      │  │  │      
+│      │  │  └─mybatis-mapper
+│      │  │          sql-cart.xml
+│      │  │          sql-chat.xml
+│      │  │          sql-common.xml
+│      │  │          sql-commu.xml
+│      │  │          sql-dashboard.xml
+│      │  │          sql-inquire.xml
+│      │  │          sql-member.xml
+│      │  │          sql-notice.xml
+│      │  │          sql-order.xml
+│      │  │          sql-pay.xml
+│      │  │          sql-product.xml
+│      │  │          
+│      │  └─webapp
+│      │      ├─css
+│      │      │  │  brand.css
+│      │      │  │  cart.css
+│      │      │  │  main.css
+│      │      │  │  pay.css
+│      │      │  │  paySuccess.css
+│      │      │  │  style.css
+│      │      │  │  
+│      │      │  ├─chatting
+│      │      │  │      chat.css
+│      │      │  │      
+│      │      │  ├─commu-css
+│      │      │  │      commu-main.css
+│      │      │  │      group-add.css
+│      │      │  │      recipe-add.css
+│      │      │  │      recipe-view.css
+│      │      │  │      
+│      │      │  ├─inquire-css
+│      │      │  │      inquire-add-style.css
+│      │      │  │      inquire-edit-style.css
+│      │      │  │      inquire-style.css
+│      │      │  │      inquire-view-style.css
+│      │      │  │      notice-edit-style.css
+│      │      │  │      notice-view-style.css
+│      │      │  │      
+│      │      │  ├─member-css
+│      │      │  │      admin-page.css
+│      │      │  │      login.css
+│      │      │  │      mypage.css
+│      │      │  │      
+│      │      │  └─product-css
+│      │      │          product-info.css
+│      │      │          product-list.css
+│      │      │          
+│      │      ├─img
+│      │      │      202522521015415.png
+│      │      │      202522521015430.png
+│      │      │      202522521211957.png
+│      │      │      202522521211965.png
+│      │      │      202522521211976.png
+│      │      │      202522521211988.jpg
+│      │      │      202522521358174.jpg
+│      │      │      202522521358181.png
+│      │      │      202522521358192.png
+│      │      │      202522521358206.jpg
+│      │      │      202522523056454.jpg
+│      │      │      202522523056469.png
+│      │      │      202522523232737.png
+│      │      │      202522523232745.png
+│      │      │      202522523232753.png
+│      │      │      202522523232760.jpg
+│      │      │      202522523712922.PNG
+│      │      │      202522523712934.PNG
+│      │      │      202522523712943.PNG
+│      │      │      2025226338483.jpg
+│      │      │      2025226338495.jpg
+│      │      │      202522635124270.jpg
+│      │      │      202522635124282.jpg
+│      │      │      202522635124289.jpg
+│      │      │      202522635124297.jpg
+│      │      │      2025226519851.png
+│      │      │      2025226519863.png
+│      │      │      2025226519872.png
+│      │      │      202522653122869.png
+│      │      │      202522653524869.png
+│      │      │      202522653524876.png
+│      │      │      202522653524883.png
+│      │      │      202522655531253.png
+│      │      │      202522655612635.png
+│      │      │      202522661112255.png
+│      │      │      202522661424283.png
+│      │      │      202522661554100.png
+│      │      │      202522661920892.png
+│      │      │      20252266836907.png
+│      │      │      202522682926859.png
+│      │      │      202522683213407.png
+│      │      │      20252268322296.png
+│      │      │      202522683733185.png
+│      │      │      202522683733194.png
+│      │      │      202522683733202.png
+│      │      │      202522683733209.jpg
+│      │      │      20252270011363.png
+│      │      │      20252270011371.png
+│      │      │      20252270029781.png
+│      │      │      20252270110983.png
+│      │      │      202522701235637.png
+│      │      │      202522701250543.png
+│      │      │      202522701319184.png
+│      │      │      20252270132582.png
+│      │      │      20252270149713.png
+│      │      │      20252270149722.png
+│      │      │      20252270149731.jpg
+│      │      │      202522701511967.png
+│      │      │      202522701511975.png
+│      │      │      20252270153094.png
+│      │      │      20252270153960.png
+│      │      │      20252270162331.png
+│      │      │      20252270162352.png
+│      │      │      202522701631385.png
+│      │      │      202522701631394.png
+│      │      │      202522701655809.jpg
+│      │      │      202522701655823.jpg
+│      │      │      202522701723784.png
+│      │      │      202522701734455.jpg
+│      │      │      202522702248878.png
+│      │      │      202522702320879.png
+│      │      │      202522702320880.jpg
+│      │      │      202522702320881.jpg
+│      │      │      202522702320882.jpg
+│      │      │      202522702331798.png
+│      │      │      202522702331805.jpg
+│      │      │      202522702331806.jpg
+│      │      │      202522702331807.jpg
+│      │      │      20252270233222.png
+│      │      │      20252270233223.jpg
+│      │      │      20252270233224.jpg
+│      │      │      20252270233225.jpg
+│      │      │      202522702349287.png
+│      │      │      202522702349294.jpg
+│      │      │      202522702349295.jpg
+│      │      │      202522702349296.jpg
+│      │      │      20252270235918.png
+│      │      │      20252270235926.jpg
+│      │      │      20252270235942.jpg
+│      │      │      202522702412110.png
+│      │      │      202522702412117.jpg
+│      │      │      202522702412118.jpg
+│      │      │      202522702412119.jpg
+│      │      │      202522702433348.jpg
+│      │      │      202522702433355.jpg
+│      │      │      202522702433356.jpg
+│      │      │      20252270316859.jpg
+│      │      │      20252270316861.jpg
+│      │      │      20252270316862.jpg
+│      │      │      20252270624634.png
+│      │      │      2025227074617.jpg
+│      │      │      2025227074627.jpg
+│      │      │      2025227074636.png
+│      │      │      2025227083275.png
+│      │      │      2025227083284.png
+│      │      │      2025227083307.jpg
+│      │      │      20252270854559.png
+│      │      │      20252270918597.png
+│      │      │      20252270918606.jpg
+│      │      │      2025227101636769.png
+│      │      │      2025227101636779.png
+│      │      │      2025227101636787.png
+│      │      │      2025227101636796.jpg
+│      │      │      2025227101736129.png
+│      │      │      2025227101959955.png
+│      │      │      202522710200382.png
+│      │      │      202522710200471.png
+│      │      │      202522710200504.jpg
+│      │      │      202522710227608.png
+│      │      │      202522710227626.png
+│      │      │      202522710227642.png
+│      │      │      202522710227657.jpg
+│      │      │      2025227102416253.png
+│      │      │      2025227102427790.png
+│      │      │      2025227102453425.jpg
+│      │      │      2025227102453433.jpg
+│      │      │      2025227102512243.jpg
+│      │      │      2025227102512250.jpg
+│      │      │      2025227102512261.jpg
+│      │      │      2025227102531692.png
+│      │      │      2025227102531701.png
+│      │      │      2025227102531709.jpg
+│      │      │      2025227102531719.jpg
+│      │      │      2025227102531728.jpg
+│      │      │      2025227102531737.jpg
+│      │      │      2025227102531745.png
+│      │      │      2025227102531754.png
+│      │      │      2025227102531762.png
+│      │      │      2025227102633566.png
+│      │      │      2025227102633579.png
+│      │      │      2025227102633588.png
+│      │      │      2025227102659238.png
+│      │      │      202522710271995.png
+│      │      │      2025227102732853.png
+│      │      │      2025227102732861.png
+│      │      │      2025227102732869.png
+│      │      │      2025227102732892.jpg
+│      │      │      202522710349723.png
+│      │      │      2025227103650883.png
+│      │      │      202522710369630.png
+│      │      │      202522710370776.png
+│      │      │      202522710379879.png
+│      │      │      2025227103825738.png
+│      │      │      2025227103836192.png
+│      │      │      2025227103853103.png
+│      │      │      2025227103853120.jpg
+│      │      │      202522710385367.png
+│      │      │      202522710385383.png
+│      │      │      2025227103959457.png
+│      │      │      202522710417857.png
+│      │      │      2025227104221359.png
+│      │      │      2025227104246654.png
+│      │      │      202522710434191.png
+│      │      │      202522710434199.jpg
+│      │      │      202522710434215.jpg
+│      │      │      202522710434230.jpg
+│      │      │      2025227104437104.png
+│      │      │      2025227104437119.jpg
+│      │      │      202522710443778.png
+│      │      │      202522710443788.png
+│      │      │      2025227104537590.png
+│      │      │      2025227104550700.png
+│      │      │      202522710460590.png
+│      │      │      2025227104617588.png
+│      │      │      2025227104617596.png
+│      │      │      2025227104617598.png
+│      │      │      2025227104617599.jpg
+│      │      │      2025227104639623.png
+│      │      │      2025227104639634.png
+│      │      │      2025227104639635.jpg
+│      │      │      202522710474781.png
+│      │      │      202522710474789.png
+│      │      │      202522710474804.png
+│      │      │      202522710474819.jpg
+│      │      │      2025227104826472.png
+│      │      │      2025227104826481.jpg
+│      │      │      2025227104841595.jpg
+│      │      │      2025227104841604.jpg
+│      │      │      2025227104841605.jpg
+│      │      │      2025227104934622.jpg
+│      │      │      2025227104934629.jpg
+│      │      │      2025227105016991.png
+│      │      │      20252271050170.jpg
+│      │      │      20252271050171.jpg
+│      │      │      20252271050172.jpg
+│      │      │      2025227105059934.png
+│      │      │      2025227105059943.jpg
+│      │      │      2025227105347821.png
+│      │      │      2025227105359905.jpg
+│      │      │      2025227105359920.png
+│      │      │      2025227105458457.png
+│      │      │      2025227105511106.png
+│      │      │      2025227105511115.jpg
+│      │      │      202522710551197.png
+│      │      │      2025227105847944.jpg
+│      │      │      2025227105847956.jpg
+│      │      │      2025227105847965.jpg
+│      │      │      202522710741232.png
+│      │      │      202522711013900.png
+│      │      │      202522711013908.png
+│      │      │      202522711013918.jpg
+│      │      │      2025227113755228.png
+│      │      │      2025227113836664.png
+│      │      │      2025227114214748.png
+│      │      │      2025227114224881.png
+│      │      │      202522711436520.png
+│      │      │      2025227114914904.png
+│      │      │      202522711508984.png
+│      │      │      202522711508993.png
+│      │      │      202522711513104.png
+│      │      │      202522711513105.jpg
+│      │      │      202522711513107.jpg
+│      │      │      202522711518116.png
+│      │      │      20252271152189.png
+│      │      │      2025227115527337.png
+│      │      │      2025227115527345.png
+│      │      │      2025227115553566.jpg
+│      │      │      2025227115553579.jpg
+│      │      │      2025227115553596.jpg
+│      │      │      202522711555809.png
+│      │      │      2025227115637231.png
+│      │      │      2025227115650787.png
+│      │      │      2025227115650796.jpg
+│      │      │      202522711573115.jpg
+│      │      │      2025227115939579.png
+│      │      │      2025227115957199.png
+│      │      │      202522711744655.png
+│      │      │      202522711752830.png
+│      │      │      202522711752839.png
+│      │      │      202522711752849.jpg
+│      │      │      202522715631933.jpg
+│      │      │      202522723744469.jpg
+│      │      │      202522723829249.jpg
+│      │      │      202522754244848.png
+│      │      │      202522754250929.png
+│      │      │      20252275431122.jpg
+│      │      │      20252275431134.jpg
+│      │      │      20252275431147.jpg
+│      │      │      2025227543192.png
+│      │      │      202522754417413.jpg
+│      │      │      202522754417425.jpg
+│      │      │      202522754417436.jpg
+│      │      │      202522754430934.png
+│      │      │      202522754430946.jpg
+│      │      │      202522754430959.jpg
+│      │      │      202522754430973.jpg
+│      │      │      202522755037820.png
+│      │      │      202522755047678.png
+│      │      │      202522755047687.jpg
+│      │      │      202522755047694.jpg
+│      │      │      202522755047701.jpg
+│      │      │      20252275508230.png
+│      │      │      20252275510467.png
+│      │      │      20252275510481.jpg
+│      │      │      20252275510490.jpg
+│      │      │      20252275510498.jpg
+│      │      │      202522755114316.png
+│      │      │      202522755114328.jpg
+│      │      │      202522755114336.jpg
+│      │      │      202522755114343.jpg
+│      │      │      20252275519531.png
+│      │      │      20252275519538.jpg
+│      │      │      20252275519546.jpg
+│      │      │      20252275519553.jpg
+│      │      │      202522755234446.jpg
+│      │      │      202522755234454.jpg
+│      │      │      202522755328657.jpg
+│      │      │      202522755328665.jpg
+│      │      │      202522755639969.jpg
+│      │      │      202522755639981.jpg
+│      │      │      202522755659252.jpg
+│      │      │      202522755659253.jpg
+│      │      │      202522755659254.jpg
+│      │      │      20252275574147.jpg
+│      │      │      20252275574158.jpg
+│      │      │      20252275574166.jpg
+│      │      │      202522755846566.jpg
+│      │      │      20252276244203.jpg
+│      │      │      20252276244216.jpg
+│      │      │      20252276477475.png
+│      │      │      20252276477485.jpg
+│      │      │      20252276740386.jpg
+│      │      │      202522774020444.png
+│      │      │      202522792637763.png
+│      │      │      202522792819130.png
+│      │      │      202522793225842.png
+│      │      │      202522794915637.png
+│      │      │      202522794926644.png
+│      │      │      202522795530822.png
+│      │      │      20252284353456.jpg
+│      │      │      20252284353480.jpg
+│      │      │      20252284353491.jpg
+│      │      │      20252284441812.jpg
+│      │      │      20252284441827.jpg
+│      │      │      202522893343207.jpg
+│      │      │      202522893343217.jpg
+│      │      │      202522893343226.jpg
+│      │      │      202522893343234.jpg
+│      │      │      banner1.png
+│      │      │      banner2.png
+│      │      │      banner3.png
+│      │      │      brand.jpg
+│      │      │      brand2.jpg
+│      │      │      brand3.jpg
+│      │      │      icon.png
+│      │      │      icon2.png
+│      │      │      intro.jpg
+│      │      │      intro2.jpg
+│      │      │      item1.jpg
+│      │      │      item10.jpg
+│      │      │      item2.jpg
+│      │      │      item3.jpeg
+│      │      │      item4.jpg
+│      │      │      item5.jpg
+│      │      │      item6.jpg
+│      │      │      item7.jpg
+│      │      │      item8.jpg
+│      │      │      item9.jpg
+│      │      │      kakao.png
+│      │      │      main1.jpg
+│      │      │      main2.jpg
+│      │      │      main3.jpg
+│      │      │      main4.png
+│      │      │      main5.png
+│      │      │      main6.jpg
+│      │      │      MEALPICK.png
+│      │      │      menu.jpg
+│      │      │      profil.png
+│      │      │      profile_sample.png
+│      │      │      파스타 상세정보(연습용).jpg
+│      │      │      포챠코4.jpg
+│      │      │      
+│      │      ├─js
+│      │      │      pageChange.js
+│      │      │      
+│      │      └─WEB-INF
+│      │          │  brand.jsp
+│      │          │  home.jsp
+│      │          │  mealsample.jsp
+│      │          │  sample.jsp
+│      │          │  
+│      │          ├─cart
+│      │          │      pay.jsp
+│      │          │      paySuccess.jsp
+│      │          │      
+│      │          ├─chatting
+│      │          │      chat.jsp
+│      │          │      chatRoom.jsp
+│      │          │      gemini.jsp
+│      │          │      
+│      │          ├─common
+│      │          │      footer.jsp
+│      │          │      header.jsp
+│      │          │      
+│      │          ├─community
+│      │          │      commu-main.jsp
+│      │          │      group-add.jsp
+│      │          │      group-edit.jsp
+│      │          │      group-view.jsp
+│      │          │      recipe-add.jsp
+│      │          │      recipe-edit.jsp
+│      │          │      recipe-view.jsp
+│      │          │      
+│      │          ├─help
+│      │          │      inquire-add.jsp
+│      │          │      inquire-edit.jsp
+│      │          │      inquire-view.jsp
+│      │          │      inquire.jsp
+│      │          │      notice-add.jsp
+│      │          │      notice-edit.jsp
+│      │          │      notice-view.jsp
+│      │          │      
+│      │          ├─member
+│      │          │      admin-page.jsp
+│      │          │      join.jsp
+│      │          │      kakao.jsp
+│      │          │      login.jsp
+│      │          │      mypage.jsp
+│      │          │      term.jsp
+│      │          │      
+│      │          └─product
+│      │                  cart.jsp
+│      │                  product-info.jsp
+│      │                  product-list.jsp
+│      │                  
+│      └─test
+│          └─java
+│              └─com
+│                  └─example
+│                      └─demo
+│                              DemoApplicationTests.class
+│                              
+├─src
+│  ├─main
+│  │  ├─java
+│  │  │  └─com
+│  │  │      └─example
+│  │  │          └─demo
+│  │  │              │  DemoApplication.java
+│  │  │              │  GroupScheduler.java
+│  │  │              │  WebSocketConfig.java
+│  │  │              │  
+│  │  │              ├─common
+│  │  │              │      Common.java
+│  │  │              │      GeminiRestTemplateConfig.java
+│  │  │              │      
+│  │  │              ├─config
+│  │  │              │      SecurityConfig.java
+│  │  │              │      
+│  │  │              ├─controller
+│  │  │              │      CartController.java
+│  │  │              │      ChatController.java
+│  │  │              │      CommonController.java
+│  │  │              │      CommunityController.java
+│  │  │              │      CouponController.java
+│  │  │              │      DashboardController.java
+│  │  │              │      DeliveryController.java
+│  │  │              │      EmailController.java
+│  │  │              │      GeminiController.java
+│  │  │              │      InquireChatController.java
+│  │  │              │      MemberController.java
+│  │  │              │      OrderController.java
+│  │  │              │      PayController.java
+│  │  │              │      ProductController.java
+│  │  │              │      QuestionController.java
+│  │  │              │      ReviewController.java
+│  │  │              │      SmsController.java
+│  │  │              │      
+│  │  │              ├─dao
+│  │  │              │      CartService.java
+│  │  │              │      ChatService.java
+│  │  │              │      CommonService.java
+│  │  │              │      CommunityService.java
+│  │  │              │      CouponService.java
+│  │  │              │      DashboardService.java
+│  │  │              │      DeliveryService.java
+│  │  │              │      EmailService.java
+│  │  │              │      GeminiService.java
+│  │  │              │      InquireChatService.java
+│  │  │              │      MemberService.java
+│  │  │              │      OrderService.java
+│  │  │              │      PayService.java
+│  │  │              │      ProductService.java
+│  │  │              │      QuestionService.java
+│  │  │              │      ReviewService.java
+│  │  │              │      SmsService.java
+│  │  │              │      
+│  │  │              ├─mapper
+│  │  │              │      CartMapper.java
+│  │  │              │      ChatMessageMapper.java
+│  │  │              │      CommonMapper.java
+│  │  │              │      CommunityMapper.java
+│  │  │              │      CouponMapper.java
+│  │  │              │      DashboardMapper.java
+│  │  │              │      DeliveryMapper.java
+│  │  │              │      MemberMapper.java
+│  │  │              │      NoticeMapper.java
+│  │  │              │      OrderMapper.java
+│  │  │              │      PayMapper.java
+│  │  │              │      ProductMapper.java
+│  │  │              │      QuestionMapper.java
+│  │  │              │      ReviewMapper.java
+│  │  │              │      
+│  │  │              └─model
+│  │  │                      Cart.java
+│  │  │                      ChatMessage.java
+│  │  │                      ChatRequest.java
+│  │  │                      ChatResponse.java
+│  │  │                      Comment.java
+│  │  │                      Delivery.java
+│  │  │                      Group.java
+│  │  │                      GroupInfo.java
+│  │  │                      GroupUser.java
+│  │  │                      InquireChatMessage.java
+│  │  │                      Member.java
+│  │  │                      Notice.java
+│  │  │                      Notification.java
+│  │  │                      Order.java
+│  │  │                      Pay.java
+│  │  │                      Product.java
+│  │  │                      ProductQuestion.java
+│  │  │                      Question.java
+│  │  │                      QuestionReply.java
+│  │  │                      Recipe.java
+│  │  │                      Review.java
+│  │  │                      Wish.java
+│  │  │                      
+│  │  ├─resources
+│  │  │  │  application.properties
+│  │  │  │  
+│  │  │  ├─META-INF
+│  │  │  │      additional-spring-configuration-metadata.json
+│  │  │  │      
+│  │  │  └─mybatis-mapper
+│  │  │          sql-cart.xml
+│  │  │          sql-chat.xml
+│  │  │          sql-common.xml
+│  │  │          sql-commu.xml
+│  │  │          sql-dashboard.xml
+│  │  │          sql-delivery.xml
+│  │  │          sql-inquire.xml
+│  │  │          sql-member.xml
+│  │  │          sql-notice.xml
+│  │  │          sql-order.xml
+│  │  │          sql-pay.xml
+│  │  │          sql-product.xml
+│  │  │          
+│  │  └─webapp
+│  │      ├─css
+│  │      │  │  brand.css
+│  │      │  │  cart.css
+│  │      │  │  main.css
+│  │      │  │  pay.css
+│  │      │  │  paySuccess.css
+│  │      │  │  style.css
+│  │      │  │  
+│  │      │  ├─chatting
+│  │      │  │      chat.css
+│  │      │  │      
+│  │      │  ├─commu-css
+│  │      │  │      commu-main.css
+│  │      │  │      group-add.css
+│  │      │  │      recipe-add.css
+│  │      │  │      recipe-view.css
+│  │      │  │      
+│  │      │  ├─inquire-css
+│  │      │  │      inquire-add-style.css
+│  │      │  │      inquire-edit-style.css
+│  │      │  │      inquire-style.css
+│  │      │  │      inquire-view-style.css
+│  │      │  │      notice-edit-style.css
+│  │      │  │      notice-view-style.css
+│  │      │  │      
+│  │      │  ├─member-css
+│  │      │  │      admin-page.css
+│  │      │  │      EditModal.vue
+│  │      │  │      login.css
+│  │      │  │      mypage.css
+│  │      │  │      
+│  │      │  └─product-css
+│  │      │          product-info.css
+│  │      │          product-list.css
+│  │      │          
+│  │      ├─img
+│  │      │      202522521015415.png
+│  │      │      202522521015430.png
+│  │      │      202522521211957.png
+│  │      │      202522521211965.png
+│  │      │      202522521211976.png
+│  │      │      202522521211988.jpg
+│  │      │      202522521358174.jpg
+│  │      │      202522521358181.png
+│  │      │      202522521358192.png
+│  │      │      202522521358206.jpg
+│  │      │      202522523056454.jpg
+│  │      │      202522523056469.png
+│  │      │      202522523232737.png
+│  │      │      202522523232745.png
+│  │      │      202522523232753.png
+│  │      │      202522523232760.jpg
+│  │      │      202522523712922.PNG
+│  │      │      202522523712934.PNG
+│  │      │      202522523712943.PNG
+│  │      │      2025226338483.jpg
+│  │      │      2025226338495.jpg
+│  │      │      202522635124270.jpg
+│  │      │      202522635124282.jpg
+│  │      │      202522635124289.jpg
+│  │      │      202522635124297.jpg
+│  │      │      2025226519851.png
+│  │      │      2025226519863.png
+│  │      │      2025226519872.png
+│  │      │      202522653122869.png
+│  │      │      202522653524869.png
+│  │      │      202522653524876.png
+│  │      │      202522653524883.png
+│  │      │      202522655531253.png
+│  │      │      202522655612635.png
+│  │      │      202522661112255.png
+│  │      │      202522661424283.png
+│  │      │      202522661554100.png
+│  │      │      202522661920892.png
+│  │      │      20252266836907.png
+│  │      │      202522682926859.png
+│  │      │      202522683213407.png
+│  │      │      20252268322296.png
+│  │      │      202522683733185.png
+│  │      │      202522683733194.png
+│  │      │      202522683733202.png
+│  │      │      202522683733209.jpg
+│  │      │      20252270011363.png
+│  │      │      20252270011371.png
+│  │      │      20252270029781.png
+│  │      │      20252270110983.png
+│  │      │      202522701235637.png
+│  │      │      202522701250543.png
+│  │      │      202522701319184.png
+│  │      │      20252270132582.png
+│  │      │      20252270149713.png
+│  │      │      20252270149722.png
+│  │      │      20252270149731.jpg
+│  │      │      202522701511967.png
+│  │      │      202522701511975.png
+│  │      │      20252270153094.png
+│  │      │      20252270153960.png
+│  │      │      20252270162331.png
+│  │      │      20252270162352.png
+│  │      │      202522701631385.png
+│  │      │      202522701631394.png
+│  │      │      202522701655809.jpg
+│  │      │      202522701655823.jpg
+│  │      │      202522701723784.png
+│  │      │      202522701734455.jpg
+│  │      │      202522702248878.png
+│  │      │      202522702320879.png
+│  │      │      202522702320880.jpg
+│  │      │      202522702320881.jpg
+│  │      │      202522702320882.jpg
+│  │      │      202522702331798.png
+│  │      │      202522702331805.jpg
+│  │      │      202522702331806.jpg
+│  │      │      202522702331807.jpg
+│  │      │      20252270233222.png
+│  │      │      20252270233223.jpg
+│  │      │      20252270233224.jpg
+│  │      │      20252270233225.jpg
+│  │      │      202522702349287.png
+│  │      │      202522702349294.jpg
+│  │      │      202522702349295.jpg
+│  │      │      202522702349296.jpg
+│  │      │      20252270235918.png
+│  │      │      20252270235926.jpg
+│  │      │      20252270235942.jpg
+│  │      │      202522702412110.png
+│  │      │      202522702412117.jpg
+│  │      │      202522702412118.jpg
+│  │      │      202522702412119.jpg
+│  │      │      202522702433348.jpg
+│  │      │      202522702433355.jpg
+│  │      │      202522702433356.jpg
+│  │      │      20252270316859.jpg
+│  │      │      20252270316861.jpg
+│  │      │      20252270316862.jpg
+│  │      │      20252270624634.png
+│  │      │      2025227074617.jpg
+│  │      │      2025227074627.jpg
+│  │      │      2025227074636.png
+│  │      │      2025227083275.png
+│  │      │      2025227083284.png
+│  │      │      2025227083307.jpg
+│  │      │      20252270854559.png
+│  │      │      20252270918597.png
+│  │      │      20252270918606.jpg
+│  │      │      2025227101636769.png
+│  │      │      2025227101636779.png
+│  │      │      2025227101636787.png
+│  │      │      2025227101636796.jpg
+│  │      │      2025227101736129.png
+│  │      │      2025227101959955.png
+│  │      │      202522710200382.png
+│  │      │      202522710200471.png
+│  │      │      202522710200504.jpg
+│  │      │      202522710227608.png
+│  │      │      202522710227626.png
+│  │      │      202522710227642.png
+│  │      │      202522710227657.jpg
+│  │      │      2025227102416253.png
+│  │      │      2025227102427790.png
+│  │      │      2025227102453425.jpg
+│  │      │      2025227102453433.jpg
+│  │      │      2025227102512243.jpg
+│  │      │      2025227102512250.jpg
+│  │      │      2025227102512261.jpg
+│  │      │      2025227102531692.png
+│  │      │      2025227102531701.png
+│  │      │      2025227102531709.jpg
+│  │      │      2025227102531719.jpg
+│  │      │      2025227102531728.jpg
+│  │      │      2025227102531737.jpg
+│  │      │      2025227102531745.png
+│  │      │      2025227102531754.png
+│  │      │      2025227102531762.png
+│  │      │      2025227102633566.png
+│  │      │      2025227102633579.png
+│  │      │      2025227102633588.png
+│  │      │      2025227102659238.png
+│  │      │      202522710271995.png
+│  │      │      2025227102732853.png
+│  │      │      2025227102732861.png
+│  │      │      2025227102732869.png
+│  │      │      2025227102732892.jpg
+│  │      │      202522710349723.png
+│  │      │      2025227103650883.png
+│  │      │      202522710369630.png
+│  │      │      202522710370776.png
+│  │      │      202522710379879.png
+│  │      │      2025227103825738.png
+│  │      │      2025227103836192.png
+│  │      │      2025227103853103.png
+│  │      │      2025227103853120.jpg
+│  │      │      202522710385367.png
+│  │      │      202522710385383.png
+│  │      │      2025227103959457.png
+│  │      │      202522710417857.png
+│  │      │      2025227104221359.png
+│  │      │      2025227104246654.png
+│  │      │      202522710434191.png
+│  │      │      202522710434199.jpg
+│  │      │      202522710434215.jpg
+│  │      │      202522710434230.jpg
+│  │      │      2025227104437104.png
+│  │      │      2025227104437119.jpg
+│  │      │      202522710443778.png
+│  │      │      202522710443788.png
+│  │      │      2025227104537590.png
+│  │      │      2025227104550700.png
+│  │      │      202522710460590.png
+│  │      │      2025227104617588.png
+│  │      │      2025227104617596.png
+│  │      │      2025227104617598.png
+│  │      │      2025227104617599.jpg
+│  │      │      2025227104639623.png
+│  │      │      2025227104639634.png
+│  │      │      2025227104639635.jpg
+│  │      │      202522710474781.png
+│  │      │      202522710474789.png
+│  │      │      202522710474804.png
+│  │      │      202522710474819.jpg
+│  │      │      2025227104826472.png
+│  │      │      2025227104826481.jpg
+│  │      │      2025227104841595.jpg
+│  │      │      2025227104841604.jpg
+│  │      │      2025227104841605.jpg
+│  │      │      2025227104934622.jpg
+│  │      │      2025227104934629.jpg
+│  │      │      2025227105016991.png
+│  │      │      20252271050170.jpg
+│  │      │      20252271050171.jpg
+│  │      │      20252271050172.jpg
+│  │      │      2025227105059934.png
+│  │      │      2025227105059943.jpg
+│  │      │      2025227105347821.png
+│  │      │      2025227105359905.jpg
+│  │      │      2025227105359920.png
+│  │      │      2025227105458457.png
+│  │      │      2025227105511106.png
+│  │      │      2025227105511115.jpg
+│  │      │      202522710551197.png
+│  │      │      2025227105847944.jpg
+│  │      │      2025227105847956.jpg
+│  │      │      2025227105847965.jpg
+│  │      │      202522710741232.png
+│  │      │      202522711013900.png
+│  │      │      202522711013908.png
+│  │      │      202522711013918.jpg
+│  │      │      2025227113755228.png
+│  │      │      2025227113836664.png
+│  │      │      2025227114214748.png
+│  │      │      2025227114224881.png
+│  │      │      202522711436520.png
+│  │      │      2025227114914904.png
+│  │      │      202522711508984.png
+│  │      │      202522711508993.png
+│  │      │      202522711513104.png
+│  │      │      202522711513105.jpg
+│  │      │      202522711513107.jpg
+│  │      │      202522711518116.png
+│  │      │      20252271152189.png
+│  │      │      2025227115527337.png
+│  │      │      2025227115527345.png
+│  │      │      2025227115553566.jpg
+│  │      │      2025227115553579.jpg
+│  │      │      2025227115553596.jpg
+│  │      │      202522711555809.png
+│  │      │      2025227115637231.png
+│  │      │      2025227115650787.png
+│  │      │      2025227115650796.jpg
+│  │      │      202522711573115.jpg
+│  │      │      2025227115939579.png
+│  │      │      2025227115957199.png
+│  │      │      202522711744655.png
+│  │      │      202522711752830.png
+│  │      │      202522711752839.png
+│  │      │      202522711752849.jpg
+│  │      │      202522715631933.jpg
+│  │      │      202522723744469.jpg
+│  │      │      202522723829249.jpg
+│  │      │      202522754244848.png
+│  │      │      202522754250929.png
+│  │      │      20252275431122.jpg
+│  │      │      20252275431134.jpg
+│  │      │      20252275431147.jpg
+│  │      │      2025227543192.png
+│  │      │      202522754417413.jpg
+│  │      │      202522754417425.jpg
+│  │      │      202522754417436.jpg
+│  │      │      202522754430934.png
+│  │      │      202522754430946.jpg
+│  │      │      202522754430959.jpg
+│  │      │      202522754430973.jpg
+│  │      │      202522755037820.png
+│  │      │      202522755047678.png
+│  │      │      202522755047687.jpg
+│  │      │      202522755047694.jpg
+│  │      │      202522755047701.jpg
+│  │      │      20252275508230.png
+│  │      │      20252275510467.png
+│  │      │      20252275510481.jpg
+│  │      │      20252275510490.jpg
+│  │      │      20252275510498.jpg
+│  │      │      202522755114316.png
+│  │      │      202522755114328.jpg
+│  │      │      202522755114336.jpg
+│  │      │      202522755114343.jpg
+│  │      │      20252275519531.png
+│  │      │      20252275519538.jpg
+│  │      │      20252275519546.jpg
+│  │      │      20252275519553.jpg
+│  │      │      202522755234446.jpg
+│  │      │      202522755234454.jpg
+│  │      │      202522755328657.jpg
+│  │      │      202522755328665.jpg
+│  │      │      202522755639969.jpg
+│  │      │      202522755639981.jpg
+│  │      │      202522755659252.jpg
+│  │      │      202522755659253.jpg
+│  │      │      202522755659254.jpg
+│  │      │      20252275574147.jpg
+│  │      │      20252275574158.jpg
+│  │      │      20252275574166.jpg
+│  │      │      202522755846566.jpg
+│  │      │      20252276244203.jpg
+│  │      │      20252276244216.jpg
+│  │      │      20252276477475.png
+│  │      │      20252276477485.jpg
+│  │      │      20252276740386.jpg
+│  │      │      202522774020444.png
+│  │      │      202522792637763.png
+│  │      │      202522792819130.png
+│  │      │      202522793225842.png
+│  │      │      202522794915637.png
+│  │      │      202522794926644.png
+│  │      │      202522795530822.png
+│  │      │      20252284353456.jpg
+│  │      │      20252284353480.jpg
+│  │      │      20252284353491.jpg
+│  │      │      20252284441812.jpg
+│  │      │      20252284441827.jpg
+│  │      │      202522893343207.jpg
+│  │      │      202522893343217.jpg
+│  │      │      202522893343226.jpg
+│  │      │      202522893343234.jpg
+│  │      │      202531401645696.png
+│  │      │      202531401645747.png
+│  │      │      20253140240446.png
+│  │      │      20253140240512.png
+│  │      │      20253140240542.png
+│  │      │      20253140240572.png
+│  │      │      20253140240602.png
+│  │      │      202531402759818.png
+│  │      │      202531402759980.png
+│  │      │      202531402940108.png
+│  │      │      202531402940236.png
+│  │      │      banner1.png
+│  │      │      banner2.png
+│  │      │      banner3.png
+│  │      │      brand.jpg
+│  │      │      brand2.jpg
+│  │      │      brand3.jpg
+│  │      │      icon.png
+│  │      │      icon2.png
+│  │      │      intro.jpg
+│  │      │      intro2.jpg
+│  │      │      item1.jpg
+│  │      │      item10.jpg
+│  │      │      item2.jpg
+│  │      │      item3.jpeg
+│  │      │      item4.jpg
+│  │      │      item5.jpg
+│  │      │      item6.jpg
+│  │      │      item7.jpg
+│  │      │      item8.jpg
+│  │      │      item9.jpg
+│  │      │      kakao.png
+│  │      │      main1.jpg
+│  │      │      main2.jpg
+│  │      │      main3.jpg
+│  │      │      main4.png
+│  │      │      main5.png
+│  │      │      main6.jpg
+│  │      │      MEALPICK.png
+│  │      │      menu.jpg
+│  │      │      profil.png
+│  │      │      profile_sample.png
+│  │      │      파스타 상세정보(연습용).jpg
+│  │      │      포챠코4.jpg
+│  │      │      
+│  │      ├─js
+│  │      │      pageChange.js
+│  │      │      
+│  │      └─WEB-INF
+│  │          │  brand.jsp
+│  │          │  home.jsp
+│  │          │  mealsample.jsp
+│  │          │  sample.jsp
+│  │          │  
+│  │          ├─cart
+│  │          │      pay.jsp
+│  │          │      paySuccess.jsp
+│  │          │      
+│  │          ├─chatting
+│  │          │      chat.jsp
+│  │          │      chatRoom.jsp
+│  │          │      gemini.jsp
+│  │          │      
+│  │          ├─common
+│  │          │      footer.jsp
+│  │          │      header.jsp
+│  │          │      
+│  │          ├─community
+│  │          │      commu-main.jsp
+│  │          │      group-add.jsp
+│  │          │      group-edit.jsp
+│  │          │      group-view.jsp
+│  │          │      recipe-add.jsp
+│  │          │      recipe-edit.jsp
+│  │          │      recipe-view.jsp
+│  │          │      
+│  │          ├─help
+│  │          │      inquire-add.jsp
+│  │          │      inquire-edit.jsp
+│  │          │      inquire-view.jsp
+│  │          │      inquire.jsp
+│  │          │      notice-add.jsp
+│  │          │      notice-edit.jsp
+│  │          │      notice-view.jsp
+│  │          │      
+│  │          ├─member
+│  │          │      admin-page.jsp
+│  │          │      join.jsp
+│  │          │      kakao.jsp
+│  │          │      login.jsp
+│  │          │      mypage.jsp
+│  │          │      order-detail.jsp
+│  │          │      review-write.jsp
+│  │          │      term.jsp
+│  │          │      withdraw.jsp
+│  │          │      
+│  │          └─product
+│  │                  cart.jsp
+│  │                  product-info.jsp
+│  │                  product-list.jsp
+│  │                  
+│  └─test
+│      └─java
+│          └─com
+│              └─example
+│                  └─demo
+│                          DemoApplicationTests.java
+│                          
+└─target
+    ├─classes
+    │  │  application.properties
+    │  │  
+    │  ├─com
+    │  │  └─example
+    │  │      └─demo
+    │  │          │  DemoApplication.class
+    │  │          │  GroupScheduler.class
+    │  │          │  WebSocketConfig.class
+    │  │          │  
+    │  │          ├─common
+    │  │          │      Common.class
+    │  │          │      GeminiRestTemplateConfig.class
+    │  │          │      
+    │  │          ├─config
+    │  │          │      SecurityConfig.class
+    │  │          │      
+    │  │          ├─controller
+    │  │          │      CartController$1.class
+    │  │          │      CartController.class
+    │  │          │      ChatController.class
+    │  │          │      CommonController.class
+    │  │          │      CommunityController.class
+    │  │          │      CouponController.class
+    │  │          │      DashboardController.class
+    │  │          │      DeliveryController.class
+    │  │          │      EmailController.class
+    │  │          │      GeminiController.class
+    │  │          │      InquireChatController.class
+    │  │          │      MemberController.class
+    │  │          │      OrderController.class
+    │  │          │      PayController.class
+    │  │          │      ProductController.class
+    │  │          │      QuestionController.class
+    │  │          │      ReviewController.class
+    │  │          │      SmsController.class
+    │  │          │      
+    │  │          ├─dao
+    │  │          │      CartService.class
+    │  │          │      ChatService.class
+    │  │          │      CommonService.class
+    │  │          │      CommunityService.class
+    │  │          │      CouponService.class
+    │  │          │      DashboardService.class
+    │  │          │      DeliveryService.class
+    │  │          │      EmailService.class
+    │  │          │      GeminiService.class
+    │  │          │      InquireChatService.class
+    │  │          │      MemberService.class
+    │  │          │      OrderService.class
+    │  │          │      PayService.class
+    │  │          │      ProductService.class
+    │  │          │      QuestionService.class
+    │  │          │      ReviewService.class
+    │  │          │      SmsService.class
+    │  │          │      
+    │  │          ├─mapper
+    │  │          │      CartMapper.class
+    │  │          │      ChatMessageMapper.class
+    │  │          │      CommonMapper.class
+    │  │          │      CommunityMapper.class
+    │  │          │      CouponMapper.class
+    │  │          │      DashboardMapper.class
+    │  │          │      DeliveryMapper.class
+    │  │          │      MemberMapper.class
+    │  │          │      NoticeMapper.class
+    │  │          │      OrderMapper.class
+    │  │          │      PayMapper.class
+    │  │          │      ProductMapper.class
+    │  │          │      QuestionMapper.class
+    │  │          │      ReviewMapper.class
+    │  │          │      
+    │  │          └─model
+    │  │                  Cart.class
+    │  │                  ChatMessage$MessageType.class
+    │  │                  ChatMessage.class
+    │  │                  ChatRequest$Content.class
+    │  │                  ChatRequest$GenerationConfig.class
+    │  │                  ChatRequest$Parts.class
+    │  │                  ChatRequest.class
+    │  │                  ChatResponse$Candidate.class
+    │  │                  ChatResponse$Content.class
+    │  │                  ChatResponse$Parts.class
+    │  │                  ChatResponse$PromptFeedback.class
+    │  │                  ChatResponse$SafetyRating.class
+    │  │                  ChatResponse.class
+    │  │                  Comment.class
+    │  │                  Delivery.class
+    │  │                  Group.class
+    │  │                  GroupInfo.class
+    │  │                  GroupUser.class
+    │  │                  InquireChatMessage.class
+    │  │                  Member.class
+    │  │                  Notice.class
+    │  │                  Notification.class
+    │  │                  Order.class
+    │  │                  Pay.class
+    │  │                  Product.class
+    │  │                  ProductQuestion.class
+    │  │                  Question.class
+    │  │                  QuestionReply.class
+    │  │                  Recipe.class
+    │  │                  Review.class
+    │  │                  Wish.class
+    │  │                  
+    │  ├─META-INF
+    │  │  │  additional-spring-configuration-metadata.json
+    │  │  │  MANIFEST.MF
+    │  │  │  
+    │  │  └─maven
+    │  │      └─com.example
+    │  │          └─demo
+    │  │                  pom.properties
+    │  │                  pom.xml
+    │  │                  
+    │  └─mybatis-mapper
+    │          sql-cart.xml
+    │          sql-chat.xml
+    │          sql-common.xml
+    │          sql-commu.xml
+    │          sql-dashboard.xml
+    │          sql-delivery.xml
+    │          sql-inquire.xml
+    │          sql-member.xml
+    │          sql-notice.xml
+    │          sql-order.xml
+    │          sql-pay.xml
+    │          sql-product.xml
+    │          
+    ├─generated-sources
+    │  └─annotations
+    ├─generated-test-sources
+    │  └─test-annotations
+    └─test-classes
+        └─com
+            └─example
+                └─demo
+                        DemoApplicationTests.class
+                        
