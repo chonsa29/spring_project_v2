@@ -84,7 +84,7 @@
                     </div>
                 </div>
             </div>
-            <div id="indexnum">
+            <!-- <div id="indexnum">
                 <a v-if="page !=1" id="index" href="javascript:;" class="color-black" @click="fnPageMove('prev')">
                     < </a>
                         <a id="index" href="javascript:;" v-for="num in index" @click="fnPage(num)">
@@ -99,7 +99,13 @@
                             @click="fnPageMove('next')">
                             >
                         </a>
-            </div>
+            </div> -->
+            <!-- 그룹 페이징 -->
+			<div class="pagination">
+				<a v-if="page != 1" id="index" href="javascript:;" @click="fnPageMove('prev')"> < </a>
+				<a href="javascript:;" v-for="num in index" @click="fnPage(num)" :class="{ active: page === num }">{{ num }}</a>
+				<a v-if="page != index" id="index" href="javascript:;" @click="fnPageMove('next')"> > </a>
+			</div>
         </div>
         </div>
         <jsp:include page="/WEB-INF/common/footer.jsp" />
@@ -168,24 +174,7 @@
                                 console.log(self.allCategory);
                                 self.index = Math.ceil(data.count / self.pageSize);
 
-                                // 상품 리스트에 이미지 추가
-                                self.list.forEach(function (product) {
-                                    if (product.itemContents) {
-                                        var binaryData = new Uint8Array(product.itemContents);
-                                        var blob = new Blob([binaryData], { type: 'image/png' }); // 이미지 타입 지정
-                                        var url = URL.createObjectURL(blob); // 이미지 URL 생성
-
-                                        // 이미지 태그 생성
-                                        var imgTag = document.createElement('img');
-                                        imgTag.src = url;
-                                        imgTag.alt = 'product image';
-
-                                        // #product-list 요소에 이미지 태그 추가
-                                        document.getElementById('product-list').appendChild(imgTag);
-                                    }
-                                });
-
-
+                                
                             } else {
                                 console.log("실패");
                             }
