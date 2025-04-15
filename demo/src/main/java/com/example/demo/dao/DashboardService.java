@@ -176,8 +176,12 @@ public class DashboardService {
 		return dashboardMapper.selectProductInquiryDetail(iqNo);
 	}
 
-	public List<Reply> getReplies(int qsNo, String type) {
+	public List<Reply> getReplies2(int qsNo) {
 		// `qsNo`와 `type`에 맞는 답변 목록을 가져오는 Mapper 호출
-		return dashboardMapper.selectReplies(qsNo, type);
+		return dashboardMapper.selectReplies(qsNo);
 	}
+	
+    public void deleteReply(Long replyNo) {
+        dashboardMapper.deleteReply(replyNo);
+    }
 }

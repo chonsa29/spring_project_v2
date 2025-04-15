@@ -75,5 +75,7 @@ public interface DashboardMapper {
 
 	Map<String, Object> selectProductInquiryDetail(int iqNo);
 
-	List<Reply> selectReplies(@Param("qsNo") int qsNo, @Param("type") String type);
+	List<Reply> selectReplies(@Param("qsNo") int qsNo);
+
+	void deleteReply(Long replyNo);
 }
