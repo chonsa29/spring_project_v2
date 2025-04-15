@@ -5,8 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
+import com.example.demo.model.Delivery;
 import com.example.demo.model.Member;
+import com.example.demo.model.Review2;
+import com.example.demo.model.ReviewDTO;
 
 @Mapper
 public interface MemberMapper {
@@ -56,4 +60,18 @@ public interface MemberMapper {
 	int updateMemberStatus2(HashMap<String, Object> map);
 
 	List<Member> selectGroupMembers(HashMap<String, Object> map);
+
+    Delivery selectDeliveryByOrderKey(@Param("orderKey") int orderKey);
+    
+    int insertReview(ReviewDTO review);
+    
+    int selectReviewCount(@Param("orderKey") int orderKey, @Param("itemId") int itemId);
+    
+    int insertReview(Review2 review);
+    
+    int updateReview(Review2 review);
+    
+    int deleteReview(Map<String, Object> map);
+    
+    boolean reviewExists(Map<String, Object> map);
 }

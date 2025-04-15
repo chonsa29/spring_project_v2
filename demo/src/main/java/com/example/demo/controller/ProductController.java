@@ -1,12 +1,16 @@
 package com.example.demo.controller;
 
 import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +23,7 @@ import com.google.gson.Gson;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 
 @Controller
 public class ProductController {
@@ -85,30 +90,38 @@ public class ProductController {
 	@RequestMapping(value = "/product/add.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String add(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
-	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 
-	    resultMap = productService.productAdd(map);
+		// BigDecimal -> Integer 변환 처리
+		try {
+			if (map.get("price") instanceof BigDecimal) {
+				map.put("price", ((BigDecimal) map.get("price")).intValue());
+			}
+			if (map.get("quantity") instanceof BigDecimal) {
+				map.put("quantity", ((BigDecimal) map.get("quantity")).intValue());
+			}
 
-	    // 상품 추가 후 `itemNo`를 받아온다면, 그 값을 `fileUpload.dox`에 넘겨줘야 함.
-	    int itemNo = (int) resultMap.get("itemNo");
-	    
-	    // 파일 업로드 호출 (itemNo를 넘겨줌)
-	    // addFileUpload(itemNo); // 혹은 별도의 로직으로 파일 업로드 처리
+			resultMap = productService.productAdd(map);
+		} catch (Exception e) {
+			resultMap.put("result", "fail");
+			resultMap.put("message", "데이터 처리 중 오류 발생: " + e.getMessage());
+		}
 
-	    return new Gson().toJson(resultMap);
+		return new Gson().toJson(resultMap);
 	}
 
 	// 상품 수정
 	@RequestMapping(value = "/product/update.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String update(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
-	    HashMap<String, Object> resultMap = productService.productUpdate(map);
-	    return new Gson().toJson(resultMap);
+		HashMap<String, Object> resultMap = productService.productUpdate(map);
+		return new Gson().toJson(resultMap);
 	}
 
 	// 파일 업로드
 	@RequestMapping("/product/fileUpload.dox")
-	public String result(@RequestParam("file1") List<MultipartFile> files,@RequestParam(value = "itemNo", defaultValue = "0") int itemNo,
+	public String result(@RequestParam("file1") List<MultipartFile> files,
+			@RequestParam(value = "itemNo", defaultValue = "0") int itemNo,
 			@RequestParam(value = "contentImage", required = false) MultipartFile contentImage,
 			HttpServletRequest request, HttpServletResponse response, Model model) {
 
@@ -233,6 +246,203 @@ public class ProductController {
 			model.addAttribute("error", "상품 수정 중 오류 발생");
 			return "redirect:/member/admin.do";
 		}
+	}
+
+	// 상품 추가 (파일 포함)
+	@PostMapping("/product/addWithFiles.dox")
+	@ResponseBody
+	public String addWithFiles(
+	    @RequestParam("name") String name,
+	    @RequestParam("price") String priceStr, // 문자열로 받기
+	    @RequestParam("quantity") String quantityStr, // 문자열로 받기
+	    @RequestParam("category") String category,
+	    @RequestParam("info") String info,
+	    @RequestParam("allergens") String allergens,
+	    @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
+	    @RequestParam(value = "additionalPhotos", required = false) List<MultipartFile> additionalPhotos,
+	    @RequestParam(value = "contentImage", required = false) MultipartFile contentImage,
+	    HttpServletRequest request) {
+
+	    HashMap<String, Object> resultMap = new HashMap<>();
+	    
+	    try {
+	        // 1. 숫자 파라미터 변환
+	        int price = Integer.parseInt(priceStr);
+	        int quantity = Integer.parseInt(quantityStr);
+
+	        // 2. 기본 상품 정보 저장
+	        HashMap<String, Object> productMap = new HashMap<>();
+	        productMap.put("name", name);
+	        productMap.put("price", price);
+	        productMap.put("quantity", quantity);
+	        productMap.put("category", category);
+	        productMap.put("info", info);
+	        productMap.put("allergens", allergens);
+
+	        HashMap<String, Object> addResult = productService.productAdd(productMap);
+	        if (!"success".equals(addResult.get("result"))) {
+	            return new Gson().toJson(addResult);
+	        }
+
+	        int itemNo = (int) addResult.get("itemNo");
+	        
+	        // 3. 파일 저장 경로 설정 (절대 경로 사용)
+	        String uploadPath = request.getServletContext().getRealPath("/resources/uploads");
+	        File uploadDir = new File(uploadPath);
+	        if (!uploadDir.exists()) {
+	            uploadDir.mkdirs();
+	        }
+
+	        // 4. 썸네일 저장
+	        if (thumbnail != null && !thumbnail.isEmpty()) {
+	            String thumbnailFileName = saveFile(thumbnail, uploadPath);
+	            HashMap<String, Object> thumbnailMap = new HashMap<>();
+	            thumbnailMap.put("itemNo", itemNo);
+	            thumbnailMap.put("filename", thumbnailFileName);
+	            thumbnailMap.put("path", "/resources/uploads/" + thumbnailFileName);
+	            thumbnailMap.put("thumbNail", "Y");
+	            productService.addProductFile(thumbnailMap);
+	        }
+
+	        // 5. 추가 이미지 저장
+	        if (additionalPhotos != null) {
+	            for (MultipartFile file : additionalPhotos) {
+	                if (!file.isEmpty()) {
+	                    String fileName = saveFile(file, uploadPath);
+	                    HashMap<String, Object> fileMap = new HashMap<>();
+	                    fileMap.put("itemNo", itemNo);
+	                    fileMap.put("filename", fileName);
+	                    fileMap.put("path", "/resources/uploads/" + fileName);
+	                    fileMap.put("thumbNail", "N");
+	                    productService.addProductFile(fileMap);
+	                }
+	            }
+	        }
+
+	        // 6. 설명 이미지 저장
+	        if (contentImage != null && !contentImage.isEmpty()) {
+	            String contentImageName = saveFile(contentImage, uploadPath);
+	            HashMap<String, Object> contentMap = new HashMap<>();
+	            contentMap.put("itemNo", itemNo);
+	            contentMap.put("contentImagePath", "/resources/uploads/" + contentImageName);
+	            productService.saveProductContentImage(contentMap);
+	        }
+
+	        resultMap.put("result", "success");
+	        resultMap.put("message", "상품이 성공적으로 추가되었습니다.");
+	    } catch (Exception e) {
+	        resultMap.put("result", "fail");
+	        resultMap.put("message", "상품 추가 실패: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	    
+	    return new Gson().toJson(resultMap);
+	}
+
+	private String saveFile(MultipartFile file, String uploadPath) throws IOException {
+	    String originalFileName = file.getOriginalFilename();
+	    String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+	    String savedFileName = UUID.randomUUID().toString() + extension;
+	    File dest = new File(uploadPath, savedFileName);
+	    file.transferTo(dest);
+	    return savedFileName;
+	}
+
+	// 상품 수정 (파일 포함)
+	@PostMapping("/product/updateWithFiles.dox")
+	@ResponseBody
+	public String updateWithFiles(@RequestParam("itemNo") int itemNo, @RequestParam("name") String name,
+			@RequestParam("price") int price, @RequestParam("quantity") int quantity,
+			@RequestParam("category") String category, @RequestParam("info") String info,
+			@RequestParam("allergens") String allergens,
+			@RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
+			@RequestParam(value = "additionalPhotos", required = false) List<MultipartFile> additionalPhotos,
+			@RequestParam(value = "contentImage", required = false) MultipartFile contentImage,
+			@RequestParam(value = "deleteContentImage", required = false) String deleteContentImage,
+			HttpServletRequest request) throws Exception {
+
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("itemNo", itemNo);
+		map.put("name", name);
+		map.put("price", price);
+		map.put("quantity", quantity);
+		map.put("category", category);
+		map.put("info", info);
+		map.put("allergens", allergens);
+
+		// 1. 상품 기본 정보 업데이트
+		productService.productUpdate(map);
+
+		// 2. 파일 처리
+		String webappPath = request.getServletContext().getRealPath("/img");
+
+		// 썸네일 업데이트
+		if (thumbnail != null && !thumbnail.isEmpty()) {
+			String originalFilename = thumbnail.getOriginalFilename();
+			String ext = originalFilename.substring(originalFilename.lastIndexOf("."));
+			String savedFilename = Common.genSaveFileName(ext);
+
+			File dest = new File(webappPath, savedFilename);
+			thumbnail.transferTo(dest);
+
+			HashMap<String, Object> fileMap = new HashMap<>();
+			fileMap.put("filename", savedFilename);
+			fileMap.put("path", "/img/" + savedFilename);
+			fileMap.put("itemNo", itemNo);
+			fileMap.put("thumbNail", "Y");
+
+			// 기존 썸네일 삭제 후 새 썸네일 추가
+			productService.deleteThumbnail(itemNo);
+			productService.addProductFile(fileMap);
+		}
+
+		// 추가 이미지 업데이트
+		if (additionalPhotos != null && !additionalPhotos.isEmpty()) {
+			for (MultipartFile file : additionalPhotos) {
+				if (!file.isEmpty()) {
+					String originalFilename = file.getOriginalFilename();
+					String ext = originalFilename.substring(originalFilename.lastIndexOf("."));
+					String savedFilename = Common.genSaveFileName(ext);
+
+					File dest = new File(webappPath, savedFilename);
+					file.transferTo(dest);
+
+					HashMap<String, Object> fileMap = new HashMap<>();
+					fileMap.put("filename", savedFilename);
+					fileMap.put("path", "/img/" + savedFilename);
+					fileMap.put("itemNo", itemNo);
+					fileMap.put("thumbNail", "N");
+
+					productService.addProductFile(fileMap);
+				}
+			}
+		}
+
+		// 3. 설명 이미지 처리
+		if (contentImage != null && !contentImage.isEmpty()) {
+			String originalFilename = contentImage.getOriginalFilename();
+			String ext = originalFilename.substring(originalFilename.lastIndexOf("."));
+			String savedFilename = Common.genSaveFileName(ext);
+
+			File dest = new File(webappPath, savedFilename);
+			contentImage.transferTo(dest);
+
+			HashMap<String, Object> contentMap = new HashMap<>();
+			contentMap.put("itemNo", itemNo);
+			contentMap.put("contentImagePath", "/img/" + savedFilename);
+			productService.saveProductContentImage(contentMap);
+		} else if ("true".equals(deleteContentImage)) {
+			// 설명 이미지 삭제 요청이 있는 경우
+			HashMap<String, Object> contentMap = new HashMap<>();
+			contentMap.put("itemNo", itemNo);
+			contentMap.put("contentImagePath", null);
+			productService.saveProductContentImage(contentMap);
+		}
+
+		HashMap<String, Object> result = new HashMap<>();
+		result.put("result", "success");
+		result.put("message", "상품이 성공적으로 수정되었습니다.");
+		return new Gson().toJson(result);
 	}
 
 	@RequestMapping(value = "/product/delete.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")

@@ -299,4 +299,50 @@
 		DELETE MEMBER
 		WHERE USERID = #{userId}
 	</delete>
+	
+	<select id="selectDeliveryByOrderKey" resultType="Delivery">
+	    SELECT 
+	        DELIVERY_NO,
+	        ORDER_KEY,
+	        CART_KEY,
+	        DELIVERY_STATUS,
+	        TRACKING_NUMBER,
+	        DELIVERY_DATE,
+	        DELIVERY_FEE
+	    FROM 
+	        DELIVERY
+	    WHERE 
+	        ORDER_KEY = #{orderKey}
+	</select>
+	
+	<insert id="insertReview" parameterType="ReviewDTO">
+	    INSERT INTO REVIEW (
+	        REVIEW_NO,
+	        ORDER_KEY,
+	        ITEM_NO,
+	        USERID,
+	        REVIEW_TITLE,
+	        REVIEW_SCORE,
+	        CDATETIME,
+	        REVIEW_CONTENTS
+	    ) VALUES (
+	        REVIEW_SEQ.NEXTVAL,
+	        #{orderKey},
+	        #{itemNo},
+	        #{userid},
+	        #{reviewTitle},
+	        #{reviewScore},
+	        SYSDATE,
+	        #{reviewContents}
+	    )
+	</insert>
+	
+	<select id="selectReviewCount" resultType="int">
+	    SELECT COUNT(*)
+	    FROM REVIEW
+	    WHERE ORDER_KEY = #{orderKey}
+	      AND ITEM_NO = #{itemNo}
+	</select>
+
+
 </mapper>
