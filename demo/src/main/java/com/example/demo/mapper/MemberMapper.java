@@ -74,4 +74,12 @@ public interface MemberMapper {
     int deleteReview(Map<String, Object> map);
     
     boolean reviewExists(Map<String, Object> map);
+    
+    int updatePassword(@Param("email") String email, @Param("password") String password);
+
+    
+    
 }
+
+
+

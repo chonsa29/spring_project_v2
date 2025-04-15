@@ -95,6 +95,37 @@
         WHERE USERID = #{memberId}
     </update>
     
+    <!--비밀번호찾기-->
+     <update id="updatePasswordByEmail" parameterType="map">
+
+        UPDATE members
+
+        SET password = #{pwd}
+
+        WHERE email = #{email}
+
+    </update>
+
+    <update id="updatePassword">
+
+        UPDATE member
+
+        SET password = #{password}
+
+        WHERE email = #{email}
+
+    </update>
+
+   <select id="isEmailRegistered" parameterType="String" resultType="boolean">
+
+  SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+
+        FROM MEMBER
+
+        WHERE EMAIL = #{email}
+
+</select>
+    
 <select id="selectMemberInfo" parameterType="hashmap" resultType="Member">
         SELECT 
             USERID as userId,

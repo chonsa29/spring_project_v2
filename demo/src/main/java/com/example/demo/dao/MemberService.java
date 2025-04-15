@@ -187,6 +187,9 @@ public class MemberService {
 			member.setGradeName("뉴픽");
 		}
 	}
+	
+	
+	
 
 	public HashMap<String, Object> getMemberDetail(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
@@ -261,10 +264,24 @@ public class MemberService {
 		return result;
 	}
 
+	
+	   public boolean changePassword(String email, String password) {
+
+	        return memberMapper.updatePassword(email, password) > 0;
+
+	    }
+
+
+	
+	
+	
+	
 	// 등급명과 그룹명 설정
 	private void setGradeAndGroupNames(Member member) {
 		if (member == null)
 			return;
+		
+		
 
 		// monthSpent 기반 등급 설정
 		if (member.getMonthSpent() != null) {

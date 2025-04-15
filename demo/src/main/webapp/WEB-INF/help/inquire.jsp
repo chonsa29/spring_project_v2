@@ -114,18 +114,15 @@
 
 		<!-- 공지사항 -->
 		<section id="notice" class="tab-content" v-show="activeTab === 'notice'">
-			<div v-if="noticeViewMode === 'view'" class="notice-detail-view">
-				<!-- 공지사항 헤더 (카테고리, 제목, 구분선) -->
+			<!-- <div v-if="noticeViewMode === 'view'" class="notice-detail-view">
 				<div class="notice-header">
 				  <span class="notice-category">공지사항</span>
 				  <h2 class="notice-title">{{ selectedNotice.noticeTitle }}</h2>
 				  <hr class="notice-separator" />
 				</div>
 			  
-				<!-- 공지사항 본문 -->
 				<div class="notice-content" v-html="selectedNotice.noticeContents"></div>
 			  
-				<!-- 이전글 / 다음글 네비게이션 -->
 				<div class="notice-navigation">
 				  <div class="nav-item">
 					<span class="nav-label">이전글</span>
@@ -145,9 +142,8 @@
 				  </div>
 				</div>
 			  
-				<!-- 목록보기 버튼 -->
 				<button @click="noticeViewMode = 'list'">목록보기</button>
-			  </div>
+			  </div> -->
 			
 			<div v-else>
 				<h2>공지사항</h2>
