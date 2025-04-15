@@ -74,5 +74,7 @@ public interface ProductMapper {
 
 	void deleteProductImagesByType(HashMap<String, Object> map);
 
+	void deleteThumbnail(int itemNo);
+
 
 }

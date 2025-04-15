@@ -1902,33 +1902,6 @@
                             default: return 'badge-info';
                         }
                     },
-
-                    //상품 관리 메서드
-                    showForm(type) {
-                        var self = this;
-                        this.formType = type;
-                        if (type == 'add') {
-                            this.showProductForm = true;
-                            this.showTable = false;
-                            self.name = "";
-                            self.price = "";
-                            self.quantity = "";
-                            self.category = "";
-                            self.info = "";
-                            self.allergens = "";
-                            self.itemNo = "",
-                                self.item = {};
-                            thumbnail = null;
-                            this.thumbnail = null;
-                            this.additionalPhotos = [];
-                            this.contentImage = null;
-                            this.contentImagePreview = null;
-                        } else {
-                            this.showProductForm = false;
-                            this.showTable = true;
-                            self.fetchProducts();
-                        }
-                    },
                     handleFileChange(field) {
                         const fileInput = document.getElementById(field);
                         const files = fileInput.files;
@@ -1950,73 +1923,149 @@
                             }
                         }
                     },
-                    async submitForm() {
-                        // 입력값 유효성 검사
-                        if (!this.name || !this.price || !this.quantity || !this.category || !this.info || !this.allergens) {
-                            alert("모든 입력란을 작성해 주세요.");
-                            return;
-                        }
-                        if (this.price <= 0 || this.quantity <= 0) {
-                            alert("가격과 수량은 0보다 커야 합니다.");
-                            return;
-                        }
-                        const formData = new FormData();
-
-                        if (this.itemNo) {
-                            formData.append("itemNo", this.itemNo);
-                        }
-
-                        formData.append("name", this.name);
-                        formData.append("price", this.price);
-                        formData.append("quantity", this.quantity);
-                        formData.append("category", this.category);
-                        formData.append("info", this.info);
-                        formData.append("allergens", this.allergens);
-
+                    // 상품 추가 전용 메서드
+                    async addProduct() {
                         try {
-                            // 1. 상품 기본 정보 업데이트
-                            const updateResponse = await $.ajax({
-                                url: "/product/fileUpdate.dox",
+                            const formData = new FormData();
+                            // 숫자 값은 명시적으로 변환
+                            formData.append("name", this.name);
+                            formData.append("price", parseInt(this.price));
+                            formData.append("quantity", parseInt(this.quantity));
+                            formData.append("category", this.category);
+                            formData.append("info", this.info);
+                            formData.append("allergens", this.allergens);
+
+                            // 파일 추가
+                            if (this.thumbnail) {
+                                formData.append("thumbnail", this.thumbnail);
+                            }
+
+                            if (this.additionalPhotos && this.additionalPhotos.length > 0) {
+                                this.additionalPhotos.forEach(file => {
+                                    formData.append("additionalPhotos", file);
+                                });
+                            }
+
+                            if (this.contentImage) {
+                                formData.append("contentImage", this.contentImage);
+                            }
+
+                            const response = await $.ajax({
+                                url: "/product/addWithFiles.dox",
                                 type: "POST",
                                 data: formData,
                                 processData: false,
-                                contentType: false
+                                contentType: false,
+                                dataType: "json"
                             });
 
-                            // 2. 이미지 처리
-                            const uploadForm = this.makeUploadForm(this.itemNo);
-                            if (uploadForm) {
-                                await $.ajax({
-                                    url: "/product/fileUpload.dox",
-                                    type: "POST",
-                                    data: uploadForm,
-                                    processData: false,
-                                    contentType: false
-                                });
+                            if (response.result === "success") {
+                                alert("상품이 추가되었습니다.");
+                                this.showProductForm = false;
+                                this.fetchProducts();
+                            } else {
+                                alert("상품 추가 실패: " + response.message);
                             }
-
-                            // 3. 설명 이미지 처리
-                            if (this.contentImage) {
-                                const contentForm = new FormData();
-                                contentForm.append("itemNo", this.itemNo);
-                                contentForm.append("contentImage", this.contentImage);
-
-                                await $.ajax({
-                                    url: "/product/updateContentImage",
-                                    type: "POST",
-                                    data: contentForm,
-                                    processData: false,
-                                    contentType: false
-                                });
-                            }
-
-                            alert("상품이 수정되었습니다.");
-                            this.showProductForm = false;
-                            this.fetchProducts();
                         } catch (error) {
-                            console.error("수정 실패:", error);
+                            console.error("상품 추가 실패:", error);
+                            alert("상품 추가 중 오류가 발생했습니다.");
+                        }
+                    },
+
+                    // 상품 수정 전용 메서드
+                    async updateProduct() {
+                        try {
+                            const formData = new FormData();
+                            formData.append("itemNo", this.itemNo);
+                            formData.append("name", this.name);
+                            formData.append("price", this.price);
+                            formData.append("quantity", this.quantity);
+                            formData.append("category", this.category);
+                            formData.append("info", this.info);
+                            formData.append("allergens", this.allergens);
+
+                            // 파일 추가 (기존 파일 유지 또는 새 파일 업로드)
+                            if (this.thumbnail) {
+                                formData.append("thumbnail", this.thumbnail);
+                            }
+
+                            if (this.additionalPhotos && this.additionalPhotos.length > 0) {
+                                this.additionalPhotos.forEach(file => {
+                                    formData.append("additionalPhotos", file);
+                                });
+                            }
+
+                            if (this.contentImage) {
+                                formData.append("contentImage", this.contentImage);
+                            }
+
+                            if (this.deleteContentImage) {
+                                formData.append("deleteContentImage", "true");
+                            }
+
+                            const response = await $.ajax({
+                                url: "/product/updateWithFiles.dox",
+                                type: "POST",
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                dataType: "json"
+                            });
+
+                            if (response.result === "success") {
+                                alert("상품이 수정되었습니다.");
+                                this.showProductForm = false;
+                                this.fetchProducts();
+                            } else {
+                                alert("상품 수정 실패: " + response.message);
+                            }
+                        } catch (error) {
+                            console.error("상품 수정 실패:", error);
                             alert("상품 수정 중 오류가 발생했습니다.");
                         }
+                    },
+
+                    // 폼 제출 시 추가/수정 구분하여 처리
+                    submitForm() {
+                        if (this.formType === 'add') {
+                            this.addProduct();
+                        } else if (this.formType === 'edit') {
+                            this.updateProduct();
+                        }
+                    },
+
+                    // 상품 수정 버튼 클릭 시 처리
+                    showForm(type) {
+                        this.formType = type;
+                        if (type === 'add') {
+                            // 추가 모드: 폼 초기화
+                            this.showProductForm = true;
+                            this.showTable = false;
+                            this.resetForm();
+                        } else {
+                            // 수정 모드: 목록 표시
+                            this.showProductForm = false;
+                            this.showTable = true;
+                            this.fetchProducts();
+                        }
+                    },
+
+                    // 폼 초기화 메서드
+                    resetForm() {
+                        this.itemNo = "";
+                        this.name = "";
+                        this.price = "";
+                        this.quantity = "";
+                        this.category = "";
+                        this.info = "";
+                        this.allergens = "";
+                        this.item = { filePath: "" };
+                        this.thumbnail = null;
+                        this.additionalPhotos = [];
+                        this.contentImage = null;
+                        this.contentImagePreview = null;
+                        this.imgList = [];
+                        this.deleteContentImage = false;
                     },
                     makeUploadForm(itemNo) {
                         if (!this.thumbnail && this.additionalPhotos.length === 0 && !this.contentImage) {

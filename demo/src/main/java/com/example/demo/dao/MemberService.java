@@ -3,13 +3,17 @@ package com.example.demo.dao;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.mapper.MemberMapper;
+import com.example.demo.model.Delivery;
 import com.example.demo.model.Member;
+import com.example.demo.model.Review2;
+import com.example.demo.model.ReviewDTO;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -22,7 +26,7 @@ public class MemberService {
 	HttpSession session;
 
 	private final PasswordEncoder passwordEncoder;
-	
+
 	@Autowired
 	public MemberService(PasswordEncoder passwordEncoder) {
 		this.passwordEncoder = passwordEncoder;
@@ -101,20 +105,20 @@ public class MemberService {
 	}
 
 	public HashMap<String, Object> getMemberGroupInfo(HashMap<String, Object> map) {
-	    HashMap<String, Object> resultMap = new HashMap<>();
+		HashMap<String, Object> resultMap = new HashMap<>();
 
-	    // 그룹 기본 정보 조회
-	    Member groupInfo = memberMapper.selectMemberGroupInfo(map);
-	    resultMap.put("groupInfo", groupInfo);
+		// 그룹 기본 정보 조회
+		Member groupInfo = memberMapper.selectMemberGroupInfo(map);
+		resultMap.put("groupInfo", groupInfo);
 
-	    // 그룹 멤버 목록 조회 (groupId가 있을 경우에만)
-	    if (groupInfo != null && groupInfo.getGroupId() != null) {
-	        map.put("groupId", groupInfo.getGroupId()); // 멤버 조회용 groupId 설정
-	        List<Member> members = memberMapper.selectGroupMembers(map);
-	        resultMap.put("groupMembers", members);
-	    }
+		// 그룹 멤버 목록 조회 (groupId가 있을 경우에만)
+		if (groupInfo != null && groupInfo.getGroupId() != null) {
+			map.put("groupId", groupInfo.getGroupId()); // 멤버 조회용 groupId 설정
+			List<Member> members = memberMapper.selectGroupMembers(map);
+			resultMap.put("groupMembers", members);
+		}
 
-	    return resultMap;
+		return resultMap;
 	}
 
 	// 기존 getMemberInfo 메서드 수정
@@ -218,18 +222,19 @@ public class MemberService {
 
 	// 주문 목록 조회
 	public HashMap<String, Object> getOrderList(HashMap<String, Object> map) {
-	    HashMap<String, Object> result = new HashMap<>();
+		HashMap<String, Object> result = new HashMap<>();
 
-	    int page = map.get("page") != null ? Integer.parseInt(map.get("page").toString()) : 1;
-	    int pageSize = map.get("pageSize") != null ? Integer.parseInt(map.get("pageSize").toString()) : 10;
+		int page = map.get("page") != null ? Integer.parseInt(map.get("page").toString()) : 1;
+		int pageSize = map.get("pageSize") != null ? Integer.parseInt(map.get("pageSize").toString()) : 10;
 
-	    map.put("offset", (page - 1) * pageSize);
+		map.put("offset", (page - 1) * pageSize);
 
-	    result.put("orders", memberMapper.selectOrderList(map));
-	    result.put("totalCount", memberMapper.selectOrderCount(map));
+		result.put("orders", memberMapper.selectOrderList(map));
+		result.put("totalCount", memberMapper.selectOrderCount(map));
 
-	    return result;
+		return result;
 	}
+
 	// 찜 목록 조회
 	public HashMap<String, Object> getWishList(HashMap<String, Object> map) {
 		HashMap<String, Object> result = new HashMap<>();
@@ -370,7 +375,7 @@ public class MemberService {
 	}
 
 	public boolean checkPassword(HashMap<String, Object> map) {
-		String inputPw = (String) map.get("password");	
+		String inputPw = (String) map.get("password");
 		String dbPw = memberMapper.selectPassword(map);
 		System.out.println(inputPw);
 		System.out.println(dbPw);
@@ -389,7 +394,39 @@ public class MemberService {
 		map.put("withdrawDate", new Date()); // java.util.Date 사용
 		return memberMapper.updateMemberStatus2(map);
 	}
-	
-	
-	
+
+	public Delivery getDeliveryByOrderKey(int orderKey) {
+		return memberMapper.selectDeliveryByOrderKey(orderKey);
+	}
+
+	public int checkReviewExists(int orderKey, int itemId) {
+		return memberMapper.selectReviewCount(orderKey, itemId);
+	}
+
+	public int insertReview(ReviewDTO review) {
+		return memberMapper.insertReview(review);
+	}
+    public boolean insertReview(Review2 review) {
+        return memberMapper.insertReview(review) > 0;
+    }
+
+    public boolean updateReview(Review2 review) {
+        return memberMapper.updateReview(review) > 0;
+    }
+
+    public boolean deleteReview(String userId, int orderKey, int itemNo) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
+        params.put("orderKey", orderKey);
+        params.put("itemNo", itemNo);
+        return memberMapper.deleteReview(params) > 0;
+    }
+
+    public boolean reviewExists(String userId, int orderKey, int itemNo) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
+        params.put("orderKey", orderKey);
+        params.put("itemNo", itemNo);
+        return memberMapper.reviewExists(params);
+    }
 }

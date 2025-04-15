@@ -53,19 +53,16 @@
 
     <!-- 인기 상품 TOP 3 -->
     <select id="selectTopProducts" resultType="java.util.LinkedHashMap">
-        SELECT * FROM (
-            SELECT 
-                P.ITEM_NO AS "itemNo",
-                P.ITEM_NAME AS "itemName",
-                P.PRICE AS "price",
-                P.SELL_COUNT AS "totalCount",
-                I.FILEPATH AS "imageUrl"
-            FROM ORDER_DETAILS OD
-            JOIN PRODUCT P ON OD.ITEM_NO = P.ITEM_NO
-            JOIN PRODUCT_IMG I ON I.ITEM_NO = P.ITEM_NO
-            GROUP BY P.ITEM_NO, P.ITEM_NAME, P.PRICE, I.FILEPATH, P.SELL_COUNT
-            ORDER BY "totalCount" DESC
-        ) WHERE ROWNUM &lt;= 3
+		SELECT 
+		    P.ITEM_NO AS "itemNo",
+		    P.ITEM_NAME AS "itemName",
+		    P.PRICE AS "price",
+		    P.SELL_COUNT AS "totalCount",
+		    I.FILEPATH AS "imageUrl"
+		FROM PRODUCT P 
+		JOIN PRODUCT_IMG I ON I.ITEM_NO = P.ITEM_NO
+		ORDER BY P.SELL_COUNT DESC
+		FETCH FIRST 3 ROWS ONLY
     </select>
     
     <select id="selectRecipeList" resultType="Recipe">

@@ -499,14 +499,31 @@
                         <span class="info-value">{{ selectedOrder.orderDate }}</span>
                     </div>
                     <div class="info-row">
-                        <span class="info-label">배송 상태</span>
+                        <span class="info-label">주문 상태</span>
                         <span class="info-value">{{ getOrderStatusText(selectedOrder.orderStatus) }}</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">총 금액</span>
                         <span class="info-value">{{ formatNumber(selectedOrder.totalPrice) }}원</span>
                     </div>
-
+                    <!-- 배송 정보 영역 -->
+                    <h4>배송 정보</h4>
+                    <div class="info-row">
+                        <span class="info-label">배송 상태</span>
+                        <span class="info-value">{{ getOrderStatusText(selectedOrder.delivery?.deliveryStatus) }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">송장 번호</span>
+                        <span class="info-value">{{ selectedOrder.delivery?.trackingNumber || '등록되지 않음' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">배송 일자</span>
+                        <span class="info-value">{{ selectedOrder.delivery?.deliveryDate }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">배송비</span>
+                        <span class="info-value">{{ formatNumber(selectedOrder.delivery?.deliveryFee || 0) }}원</span>
+                    </div>
                     <!-- 리뷰 작성 폼 -->
                     <div class="review-section" v-if="selectedOrder.orderStatus === 'DELIVERED'">
                         <h4>리뷰 작성</h4>
@@ -514,8 +531,21 @@
                             <div class="info-row">
                                 <span class="info-label">{{ item.productName }}</span>
                             </div>
+
+                            <!-- 별점 선택 -->
+                            <div class="rating">
+                                <span v-for="star in 5" :key="star" @click="item.reviewScore = star">
+                                    <i :class="['fas', star <= item.reviewScore ? 'fa-star' : 'fa-star-half-alt']"></i>
+                                </span>
+                            </div>
+
                             <textarea v-model="item.reviewContent" placeholder="리뷰를 작성해 주세요."></textarea>
-                            <button @click="submitReview(item)">리뷰 등록</button>
+
+                            <div class="btn-group">
+                                <button v-if="!item.reviewExists" @click="submitReview(item)">리뷰 등록</button>
+                                <button v-else @click="updateReview(item)">리뷰 수정</button>
+                                <button v-if="item.reviewExists" @click="deleteReview(item)">리뷰 삭제</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -597,39 +627,36 @@
                 };
             },
             methods: {
-                async submitReview(item) {
-                    if (!item.reviewContent || item.reviewContent.trim() === '') {
-                        alert('리뷰 내용을 입력해 주세요.');
-                        return;
-                    }
 
-                    try {
-                        const response = await $.ajax({
-                            url: '/review/write.do',
-                            method: 'POST',
-                            data: {
-                                orderKey: this.selectedOrder.orderKey,
-                                itemId: item.itemId,
-                                content: item.reviewContent
-                            }
-                        });
-
-                        if (response.success) {
-                            alert('리뷰가 등록되었습니다.');
-                            item.reviewContent = ''; // 초기화
-                        } else {
-                            alert('리뷰 등록에 실패했습니다.');
-                        }
-                    } catch (error) {
-                        console.error('리뷰 등록 오류:', error);
-                        alert('리뷰 등록 중 오류가 발생했습니다.');
-                    }
-                },
                 viewOrderDetail(orderKey) {
                     const order = this.orders.find(o => o.orderKey === orderKey);
                     if (order) {
-                        this.selectedOrder = order;
-                        this.showOrderModal = true;
+                        // 배송 정보도 함께 받아오기
+                        $.ajax({
+                            url: '/member/myPage/orderDeliveryInfo.dox',
+                            method: 'POST',
+                            dataType: 'json',
+                            data: { orderKey: orderKey },
+                            success: (data) => {
+                                console.log(data);
+                                order.delivery = data.delivery;
+                                this.selectedOrder = order;
+                                this.showOrderModal = true;
+                            },
+                            error: (err) => {
+                                alert('배송 정보를 불러오는 중 오류가 발생했습니다.');
+                                console.error(err);
+                            }
+                        });
+                    }
+                },
+                getOrderStatusText(status) {
+                    switch (status) {
+                        case 'PAY_COMPLETE': return '결제완료';
+                        case 'P': return '상품준비중';
+                        case 'D': return '배송중';
+                        case 'S': return '배송완료';
+                        case 'C': return '취소됨';
                     }
                 },
                 closeOrderModal() {
@@ -804,7 +831,7 @@
                         'PAY_COMPLETE': '결제완료',
                         'P': '상품준비중',
                         'D': '배송중',
-                        'F': '배송완료',
+                        'S': '배송완료',
                         'C': '취소됨'
                     };
                     return statusMap[status] || status;
@@ -1076,6 +1103,85 @@
                         width: '100%',
                         height: '100%'
                     }).open();  // 팝업 방식으로 주소 찾기
+                },
+                async submitReview(item) {
+                    if (!item.reviewContent?.trim()) {
+                        alert('리뷰 내용을 입력해 주세요.');
+                        return;
+                    }
+
+                    try {
+                        const response = await $.ajax({
+                            url: '/review/write.do',
+                            method: 'POST',
+                            data: {
+                                orderKey: this.selectedOrder.orderKey,
+                                itemNo: item.itemId,
+                                content: item.reviewContent,
+                                score: item.reviewScore || 5,
+                            }
+                        });
+
+                        if (response.success) {
+                            alert('리뷰가 등록되었습니다.');
+                            item.reviewExists = true;
+                        } else {
+                            alert('리뷰 등록 실패');
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        alert('리뷰 등록 오류');
+                    }
+                },
+
+                async updateReview(item) {
+                    try {
+                        const response = await $.ajax({
+                            url: '/review/update.do',
+                            method: 'POST',
+                            data: {
+                                orderKey: this.selectedOrder.orderKey,
+                                itemNo: item.itemId,
+                                content: item.reviewContent,
+                                score: item.reviewScore,
+                            }
+                        });
+
+                        if (response.success) {
+                            alert('리뷰가 수정되었습니다.');
+                        } else {
+                            alert('리뷰 수정 실패');
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        alert('리뷰 수정 오류');
+                    }
+                },
+
+                async deleteReview(item) {
+                    if (!confirm('정말 삭제하시겠습니까?')) return;
+
+                    try {
+                        const response = await $.ajax({
+                            url: '/review/delete.do',
+                            method: 'POST',
+                            data: {
+                                orderKey: this.selectedOrder.orderKey,
+                                itemNo: item.itemId
+                            }
+                        });
+
+                        if (response.success) {
+                            alert('리뷰가 삭제되었습니다.');
+                            item.reviewContent = '';
+                            item.reviewExists = false;
+                        } else {
+                            alert('리뷰 삭제 실패');
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        alert('리뷰 삭제 오류');
+                    }
                 },
 
             },

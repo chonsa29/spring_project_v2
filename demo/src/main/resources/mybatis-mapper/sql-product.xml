@@ -89,13 +89,25 @@
 	    WHERE THUMBNAIL = 'Y'
 	</select>
 	
-	
+
 	<!--product 추가-->
-	<insert id="addProduct" parameterType="hashmap"  useGeneratedKeys="true" keyColumn="ITEM_NO" keyProperty="itemNo">
-		INSERT INTO PRODUCT (ITEM_NO, PRICE, ITEM_NAME, ITEM_COUNT, CATEGORY, RDATE, ITEM_INFO, ALLERGENS, STATUS)
-		VALUES (PRODUCT_SEQ.NEXTVAL, #{price}, #{name}, #{quantity}, #{category}, SYSDATE, #{info}, #{allergens}, 'Y')
+	<insert id="addProduct" parameterType="hashmap" useGeneratedKeys="true" keyColumn="ITEM_NO" keyProperty="itemNo">
+	    INSERT INTO PRODUCT (ITEM_NO, PRICE, ITEM_NAME, ITEM_COUNT, CATEGORY, RDATE, ITEM_INFO, ALLERGENS, STATUS)
+	    VALUES (PRODUCT_SEQ.NEXTVAL, #{price}, #{name}, #{quantity}, #{category}, SYSDATE, #{info}, #{allergens}, 'Y')
 	</insert>
 	
+	<!-- PRODUCT_IMG 테이블에 삽입 -->
+	<insert id="addProductFile" parameterType="hashmap">
+	    INSERT INTO PRODUCT_IMG (ITEM_NO, FILENAME, FILEPATH, THUMBNAIL)
+	    VALUES (#{itemNo}, #{filename}, #{path}, #{thumbNail})
+	</insert>
+	
+	<!-- PRODUCT 테이블의 ITEM_CONTENTS 업데이트 -->
+	<update id="saveProductContentImage" parameterType="hashmap">
+	    UPDATE PRODUCT
+	    SET ITEM_CONTENTS = #{contentImagePath}
+	    WHERE ITEM_NO = #{itemNo}
+	</update>
 	<!--product 이미지 추가-->
 	<insert id="insertProductFile" parameterType="hashmap">
 		INSERT INTO PRODUCT_IMG
@@ -127,6 +139,13 @@
 	    WHERE ITEM_NO = #{itemNo}
 	</update>
 
+	<!-- 기존 썸네일 삭제 -->
+	<delete id="deleteThumbnail" parameterType="int">
+	    DELETE FROM PRODUCT_IMG
+	    WHERE ITEM_NO = #{itemNo} AND THUMBNAIL = 'Y'
+	</delete>
+	
+	<!-- 상품 정보 업데이트 -->
 	<update id="updateProduct" parameterType="hashmap">
 	    UPDATE PRODUCT
 	    SET ITEM_NAME = #{name},
@@ -134,8 +153,7 @@
 	        ITEM_COUNT = #{quantity},
 	        CATEGORY = #{category},
 	        ITEM_INFO = #{info},
-	        ALLERGENS = #{allergens},
-	        STATUS = #{status}
+	        ALLERGENS = #{allergens}
 	    WHERE ITEM_NO = #{itemNo}
 	</update>
 	
