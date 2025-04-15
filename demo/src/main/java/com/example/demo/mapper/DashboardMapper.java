@@ -78,4 +78,10 @@ public interface DashboardMapper {
 	List<Reply> selectReplies(@Param("qsNo") int qsNo);
 
 	void deleteReply(Long replyNo);
+	
+	// 답변 단건 조회 추가
+	QuestionReply selectReply(int replyNo);
+
+	// 문의별 답변 수 조회 추가
+	int countRepliesByQsNo(int qsNo);	
 }

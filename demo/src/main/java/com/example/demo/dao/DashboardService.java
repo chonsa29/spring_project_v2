@@ -165,12 +165,6 @@ public class DashboardService {
 		dashboardMapper.updateProductInquiryStatus(reply.getQsNo(), "1");
 	}
 
-	// 답변 수정
-	@Transactional
-	public void updateReply(QuestionReply reply) {
-		dashboardMapper.updateReply(reply);
-	}
-
 	// 상품 문의 상세 조회 추가
 	public Map<String, Object> getProductInquiryDetail(int iqNo) {
 		return dashboardMapper.selectProductInquiryDetail(iqNo);
@@ -183,5 +177,37 @@ public class DashboardService {
 	
     public void deleteReply(Long replyNo) {
         dashboardMapper.deleteReply(replyNo);
+    }
+    @Transactional
+    public void updateReply(QuestionReply reply) {
+        // 필수 필드 검증
+        if (reply.getReplyNo() == 0) {
+            throw new IllegalArgumentException("답변 번호는 필수입니다.");
+        }
+        if (reply.getReplyContents() == null || reply.getReplyContents().isEmpty()) {
+            throw new IllegalArgumentException("답변 내용은 필수입니다.");
+        }
+        
+        dashboardMapper.updateReply(reply);
+    }
+
+    @Transactional
+    public void deleteReply(int replyNo) {
+        // 1. 삭제할 답변 정보 조회 (문의 번호 확인을 위해)
+        QuestionReply reply = dashboardMapper.selectReply(replyNo);
+        if (reply == null) {
+            throw new IllegalArgumentException("존재하지 않는 답변입니다.");
+        }
+        
+        // 2. 답변 삭제
+        dashboardMapper.deleteReply(replyNo);
+        
+        // 3. 해당 문의의 남은 답변 수 확인
+        int remainingReplies = dashboardMapper.countRepliesByQsNo(reply.getQsNo());
+        
+        // 4. 답변이 더 이상 없으면 문의 상태를 '미답변'으로 변경
+        if (remainingReplies == 0) {
+            dashboardMapper.updateInquiryStatus(reply.getQsNo(), "0");
+        }
     }
 }
