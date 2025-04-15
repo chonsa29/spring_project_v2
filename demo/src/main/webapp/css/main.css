@@ -92,12 +92,22 @@
 		
 		position: relative;
 		width: 90%;
-		height: 300px;
+		height: 350px;
 	    overflow: hidden; /* 슬라이드 밖 콘텐츠 숨기기 */
 	    margin: auto;
 	    border-radius: 15px;
 	    background-color: transparent;
 		
+	}
+	
+	/* main.css 또는 style.css 등에 추가 */
+	.product-swiper .swiper-slide {
+	  display: flex;
+	  flex-direction: column;
+	  align-items: center;
+	  justify-content: start;
+	  height: 350px; /* 슬라이드 높이 고정 */
+	  box-sizing: border-box;
 	}
 
 	/* 상품 슬라이드 박스 */
