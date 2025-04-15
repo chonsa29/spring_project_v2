@@ -91,11 +91,17 @@
 	
 
 	<!--product 추가-->
-	<insert id="addProduct" parameterType="hashmap" useGeneratedKeys="true" keyColumn="ITEM_NO" keyProperty="itemNo">
-	    INSERT INTO PRODUCT (ITEM_NO, PRICE, ITEM_NAME, ITEM_COUNT, CATEGORY, RDATE, ITEM_INFO, ALLERGENS, STATUS)
-	    VALUES (PRODUCT_SEQ.NEXTVAL, #{price}, #{name}, #{quantity}, #{category}, SYSDATE, #{info}, #{allergens}, 'Y')
-	</insert>
-	
+<insert id="addProduct" parameterType="hashmap">
+  <selectKey keyProperty="itemNo" resultType="int" order="BEFORE">
+    SELECT PRODUCT_SEQ.NEXTVAL FROM DUAL
+  </selectKey>
+
+  INSERT INTO PRODUCT (
+    ITEM_NO, PRICE, ITEM_NAME, ITEM_COUNT, CATEGORY, RDATE, ITEM_INFO, ALLERGENS, STATUS
+  ) VALUES (
+    #{itemNo}, #{price}, #{name}, #{quantity}, #{category}, SYSDATE, #{info}, #{allergens}, 'Y'
+  )
+</insert>
 	<!-- PRODUCT_IMG 테이블에 삽입 -->
 	<insert id="addProductFile" parameterType="hashmap">
 	    INSERT INTO PRODUCT_IMG (ITEM_NO, FILENAME, FILEPATH, THUMBNAIL)

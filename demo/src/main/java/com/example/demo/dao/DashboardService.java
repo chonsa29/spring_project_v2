@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.example.demo.mapper.DashboardMapper;
 import com.example.demo.model.Question;
 import com.example.demo.model.QuestionReply;
+import com.example.demo.model.Reply;
 
 import jakarta.transaction.Transactional;
 
@@ -101,12 +102,12 @@ public class DashboardService {
 	}
 
 	public Map<String, Object> getDeliveryDetail(int deliveryNo) {
-	    Map<String, Object> params = new HashMap<>();
-	    params.put("deliveryNo", deliveryNo);
-	    
-	    return dashboardMapper.selectDeliveryDetail(params);
+		Map<String, Object> params = new HashMap<>();
+		params.put("deliveryNo", deliveryNo);
+
+		return dashboardMapper.selectDeliveryDetail(params);
 	}
-	
+
 	public Map<String, Object> getDeliveryList(String searchType, String searchKeyword, int page, int size) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("searchType", searchType);
@@ -132,46 +133,51 @@ public class DashboardService {
 	public void updateTrackingNumber(int deliveryNo, String trackingNumber) {
 		dashboardMapper.updateTrackingNumber(deliveryNo, trackingNumber);
 	}
-	
+
 	@Transactional
 	public void updateProductStatus(int itemNo, String status) {
-	    Map<String, Object> params = new HashMap<>();
-	    params.put("itemNo", itemNo);
-	    params.put("status", status);
-	    dashboardMapper.updateProductStatus(params);
+		Map<String, Object> params = new HashMap<>();
+		params.put("itemNo", itemNo);
+		params.put("status", status);
+		dashboardMapper.updateProductStatus(params);
 	}
-	
+
 	public List<Map<String, Object>> selectProductInquiryList(Map<String, Object> params) {
-	    return dashboardMapper.selectProductInquiryList(params);
+		return dashboardMapper.selectProductInquiryList(params);
 	}
 
 	public int selectProductInquiryCount(Map<String, Object> params) {
-	    return dashboardMapper.selectProductInquiryCount(params);
+		return dashboardMapper.selectProductInquiryCount(params);
 	}
-	
+
 	public List<Map<String, Object>> selectInquiryList2(Map<String, Object> params) {
-	    return dashboardMapper.selectInquiryList2(params);
+		return dashboardMapper.selectInquiryList2(params);
 	}
 
 	public int selectInquiryCount(Map<String, Object> params) {
-	    return dashboardMapper.selectInquiryCount(params);
+		return dashboardMapper.selectInquiryCount(params);
 	}
-	
+
 	// 상품 문의 답변 추가
 	@Transactional
 	public void addProductInquiryReply(QuestionReply reply) {
-	    dashboardMapper.insertProductInquiryReply(reply);
-	    dashboardMapper.updateProductInquiryStatus(reply.getQsNo(), "1");
+		dashboardMapper.insertProductInquiryReply(reply);
+		dashboardMapper.updateProductInquiryStatus(reply.getQsNo(), "1");
 	}
 
 	// 답변 수정
 	@Transactional
 	public void updateReply(QuestionReply reply) {
-	    dashboardMapper.updateReply(reply);
+		dashboardMapper.updateReply(reply);
 	}
 
 	// 상품 문의 상세 조회 추가
 	public Map<String, Object> getProductInquiryDetail(int iqNo) {
-	    return dashboardMapper.selectProductInquiryDetail(iqNo);
+		return dashboardMapper.selectProductInquiryDetail(iqNo);
+	}
+
+	public List<Reply> getReplies(int qsNo, String type) {
+		// `qsNo`와 `type`에 맞는 답변 목록을 가져오는 Mapper 호출
+		return dashboardMapper.selectReplies(qsNo, type);
 	}
 }

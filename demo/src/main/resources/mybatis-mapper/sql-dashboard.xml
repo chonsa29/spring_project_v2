@@ -323,4 +323,10 @@
 	    LEFT JOIN PRODUCT p ON iq.ITEM_NO = p.ITEM_NO
 	    WHERE iq.IQ_NO = #{iqNo}
 	</select>
+	
+	 <select id="selectReplies" resultType="Reply">
+        SELECT *
+        FROM reply
+        WHERE qs_no = #{qsNo}
+    </select>
 </mapper>
