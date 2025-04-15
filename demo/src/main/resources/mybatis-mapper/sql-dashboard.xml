@@ -98,11 +98,15 @@
     </delete>
     
  <!-- 1. 답변 등록 -->
-	 <insert id="insertReply" parameterType="QuestionReply">
+	<insert id="insertReply" parameterType="QuestionReply">
 	    INSERT INTO REPLY (
-	        QS_NO, USERID, REPLY_CONTENTS, ADMIN_ID
+	        REPLY_NO, QS_NO, USERID, REPLY_CONTENTS, ADMIN_ID
 	    ) VALUES (
-	        #{qsNo}, #{userId}, #{replyContents}, #{adminId}
+	        REPLY_SEQ.NEXTVAL,
+	        #{qsNo},
+	        'admin01',
+	        #{replyContents},
+	        #{adminId}
 	    )
 	</insert>
 
@@ -112,7 +116,7 @@
             REPLY_NO as replyNo,
             QS_NO as qsNo,
             USERID as userId,
-            REPLY_CONTENTS as replyContents,
+            REPLY_CONTENTS as replyContents,	
             ADMIN_ID as adminId
         FROM REPLY
         WHERE QS_NO = #{qsNo}
@@ -329,5 +333,22 @@
         FROM reply
         WHERE qs_no = #{qsNo}
     </select>
-    
+    <!-- 답변 단건 조회 -->
+	<select id="selectReply" resultType="QuestionReply">
+	    SELECT 
+	        REPLY_NO as replyNo,
+	        QS_NO as qsNo,
+	        USERID as userId,
+	        REPLY_CONTENTS as replyContents,
+	        ADMIN_ID as adminId
+	    FROM REPLY
+	    WHERE REPLY_NO = #{replyNo}
+	</select>
+	
+	<!-- 문의별 답변 수 조회 -->
+	<select id="countRepliesByQsNo" resultType="int">
+	    SELECT COUNT(*) 
+	    FROM REPLY
+	    WHERE QS_NO = #{qsNo}
+	</select>
 </mapper>

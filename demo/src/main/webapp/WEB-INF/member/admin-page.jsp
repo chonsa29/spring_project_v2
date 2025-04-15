@@ -683,7 +683,7 @@
                                         <div v-for="reply in replies" :key="reply.replyNo" class="reply-item">
                                             <p><strong>내용:</strong> {{ reply.replyContents }}</p>
                                             <p><strong>작성자:</strong> {{ reply.adminId }}</p>
-                                            <p><strong>작성일:</strong> {{ formatDate(reply.createdAt) }}</p>
+                                            <p><strong>작성일:</strong> 2024-04-11 </p>
 
                                             <button @click="startEditReply(reply)">수정</button>
                                             <button @click="deleteReply(reply.replyNo)">삭제</button>
@@ -1137,6 +1137,7 @@
             const app = Vue.createApp({
                 data() {
                     return {
+                        selectedInquiryId : "",
                         currentSection: 'dashboard',
                         // 대시보드 데이터
                         dashboard: {
@@ -1265,11 +1266,7 @@
                     };
                 },
                 computed: {
-                    startEditReply(reply) {
-                        this.replyContent = reply.replyContents;
-                        this.isEditing = true;
-                        this.editingReplyNo = reply.replyNo;
-                    },
+                    
                     totalOrderPrice() {
                         return this.currentOrder.items.reduce((sum, item) => {
                             return sum + (item.ORDERCOUNT * item.PRICE);
@@ -1349,16 +1346,106 @@
                     }
                 },
                 methods: {
+                    submitReply(QSNO) {
+                        alert("등록되었습니다.");
+                        const formData = {
+                            qsNo : QSNO,
+                            replyContents: this.replyContent,
+                            adminId: 'admin' // 실제로는 로그인한 관리자 ID 사용
+                        };
+                        console.log("test ==> ", formData);
+
+                        $.ajax({
+                            url: '/admin/dashboard/inquiry/reply',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify(formData),
+                            success: (response) => {
+                                alert('답변이 등록되었습니다.');
+                                this.replyContent = '';
+                                this.fetchReplies(QSNO); // 답변 목록 새로고침
+                                
+                            },
+                            error: (xhr) => {
+                                alert('답변 등록에 실패했습니다.');
+                                console.error(xhr);
+                            }
+                        });
+                        this.showReplyModal = false;
+                    },
+
+                    // 답변 수정 메서드
+                    updateReply() {
+                        if (!this.replyContent) {
+                            alert('답변 내용을 입력해주세요.');
+                            return;
+                        }
+
+                        const formData = {
+                            replyNo: this.editingReplyNo,
+                            replyContents: this.replyContent,
+                            adminId: 'admin' // 실제로는 로그인한 관리자 ID 사용
+                        };
+
+                        $.ajax({
+                            url: `/admin/dashboard/reply/${this.editingReplyNo}`,
+                            type: 'PUT',
+                            contentType: 'application/json',
+                            data: JSON.stringify(formData),
+                            success: (response) => {
+                                alert('답변이 수정되었습니다.');
+                                this.cancelEdit();
+                                this.fetchReplies(this.selectedInquiry.QSNO);
+                            },
+                            error: (xhr) => {
+                                alert('답변 수정에 실패했습니다.');
+                                console.error(xhr);
+                            }
+                        });
+                    },
+
+                    // 답변 삭제 메서드
+                    deleteReply(replyNo) {
+                        if (!confirm('정말 삭제하시겠습니까?')) return;
+
+                        $.ajax({
+                            url: `/admin/dashboard/reply/${replyNo}`,
+                            type: 'DELETE',
+                            success: (response) => {
+                                alert('답변이 삭제되었습니다.');
+                                this.fetchReplies(this.selectedInquiry.QSNO);
+                            },
+                            error: (xhr) => {
+                                alert('답변 삭제에 실패했습니다.');
+                                console.error(xhr);
+                            }
+                        });
+                    },
+
+                    // 수정 모드 시작
+                    startEditReply(reply) {
+                        this.editingReplyNo = reply.replyNo;
+                        this.replyContent = reply.replyContents;
+                        this.isEditing = true;
+                    },
+
+                    // 수정 취소
+                    cancelEdit() {
+                        this.editingReplyNo = null;
+                        this.replyContent = '';
+                        this.isEditing = false;
+                    },
                     // 일반 문의 상세 보기
                     showInquiryDetail(inq) {
-                        const qsNo = parseInt(inq.QSNO);
+                        this.selectedInquiryId = inq.QSNO;
+                        const QSNO = parseInt(inq.QSNO);
 
-                        if (isNaN(qsNo)) {
+                        if (isNaN(QSNO)) {
                             console.error("QSNO is not a number:", inq.QSNO);
                             return;
                         }
-                        this.selectedInquiry = { QSNO: qsNo };
-                        this.fetchReplies(qsNo);
+                        this.selectedInquiry = { QSNO: QSNO };
+                        this.fetchReplies(QSNO);
                         this.showReplyModal = true;
                         console.log("모달 열기 상태:", this.showReplyModal);
                     },
@@ -1370,22 +1457,22 @@
                             return;
                         }
 
-                        const qsNo = parseInt(inquiry.QSNO); // 🔥 숫자 변환
+                        const QSNO = parseInt(inquiry.QSNO); // 🔥 숫자 변환
 
-                        if (isNaN(qsNo)) {
+                        if (isNaN(QSNO)) {
                             console.error("QSNO is not a number:", inquiry.QSNO);
                             return;
                         }
 
                         this.selectedInquiry = inquiry;
-                        this.fetchReplies(qsNo);
+                        this.fetchReplies(QSNO);
                         this.showReplyModal = true;
                     },
 
                     // 답변 목록 가져오기
-                    fetchReplies(qsNo) {
-                        if (isNaN(qsNo)) {
-                            console.error("Invalid qsNo:", qsNo);
+                    fetchReplies(QSNO) {
+                        if (isNaN(QSNO)) {
+                            console.error("Invalid qsNo:", QSNO);
                             return;
                         }
 
@@ -1394,17 +1481,13 @@
                             url: url,
                             type: "GET",
                             data: {
-                                qsNo: qsNo
+                                qsNo: QSNO
                             },
                             success: (response) => {
                                 console.log(response);
                                 this.replies = response; // 서버에서 받은 답변 데이터를 replies에 할당
                                 console.log("Replies:", this.replies); // 로그로 확인
                             },
-                            error: (xhr, status, error) => {
-                                console.error("Failed to fetch replies:", error);
-                                alert("답변 목록을 불러오는 데 실패했습니다.");
-                            }
                         });
                     },
                     // 답변 수정
@@ -2313,21 +2396,6 @@
                             }
                         });
                     },
-                    submitReply(inquiryId) {
-                        $.ajax({
-                            url: `/admin/dashboard/inquiries/${inquiryId}/reply`,
-                            method: 'POST',
-                            data: {
-                                replyContents: this.replyContent,
-                                adminId: this.adminId // 필요 시 추가
-                            },
-                            success: () => {
-                                alert("답변이 등록되었습니다.");
-                                this.replyContent = '';
-                                this.fetchReplies(); // 등록 후 다시 불러오기
-                            }
-                        });
-                    },
                     loadReplies(QSNO) {
                         $.ajax({
                             url: `/admin/inquiries/${QSNO}/replies`,
@@ -2348,23 +2416,7 @@
                             }
                         });
                     },
-                    deleteReply(replyNo) {
-                        if (!confirm('답변을 삭제하시겠습니까?')) return;
-
-                        $.ajax({
-                            url: `/admin/inquiries/replies/${replyNo}`,
-                            type: 'DELETE',
-                            success: function () {
-                                alert('삭제되었습니다.');
-                                // 삭제 후 문의 상태를 "N"으로 변경
-                                $.ajax({
-                                    url: `/admin/inquiries/${QSNO}/status`,
-                                    type: 'PUT',
-                                    data: { status: 'N' }
-                                });
-                            }
-                        });
-                    },
+                
                     stripHtml(html) {
                         const tmp = document.createElement("div");
                         tmp.innerHTML = html;
@@ -2499,7 +2551,8 @@
                             'C': '배송취소'
                         };
                         return statusMap[status] || status;
-                    }
+                    },
+                    
                 },
                 mounted() {
                     this.loadDashboardData();

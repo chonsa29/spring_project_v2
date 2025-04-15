@@ -214,30 +214,33 @@ public class DashboardController {
 		}
 	}
 
-	// 일반 문의 답변 등록
+	// 답변 등록 (일반 문의/상품 문의 통합)
 	@PostMapping("/inquiry/reply")
-	public ResponseEntity<?> addInquiryReply(@RequestBody QuestionReply reply) {
-		dashboardService.addReply(reply);
-		return ResponseEntity.ok().build();
+	public ResponseEntity<?> addInquiryReply(@RequestBody QuestionReply reply, 
+	                                       @RequestHeader(value = "X-Admin-Id", required = false) String adminId) {
+	    if (adminId != null) {
+	        reply.setAdminId(adminId);
+	    }
+	    dashboardService.addReply(reply);
+	    return ResponseEntity.ok().build();
 	}
 
-	// 상품 문의 답변 등록
-	@PostMapping("/productInquiry/reply")
-	public ResponseEntity<?> addProductInquiryReply(@RequestBody QuestionReply reply) {
-		dashboardService.addProductInquiryReply(reply);
-		return ResponseEntity.ok().build();
-	}
-
-	// 답변 수정 (공통)
+	// 답변 수정
 	@PutMapping("/reply/{replyNo}")
-	public ResponseEntity<?> updateReply(@PathVariable int replyNo, @RequestBody QuestionReply reply) {
-		reply.setReplyNo(replyNo);
-		dashboardService.updateReply(reply);
-		return ResponseEntity.ok().build();
+	public ResponseEntity<?> updateReply(@PathVariable int replyNo, 
+	                                    @RequestBody QuestionReply reply,
+	                                    @RequestHeader(value = "X-Admin-Id", required = false) String adminId) {
+	    reply.setReplyNo(replyNo);
+	    if (adminId != null) {
+	        reply.setAdminId(adminId);
+	    }
+	    dashboardService.updateReply(reply);
+	    return ResponseEntity.ok().build();
 	}
 
-	@DeleteMapping("/replies/{replyNo}")
-	public ResponseEntity<?> deleteReply(@PathVariable Long replyNo) {
+	// 답변 삭제
+	@DeleteMapping("/reply/{replyNo}")	
+	public ResponseEntity<?> deleteReply(@PathVariable int replyNo) {
 	    dashboardService.deleteReply(replyNo);
 	    return ResponseEntity.ok().build();
 	}
