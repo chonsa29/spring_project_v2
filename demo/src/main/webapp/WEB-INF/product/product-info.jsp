@@ -39,7 +39,7 @@
                             ❤
                         </button>
                     </div>
-                    
+
                     <div v-if="showLikePopup" class="like-popup-overlay">
                         <div class="like-popup">
                             {{ likeAction === 'add' ? '좋아요 항목에 추가되었습니다' : '좋아요 항목에서 취소되었습니다.' }}
@@ -199,8 +199,10 @@
                 <div id="product-view">
                     <!-- 상세정보 -->
                     <div v-show="selectedTab === 'info'" class="preparing-info">
-                        <img :src="info.itemContents" alt="" id="product-view-img">
+                        <img v-if="info.itemContents" :src="info.itemContents" alt="" id="product-view-img">
+                        <div v-else class="no-info-message">아직 상품 정보가 없습니다.</div>
                     </div>
+
 
                     <!-- 상품 리뷰 -->
                     <div v-show="selectedTab === 'review'" class="review-container">

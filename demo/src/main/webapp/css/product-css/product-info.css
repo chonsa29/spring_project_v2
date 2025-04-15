@@ -684,6 +684,12 @@
     margin: 0 auto;
 }
 
+.no-info-message {
+    font-size: 18px;
+    color: #777;
+    text-align: center;
+}
+
 a {
     text-decoration: none;
 }
