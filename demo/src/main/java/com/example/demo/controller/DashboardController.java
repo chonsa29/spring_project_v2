@@ -203,9 +203,9 @@ public class DashboardController {
 	}
 
 	@GetMapping("/inquiry/replies")
-	public ResponseEntity<List<Reply>> getReplies(@RequestParam("qsNo") int qsNo, @RequestParam("type") String type) {
+	public ResponseEntity<List<Reply>> getReplies2(@RequestParam("qsNo") int qsNo) {
 		// 답변 목록을 조회하는 서비스 메소드 호출
-		List<Reply> replies = dashboardService.getReplies(qsNo, type);
+		List<Reply> replies = dashboardService.getReplies2(qsNo);
 
 		if (replies != null && !replies.isEmpty()) {
 			return ResponseEntity.ok(replies);
@@ -236,10 +236,9 @@ public class DashboardController {
 		return ResponseEntity.ok().build();
 	}
 
-//	// 답변 삭제 (공통)
-//	@DeleteMapping("/reply/{replyNo}")
-//	public ResponseEntity<?> deleteReply(@PathVariable int replyNo) {
-//	    dashboardService.deleteReply(replyNo);
-//	    return ResponseEntity.ok().build();
-//	}
+	@DeleteMapping("/replies/{replyNo}")
+	public ResponseEntity<?> deleteReply(@PathVariable Long replyNo) {
+	    dashboardService.deleteReply(replyNo);
+	    return ResponseEntity.ok().build();
+	}
 }

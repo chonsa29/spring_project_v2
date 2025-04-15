@@ -329,4 +329,5 @@
         FROM reply
         WHERE qs_no = #{qsNo}
     </select>
+    
 </mapper>
