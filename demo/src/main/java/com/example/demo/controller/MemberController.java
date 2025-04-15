@@ -3,7 +3,9 @@ package com.example.demo.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -23,6 +25,8 @@ import com.example.demo.model.ReviewDTO;
 import com.google.gson.Gson;
 
 import jakarta.servlet.http.HttpSession;
+
+
 
 @Controller
 public class MemberController {
@@ -67,6 +71,14 @@ public class MemberController {
 	public String admin(Model model) throws Exception {
 
 		return "/member/admin-page";
+	}
+	
+	@RequestMapping("/member/repwd.do")
+
+	public String repwd(Model model) throws Exception {
+
+		return "/member/find-password";
+
 	}
 
 	@RequestMapping(value = "/member/check.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -336,4 +348,38 @@ public class MemberController {
 	    boolean exists = memberService.reviewExists(userId, orderKey, itemNo);
 	    return Map.of("exists", exists);
 	}
+	
+    @PostMapping("/change-password.dox")
+    @ResponseBody
+    public ResponseEntity<?> changePassword(@RequestParam String email, @RequestParam String password) {
+
+        try {
+
+            boolean result = memberService.changePassword(email, password);
+
+            if (result) {
+
+                return ResponseEntity.ok(Map.of("result", "success"));
+
+            } else {
+
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+
+                        .body(Map.of("result", "fail", "message", "비밀번호 변경에 실패했습니다."));
+
+            }
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+
+                    .body(Map.of("result", "error", "message", "서버 오류: " + e.getMessage()));
+
+        }
+
+    }
+
+    
+	
+	
 }

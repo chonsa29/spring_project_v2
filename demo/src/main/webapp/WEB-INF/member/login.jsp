@@ -33,7 +33,7 @@
                 <div class="bottom-links">
                     <a href="#" @click="fnTermPg()">회원가입 </a>
 
-                    <a href="#">비밀번호 찾기</a>
+                    <a href="#" @click=" fnFindPassword()">비밀번호 찾기</a>
                 </div>
 
                 <div style="margin-top: 10px; text-align: center;">
@@ -85,6 +85,10 @@
             methods: {
                 fnTermPg() {
                     window.location.href = "/member/term.do";
+                },
+
+                fnFindPassword() {
+                    window.location.href = "/member/repwd.do";  // 비밀번호 찾기 페이지로 이동
                 },
                 fnLogin() {
                     var self = this;
