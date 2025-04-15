@@ -17,7 +17,7 @@
 
         <div id="app">
             <div id="rootname">
-                <a href="/home.do">HOME</a> > <a href="/product.do">PRODUCT</a> > {{ selectedCategory }}
+                <a href="/home.do" style="color: #aaa;">HOME</a> > <a href="/product.do" style="color: #aaa;" >PRODUCT</a> > {{ selectedCategory }}
             </div>
             <div id="name">
                 <div class="custom-dropdown">
