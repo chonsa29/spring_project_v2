@@ -84,4 +84,10 @@
 		WHERE ITEM_NO = #{itemNo} AND USERID = #{userId}
 	</delete>
 	
+	<update id="pointSave" parameterType="hashmap">
+	    UPDATE MEMBER
+	    SET POINT = NVL(point, 0) + #{point}
+	    WHERE USERID = #{userId}
+	</update>
+	
 </mapper>

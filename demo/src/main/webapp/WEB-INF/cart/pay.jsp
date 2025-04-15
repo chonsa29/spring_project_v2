@@ -458,6 +458,34 @@
                                 }));
                                 self.removeItemsFromCart(orderItems);
 
+                                const savePoint = Math.floor(finalPrice * 0.1);  
+                                console.log("적립될 포인트:", savePoint);
+
+                                $.ajax({
+                                    url: "/savePoint.dox",  
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: {
+                                        userId: self.sessionId,
+                                        point: savePoint,
+                                        reason: "구매 적립",
+                                        orderId: data.orderId 
+                                    },
+                                    success: function (res) {
+                                        console.log("포인트 적립 성공:", res);
+                                        console.log("포인트 적립 성공:", res);
+
+                                        if (res.result === "success" && res.member) {
+                                            // 적립된 포인트 반영해서 화면에 갱신
+                                            self.memberInfo.point = res.member.point;
+                                            console.log("갱신된 포인트:", self.memberInfo.point);
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        console.error("포인트 적립 실패:", error);
+                                    }
+                                });
+
                             setTimeout(function() {
                                 window.location.href = "/paySuccess.do?orderId=" + data.orderId;
                             }, 500);

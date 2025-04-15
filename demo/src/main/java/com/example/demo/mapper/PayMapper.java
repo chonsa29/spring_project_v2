@@ -48,4 +48,6 @@ public interface PayMapper {
 
 	void deleteOrderedCart(HashMap<String, Object> map);
 
+	Member pointSave(HashMap<String, Object> map);
+
 }
