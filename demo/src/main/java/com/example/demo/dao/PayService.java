@@ -227,5 +227,20 @@ public class PayService {
 	    return resultMap;
 	}
 
+	public HashMap<String, Object> savePoint(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			Member member = payMapper.pointSave(map);
+			resultMap.put("member", member);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			resultMap.put("result", "fail");
+		}
+		
+		return resultMap;
+	}
+
 
 }
