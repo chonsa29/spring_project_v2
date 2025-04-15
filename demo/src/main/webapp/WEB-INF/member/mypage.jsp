@@ -251,30 +251,31 @@
                         </div>
                     </div>
 
-                    <!-- 등급/그룹 탭 (기존 코드 + 그룹 정보 추가) -->
+                    <!-- 등급/그룹 탭 부분 수정 -->
                     <div v-if="currentTab === 'grade'">
                         <h2 class="section-title">등급 및 그룹 정보</h2>
 
-                        <div class="content-card" v-if="currentTab === 'grade'">
+                        <div class="content-card">
                             <h3 class="card-title">회원 등급</h3>
                             <div class="info-row">
                                 <span class="info-label">현재 등급</span>
                                 <span class="info-value">
                                     <span class="grade-badge" :data-grade="memberInfo.gradeName">
-                                        {{ memberInfo.gradeName }}
+                                        {{ memberInfo.gradeName || '등급 정보 없음' }}
                                     </span>
-                                    ({{ formatNumber(memberInfo.monthSpent) }}원 사용)
+                                    ({{ formatNumber(memberInfo.monthSpent || 0) }}원 사용)
                                 </span>
                             </div>
                             <div class="info-row" v-if="memberInfo.grade < 5">
                                 <span class="info-label">다음 등급</span>
                                 <span class="info-value">
                                     {{ getNextGradeName(memberInfo.grade) }}
-                                    ({{ formatNumber(memberInfo.remainPoint) }}원 더 사용 시)
+                                    ({{ formatNumber(memberInfo.remainPoint || 0) }}원 더 사용 시)
                                 </span>
                             </div>
                         </div>
 
+                        <!-- 그룹 정보가 있을 때만 표시 -->
                         <div class="content-card" v-if="memberInfo.groupName">
                             <h3 class="card-title">소속 그룹</h3>
                             <div class="info-row">
@@ -285,7 +286,7 @@
                                 <span class="info-label">나의 역할</span>
                                 <span class="info-value">
                                     {{ memberInfo.groupRole === 'LEADER' ? '리더' : '멤버' }}
-
+                                </span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">리더</span>
@@ -310,14 +311,20 @@
                             <div class="info-row">
                                 <span class="info-label">그룹 혜택</span>
                                 <span class="info-value">
-                                    <span class="discount-badge">{{ memberInfo.groupDiscountRate }}% 추가 할인</span>
+                                    <span class="discount-badge" v-if="memberInfo.groupDiscountRate">
+                                        {{ memberInfo.groupDiscountRate }}% 추가 할인
+                                    </span>
+                                    <span v-else>그룹 할인 정보 없음</span>
                                     <small v-if="memberInfo.gradeName">({{ memberInfo.gradeName }} 등급 적용)</small>
                                 </span>
                             </div>
                         </div>
 
-                        <div v-else>
-                            <h4>현재 소속된 그룹이 없습니다. <br>그룹 가입시 더 많은 혜택을 받으실 수 있습니다.</h4>
+                        <!-- 그룹 정보가 없을 때 표시 -->
+                        <div v-else class="content-card">
+                            <h4>현재 소속된 그룹이 없습니다.</h4>
+                            <p>그룹 가입시 더 많은 혜택을 받으실 수 있습니다.</p>
+                            <button class="btn btn-primary" @click="showGroupJoinModal">그룹 찾기/가입</button>
                         </div>
                     </div>
 
@@ -732,46 +739,57 @@
                     $.ajax({
                         url: "/member/myPage/info.dox",
                         type: "POST",
-                        data: { userId: this.userId, groupId: this.groupId },
+                        data: { userId: this.userId },
                         success: function (memberData) {
                             if (memberData.member) {
                                 // 2. 등급 계산
                                 const spent = parseInt(memberData.member.monthSpent || 0);
                                 const gradeInfo = self.calculateGrade(spent);
 
-                                // 3. 그룹 정보 로드
-                                $.ajax({
-                                    url: "/member/myPage/groupInfo.dox",
-                                    type: "POST",
-                                    data: { userId: self.userId, groupId: self.groupId },
-                                    success: function (groupData) {
-                                        if (typeof groupData === 'string') {
-                                            groupData = JSON.parse(groupData);
+                                // 기본 회원 정보 설정
+                                self.memberInfo = {
+                                    ...memberData.member,
+                                    ...gradeInfo,
+                                    groupName: null, // 기본값 설정
+                                    groupMembers: [] // 빈 배열로 초기화
+                                };
+
+                                // 3. 그룹 정보가 있는 경우에만 그룹 정보 요청
+                                if (memberData.member.groupId) {
+                                    $.ajax({
+                                        url: "/member/myPage/groupInfo.dox",
+                                        type: "POST",
+                                        data: { userId: self.userId, groupId: memberData.member.groupId },
+                                        success: function (groupData) {
+                                            if (typeof groupData === 'string') {
+                                                groupData = JSON.parse(groupData);
+                                            }
+
+                                            // 그룹 정보가 있을 경우에만 업데이트
+                                            if (groupData.groupInfo) {
+                                                const groupInfo = groupData.groupInfo;
+                                                const groupMembers = groupData.groupMembers || [];
+
+                                                self.memberInfo = {
+                                                    ...self.memberInfo,
+                                                    groupId: groupInfo.groupId,
+                                                    groupName: groupInfo.groupName,
+                                                    leaderId: groupInfo.leaderId,
+                                                    joinDate: groupInfo.joinDate,
+                                                    groupStatus: groupInfo.groupStatus,
+                                                    groupRole: groupInfo.groupRole || 'MEMBER',
+                                                    groupMembers: groupMembers
+                                                };
+                                            }
+                                        },
+                                        error: function (error) {
+                                            console.error("그룹 정보 로드 실패:", error);
                                         }
+                                    });
+                                }
 
-                                        // 그룹 정보 로드 후 memberInfo를 업데이트
-                                        const groupInfo = groupData.groupInfo;
-                                        const groupMembers = groupData.groupMembers || [];
-
-                                        self.memberInfo = {
-                                            ...memberData.member,
-                                            ...gradeInfo,
-                                            groupId: groupInfo.groupId,
-                                            groupName: groupInfo.groupName,
-                                            leaderId: groupInfo.leaderId,
-                                            joinDate: groupInfo.joinDate,
-                                            groupStatus: groupInfo.groupStatus,
-                                            groupRole: groupInfo.groupRole || 'MEMBER',
-                                            groupMembers: groupMembers
-                                        };
-
-                                        // memberInfo가 업데이트된 후에 loadEditForm 호출
-                                        self.loadEditForm();
-                                    },
-                                    error: function (error) {
-                                        console.error("그룹 정보 로드 실패:", error);
-                                    }
-                                });
+                                // memberInfo가 업데이트된 후에 loadEditForm 호출
+                                self.loadEditForm();
                             }
                         },
                         error: function (error) {
@@ -1183,6 +1201,11 @@
                         alert('리뷰 삭제 오류');
                     }
                 },
+                showGroupJoinModal() {
+                    // 그룹 가입 모달을 표시하는 로직
+                    alert('그룹 찾기/가입 기능을 구현해주세요.');
+                    // 또는 모달 컴포넌트를 표시하는 로직
+                }
 
             },
             mounted() {

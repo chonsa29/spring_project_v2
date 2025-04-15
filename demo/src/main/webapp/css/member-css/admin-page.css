@@ -637,40 +637,74 @@ textarea {
 
 /* 상품 상태 토글 버튼 */
 .status-toggle-btn {
-  min-width: 80px;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 4px;
-  font-weight: 500;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+	min-width: 80px;
+	padding: 5px 10px;
+	border: none;
+	border-radius: 4px;
+	font-weight: 500;
+	font-size: 13px;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
 }
 
 .status-toggle-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .status-toggle-btn:active {
-  transform: translateY(0);
+	transform: translateY(0);
 }
 
 .status-toggle-btn.active {
-  background-color: #4CAF50;
-  color: white;
+	background-color: #4CAF50;
+	color: white;
 }
 
 .status-toggle-btn.inactive {
-  background-color: #F44336;
-  color: white;
+	background-color: #F44336;
+	color: white;
 }
 
 .status-toggle-btn.loading {
-  background-color: #FFC107;
-  color: #333;
-  cursor: not-allowed;
+	background-color: #FFC107;
+	color: #333;
+	cursor: not-allowed;
+}
+
+.modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.4);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.modal-content {
+	background: white;
+	padding: 20px;
+	width: 500px;
+	border-radius: 10px;
+}
+
+.reply-list {
+	margin-top: 20px;
+}
+
+.reply-item {
+	padding: 10px;
+	border-bottom: 1px solid #ccc;
+}
+
+textarea {
+	width: 100%;
+	height: 80px;
+	margin-top: 10px;
 }

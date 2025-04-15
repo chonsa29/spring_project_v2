@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dao.DashboardService;
 import com.example.demo.model.Question;
 import com.example.demo.model.QuestionReply;
+import com.example.demo.model.Reply;
 
 @RestController
 @RequestMapping(value = "/admin/dashboard", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -150,7 +152,6 @@ public class DashboardController {
 		return dashboardService.getReplies(qsNo);
 	}
 
-
 	// 배송 목록 조회
 	@GetMapping("/delivery/list")
 	public Map<String, Object> getDeliveryList(@RequestParam(required = false) String searchType,
@@ -200,33 +201,45 @@ public class DashboardController {
 		dashboardService.updateTrackingNumber(deliveryNo, trackingNumber);
 		return ResponseEntity.ok().build();
 	}
-	
+
+	@GetMapping("/inquiry/replies")
+	public ResponseEntity<List<Reply>> getReplies(@RequestParam("qsNo") int qsNo, @RequestParam("type") String type) {
+		// 답변 목록을 조회하는 서비스 메소드 호출
+		List<Reply> replies = dashboardService.getReplies(qsNo, type);
+
+		if (replies != null && !replies.isEmpty()) {
+			return ResponseEntity.ok(replies);
+		} else {
+			return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(null); // 답변이 없으면 404
+		}
+	}
+
 	// 일반 문의 답변 등록
 	@PostMapping("/inquiry/reply")
 	public ResponseEntity<?> addInquiryReply(@RequestBody QuestionReply reply) {
-	    dashboardService.addReply(reply);
-	    return ResponseEntity.ok().build();
+		dashboardService.addReply(reply);
+		return ResponseEntity.ok().build();
 	}
 
-	// 상품 문의 답변 등록 
+	// 상품 문의 답변 등록
 	@PostMapping("/productInquiry/reply")
 	public ResponseEntity<?> addProductInquiryReply(@RequestBody QuestionReply reply) {
-	    dashboardService.addProductInquiryReply(reply);
-	    return ResponseEntity.ok().build();
+		dashboardService.addProductInquiryReply(reply);
+		return ResponseEntity.ok().build();
 	}
 
 	// 답변 수정 (공통)
 	@PutMapping("/reply/{replyNo}")
 	public ResponseEntity<?> updateReply(@PathVariable int replyNo, @RequestBody QuestionReply reply) {
-	    reply.setReplyNo(replyNo);
-	    dashboardService.updateReply(reply);
-	    return ResponseEntity.ok().build();
+		reply.setReplyNo(replyNo);
+		dashboardService.updateReply(reply);
+		return ResponseEntity.ok().build();
 	}
 
-	// 답변 삭제 (공통)
-	@DeleteMapping("/reply/{replyNo}")
-	public ResponseEntity<?> deleteReply(@PathVariable int replyNo) {
-	    dashboardService.deleteReply(replyNo);
-	    return ResponseEntity.ok().build();
-	}
+//	// 답변 삭제 (공통)
+//	@DeleteMapping("/reply/{replyNo}")
+//	public ResponseEntity<?> deleteReply(@PathVariable int replyNo) {
+//	    dashboardService.deleteReply(replyNo);
+//	    return ResponseEntity.ok().build();
+//	}
 }
