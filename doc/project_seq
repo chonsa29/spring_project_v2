@@ -1,0 +1,103 @@
+--------------------------------------------------------
+--  파일이 생성됨 - 수요일-4월-16-2025   
+--------------------------------------------------------
+--------------------------------------------------------
+--  DDL for Sequence CART_KEY_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."CART_KEY_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 14 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence CART_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."CART_SEQ"  MINVALUE 1 MAXVALUE 9999 INCREMENT BY 1 START WITH 98 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence CHAT_MESSAGE_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."CHAT_MESSAGE_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 401 CACHE 20 NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence COMMENT_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."COMMENT_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 49 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence DELIVERY_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."DELIVERY_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 41 CACHE 20 NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence GROUP_INFO_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."GROUP_INFO_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 19 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence GROUP_POST_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."GROUP_POST_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 24 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence GROUP_USER_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."GROUP_USER_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 1 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence ITEM_QUESTION_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."ITEM_QUESTION_SEQ"  MINVALUE 1 MAXVALUE 99999 INCREMENT BY 1 START WITH 101 CACHE 20 NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence NOTICE_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."NOTICE_SEQ"  MINVALUE 1 MAXVALUE 99999 INCREMENT BY 1 START WITH 15 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence NOTIFICATION_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."NOTIFICATION_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 20 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence ORDER_DETAILS_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."ORDER_DETAILS_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 10 START WITH 619 CACHE 20 NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence ORDER_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."ORDER_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 53 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence POST_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."POST_SEQ"  MINVALUE 1 MAXVALUE 9999 INCREMENT BY 1 START WITH 1 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence PRODUCT_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."PRODUCT_SEQ"  MINVALUE 1 MAXVALUE 9999 INCREMENT BY 1 START WITH 117 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence QUESTION_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."QUESTION_SEQ"  MINVALUE 1 MAXVALUE 9999 INCREMENT BY 1 START WITH 42 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence RECIPE_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."RECIPE_SEQ"  MINVALUE 1 MAXVALUE 9999 INCREMENT BY 1 START WITH 66 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence REPLY_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."REPLY_SEQ"  MINVALUE 1 MAXVALUE 9999 INCREMENT BY 1 START WITH 61 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence REVIEW_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."REVIEW_SEQ"  MINVALUE 1 MAXVALUE 9999 INCREMENT BY 1 START WITH 21 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence WISH_SEQ
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "SYSTEM"."WISH_SEQ"  MINVALUE 1 MAXVALUE 9999 INCREMENT BY 1 START WITH 125 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
