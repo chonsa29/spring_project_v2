@@ -114,5 +114,5 @@ mealpick/
 
 ---
 ## 📸 시연 영상
-
+https://www.youtube.com/watch?v=F9O0MT5TcLo&feature=youtu.be
 
