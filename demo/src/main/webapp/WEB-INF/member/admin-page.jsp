@@ -9,7 +9,7 @@
             <script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.min.js"></script>
             <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
             <link rel="stylesheet" href="/css/member-css/admin-page.css">
-            <title>상품 관리</title>
+            <title>관리자 페이지</title>
             <style>
                 /* 추가적인 인라인 스타일이 필요한 경우 여기에 작성 */
             </style>
@@ -658,12 +658,11 @@
                                             <td>
                                                 <span
                                                     :class="'status-badge ' + (inq.qsStatus === '1' ? 'completed' : 'pending')">
-                                                    {{ inq.qsStatus === '1' ? '답변완료' : '답변대기' }}
+                                                    답변완료
                                                 </span>
                                             </td>
                                             <td>
-                                                <button @click="showProductInquiryDetail(inq)"
-                                                    class="btn btn-sm btn-primary">
+                                                <button @click="fetchProductReplies(inq.QSNO)" class="btn btn-sm btn-primary">
                                                     답변 관리
                                                 </button>
                                             </td>
@@ -704,6 +703,39 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- 상품 문의 답변 모달 -->
+                        <div v-if="showProductReplyModal" class="custom-modal">
+                        <div class="custom-modal-content">
+                            <h3>상품 문의 답변 관리</h3>
+                            <button @click="showProductReplyModal = false" class="modal-close">X</button>
+
+                            <!-- 답변 목록 -->
+                            <div v-if="productReplies.length > 0" class="reply-list">
+                            <div v-for="reply in productReplies" :key="reply.qsNo" class="reply-item">
+                                <p><strong>내용:</strong> {{ reply.replyContents }}</p>
+                                <p><strong>작성자:</strong> {{ reply.adminId }}</p>
+                                <p><strong>작성일:</strong> 2024-04-11</p>
+                                <button @click="startEditProductReply(reply)">수정</button>
+                                <button @click="deleteProductReply(reply)">삭제</button>
+                            </div>
+                            </div>
+                            <div v-else>
+                            <p>등록된 답변이 없습니다.</p>
+                            </div>
+
+                            <!-- 답변 작성/수정 -->
+                            <div class="reply-form">
+                            <textarea v-model="newProductReply" placeholder="답변 내용을 입력하세요"></textarea>
+                            <div>
+                                <button v-if="isProductEditing" @click="confirmUpdateProductReply">답변 수정</button>
+                                <button v-else @click="addProductReply">답변 등록</button>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+
+                        
                         <!--배송관리-->
                         <div v-if="currentSection === 'delivery-management'" class="section">
                             <h3>배송 관리</h3>
@@ -1262,7 +1294,12 @@
                         isEditing: false,
                         editingReplyId: null,
                         showReplyModal: false,
-
+                        productReplies: [],
+                        selectedIqNo: null,
+                        newProductReply: '',
+                        isProductEditing: false,
+                        editingReply: null,
+                        showProductReplyModal: false
                     };
                 },
                 computed: {
@@ -1346,6 +1383,101 @@
                     }
                 },
                 methods: {
+
+                startEditProductReply(reply) {
+                this.isProductEditing = true;
+                this.editingReply = reply;
+                this.newProductReply = reply.replyContents;
+                },
+                confirmUpdateProductReply() {
+                // 기존 updateProductReply 함수를 그대로 사용
+                this.editingReply.replyContents = this.newProductReply;
+                this.updateProductReply(this.editingReply);
+
+                this.isProductEditing = false;
+                this.newProductReply = '';
+                this.editingReply = null;
+                },
+
+                fetchProductReplies(iqNo) {
+                console.log("상품 문의 ID:", iqNo);
+
+                this.productReplies = [];
+                this.selectedIqNo = iqNo;
+                this.newProductReply = '';
+                this.isProductEditing = false;
+                this.editingReply = null;
+
+                $.ajax({
+                    url: '/admin/dashboard/productReplies',
+                    type: 'GET',
+                    data: { iqNo: iqNo },
+                    success: (response) => {
+                    console.log("상품 문의 답변 목록:", response);
+                    this.productReplies = response;
+
+                    // ✅ Vue 모달용 변수
+                    this.showProductReplyModal = true;
+                    },
+                    error: (xhr, status, error) => {
+                    console.error("상품 문의 답변 조회 실패:", error);
+                    }
+                });
+},
+
+                    addProductReply() {
+                    $.ajax({
+                        url: '/admin/dashboard/addProductReply',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                        qsNo: this.selectedIqNo,
+                        userId: this.adminId,  // 관리자인 경우 adminId 지정
+                        replyContents: this.newProductReply,
+                        adminId: this.adminId
+                        }),
+                        success: () => {
+                        this.newProductReply = '';
+                        this.fetchProductReplies(this.selectedIqNo);
+                        },
+                        error: (xhr, status, error) => {
+                        console.error("상품 문의 답변 등록 실패:", error);
+                        }
+                    });
+                    },
+
+                    updateProductReply(reply) {
+                    $.ajax({
+                        url: '/admin/dashboard/updateProductReply',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(reply),
+                        success: () => {
+                        this.fetchProductReplies(this.selectedIqNo);
+                        },
+                        error: (xhr, status, error) => {
+                        console.error("상품 문의 답변 수정 실패:", error);
+                        }
+                    });
+                    },
+
+                    deleteProductReply(reply) {
+                    $.ajax({
+                        url: '/admin/dashboard/deleteProductReply',
+                        type: 'POST',
+                        data: {
+                        iqNo: reply.qsNo,
+                        userId: reply.userId
+                        },
+                        success: () => {
+                        this.fetchProductReplies(this.selectedIqNo);
+                        },
+                        error: (xhr, status, error) => {
+                        console.error("상품 문의 답변 삭제 실패:", error);
+                        }
+                    });
+                    },
+                   
                     submitReply(QSNO) {
                         alert("등록되었습니다.");
                         const formData = {
@@ -2380,9 +2512,9 @@
                             type: "POST",
                             dataType: "json",
                             data: {
-                                type: "general",
+                                type: "all",
                                 page: this.currentPage,
-                                size: this.pageSize
+                                size: 9999
                             },
                             success: (response) => {
                                 console.log("API 응답 데이터:", response);

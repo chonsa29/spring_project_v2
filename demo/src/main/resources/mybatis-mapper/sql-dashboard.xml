@@ -148,11 +148,11 @@
             VIEW_CNT as viewCnt,
             QS_CATEGORY as qsCategory
         FROM QUESTION
-        <where>
-            <if test="status != null and status != ''">
-                QS_STATUS = #{status}
-            </if>
-        </where>
+	<where>
+	    <if test="status != null and status != ''">
+	        QS_STATUS = #{status}
+	    </if>
+	</where>
         ORDER BY QS_NO DESC
     </select>
     
@@ -176,28 +176,21 @@
 	    FROM DELIVERY d
 	    INNER JOIN ORDER_LIST o ON d.ORDER_KEY = o.ORDER_KEY
 	    INNER JOIN MEMBER m ON o.USERID = m.USERID
+	    <where>
+	        <if test="searchType == 'orderKey' and searchKeyword != null and searchKeyword != ''">
+	            AND d.ORDER_KEY = #{searchKeyword}
+	        </if>
+	        <if test="searchType == 'trackingNumber' and searchKeyword != null and searchKeyword != ''">
+	            AND d.TRACKING_NUMBER LIKE '%' || #{searchKeyword} || '%'
+	        </if>
+	        <if test="searchType == 'userName' and searchKeyword != null and searchKeyword != ''">
+	            AND m.USERNAME LIKE '%' || #{searchKeyword} || '%'
+	        </if>
+	    </where>
 	    ORDER BY d.DELIVERY_NO DESC
 	    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
-	<select id="selectDeliveryDetail" resultType="map">
-   	 SELECT 
-	        d.DELIVERY_NO as deliveryNo,
-	        d.ORDER_KEY as orderKey,
-	        d.CART_KEY as cartKey,
-	        d.DELIVERY_STATUS as deliveryStatus,
-	        d.TRACKING_NUMBER as trackingNumber,
-	        TO_CHAR(d.DELIVERY_DATE, 'YYYY-MM-DD HH24:MI') as deliveryDate,
-	        d.DELIVERY_FEE as deliveryFee,
-	        o.ORDER_DATE as orderDate,
-	        m.USERNAME as userName,
-	        m.PHONE as userPhone,
-	        m.EMAIL as userEmail,
-	        o.PRICE as orderPrice
-	    FROM DELIVERY d
-	    LEFT JOIN ORDER_LIST o ON d.ORDER_KEY = o.ORDER_KEY
-	    LEFT JOIN MEMBER m ON o.USERID = m.USERID
-	    WHERE d.DELIVERY_NO = #{deliveryNo}
-	</select>
+
 	
 	<select id="selectDeliveryCount" resultType="int">
 	    SELECT COUNT(*)
@@ -259,23 +252,26 @@
 	
 	<!-- 일반 문의 조회 -->
 	<select id="selectInquiryList2" resultType="map">
-    SELECT 
-        QS_NO as qsNo,
-        USERID as userId,
-        QS_TITLE as qsTitle,
-        QS_CONTENTS as qsContents,
-        QS_STATUS as qsStatus,
-        TO_CHAR(CDATETIME, 'YYYY-MM-DD HH24:MI') as cdatetime,
-        VIEW_CNT as viewCnt,
-        QS_CATEGORY as qsCategory
-   	 FROM QUESTION
+	    SELECT 
+	        QS_NO as qsNo,
+	        USERID as userId,
+	        QS_TITLE as qsTitle,
+	        QS_CONTENTS as qsContents,
+	        QS_STATUS as qsStatus,
+	        TO_CHAR(CDATETIME, 'YYYY-MM-DD HH24:MI') as cdatetime,
+	        VIEW_CNT as viewCnt,
+	        QS_CATEGORY as qsCategory
+	    FROM QUESTION
 	    <where>
-	        <if test="type != null and type != 'all'">
-	            AND QS_STATUS = 
-	                <choose>
-	                    <when test="type == 'pending'">0</when>
-	                    <otherwise>1</otherwise>
-	                </choose>
+	        <if test="type != null and type != '' and type != 'all'">
+	            <choose>
+	                <when test="type == 'pending'">
+	                    AND QS_STATUS = 0
+	                </when>
+	                <otherwise>
+	                    AND QS_STATUS IN (1, 2)
+	                </otherwise>
+	            </choose>
 	        </if>
 	        <if test="searchKeyword != null and searchKeyword != ''">
 	            AND (QS_TITLE LIKE '%' || #{searchKeyword} || '%' 
@@ -283,8 +279,8 @@
 	        </if>
 	    </where>
 	    ORDER BY QS_NO DESC
-	    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
+
 		
 	<!-- 일반 문의 카운트 -->
 	<select id="selectInquiryCount" resultType="int">
@@ -298,13 +294,24 @@
 	
 	<!-- 상품 문의 답변 추가 -->
 	<insert id="insertProductInquiryReply" parameterType="QuestionReply">
-	    INSERT INTO ITEM_QUESTION_REPLY (
-	        IQ_NO, USERID, REPLY_CONTENTS, ADMIN_ID
+	    INSERT INTO ITEM_QUESTION (
+	        IQ_NO,
+	        USERID,
+	        IQ_TITLE,
+	        IQ_CONTENTS,
+	        IQ_STATUS,
+	        ITEM_NO,
+	        CDATETIME
 	    ) VALUES (
-	        #{qsNo}, #{userId}, #{replyContents}, #{adminId}
+	        (SELECT NVL(MAX(IQ_NO), 0) + 1 FROM ITEM_QUESTION),
+	        'admin01',
+	        '답변',
+	        #{replyContents},
+	        '1',
+	        (SELECT ITEM_NO FROM ITEM_QUESTION WHERE IQ_NO = #{qsNo}),
+	        SYSDATE
 	    )
-	</insert>
-	
+	</insert>	
 	<!-- 상품 문의 상태 업데이트 -->
 	<update id="updateProductInquiryStatus">
 	    UPDATE ITEM_QUESTION SET 
@@ -351,4 +358,29 @@
 	    FROM REPLY
 	    WHERE QS_NO = #{qsNo}
 	</select>
+	
+	<select id="selectRepliesByIqNo" resultType="QuestionReply">
+	    SELECT 
+	        IQ_NO as qsNo,
+	        USERID as userId,
+	        IQ_CONTENTS as replyContents,
+	        'admin' as adminId
+	    FROM ITEM_QUESTION
+	    WHERE IQ_NO = #{iqNo}
+	</select>
+		
+	<update id="updateProductInquiryReply" parameterType="QuestionReply">
+	    UPDATE ITEM_QUESTION
+	    SET 
+	        IQ_CONTENTS = #{replyContents},
+	        IQ_STATUS = '1'
+	    WHERE IQ_NO = #{qsNo}
+	</update>
+	
+	<delete id="deleteProductInquiryReply">
+	    DELETE FROM ITEM_QUESTION
+	    WHERE IQ_NO = #{iqNo}
+	</delete>
+
+
 </mapper>

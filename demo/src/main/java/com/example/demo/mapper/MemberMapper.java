@@ -77,7 +77,10 @@ public interface MemberMapper {
     
     int updatePassword(@Param("email") String email, @Param("password") String password);
 
-    
+    int insertReview(HashMap<String, Object> map);
+
+	List<HashMap<String, Object>> selectOrderDetailItems(HashMap<String, Object> map);
+
     
 }
 

@@ -1,11 +1,10 @@
 package com.example.demo.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -349,37 +348,40 @@ public class MemberController {
 	    return Map.of("exists", exists);
 	}
 	
-    @PostMapping("/change-password.dox")
-    @ResponseBody
-    public ResponseEntity<?> changePassword(@RequestParam String email, @RequestParam String password) {
+	@RequestMapping(value = "/member/insertReview.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String insertReview(@RequestParam HashMap<String, Object> map) {
+		System.out.println("======= 리뷰 등록 전 파라미터 =======");
+		for (String key : map.keySet()) {
+		    System.out.println(key + " : " + map.get(key));
+		}
 
-        try {
+	    if (map.get("orderKey") != null && !map.get("orderKey").toString().isEmpty()) {
+	        map.put("orderKey", Integer.parseInt(map.get("orderKey").toString()));
+	    }
+	    if (map.get("itemNo") != null && !map.get("itemNo").toString().isEmpty()) {
+	        map.put("itemNo", Integer.parseInt(map.get("itemNo").toString()));
+	    }
+	    if (map.get("reviewScore") != null && !map.get("reviewScore").toString().isEmpty()) {
+	        map.put("reviewScore", Integer.parseInt(map.get("reviewScore").toString()));
+	    }
 
-            boolean result = memberService.changePassword(email, password);
 
-            if (result) {
+	    int result = memberService.insertReview(map);
+	    HashMap<String, Object> res = new HashMap<>();
+	    res.put("result", result > 0 ? "success" : "fail");
+	    return new Gson().toJson(res);
+	}
 
-                return ResponseEntity.ok(Map.of("result", "success"));
 
-            } else {
-
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-
-                        .body(Map.of("result", "fail", "message", "비밀번호 변경에 실패했습니다."));
-
-            }
-
-        } catch (Exception e) {
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-
-                    .body(Map.of("result", "error", "message", "서버 오류: " + e.getMessage()));
-
-        }
-
-    }
-
-    
 	
-	
+	@RequestMapping(value = "/member/orderDetailItems.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String getOrderDetailItems(@RequestParam HashMap<String, Object> map) {
+	    List<HashMap<String, Object>> items = memberService.getOrderDetailItems(map);
+	    HashMap<String, Object> res = new HashMap<>();
+	    res.put("items", items);
+	    return new Gson().toJson(res);
+	}
+
 }

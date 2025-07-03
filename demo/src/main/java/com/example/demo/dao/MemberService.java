@@ -446,4 +446,13 @@ public class MemberService {
         params.put("itemNo", itemNo);
         return memberMapper.reviewExists(params);
     }
+
+    public int insertReview(HashMap<String, Object> map) {
+        return memberMapper.insertReview(map);
+    }
+
+    public List<HashMap<String, Object>> getOrderDetailItems(HashMap<String, Object> map) {
+        return memberMapper.selectOrderDetailItems(map);
+    }
+
 }

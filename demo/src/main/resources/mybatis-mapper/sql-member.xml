@@ -308,10 +308,12 @@
 	        <if test="phone != null">PHONE = #{phone},</if>
 	        <if test="email != null">EMAIL = #{email},</if>
 	        <if test="address != null">ADDRESS = #{address},</if>
-	        <if test="password != null">PASSWORD = #{password},</if>	
+	        <if test="password != null">PASSWORD = #{password},</if>
+	        <if test="allergy != null">ALLERGY = #{allergy},</if> <!-- ✨ 추가 -->
 	    </set>
 	    WHERE USERID = #{userId}
 	</update>
+
 	
 	<!--회원탈퇴-->
     <select id="selectPassword" parameterType="String" resultType="String">
@@ -346,7 +348,7 @@
 	        ORDER_KEY = #{orderKey}
 	</select>
 	
-	<insert id="insertReview" parameterType="ReviewDTO">
+	<insert id="insertReview" parameterType="hashmap">
 	    INSERT INTO REVIEW (
 	        REVIEW_NO,
 	        ORDER_KEY,
@@ -358,15 +360,27 @@
 	        REVIEW_CONTENTS
 	    ) VALUES (
 	        REVIEW_SEQ.NEXTVAL,
-	        #{orderKey},
-	        #{itemNo},
-	        #{userid},
-	        #{reviewTitle},
-	        #{reviewScore},
+	        #{orderKey, jdbcType=NUMERIC},
+	        #{itemNo, jdbcType=NUMERIC},
+	        #{userid, jdbcType=VARCHAR},
+	        #{reviewTitle, jdbcType=VARCHAR},
+	        #{reviewScore, jdbcType=NUMERIC},
 	        SYSDATE,
-	        #{reviewContents}
+	        #{reviewContents, jdbcType=VARCHAR}
 	    )
 	</insert>
+
+
+		
+	<select id="selectOrderDetailItems" parameterType="hashmap" resultType="Member">
+	    SELECT 
+	        d.ITEM_NO as itemNo,
+	        p.ITEM_NAME as itemName
+	    FROM ORDER_DETAILS d
+	    JOIN PRODUCT p ON d.ITEM_NO = p.ITEM_NO
+	    WHERE d.ORDER_KEY = #{orderKey}
+	</select>
+
 	
 	<select id="selectReviewCount" resultType="int">
 	    SELECT COUNT(*)

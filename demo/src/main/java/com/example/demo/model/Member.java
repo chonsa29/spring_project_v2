@@ -50,4 +50,6 @@ public class Member {
     private Integer groupDiscountRate; 
     private String groupRole;
     private List<Member> groupMembers; 
+    private String itemNo;
+    private String itemName;
 }

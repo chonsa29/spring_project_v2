@@ -83,5 +83,13 @@ public interface DashboardMapper {
 	QuestionReply selectReply(int replyNo);
 
 	// 문의별 답변 수 조회 추가
-	int countRepliesByQsNo(int qsNo);	
+	int countRepliesByQsNo(int qsNo);
+
+	List<QuestionReply> selectRepliesByIqNo(int iqNo);
+
+	void updateProductInquiryReply(QuestionReply reply);
+
+	void deleteProductInquiryReply(int iqNo, String userId);
+
+	void deleteProductInquiryReply(int iqNo);	
 }

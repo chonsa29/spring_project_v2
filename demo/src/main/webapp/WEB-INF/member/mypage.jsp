@@ -229,20 +229,25 @@
                                 <span class="info-label">상태</span>
                                 <span class="info-value">{{ getOrderStatusText(order.orderStatus) }}</span>
                             </div>
+                        
                             <div class="info-row">
                                 <span class="info-label">주문일자</span>
                                 <span class="info-value">{{ order.orderDate }}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">총 금액</span>
-                                <span class="info-value">{{ formatNumber(order.price) }}원</span>
+                                <span class="info-value">{{ formatNumber(order.totalPrice) }}원</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">상품 수</span>
                                 <span class="info-value">{{ order.itemCount }}개</span>
                             </div>
+                            <div v-if="order.orderStatus === 'S'" class="text-end mt-2">
+                                <button class="btn btn-outline-primary" @click="openReviewModal(order)">리뷰 작성</button>
+                            </div>                                   
                         </div>
 
+                 
                         <div class="pagination">
                             <a v-for="page in orderPages" @click="changeOrderPage(page)"
                                 :class="{active: currentOrderPage === page}">
@@ -252,7 +257,7 @@
                     </div>
 
                     <!-- 등급/그룹 탭 부분 수정 -->
-                    <div v-if="currentTab === 'grade'">
+                     <div v-if="currentTab === 'grade'">
                         <h2 class="section-title">등급 및 그룹 정보</h2>
 
                         <div class="content-card">
@@ -477,6 +482,12 @@
                                 </div>
 
                                 <div class="mb-3">
+                                    <label class="form-label">알러지 정보</label>
+                                    <input type="text" class="form-control" v-model="editData.allergy" placeholder="예: 견과류, 갑각류 등">
+                                    <small class="text-muted">복수 입력 시 쉼표로 구분해 주세요.</small>
+                                </div>
+
+                                <div class="mb-3">
                                     <label class="form-label">새 비밀번호 (변경시만 입력)</label>
                                     <input type="password" class="form-control" v-model="editData.newPassword">
                                     <small class="text-muted">8자 이상, 영문+숫자 조합</small>
@@ -557,8 +568,48 @@
                     </div>
                 </div>
             </div>
+            <!-- 리뷰 작성 모달 -->
+            <div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">리뷰 작성</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
 
+                    <!-- 상품 선택 -->
+                    <div class="mb-3">
+                    <label class="form-label">상품 선택</label>
+                        <select v-model="reviewData.itemNo" class="form-select">
+                        <option v-for="item in reviewData.itemList" :value="String(item.itemNo)" :key="item.itemNo">
+                            {{ item.itemName }}
+                        </option>
+                        </select>
+                    </div>
 
+                    <div class="mb-3">
+                    <label class="form-label">제목</label>
+                    <input type="text" class="form-control" v-model="reviewData.title" placeholder="리뷰 제목을 입력하세요">
+                    </div>
+                    <div class="mb-3">
+                    <label class="form-label">평점 (1~5)</label>
+                    <input type="number" class="form-control" v-model="reviewData.score" min="1" max="5">
+                    </div>
+                    <div class="mb-3">
+                    <label class="form-label">내용</label>
+                    <textarea class="form-control" v-model="reviewData.contents" placeholder="리뷰 내용을 입력하세요"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" @click="submitReview" class="btn btn-primary">등록</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                </div>
+                </div>
+            </div>
+            </div>
+
+           
 
 
 
@@ -630,10 +681,90 @@
                         address: '1234',
                         newPassword: '1234'
                     },
-                    editModal: null // 모달 인스턴스 저장용
+                    editModal: null, // 모달 인스턴스 저장용
+                    allergy: '',
+                    reviewData: {
+                    orderKey: '',
+                    itemNo: '',
+                    title: '',
+                    score: 5,
+                    contents: '',
+                    itemList: [] // 상품 목록
+                    },                   
                 };
             },
             methods: {
+                // 리뷰 모달 열기
+                openReviewModal(order) {
+                    this.reviewData.orderKey = order.orderKey;
+                    this.reviewData.title = '';
+                    this.reviewData.score = 5;
+                    this.reviewData.contents = '';
+                    this.reviewData.itemNo = '';
+                    this.reviewData.itemList = [];
+
+                    const self = this;
+                    $.ajax({
+                    url: "/member/orderDetailItems.dox",
+                    type: "POST",
+                    dataType: "json",
+                    data: { orderKey: order.orderKey },
+                    success: function (res) {
+                    console.log("✔️ 상품 목록 응답", res);
+                    self.reviewData.itemList = res.items || [];
+                    console.log("✔️ Vue itemList", self.reviewData.itemList);
+                    if (self.reviewData.itemList.length > 0) {
+                        self.reviewData.itemNo = String(self.reviewData.itemList[0].itemNo);
+                        console.log("✔️ 초기 선택된 itemNo", self.reviewData.itemNo);
+                    }
+
+                    $('#reviewModal').modal('show');
+                    },
+                    error: function () {
+                        Swal.fire("오류", "상품 정보를 불러오지 못했습니다.", "error");
+                    }
+                    });
+                },
+
+                // 리뷰 제출
+                submitReview() {
+                const self = this;
+
+                console.log("등록 전 데이터", {
+                    orderKey: self.reviewData.orderKey,
+                    itemNo: self.reviewData.itemNo, // ← 추가 확인
+                    userid: self.userId,
+                    reviewTitle: self.reviewData.title,
+                    reviewScore: self.reviewData.score,
+                    reviewContents: self.reviewData.contents
+                });
+
+                $.ajax({
+                    url: "/member/insertReview.dox",
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                    orderKey: parseInt(self.reviewData.orderKey),
+                    itemNo: parseInt(self.reviewData.itemNo), // ✅ 반드시 추가
+                    userid: self.userId,
+                    reviewTitle: self.reviewData.title,
+                    reviewScore: parseInt(self.reviewData.score),
+                    reviewContents: self.reviewData.contents
+                    },
+                    success: function (res) {
+                    if (res.result === 'success') {
+                        Swal.fire("성공!", "리뷰가 등록되었습니다.", "success");
+                        $('#reviewModal').modal('hide');
+                        self.loadOrderList();
+                    } else {
+                        Swal.fire("오류", "리뷰 등록 실패", "error");
+                    }
+                    },
+                    error: function () {
+                    Swal.fire("오류", "서버 오류가 발생했습니다.", "error");
+                    }
+                });
+                },
 
                 viewOrderDetail(orderKey) {
                     const order = this.orders.find(o => o.orderKey === orderKey);
@@ -822,6 +953,7 @@
                             self.orders = data.orders || [];
                             self.orderTotalCount = data.totalCount || 0;
                             self.calculateOrderPages();
+                            console.log(self.orders);
                         },
                         error: function (error) {
                             self.showError('주문 내역을 불러오는 중 오류가 발생했습니다.');
@@ -1122,36 +1254,40 @@
                         height: '100%'
                     }).open();  // 팝업 방식으로 주소 찾기
                 },
-                async submitReview(item) {
-                    if (!item.reviewContent?.trim()) {
-                        alert('리뷰 내용을 입력해 주세요.');
-                        return;
-                    }
+                submitReview() {
+                const self = this;
 
-                    try {
-                        const response = await $.ajax({
-                            url: '/review/write.do',
-                            method: 'POST',
-                            data: {
-                                orderKey: this.selectedOrder.orderKey,
-                                itemNo: item.itemId,
-                                content: item.reviewContent,
-                                score: item.reviewScore || 5,
-                            }
-                        });
+                if (!this.reviewData.title.trim() || !this.reviewData.contents.trim()) {
+                    Swal.fire("알림", "제목과 내용을 입력하세요.", "warning");
+                    return;
+                }
 
-                        if (response.success) {
-                            alert('리뷰가 등록되었습니다.');
-                            item.reviewExists = true;
-                        } else {
-                            alert('리뷰 등록 실패');
-                        }
-                    } catch (e) {
-                        console.error(e);
-                        alert('리뷰 등록 오류');
+                $.ajax({
+                    url: "/member/insertReview.dox",
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                    orderKey: self.reviewData.orderKey,
+                    itemNo: self.reviewData.itemNo,
+                    userid: self.userId,
+                    reviewTitle: self.reviewData.title,
+                    reviewScore: self.reviewData.score,
+                    reviewContents: self.reviewData.contents
+                    },
+                    success: function (res) {
+                    if (res.result === 'success') {
+                        Swal.fire("성공!", "리뷰가 등록되었습니다.", "success");
+                        $('#reviewModal').modal('hide');
+                        self.loadOrderList();
+                    } else {
+                        Swal.fire("오류", "리뷰 등록에 실패했습니다.", "error");
                     }
+                    },
+                    error: function () {
+                    Swal.fire("오류", "서버 오류가 발생했습니다.", "error");
+                    }
+                });
                 },
-
                 async updateReview(item) {
                     try {
                         const response = await $.ajax({
@@ -1203,7 +1339,7 @@
                 },
                 showGroupJoinModal() {
                     // 그룹 가입 모달을 표시하는 로직
-                    alert('그룹 찾기/가입 기능을 구현해주세요.');
+                    window.location.href = '/commu-main.do';
                     // 또는 모달 컴포넌트를 표시하는 로직
                 }
 

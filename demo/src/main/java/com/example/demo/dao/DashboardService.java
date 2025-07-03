@@ -210,4 +210,23 @@ public class DashboardService {
             dashboardMapper.updateInquiryStatus(reply.getQsNo(), "0");
         }
     }
+    
+    public List<QuestionReply> selectRepliesByIqNo(int iqNo) {
+        return dashboardMapper.selectRepliesByIqNo(iqNo);
+    }
+    
+    public void insertProductInquiryReply(QuestionReply reply) {
+        dashboardMapper.insertProductInquiryReply(reply);
+    }
+    
+    public void updateProductInquiryReply(QuestionReply reply) {
+        dashboardMapper.updateProductInquiryReply(reply);
+    }
+
+    public void deleteProductInquiryReply(int iqNo, String userId) {
+        dashboardMapper.deleteProductInquiryReply(iqNo);
+    }
+
+
+
 }

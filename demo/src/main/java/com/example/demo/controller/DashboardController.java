@@ -244,4 +244,34 @@ public class DashboardController {
 	    dashboardService.deleteReply(replyNo);
 	    return ResponseEntity.ok().build();
 	}
+	@RequestMapping(value = "/productReplies",  method = {RequestMethod.GET, RequestMethod.POST})
+	@ResponseBody
+	public List<QuestionReply> getProductReplies(@RequestParam int iqNo) {
+	    return dashboardService.selectRepliesByIqNo(iqNo);
+	}
+
+	@RequestMapping("/addProductReply")
+	@ResponseBody
+	public Map<String, Object> addProductReply(@RequestBody QuestionReply reply) {
+	    dashboardService.insertProductInquiryReply(reply);
+	    // 필요하면 상태 업데이트도 호출 가능
+	    return Map.of("result", "success");
+	}
+
+	@RequestMapping("/updateProductReply")
+	@ResponseBody
+	public Map<String, Object> updateProductReply(@RequestBody QuestionReply reply) {
+	    dashboardService.updateProductInquiryReply(reply);
+	    return Map.of("result", "success");
+	}
+
+	@RequestMapping("/deleteProductReply")
+	public Map<String, Object> deleteProductReply(@RequestParam int iqNo, @RequestParam String userId) {
+	    dashboardService.deleteProductInquiryReply(iqNo, userId);
+
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("result", "success");
+	    return result;
+	}
+
 }
