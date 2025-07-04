@@ -35,7 +35,9 @@
 
             <div class="story-section">
                 <div class="story-content">
-                    <img src="/img/story1.jpg" class="story-img" />
+                    <div class="story-img-wrapper">
+                        <img src="/img/story1.jpg" alt="story image01" class="story-img" />
+                    </div>
                     <div class="story-text">
                         <div class="story-number">01</div>
                         <p class="story-paragraph">
@@ -50,9 +52,10 @@
                 </div>
             </div>
 
+
             <div class="story-section">
                 <div class="story-content reverse">
-                    <img src="/img/story2.jpg" class="story-img" />
+                    <img src="/img/story2.jpg" alt="story image02" class="story-img" />
                     <div class="story-text">
                         <div class="story-number">02</div>
                         <p class="story-paragraph">우리는 고객의 건강을 위해 무첨가, 유기농 원료만을 사용하며, 각 연령대에 맞춘 맞춤 메뉴로 여러분의 웰에이징을 지원합니다.
@@ -65,11 +68,10 @@
             <!-- 브랜드 스토리 03 -->
             <div class="story-section">
                 <div class="story-content">
-                    <img src="/img/story3.jpg" class="story-img" />
+                    <img src="/img/story3.jpg" alt="story image03" class="story-img" />
                     <div class="story-text">
-                        <h2>03</h2>
-                        <p>MealPick은 바쁜 현대인을 위해 시간을 절약하면서도 영양가 있는 균형 잡힌 식사를 제공합니다.</p>
-                        <p>Commodo odio aenean sed adipiscing diam donec adipiscing tristique.</p>
+                        <div class="story-number">03</div>
+                        <p class="story-paragraph">MealPick은 바쁜 현대인을 위해 시간을 절약하면서도 영양가 있는 균형 잡힌 식사를 제공합니다.</p>
                     </div>
                 </div>
             </div>
