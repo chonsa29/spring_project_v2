@@ -31,27 +31,49 @@ body, html {
     z-index: 2;
 }
 
-.hero-box {
-    background-color: rgba(0, 0, 0, 0.6); /* 검정색 반투명 박스 */
-    padding: 40px 30px;
-    border-radius: 4px;
-    text-align: center;
+.hero-centered-box {
+    background-color: rgba(0, 0, 0, 0.6); /* 반투명 검정 배경 */
     color: white;
-    max-width: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    max-width: 800px;
     width: 90%;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    height: 100%; /* 이미지 높이에 맞춤 */
+    padding: 0 60px; /* 좌우 여백으로 내부 정렬 */
+    box-sizing: border-box;
+}
+
+.hero-centered-box::before,
+.hero-centered-box::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    height: 100%; /* 검정 박스 높이만큼 */
+    width: 1px;
+    background-color: white;
+}
+
+.hero-centered-box::before {
+    left: 30px; /* 안쪽으로 들임 */
+}
+
+.hero-centered-box::after {
+    right: 30px;
+}
+
+
+.hero-content {
+    text-align: center;
+    max-width: 500px;
 }
 
 .hero-icon {
-    width: 50px;
-    margin-bottom: 10px;
-}
-
-.hero-brand {
-    font-size: 14px;
-    letter-spacing: 1px;
-    font-weight: bold;
-    margin-bottom: 8px;
+    width: 100px;         /* 기존에 늘려둔 크기 예시 */
+    height: auto;
+    position: relative;   /* 위치 조정 가능하도록 */
+    top: -50px;           /* 위로 20px 당김 */
 }
 
 .hero-title {
@@ -68,9 +90,10 @@ body, html {
 }
 
 
-/* 브랜드 스토리 섹션 */
+
+/* 브랜드 스토리 섹션 리디자인 */
 .story-section {
-    padding: 60px 20px;
+    padding: 80px 20px;
     max-width: 1100px;
     margin: 0 auto;
 }
@@ -78,7 +101,7 @@ body, html {
 .story-content {
     display: flex;
     gap: 40px;
-    align-items: center;
+    align-items: flex-start;
     flex-wrap: wrap;
 }
 
@@ -87,26 +110,33 @@ body, html {
 }
 
 .story-img {
-    flex: 1 1 45%;
-    border-radius: 8px;
-    max-width: 600px;
+    flex: 1 1 50%;
     width: 100%;
+    max-width: 520px;
+    border-radius: 4px;
     object-fit: cover;
 }
 
 .story-text {
     flex: 1 1 45%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-.story-text h2 {
-    font-size: 24px;
-    color: #2d7f62;
-    margin-bottom: 10px;
+.story-number {
+    font-size: 20px;
+    font-weight: 700;
+    border-bottom: 2px solid black;
+    display: inline-block;
+    padding-bottom: 6px;
+    margin-bottom: 20px;
 }
 
-.story-text p {
+.story-paragraph {
     font-size: 16px;
-    color: #444;
-    line-height: 1.6;
-    margin-bottom: 10px;
+    color: #333;
+    line-height: 1.7;
+    margin-bottom: 12px;
 }
+
