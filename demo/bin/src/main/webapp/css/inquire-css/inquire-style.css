@@ -144,12 +144,19 @@ body {
     display: block;
     padding: 10px;
     color: #555;
-    align-items: flex-start;
+    text-align: left;
 }
 
 /* Q 아이콘 */
 .faq-question::before {
     content: "Q.";
+    font-weight: bold;
+    color: #333;
+    margin-right: 5px;
+}
+
+.faq-answer::before {
+    content: "A.";
     font-weight: bold;
     color: #333;
     margin-right: 5px;

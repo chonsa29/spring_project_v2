@@ -52,7 +52,9 @@
                         <div class="product-details">
                             <div class="price-row">
                                 <h3>PRICE</h3>
-                                <span>{{ (item.price * item.cartCount).toLocaleString() }}원</span>
+                                <span>
+                                    {{ item.price.toLocaleString() }}원
+                                </span>
                             </div>
                             <div class="quantity">
                                 <span>수량</span>
@@ -71,10 +73,7 @@
                             <span>총 상품 금액:</span>
                             <span>{{ totalAmount.toLocaleString() }}원</span>
                         </div>
-                        <div class="summary-item">
-                            <span>할인 금액:</span>
-                            <span>-{{ totalDiscount.toLocaleString() }}원</span>
-                        </div>
+
                         <div class="summary-item">
                             <span>배송비:</span>
                             <span>{{ totalShippingFee.toLocaleString() }}원</span>
@@ -102,30 +101,21 @@
     const app = Vue.createApp({
         data() {
             return {
-                list: [], // 서버에서 가져올 상품 리스트
-                totalAmount: 0, // 선택된 상품의 총 금액
-                isAllSelected: false, // 전체 선택 체크박스 상태
+                list: [],
+                totalAmount: 0,
+                isAllSelected: false,
                 userId : "${sessionId}",
                 count : "",
                 selectList : [],
-                discount: 0, // 기본 할인 금액
-                shippingFee: 3000 // 기본 배송비
+                shippingFee: 3000,
             };
         },
-        computed: { // computed 속성 추가
-            // 할인 금액: 선택된 상품이 있을 때만 적용
-            totalDiscount() {
-                return this.list.some(item => item.checked) ? this.discount : 0;
-            },
-            // 배송비: 선택된 상품이 있을 때만 적용
+        computed: {
             totalShippingFee() {
                 return this.totalAmount >= 30000 ? 0 : this.shippingFee;
             },
-            // 최종 결제 금액 계산
             finalAmount() {
-                const discount = this.totalDiscount; // 할인 금액 적용
-                const discountedTotal = Math.max(this.totalAmount - discount, 0);
-                return discountedTotal + this.totalShippingFee; // 배송비 자동 반영
+                return this.totalAmount + this.totalShippingFee;
             },
             progressBarStyle() {
                 const maxAmount = 30000;
@@ -152,23 +142,20 @@
                     checkedMap[item.itemNo] = item.checked;
                 });
 
-                // Ajax로 서버에서 데이터 가져오기
                 $.ajax({
                     url: "/cart/list.dox",
                     dataType: "json",
                     type: "POST",
                     data : params,
                     success: (data) => {
-                        // 리스트 초기화 및 각 아이템에 checked 속성 추가
                         this.list = data.list.map(item => ({
                             ...item,
                             price: Number(item.price),
                             cartCount: Number(item.cartCount),
-                            checked: checkedMap[item.itemNo] || false, // 초기 상태는 선택되지 않음
+                            checked: checkedMap[item.itemNo] || false,
                         }));
 
                         console.log(this.list);
-                        // 데이터 로드 후 초기화
                         this.updateTotalAmount();
                     },
                 });
@@ -212,20 +199,19 @@
             },
             fnRemoveAll() {
                 var self = this;
-
-                // 체크된 상품들의 itemNo를 배열로 수집
                 var selectedItems = self.list
-                    .filter(item => item.checked)  // 체크된 상품만 필터링
-                    .map(item => item.itemNo);  // itemNo 값만 추출
+                    .filter(item => item.checked)
+                    .map(item => item.itemNo);
 
                 if (selectedItems.length === 0) {
                     alert("삭제할 상품을 선택하세요.");
                     return;
                 }
 
-                var param = { selectList: JSON.stringify(selectedItems),
-                                userId: self.userId
-                 };
+                var param = { 
+                    selectList: JSON.stringify(selectedItems),
+                    userId: self.userId
+                };
 
                 $.ajax({
                     url: "/cart/remove-list.dox",
@@ -235,31 +221,27 @@
                     success: function (data) {
                         console.log(data);
                         alert("선택한 상품이 장바구니에서 제거되었습니다.");
-                        self.fnCartList();  // 장바구니 목록 새로고침
+                        self.fnCartList();
                     }
                 });
             },
-            fnProduct : function(){
+            fnProduct() {
                 location.href = "/product.do";
             },
             updateTotalAmount() {
-                console.log('updateTotalAmount 호출됨'); // 디버깅용 로그 추가
-
-                // 체크된 항목들의 가격을 합산
+                console.log('updateTotalAmount 호출됨');
                 this.totalAmount = this.list
-                    .filter(item => item.checked) // 체크된 항목만 필터링
-                    .reduce((sum, item) => sum + (item.price * item.cartCount), 0); // 가격 합산
+                    .filter(item => item.checked)
+                    .reduce((sum, item) => sum + (item.price * item.cartCount), 0);
 
-                console.log("계산된 totalAmount:", this.totalAmount); // totalAmount 값 확인
+                console.log("계산된 totalAmount:", this.totalAmount);
 
-                // Vue가 DOM을 업데이트한 후 실행 (반영 지연 방지)
                 this.$nextTick(() => {
                     this.updateProgressBar();
                 });
             },
-
             updateProgressBar() {
-                this.$nextTick(() => { // Vue가 DOM 업데이트 후 실행하도록 보장
+                this.$nextTick(() => {
                     const maxAmount = 30000;
                     const progressBar = document.getElementById('progress-bar');
 
@@ -268,54 +250,35 @@
                         return;
                     }
 
-                    // 총 금액 비율 계산 (최대 100% 초과 방지)
                     const percentage = Math.min((this.totalAmount / maxAmount) * 100, 100);
-
-                    // width 값 적용 (이전에 빈값이 나왔던 문제 해결)
                     progressBar.style.width = percentage + "%";
 
-                    // 강제 리페인트 적용 (브라우저 최적화로 인해 무시되는 경우 방지)
                     progressBar.style.display = "none";
-                    progressBar.offsetHeight; // 트릭: 리플로우 강제 실행
+                    progressBar.offsetHeight;
                     progressBar.style.display = "block";
 
-                    // 색상 변경
                     progressBar.style.backgroundColor = percentage >= 100 ? "#ff5733" : "#C1E8C7";
-
                 });
             },
-
             toggleAllSelection() {
-                // 전체 선택 체크박스 상태에 따라 모든 항목 선택/해제
                 this.list.forEach(item => {
                     item.checked = this.isAllSelected;
                 });
-                this.updateTotalAmount(); // 총 금액 업데이트
-
+                this.updateTotalAmount();
             },
-
-            fnGoPay(itemNo, count) {
+            fnGoPay() {
                 const selectedItems = this.list.filter(item => item.checked);
                 if (selectedItems.length === 0) {
                     alert("주문할 상품을 선택해주세요.");
                     return;
                 }
-                
-                // 필요한 데이터를 localStorage에 저장
+
                 localStorage.setItem('orderData', JSON.stringify(selectedItems));
-                
-                // 페이지 이동
                 location.href = '/pay.do';
             }
         },
         mounted() {
-            this.fnCartList(); // 컴포넌트가 마운트될 때 데이터 가져오기
-
-            const orderData = JSON.parse(localStorage.getItem('orderData'));
-            if (orderData) {
-                this.orderItems = orderData;
-                this.calculateTotal();
-            }
+            this.fnCartList();
         },
     });
 

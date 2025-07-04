@@ -3,10 +3,11 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>결제 페이지</title>
+    <title>결제</title>
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.min.js"></script>
     <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="/js/pageChange.js"></script>
     <link rel="stylesheet" href="/css/pay.css">
 </head>
@@ -91,7 +92,11 @@
                        <h2 class="text">포인트</h2> 
                     </div>
                     <div>
-                        <input type="text" class="pay_point" v-model.number="displayPoint" placeholder="포인트 입력">
+                        <input type="text" 
+                        class="pay_point" 
+                        v-model.number="displayPoint" 
+                        placeholder="포인트 입력" 
+                        @input="onPointInput">
                         <button class="point_btn" @click="applyPoint">전액 사용</button>
                     </div>
                     <div class="point_text">
@@ -124,7 +129,7 @@
               
                 <section class="payment">
                     <h2 class="text">결제 수단</h2>
-                    <select class="pay_way">
+                    <select class="pay_way" v-model="payWay">
                         <option>신용카드</option>
                         <option>실시간 계좌이체</option>
                     </select>
@@ -153,7 +158,11 @@
                 sameAsOrderer: false,
                 receiverName: '',
                 receiverPhone: '',
-                detailAddress: ''
+                detailAddress: '',
+                shippingMessage: '',
+                payWay: '신용카드',
+                cartKey: '',
+                productNumber: ''
             };
         },
         computed: {
@@ -231,6 +240,9 @@
                                 price: parseInt(data.productInfo.price, 10), 
                                 quantity: quantity // 수량 반영
                             }];
+
+                            self.productNumber = data.productInfo.itemNo
+
                         } else {
                             self.productInfo = Array.isArray(data.productInfo) 
                                 ? data.productInfo.map(item => ({
@@ -238,7 +250,8 @@
                                     itemName: item.itemName,
                                     filePath: item.filePath,
                                     price: parseInt(item.price, 10), 
-                                    quantity: parseInt(item.quantity, 10)
+                                    quantity: parseInt(item.quantity, 10),
+                                    cartKey: item.cartKey 
                                 }))
                                 : [{
                                     itemNo: data.productInfo.itemNo,
@@ -247,6 +260,11 @@
                                     price: parseInt(data.productInfo.price, 10), 
                                     quantity: parseInt(data.productInfo.quantity, 10) || 1
                                 }];
+
+                                self.productNumber = Array.isArray(data.productInfo)
+                                    ? data.productInfo[0]?.itemNo
+                                    : data.productInfo.itemNo;
+
                         }
                         console.log("상품 정보:", self.productInfo);
                     }
@@ -269,8 +287,32 @@
 					}
 				});
             },
+            removeItemsFromCart(orderItems) {
+                var self = this;
+				var nparmap = { 
+                    userId : self.sessionId,
+                    quantity : self.quantity,
+                    itemNo : self.itemNo,
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/deleteOrderedItems.dox", 
+                    data: JSON.stringify(orderItems),
+                    contentType: "application/json",
+                    success: function(response) {
+                        console.log("장바구니에서 삭제 성공", response);
+                    },
+                    error: function(error) {
+                        console.error("장바구니 삭제 실패", error);
+                        alert("장바구니 처리 중 오류가 발생했습니다.");
+                    }
+                });
+            },
             fnPayment(){
                 var self = this;
+
+                localStorage.setItem("orderData", JSON.stringify(self.productInfo));
+                sessionStorage.setItem("orderTempData", JSON.stringify(this.productInfo));
 
                 if(!self.memberInfo.userName || !self.memberInfo.phone) {
                     alert("주문자 정보를 입력해주세요");
@@ -282,36 +324,55 @@
                     return;
                 }
 
+                if (self.paymentMethod === 'five' && !self.shippingMessage.trim()) {
+                    alert("배송 메모를 입력해 주세요.");
+                    return;
+                }
+
                 const originalPrice = this.productInfo.reduce((total, item) => total + item.price * item.quantity, 0);
                 const discount = this.discountRate * originalPrice;
                 const gradeDiscount = this.gradeDiscountAmount;
                 const usedPoint = parseInt(this.memberInfo.usedPoint) || 0;
                 const totalPrice = originalPrice - discount - gradeDiscount + this.shippingFee - usedPoint;
 
+                // 결제 직전에
+                const orderData = JSON.parse(localStorage.getItem("orderData"));
+                if (orderData) {
+                    localStorage.setItem("lastOrderData", JSON.stringify(orderData));
+                }
+
                 IMP.request_pay({
                     pg: "html5_inicis",
                     pay_method: "card",
                     merchant_uid: "merchant_" + new Date().getTime(),
-                    name: "테스트 결제",
+                    name:  (function () {
+                        if (!self.productInfo || self.productInfo.length === 0) return "상품 없음";
+
+                        var firstItemName = self.productInfo[0] && self.productInfo[0].itemName ? self.productInfo[0].itemName : "상품";
+                        var count = self.productInfo.length;
+
+                        return count > 1 
+                            ? firstItemName + " 외 " + (count - 1) + "건"
+                            : firstItemName;
+                    })(),
                     amount: totalPrice,
-                    buyer_tel: "010-0000-0000",
+                    buyer_tel: self.memberInfo.phone,
                     }	, function (rsp) { // callback
                     if (rsp.success) {
                         // 결제 성공 시
                         console.log(rsp);
                         self.fnSave(rsp.merchant_uid);
-                        setTimeout(() => {
-                            location.href = "paySuccess.do";  
-                        }, 1000);
                     } else {
                         // 결제 실패 시
                         console.log(rsp);
+                        alert("결제가 실패했습니다: " + rsp.error_msg);
                     }
                 });
             },
             fnSave(merchant_uid) {
                 var self = this;
-                let totalPriceBeforePoint = 0; 
+                let totalPriceBeforePoint = 0;  
+                let totalQuantity = 0;
 
                 const discountRate = Number(self.discountRate); // computed 사용 가능
                 const usedPoint = parseInt(self.memberInfo.usedPoint) || 0;
@@ -322,10 +383,11 @@
                     const itemTotalPrice = Number(item.price) * quantity;
                     const discount = itemTotalPrice * discountRate;
 
-                    totalPriceBeforePoint += itemTotalPrice;
+                    totalPriceBeforePoint += itemTotalPrice
+                    totalQuantity += quantity;
 
                     return {
-                        itemNo: item.itemNo,
+                        itemNo: Number(item.itemNo),
                         itemName: item.itemName,
                         price: item.price,
                         quantity: quantity,
@@ -339,9 +401,18 @@
                     : Math.floor(totalPriceBeforePoint * discountRate); // 쿠폰 할인
 
                 const finalPrice = Math.max(0, (totalPriceBeforePoint - discountAmount - gradeDiscount + this.shippingFee - usedPoint));
-                const shippingFee = this.shippingFee;
+                const shippingFee = self.shippingFee;
+                const now = new Date();
+                const orderDate = now.getFullYear() + '-' + 
+                    ('0' + (now.getMonth() + 1)).slice(-2) + '-' + 
+                    ('0' + now.getDate()).slice(-2) + ' ' + 
+                    ('0' + now.getHours()).slice(-2) + ':' + 
+                    ('0' + now.getMinutes()).slice(-2) + ':' + 
+                    ('0' + now.getSeconds()).slice(-2);
 
                 var nparmap = { 
+                    itemNo : Number(self.itemNo),
+                    cartKey: self.cartKey,
                     pWay : merchant_uid,
                     userId : self.sessionId,
                     price: finalPrice,
@@ -349,8 +420,26 @@
                     discountAmount: Math.floor(discountAmount),
                     gradeDiscount: gradeDiscount,
                     usedPoint: usedPoint,
-                    shippingFee: shippingFee
+                    shippingFee: shippingFee,
+                    card: this.payWay,
+                    orderCount: totalQuantity,
+                    zipCode: self.memberInfo.zipCode || self.inputZipCode, // 수동 입력 값
+                    address: (self.memberInfo.address || '') + ' ' + self.detailAddress,
+                    userName: self.memberInfo.userName || self.inputUserName,
+                    phone: self.receiverPhone,
+                    request: self.paymentMethod === 'five' ? self.shippingMessage : self.getShippingMemoText(self.paymentMethod),
+                    pNo: Number(self.productNumber),
+                    orderDate: orderDate, 
+                    // cartList: JSON.stringify(this.orderItems)
                 };
+
+                if (!self.productInfo.cartKey || self.productInfo.cartKey === "") {
+                    nparmap.cartKey = 12345; // 또는 유의미한 값
+                    } else {
+                    nparmap.cartKey = self.productInfo.cartKey;
+                    }
+
+                console.log("전송되는 nparmap:", nparmap);
 
                 $.ajax({
                     url: "/payment.dox",  
@@ -359,13 +448,70 @@
                     data: nparmap,
                     success: function (data) {
                         console.log(data);
-                        setTimeout(function() {
-                            window.location.href = "/paySuccess.do?orderId=" + data.orderId;
-                        }, 500);
+                            if (data.result === "success") {
+                                const orderData = JSON.parse(localStorage.getItem("orderData")) || self.productInfo;
+
+                                const orderItems = orderData.map(item => ({
+                                    itemNo: item.itemNo,
+                                    quantity: item.quantity,
+                                    userId: self.sessionId,
+                                }));
+                                self.removeItemsFromCart(orderItems);
+
+                                const savePoint = Math.floor(finalPrice * 0.1);  
+                                console.log("적립될 포인트:", savePoint);
+
+                                $.ajax({
+                                    url: "/savePoint.dox",  
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: {
+                                        userId: self.sessionId,
+                                        point: savePoint,
+                                        reason: "구매 적립",
+                                        orderId: data.orderId 
+                                    },
+                                    success: function (res) {
+                                        console.log("포인트 적립 성공:", res);
+                                        console.log("포인트 적립 성공:", res);
+
+                                        if (res.result === "success" && res.member) {
+                                            // 적립된 포인트 반영해서 화면에 갱신
+                                            self.memberInfo.point = res.member.point;
+                                            console.log("갱신된 포인트:", self.memberInfo.point);
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        console.error("포인트 적립 실패:", error);
+                                    }
+                                });
+
+                            setTimeout(function() {
+                                window.location.href = "/paySuccess.do?orderId=" + data.orderId;
+                            }, 500);
+                        } else {
+                            alert("결제 저장 실패: " + data.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("결제 저장 AJAX 에러:", error);
+                        alert("서버와 통신 중 오류가 발생했습니다.");
                     }
                 });
             },
 
+            onPointInput(event) {
+                const val = parseInt(event.target.value.replace(/[^\d]/g, '')) || 0;
+                this.displayPoint = val;
+            },
+            getShippingMemoText(code) {
+                switch(code) {
+                    case 'two': return '배송 전에 미리 연락 바랍니다.';
+                    case 'three': return '부재 시 경비실에 맡겨 주세요.';
+                    case 'four': return '부재 시 전화나 문자 남겨 주세요.';
+                    default: return '배송 메모 없음';
+                }
+            },
             applyPoint() {
                 if (this.memberInfo.usedPoint && this.memberInfo.usedPoint > 0) {
                     // 이미 포인트가 적용된 상태라면 초기화
@@ -410,7 +556,7 @@
             }, { passive: false });
 
             // orderData 확인 후 상품 정보 불러오기
-            const orderData = JSON.parse(localStorage.getItem("orderData"));
+            const orderData = JSON.parse(localStorage.getItem("orderData")) || JSON.parse(localStorage.getItem("lastOrderData") ||  JSON.parse(sessionStorage.getItem("orderTempData")));
 
             if (orderData && orderData.length > 0 && !(self.itemNo && self.quantity)) {
                 // 장바구니 결제

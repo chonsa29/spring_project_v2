@@ -86,7 +86,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr v-for="order in recentOrders" :key="order.ORDERKEY">
+                                                <tr v-for="order in recentOrders" :key="order.orderKeys">
                                                     <td>
                                                         <a href="javascript:;" @click="showOrderDetail(order.orderKey)">
                                                             {{ order.orderKey }}
@@ -137,13 +137,13 @@
                                             <input type="text" class="form-control" v-model="productSearch.keyword"
                                                 @keyup.enter="searchProducts">
                                         </div>
-                                        <div class="col-md-3">
+                                        <!-- <div class="col-md-3">
                                             <label class="form-label">카테고리</label>
                                             <select class="form-select" v-model="productSearch.category">
                                                 <option value="">전체 카테고리</option>
                                                 <option v-for="cat in categories" :value="cat">{{ cat }}</option>
                                             </select>
-                                        </div>
+                                        </div> -->
                                         <div class="col-md-3">
                                             <label class="form-label">상품 상태</label>
                                             <select class="form-select" v-model="productSearch.status">
@@ -191,10 +191,21 @@
                                             <td>{{ item.itemCount }}</td>
                                             <td>{{ item.category }}</td>
                                             <td>
-                                                <span
-                                                    :class="'badge ' + (item.status === 'Y' ? 'badge-success' : 'badge-secondary')">
-                                                    {{ item.status === 'Y' ? '판매중' : '판매중지' }}
-                                                </span>
+                                                <button @click="toggleProductStatus(item)" :class="[
+                                                    'status-toggle-btn',
+                                                    {
+                                                      'active': item.status === 'Y',
+                                                      'inactive': item.status !== 'Y',
+                                                      'loading': item.loading
+                                                    }
+                                                  ]" :disabled="item.loading">
+                                                    <span v-if="item.loading">
+                                                        <i class="fas fa-spinner fa-pulse"></i> 처리중
+                                                    </span>
+                                                    <span v-else>
+                                                        {{ item.status === 'Y' ? '판매중' : '판매중지' }}
+                                                    </span>
+                                                </button>
                                             </td>
                                             <td>{{ formatDate(item.rDate) }}</td>
                                             <td>
@@ -255,7 +266,7 @@
                                     </div>
                                     <input type="file" id="thumbnail" @change="handleFileChange('thumbnail')">
                                     <label for="additionalPhotos">추가 이미지</label>
-                                    <div class="subimg-container" v-if="formType=='edit' && imgList.length != 0">
+                                    <div class="subimg-container" v-if="imgList && imgList.length > 0">
                                         <table>
                                             <tr>
                                                 <th>추가 이미지</th>
@@ -263,13 +274,24 @@
                                             </tr>
                                             <tr v-for="(img,index) in imgList">
                                                 <td><img :src="img.filePath"></td>
-                                                <td><button @click="fnDeleteImg(img.fileName)">삭제</button></td>
+                                                <td><button type="button" @click="fnDeleteImg(img.fileName)">삭제</button>
+                                                </td>
                                             </tr>
                                         </table>
                                     </div>
                                     <input type="file" id="additionalPhotos"
                                         @change="handleFileChange('additionalPhotos')" multiple>
+                                    <!-- 설명 이미지 업로드 필드 -->
+                                    <label for="contentImage">설명 이미지</label>
+                                    <input type="file" id="contentImage" @change="handleFileChange('contentImage')">
 
+
+                                    <!-- 설명 이미지 미리보기 -->
+                                    <div v-if="contentImagePreview">
+                                        <h5>설명 이미지 미리보기</h5>
+                                        <img :src="contentImagePreview" alt="설명 이미지"
+                                            style="max-width: 100%; height: auto;">
+                                    </div>
                                     <button type="submit">저장</button>
                                     <button type="button" @click="cancelForm">취소</button>
                                 </form>
@@ -297,12 +319,10 @@
                                             <label class="form-label">주문 상태</label>
                                             <select class="form-select" v-model="orderSearch.status">
                                                 <option value="">전체</option>
-                                                <option value="PENDING">결제대기</option>
-                                                <option value="PAID">결제완료</option>
-                                                <option value="PREPARING">상품준비중</option>
-                                                <option value="SHIPPED">배송중</option>
-                                                <option value="DELIVERED">배송완료</option>
-                                                <option value="CANCELED">취소</option>
+                                                <option value="P">결제완료</option>
+                                                <option value="D">배송중</option>
+                                                <option value="F">배송완료</option>
+                                                <option value="C">취소</option>
                                             </select>
                                         </div>
                                         <div class="col-md-3">
@@ -349,7 +369,7 @@
                                                     <td>{{ formatDate(order.ORDERDATE) }}</td>
                                                     <td>{{ order.USERNAME }} ({{ order.USERID }})</td>
                                                     <td>{{ formatCurrency(order.PRICE) }}</td>
-                                                    <td>{{ getPaymentMethod(order.PWAY) }}</td>
+                                                    <td>신용카드</td>
                                                     <td>
                                                         <span :class="'status-badge ' + getStatusClass(order.status)">
                                                             {{ getStatusText(order.ORDERSTATUS) }}
@@ -507,8 +527,8 @@
                                         <div class="col-md-3">
                                             <select class="form-select" v-model="boardSearch.boardType">
                                                 <option value="">전체 게시판</option>
-                                                <option value="notice">공지사항</option>
-                                                <option value="qna">Q&A</option>
+                                                <option value="recipe">레시피 게시판</option>
+                                                <option value="group">그룹 게시판</option>
                                             </select>
                                         </div>
                                         <button class="btn btn-primary col-md-2" @click="searchBoards">검색</button>
@@ -531,7 +551,12 @@
                                 <tbody>
                                     <tr v-for="board in boardList" :key="board.postId">
                                         <td>{{ board.postId }}</td>
-                                        <td>{{ board.title }}</td>
+                                        <td>
+                                            <a :href="`/recipe/view.do?postId=${board.postId}`"
+                                                class="text-decoration-none">
+                                                {{ board.title }}
+                                            </a>
+                                        </td>
                                         <td>{{ board.userId }}</td>
                                         <td>{{ formatDate(board.cdatetime) }}</td>
                                         <td>{{ board.cnt }}</td>
@@ -554,47 +579,132 @@
                             </nav>
                         </div>
 
-                        <!-- 문의 관리 섹션 -->
+                        <!--문의 관리-->
                         <div v-if="currentSection === 'inquiry-management'" class="section">
                             <h3>문의 관리</h3>
 
-                            <!-- 상태 필터 -->
-                            <div class="mb-3">
-                                <select v-model="inquiryFilter.status" @change="fetchInquiries">
-                                    <option value="all">전체 문의</option>
-                                    <option value="pending">답변 대기</option>
-                                    <option value="completed">답변 완료</option>
-                                </select>
+                            <!-- 상태 필터 탭 -->
+                            <div class="inquiry-tabs">
+                                <button @click="currentInquiryTab = 'general'"
+                                    :class="{ active: currentInquiryTab === 'general' }">
+                                    일반 문의
+                                </button>
+                                <button @click="currentInquiryTab = 'product'"
+                                    :class="{ active: currentInquiryTab === 'product' }">
+                                    상품 문의
+                                </button>
                             </div>
 
-                            <div v-for="inquiry in inquiries" :key="inquiry.qsNo" class="inquiry-item">
-                                <div class="inquiry-header">
-                                    <span>[{{ inquiry.qsCategory }}] {{ inquiry.qsTitle }}</span>
-                                    <span>{{ inquiry.userId }} | {{ formatDate(inquiry.cdatetime) }}</span>
-                                    <span class="badge" :class="inquiry.qsStatus === '1' ? 'bg-success' : 'bg-warning'">
-                                        {{ inquiry.qsStatus === '1' ? '답변완료' : '답변대기' }}
-                                    </span>
-                                </div>
-                                <!-- HTML 태그 이스케이프 처리 -->
-                                <div class="inquiry-content" v-html="stripHtml(inquiry.qsContents)"></div>
+                            <!-- 일반 문의 탭 -->
+                            <div v-if="currentInquiryTab === 'general'">
+                                <table class="inquiry-table">
+                                    <thead>
+                                        <tr>
+                                            <th>번호</th>
+                                            <th>제목</th>
+                                            <th>작성자</th>
+                                            <th>작성일</th>
+                                            <th>상태</th>
+                                            <th>관리</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="inq in generalInquiries" :key="inq.QSNO">
+                                            <td>{{ inq.QSNO }}</td>
+                                            <td>
+                                                <a @click="showInquiryDetail(inq)">{{ inq.QSTITLE }}</a>
+                                            </td>
+                                            <td>{{ inq.USERID }}</td>
+                                            <td>{{ inq.CDATETIME }}</td>
+                                            <td>
+                                                <span
+                                                    :class="'status-badge ' + (inq.qsStatus === '1' ? 'completed' : 'pending')">
+                                                    {{ inq.QSSTATUS === '1' ? '답변완료' : '답변대기' }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <button @click="showInquiryDetail(inq)"
+                                                    class="btn btn-sm btn-primary">답변
+                                                    관리</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
 
-                                <!-- 답변 영역 -->
-                                <div v-if="inquiry.replies && inquiry.replies.length > 0" class="answer-section">
-                                    <div v-for="reply in inquiry.replies" :key="reply.replyNo" class="reply-item">
-                                        <strong>{{ reply.adminId }}</strong>
-                                        <p v-html="stripHtml(reply.replyContents)"></p>
-                                        <small>{{ formatDate(reply.cdatetime) }}</small>
-                                        <button @click="deleteReply(reply.replyNo, inquiry.qsNo)"
-                                            class="btn btn-sm btn-danger">삭제</button>
+                            <!-- 상품 문의 탭 -->
+                            <div v-else>
+                                <table class="inquiry-table">
+                                    <thead>
+                                        <tr>
+                                            <th>번호</th>
+                                            <th>상품명</th>
+                                            <th>제목</th>
+                                            <th>작성자</th>
+                                            <th>작성일</th>
+                                            <th>상태</th>
+                                            <th>관리</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="inq in productInquiries" :key="inq.QSNO">
+                                            <td>{{ inq.QSNO }}</td>
+                                            <td> <a href="javascript:;" @click="showProductDetail(inq.ITEMNO)">
+                                                    {{ inq.ITEMNAME }}
+                                                </a></td>
+                                            <td>{{ inq.QSTITLE }}</td>
+                                            <td>{{ inq.USERID }}</td>
+                                            <td>{{ inq.CDATETIME }}</td>
+                                            <td>
+                                                <span
+                                                    :class="'status-badge ' + (inq.qsStatus === '1' ? 'completed' : 'pending')">
+                                                    {{ inq.qsStatus === '1' ? '답변완료' : '답변대기' }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <button @click="showProductInquiryDetail(inq)"
+                                                    class="btn btn-sm btn-primary">
+                                                    답변 관리
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- 답변 모달 -->
+                            <div v-if="showReplyModal" class="custom-modal">
+                                <div class="custom-modal-content">
+                                    <h3>답변 관리</h3>
+                                    <button @click="showReplyModal = false" class="modal-close">X</button>
+
+                                    <!-- 답변 목록 -->
+                                    <div v-if="replies.length > 0" class="reply-list">
+                                        <div v-for="reply in replies" :key="reply.replyNo" class="reply-item">
+                                            <p><strong>내용:</strong> {{ reply.replyContents }}</p>
+                                            <p><strong>작성자:</strong> {{ reply.adminId }}</p>
+                                            <p><strong>작성일:</strong> 2024-04-11 </p>
+
+                                            <button @click="startEditReply(reply)">수정</button>
+                                            <button @click="deleteReply(reply.replyNo)">삭제</button>
+                                        </div>
                                     </div>
-                                </div>
-                                <div v-else class="reply-form">
-                                    <textarea v-model="inquiry.newReply" placeholder="답변 내용 입력"></textarea>
-                                    <button @click="submitReply(inquiry.qsNo, inquiry.newReply)"
-                                        class="btn btn-primary">답변 등록</button>
+                                    <div v-else>
+                                        <p>등록된 답변이 없습니다.</p>
+                                    </div>
+
+                                    <!-- 답변 작성/수정 -->
+                                    <div class="reply-form">
+                                        <textarea v-model="replyContent" placeholder="답변 내용을 입력하세요"></textarea>
+                                        <div>
+                                            <button v-if="isEditing" @click="updateReply">답변 수정</button>
+                                            <button @click="submitReply(selectedInquiryId)">답변 등록</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <!--배송관리-->
                         <div v-if="currentSection === 'delivery-management'" class="section">
                             <h3>배송 관리</h3>
 
@@ -735,11 +845,6 @@
                                                 <th>가입일</th>
                                                 <td>{{ currentMember.member.cDateTime }}</td>
                                             </tr>
-                                            <tr>
-                                                <th>최근로그인</th>
-                                                <td>{{ currentMember.member.lastLogin ?
-                                                    formatDateTime(currentMember.member.lastLogin) : '-' }}</td>
-                                            </tr>
                                         </table>
                                     </div>
                                     <div class="col-md-6">
@@ -749,16 +854,6 @@
                                                 <th style="width: 30%">주소</th>
                                                 <td>
                                                     {{ currentMember.member.address }}<br>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th>상태</th>
-                                                <td>
-                                                    <select class="form-select" v-model="currentMember.member.status">
-                                                        <option value="ACTIVE">활성</option>
-                                                        <option value="DORMANT">휴면</option>
-                                                        <option value="BANNED">정지</option>
-                                                    </select>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -784,7 +879,7 @@
                                             <tr v-for="order in currentMember.orderHistory" :key="order.orderId">
                                                 <td>{{ order.ORDERKEY }}</td>
                                                 <td>{{ order.ORDERDATE }}</td>
-                                                <td>{{ order.PRICE }}</td>
+                                                <td>{{ formatCurrency(order.PRICE) }}</td>
                                                 <td>{{ getOrderStatusText(order.status) }}</td>
                                             </tr>
                                             <tr v-if="currentMember.orderHistory.length === 0">
@@ -839,7 +934,7 @@
                                             </tr>
                                             <tr>
                                                 <th>결제방법</th>
-                                                <td>{{ getPaymentMethod(currentOrder.order.PWAY) }}
+                                                <td>신용카드
                                                 </td>
                                             </tr>
                                         </table>
@@ -901,7 +996,7 @@
                                             </tr>
                                             <tr>
                                                 <td colspan="5" class="text-end"><strong>총 결제금액</strong></td>
-                                                <td><strong>{{ formatCurrency(currentOrder.order.PRICE) }}</strong></td>
+                                                <td><strong>{{ formatCurrency(totalOrderPrice) }}</strong></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -969,68 +1064,71 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- 배송 상세 모달 추가 -->
-            <div class="modal fade" id="deliveryDetailModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">배송 상세 정보 - {{ currentDelivery.DELIVERYNO }}</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body" v-if="currentDelivery">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6>배송 정보</h6>
-                                    <table class="table table-bordered">
-                                        <tr>
-                                            <th>배송번호</th>
-                                            <td>{{ currentDelivery.DELIVERYNO }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>주문번호</th>
-                                            <td>{{ currentDelivery.ORDERKEY }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>배송상태</th>
-                                            <td>{{ getDeliveryStatusText(currentDelivery.DELIVERYSTATUS) }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>운송장번호</th>
-                                            <td>{{ currentDelivery.TRACKINGNUMBER || '-' }}</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6>회원 정보</h6>
-                                    <table class="table table-bordered">
-                                        <tr>
-                                            <th>회원명</th>
-                                            <td>{{ currentDelivery.USERNAME }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>연락처</th>
-                                            <td>{{ currentDelivery.USERPHONE }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>이메일</th>
-                                            <td>{{ currentDelivery.USEREMAIL }}</td>
-                                        </tr>
-                                    </table>
+                <!-- 배송 상세 모달 추가 -->
+                <div class="modal fade" id="deliveryDetailModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">배송 상세 정보 - {{ currentDelivery.DELIVERYNO }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" v-if="currentDelivery">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>배송 정보</h6>
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <th>배송번호</th>
+                                                <td>{{ currentDelivery.DELIVERYNO }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>주문번호</th>
+                                                <td>{{ currentDelivery.ORDERKEY }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>배송상태</th>
+                                                <td>{{ getDeliveryStatusText(currentDelivery.DELIVERYSTATUS) }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>운송장번호</th>
+                                                <td>{{ currentDelivery.TRACKINGNUMBER || '-' }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>회원 정보</h6>
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <th>회원명</th>
+                                                <td>{{ currentDelivery.USERNAME }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>연락처</th>
+                                                <td>{{ currentDelivery.USERPHONE }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>이메일</th>
+                                                <td>{{ currentDelivery.USEREMAIL }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
 
+
+
             <!-- Bootstrap JS -->
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        </body>
 
         </html>
 
@@ -1039,6 +1137,7 @@
             const app = Vue.createApp({
                 data() {
                     return {
+                        selectedInquiryId : "",
                         currentSection: 'dashboard',
                         // 대시보드 데이터
                         dashboard: {
@@ -1064,6 +1163,8 @@
                         allergens: '',
                         thumbnail: null,
                         additionalPhotos: [],
+                        contentImage: null,
+                        contentImagePreview: null,
                         // 상품 검색 및 페이징 관련 데이터
                         productSearch: {
                             keyword: '',
@@ -1077,7 +1178,9 @@
                         productPageSize: 10,
                         productTotalCount: 0,
                         categories: [], // 카테고리 목록
-                        item: {},
+                        item: {
+                            filePath: ''
+                        },
                         itemNo: "",
                         imgList: [],
                         users: [],
@@ -1122,9 +1225,16 @@
                         boardCurrentPage: 1,
                         boardTotalCount: 0,
                         // 문의 관리 데이터
-                        inquiries: [],
+                        generalInquiries: [],
                         inquiryFilter: {
                             status: 'all'
+                        },
+                        currentInquiryTab: 'general',
+                        productInquiries: [],
+                        productInquiryPagination: {
+                            currentPage: 1,
+                            totalItems: 0,
+                            itemsPerPage: 10
                         },
                         deliverySearch: {
                             searchType: 'orderKey',
@@ -1144,10 +1254,24 @@
                             USERNAME: null,
                             USERPHONE: null,
                             USEREMAIL: null
-                        }
+                        },
+                        deleteContentImage: false,
+                        selectedInquiry: null,
+                        replies: [], // 여기서 replies를 관리합니다.
+                        replyContent: '',
+                        isEditing: false,
+                        editingReplyId: null,
+                        showReplyModal: false,
+
                     };
                 },
                 computed: {
+                    
+                    totalOrderPrice() {
+                        return this.currentOrder.items.reduce((sum, item) => {
+                            return sum + (item.ORDERCOUNT * item.PRICE);
+                        }, 0);
+                    },
                     deliveryTotalPages() {
                         return Math.ceil(this.deliveryTotalCount / this.deliveryPageSize);
                     },
@@ -1212,7 +1336,225 @@
                         return pages;
                     }
                 },
+                watch: {
+                    currentInquiryTab(newVal) {
+                        if (newVal === 'product') {
+                            this.fetchProductInquiries();
+                        } else if (newVal === 'general') {
+                            this.fetchInquiries();
+                        }
+                    }
+                },
                 methods: {
+                    submitReply(QSNO) {
+                        alert("등록되었습니다.");
+                        const formData = {
+                            qsNo : QSNO,
+                            replyContents: this.replyContent,
+                            adminId: 'admin' // 실제로는 로그인한 관리자 ID 사용
+                        };
+                        console.log("test ==> ", formData);
+
+                        $.ajax({
+                            url: '/admin/dashboard/inquiry/reply',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify(formData),
+                            success: (response) => {
+                                alert('답변이 등록되었습니다.');
+                                this.replyContent = '';
+                                this.fetchReplies(QSNO); // 답변 목록 새로고침
+                                
+                            },
+                            error: (xhr) => {
+                                alert('답변 등록에 실패했습니다.');
+                                console.error(xhr);
+                            }
+                        });
+                        this.showReplyModal = false;
+                    },
+
+                    // 답변 수정 메서드
+                    updateReply() {
+                        if (!this.replyContent) {
+                            alert('답변 내용을 입력해주세요.');
+                            return;
+                        }
+
+                        const formData = {
+                            replyNo: this.editingReplyNo,
+                            replyContents: this.replyContent,
+                            adminId: 'admin' // 실제로는 로그인한 관리자 ID 사용
+                        };
+
+                        $.ajax({
+                            url: `/admin/dashboard/reply/${this.editingReplyNo}`,
+                            type: 'PUT',
+                            contentType: 'application/json',
+                            data: JSON.stringify(formData),
+                            success: (response) => {
+                                alert('답변이 수정되었습니다.');
+                                this.cancelEdit();
+                                this.fetchReplies(this.selectedInquiry.QSNO);
+                            },
+                            error: (xhr) => {
+                                alert('답변 수정에 실패했습니다.');
+                                console.error(xhr);
+                            }
+                        });
+                    },
+
+                    // 답변 삭제 메서드
+                    deleteReply(replyNo) {
+                        if (!confirm('정말 삭제하시겠습니까?')) return;
+
+                        $.ajax({
+                            url: `/admin/dashboard/reply/${replyNo}`,
+                            type: 'DELETE',
+                            success: (response) => {
+                                alert('답변이 삭제되었습니다.');
+                                this.fetchReplies(this.selectedInquiry.QSNO);
+                            },
+                            error: (xhr) => {
+                                alert('답변 삭제에 실패했습니다.');
+                                console.error(xhr);
+                            }
+                        });
+                    },
+
+                    // 수정 모드 시작
+                    startEditReply(reply) {
+                        this.editingReplyNo = reply.replyNo;
+                        this.replyContent = reply.replyContents;
+                        this.isEditing = true;
+                    },
+
+                    // 수정 취소
+                    cancelEdit() {
+                        this.editingReplyNo = null;
+                        this.replyContent = '';
+                        this.isEditing = false;
+                    },
+                    // 일반 문의 상세 보기
+                    showInquiryDetail(inq) {
+                        this.selectedInquiryId = inq.QSNO;
+                        const QSNO = parseInt(inq.QSNO);
+
+                        if (isNaN(QSNO)) {
+                            console.error("QSNO is not a number:", inq.QSNO);
+                            return;
+                        }
+                        this.selectedInquiry = { QSNO: QSNO };
+                        this.fetchReplies(QSNO);
+                        this.showReplyModal = true;
+                        console.log("모달 열기 상태:", this.showReplyModal);
+                    },
+
+                    // 상품 문의 상세 보기
+                    showProductInquiryDetail(inquiry) {
+                        if (!inquiry.QSNO) {
+                            console.error("QSNO is missing in inquiry:", inquiry);
+                            return;
+                        }
+
+                        const QSNO = parseInt(inquiry.QSNO); // 🔥 숫자 변환
+
+                        if (isNaN(QSNO)) {
+                            console.error("QSNO is not a number:", inquiry.QSNO);
+                            return;
+                        }
+
+                        this.selectedInquiry = inquiry;
+                        this.fetchReplies(QSNO);
+                        this.showReplyModal = true;
+                    },
+
+                    // 답변 목록 가져오기
+                    fetchReplies(QSNO) {
+                        if (isNaN(QSNO)) {
+                            console.error("Invalid qsNo:", QSNO);
+                            return;
+                        }
+
+                        const url = '/admin/dashboard/inquiry/replies';
+                        $.ajax({
+                            url: url,
+                            type: "GET",
+                            data: {
+                                qsNo: QSNO
+                            },
+                            success: (response) => {
+                                console.log(response);
+                                this.replies = response; // 서버에서 받은 답변 데이터를 replies에 할당
+                                console.log("Replies:", this.replies); // 로그로 확인
+                            },
+                        });
+                    },
+                    // 답변 수정
+                    editReply(reply) {
+                        this.replyContent = reply.replyContents;
+                        this.isEditing = true;
+                        this.editingReplyId = reply.replyNo;
+                    },
+                    fetchProductInquiries() {
+                        $.ajax({
+                            url: "/admin/dashboard/inquiryList.dox",
+                            type: "POST",
+                            data: {
+                                type: "product",
+                                page: this.currentPage,
+                                size: this.pageSize
+                            },
+                            success: (response) => {
+                                // 응답 데이터 구조 확인
+                                console.log(response);
+
+                                // productInquiries에 직접 할당
+                                this.productInquiries = response.list || response.data || response;
+
+                                // 할당 후 데이터 확인
+                                console.log("할당 후 productInquiries:", this.productInquiries);
+                            }
+                        });
+                    },
+                    showProductDetail(itemNo) {
+                        // 상품 상세 보기 구현
+                        console.log("상품 조회:", itemNo);
+                        window.location.href = '/product/info.do?itemNo=' + itemNo;
+                    },
+                    toggleProductStatus(item) {
+                        if (!confirm(`정말 ${item.status === 'Y' ? '판매중지' : '판매재개'} 하시겠습니까?`)) {
+                            return;
+                        }
+
+                        $.ajax({
+                            url: "/admin/dashboard/toggleProductStatus.dox",
+                            type: "POST",
+                            dataType: "json",
+                            data: {
+                                itemNo: item.itemNo,
+                                currentStatus: item.status
+                            },
+                            success: (response) => {
+                                if (response.result === "success") {
+                                    item.status = response.newStatus; // 상태값 실시간 업데이트
+                                    this.showAlert(
+                                        response.newStatus === 'Y' ? '판매 상태가 활성화되었습니다.' : '판매가 중지되었습니다.',
+                                        'success'
+                                    );
+                                } else {
+                                    this.showAlert('상태 변경 실패: ' + response.message, 'error');
+                                }
+                            },
+                            error: (xhr) => {
+                                this.showAlert('서버 오류: ' + xhr.statusText, 'error');
+                            }
+                        });
+                    },
+                    showAlert(message, type) {
+                        // SweetAlert2 또는 기존 alert 사용
+                        alert(message); // 간단한 알림
+                    },
                     // 회원 관리 관련 메서드 추가
                     searchMembers() {
                         const params = {
@@ -1292,11 +1634,8 @@
 
                     getMemberStatusText(status) {
                         switch (status) {
-                            case 'ACTIVE': return '활성';
-                            case 'DORMANT': return '휴면';
-                            case 'BANNED': return '정지';
-                            case 'WITHDRAWN': return '탈퇴';
-                            default: return status;
+                            case 'C': return '회원';
+                            case 'A': return '관리자';
                         }
                     },
 
@@ -1313,17 +1652,17 @@
                             size: this.pageSize
                         };
 
+                        // 날짜가 없으면 파라미터에서 제거
+                        if (!params.startDate) delete params.startDate;
+                        if (!params.endDate) delete params.endDate;
+
                         $.ajax({
                             url: "/admin/order/list.dox",
                             type: "POST",
                             dataType: "json",
                             data: params,
                             success: (response) => {
-
                                 this.orderList = response;
-
-                                // 실제 구현에서는 페이지네이션 정보도 함께 받아야 함
-                                // this.totalCount = response.totalCount;
                             },
                             error: (xhr, status, error) => {
                                 console.error("주문 목록 조회 실패:", error);
@@ -1488,11 +1827,11 @@
                             this.loadDashboardData();
                         } else if (section === 'product-management') {
                             this.fetchProducts();
-                        }
-                        else if (section === 'board-management') {
+                        } else if (section === 'board-management') {
                             this.fetchBoards();
                         } else if (section === 'inquiry-management') {
-                            this.fetchInquiries();
+                            this.fetchInquiries(); // 일반 문의 로드
+                            this.fetchProductInquiries(); // 상품 문의 로드
                         }
                     },
                     formatDateTime(dateString) {
@@ -1634,112 +1973,216 @@
                             default: return 'badge-info';
                         }
                     },
-
-                    //상품 관리 메서드
-                    showForm(type) {
-                        var self = this;
-                        this.formType = type;
-                        if (type == 'add') {
-                            this.showProductForm = true;
-                            this.showTable = false;
-                            self.name = "";
-                            self.price = "";
-                            self.quantity = "";
-                            self.category = "";
-                            self.info = "";
-                            self.allergens = "";
-                            self.itemNo = "",
-                                self.item = {};
-                            thumbnail = null;
-                        } else {
-                            this.showProductForm = false;
-                            this.showTable = true;
-                            self.fetchProducts();
-                        }
-                    },
                     handleFileChange(field) {
                         const fileInput = document.getElementById(field);
                         const files = fileInput.files;
+
                         if (field === 'thumbnail') {
                             this.thumbnail = files[0];
                         } else if (field === 'additionalPhotos') {
                             this.additionalPhotos = Array.from(files);
+                        } else if (field === 'contentImage') {
+                            this.contentImage = files[0];
+
+                            // ✅ 미리보기용 URL 생성
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                this.contentImagePreview = e.target.result;
+                            };
+                            if (this.contentImage) {
+                                reader.readAsDataURL(this.contentImage);
+                            }
                         }
                     },
+                    // 상품 추가 전용 메서드
+                    async addProduct() {
+                        try {
+                            const formData = new FormData();
+                            // 숫자 값은 명시적으로 변환
+                            formData.append("name", this.name);
+                            formData.append("price", parseInt(this.price));
+                            formData.append("quantity", parseInt(this.quantity));
+                            formData.append("category", this.category);
+                            formData.append("info", this.info);
+                            formData.append("allergens", this.allergens);
+
+                            // 파일 추가
+                            if (this.thumbnail) {
+                                formData.append("thumbnail", this.thumbnail);
+                            }
+
+                            if (this.additionalPhotos && this.additionalPhotos.length > 0) {
+                                this.additionalPhotos.forEach(file => {
+                                    formData.append("additionalPhotos", file);
+                                });
+                            }
+
+                            if (this.contentImage) {
+                                formData.append("contentImage", this.contentImage);
+                            }
+
+                            const response = await $.ajax({
+                                url: "/product/addWithFiles.dox",
+                                type: "POST",
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                dataType: "json"
+                            });
+
+                            if (response.result === "success") {
+                                alert("상품이 추가되었습니다.");
+                                this.showProductForm = false;
+                                this.fetchProducts();
+                            } else {
+                                alert("상품 추가 실패: " + response.message);
+                            }
+                        } catch (error) {
+                            console.error("상품 추가 실패:", error);
+                            alert("상품 추가 중 오류가 발생했습니다.");
+                        }
+                    },
+
+                    // 상품 수정 전용 메서드
+                    async updateProduct() {
+                        try {
+                            const formData = new FormData();
+                            formData.append("itemNo", this.itemNo);
+                            formData.append("name", this.name);
+                            formData.append("price", this.price);
+                            formData.append("quantity", this.quantity);
+                            formData.append("category", this.category);
+                            formData.append("info", this.info);
+                            formData.append("allergens", this.allergens);
+
+                            // 파일 추가 (기존 파일 유지 또는 새 파일 업로드)
+                            if (this.thumbnail) {
+                                formData.append("thumbnail", this.thumbnail);
+                            }
+
+                            if (this.additionalPhotos && this.additionalPhotos.length > 0) {
+                                this.additionalPhotos.forEach(file => {
+                                    formData.append("additionalPhotos", file);
+                                });
+                            }
+
+                            if (this.contentImage) {
+                                formData.append("contentImage", this.contentImage);
+                            }
+
+                            if (this.deleteContentImage) {
+                                formData.append("deleteContentImage", "true");
+                            }
+
+                            const response = await $.ajax({
+                                url: "/product/updateWithFiles.dox",
+                                type: "POST",
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                dataType: "json"
+                            });
+
+                            if (response.result === "success") {
+                                alert("상품이 수정되었습니다.");
+                                this.showProductForm = false;
+                                this.fetchProducts();
+                            } else {
+                                alert("상품 수정 실패: " + response.message);
+                            }
+                        } catch (error) {
+                            console.error("상품 수정 실패:", error);
+                            alert("상품 수정 중 오류가 발생했습니다.");
+                        }
+                    },
+
+                    // 폼 제출 시 추가/수정 구분하여 처리
                     submitForm() {
-                        var self = this;
-                        var nparmap = {
-                            itemNo: self.itemNo,
-                            name: self.name,
-                            price: self.price,
-                            quantity: self.quantity,
-                            category: self.category,
-                            info: self.info,
-                            allergens: self.allergens,
-                        };
-                        if (self.item.itemNo == null) {
-                            $.ajax({
-                                url: "/product/add.dox",
-                                dataType: "json",
-                                type: "POST",
-                                data: nparmap,
-                                success: function (data) {
-                                    if (self.thumbnail || self.additionalPhotos.length > 0) {
-                                        var form = new FormData();
-                                        if (self.thumbnail) {
-                                            form.append("file1", self.thumbnail);
-                                            form.append("isThumbnail", "Y");
-                                        }
-                                        if (self.additionalPhotos.length > 0) {
-                                            self.additionalPhotos.forEach((photo, index) => {
-                                                form.append("file1", photo);
-                                                form.append("isThumbnail", "N");
-                                            });
-                                        }
-                                        form.append("itemNo", data.itemNo);
-                                        self.upload(form);
-                                    }
-                                }
-                            });
+                        if (this.formType === 'add') {
+                            this.addProduct();
+                        } else if (this.formType === 'edit') {
+                            this.updateProduct();
+                        }
+                    },
+
+                    // 상품 수정 버튼 클릭 시 처리
+                    showForm(type) {
+                        this.formType = type;
+                        if (type === 'add') {
+                            // 추가 모드: 폼 초기화
+                            this.showProductForm = true;
+                            this.showTable = false;
+                            this.resetForm();
                         } else {
-                            $.ajax({
-                                url: "/product/update.dox",
-                                dataType: "json",
-                                type: "POST",
-                                data: nparmap,
-                                success: function (data) {
-                                    if (self.thumbnail || self.additionalPhotos.length > 0) {
-                                        var form = new FormData();
-                                        if (self.thumbnail) {
-                                            form.append("file1", self.thumbnail);
-                                            form.append("isThumbnail", "Y");
-                                        }
-                                        if (self.additionalPhotos.length > 0) {
-                                            self.additionalPhotos.forEach((photo, index) => {
-                                                form.append("file1", photo);
-                                                form.append("isThumbnail", "N");
-                                            });
-                                        }
-                                        form.append("itemNo", data.itemNo);
-                                        self.update(form);
-                                    }
-                                }
+                            // 수정 모드: 목록 표시
+                            this.showProductForm = false;
+                            this.showTable = true;
+                            this.fetchProducts();
+                        }
+                    },
+
+                    // 폼 초기화 메서드
+                    resetForm() {
+                        this.itemNo = "";
+                        this.name = "";
+                        this.price = "";
+                        this.quantity = "";
+                        this.category = "";
+                        this.info = "";
+                        this.allergens = "";
+                        this.item = { filePath: "" };
+                        this.thumbnail = null;
+                        this.additionalPhotos = [];
+                        this.contentImage = null;
+                        this.contentImagePreview = null;
+                        this.imgList = [];
+                        this.deleteContentImage = false;
+                    },
+                    makeUploadForm(itemNo) {
+                        if (!this.thumbnail && this.additionalPhotos.length === 0 && !this.contentImage) {
+                            return null;
+                        }
+
+                        var form = new FormData();
+
+                        if (this.thumbnail) {
+                            form.append("file1", this.thumbnail);
+                            form.append("isThumbnail", "Y");
+                        } else {
+                            // 썸네일이 없을 경우 빈 file1 추가 (해결책)
+                            form.append("file1", "");
+                        }
+
+                        if (this.additionalPhotos.length > 0) {
+                            this.additionalPhotos.forEach((photo, index) => {
+                                form.append("file1", photo);
+                                form.append("isThumbnail", "N");
                             });
                         }
-                        this.showProductForm = false;
+
+                        // 설명 이미지 경로를 보내는 부분
+                        if (this.contentImage) {
+                            form.append("contentImage", this.contentImage); // 설명용 이미지 경로
+                        }
+
+                        form.append("itemNo", itemNo);
+
+                        return form;
                     },
+
                     upload(form) {
                         var self = this;
                         $.ajax({
-                            url: "/product/fileUpload.dox",
-                            type: "POST",
-                            processData: false,
+                            url: '/product/fileUpload.dox',
+                            type: 'POST',
+                            data: formData,
                             contentType: false,
-                            data: form,
+                            processData: false,
                             success: function (response) {
-                                alert("저장되었습니다!");
-                                location.href = "/product.do";
-                                self.showProductForm = false;
+                                // 파일 업로드 성공
+                            },
+                            error: function (error) {
+                                alert("파일 업로드 실패: " + error.responseJSON.message);
                             }
                         });
                     },
@@ -1753,10 +2196,15 @@
                             data: form,
                             success: function (response) {
                                 alert("수정되었습니다!");
-                                location.reload();
+                                location.href = "/product.do";
+                                self.showProductForm = false;
+                            },
+                            error: function (xhr, status, error) {
+                                console.log("에러 발생: " + error);
                             }
                         });
                     },
+
                     cancelForm() {
                         this.showProductForm = false;
                         if (this.formType == 'edit') {
@@ -1780,10 +2228,19 @@
                                 self.category = self.item.category;
                                 self.info = self.item.itemInfo;
                                 self.allergens = self.item.allergens;
-                                self.imgList = data.imgList;
+
+                                // 이미지 리스트 초기화
+                                self.imgList = data.imgList || [];
+
+                                // 썸네일 이미지 설정
+                                if (data.info.filePath) {
+                                    self.item.filePath = data.info.filePath;
+                                }
+
                                 self.itemNo = self.item.itemNo;
                                 self.showProductForm = true;
                                 self.showTable = false;
+                                self.formType = 'edit';
                             }
                         });
                     },
@@ -1862,20 +2319,23 @@
                             data: nparmap,
                             success: function (data) {
                                 alert("삭제되었습니다.");
+                                // 화면에서만 제거
+                                self.imgList = self.imgList.filter(img => img.fileName !== fileName);
+
+                                // 만약 썸네일이 삭제된 경우
+                                if (self.item.filePath && self.item.filePath.includes(fileName)) {
+                                    self.item.filePath = '';
+                                }
                             }
                         });
                     },
                     getOrderStatusText(status) {
                         switch (status) {
-                            case 'PENDING': return '결제대기';
-                            case 'PAID': return '결제완료';
-                            case 'PREPARING': return '상품준비중';
-                            case 'SHIPPED': return '배송중';
-                            case 'DELIVERED': return '배송완료';
-                            case 'CANCELED': return '취소됨';
-                            case 'REFUNDED': return '환불완료';
-                            case 'FAILED': return '결제실패';
-                            default: return status || '알 수 없음';
+                            case 'PAY_COMPLETE': return '결제완료';
+                            case 'P': return '상품준비중';
+                            case 'D': return '배송중';
+                            case 'F': return '배송완료';
+                            case 'C': return '취소됨';
                         }
                     },
                     // 게시판 관리
@@ -1913,62 +2373,32 @@
                     },
 
                     // 문의 관리
-                    async fetchInquiries() {
-                        try {
-                            const response = await $.ajax({
-                                url: '/admin/dashboard/inquiries',
-                                type: 'GET',
-                                data: { status: 'pending' }, // pending/completed/all
-                                success: function (inquiries) {
-                                    console.log(inquiries);
-                                    inquiries.forEach(inquiry => {
-                                        let statusBadge = inquiry.qsStatus === 'Y' ?
-                                            '<span class="badge bg-success">답변완료</span>' :
-                                            '<span class="badge bg-warning">미답변</span>';
-
-                                        $('#inquiry-table').append(`
-                <tr>
-                    <td>${inquiry.qsNo}</td>
-                    <td>${inquiry.qsTitle}</td>
-                    <td>${statusBadge}</td>
-                    <td>
-                        <button onclick="loadReplies(${inquiry.qsNo})"
-                                class="btn btn-sm btn-info">답변보기</button>
-                    </td>
-                </tr>
-            `);
-                                    });
-                                }
-                            });
-                            this.inquiries = response.map(inquiry => ({
-                                ...inquiry,
-                                answerText: ''
-                            }));
-                        } catch (error) {
-                            console.error('문의 조회 실패:', error);
-                        }
-                    },
-                    submitReply(qsNo) {
-                        const replyContent = $('#reply-content').val();
-
+                    fetchInquiries() {
+                        console.log("일반 문의 조회 시작");
                         $.ajax({
-                            url: `/admin/dashboard/inquiries/${qsNo}/reply`,
-                            type: 'POST',
-                            contentType: 'application/json',
-                            data: JSON.stringify({
-                                replyContents: replyContent,
-                                userId: $('#inquiry-user-id').val() // 문의 작성자 ID
-                            }),
-                            success: function () {
-                                alert('답변이 등록되었습니다.');
-                                loadReplies(qsNo); // 답변 목록 갱신
-                                // 문의 상태 자동 변경됨 (서버에서 처리)
+                            url: "/admin/dashboard/inquiryList.dox",
+                            type: "POST",
+                            dataType: "json",
+                            data: {
+                                type: "general",
+                                page: this.currentPage,
+                                size: this.pageSize
+                            },
+                            success: (response) => {
+                                console.log("API 응답 데이터:", response);
+                                this.generalInquiries = response.list || [];
+                                console.log("할당 후 generalInquiries:", this.generalInquiries);
+                            },
+                            error: (xhr, status, error) => {
+                                console.error("문의 목록 조회 실패:", error);
+                                console.log("상태 코드:", xhr.status);
+                                console.log("응답 텍스트:", xhr.responseText);
                             }
                         });
                     },
-                    loadReplies(qsNo) {
+                    loadReplies(QSNO) {
                         $.ajax({
-                            url: `/admin/inquiries/${qsNo}/replies`,
+                            url: `/admin/inquiries/${QSNO}/replies`,
                             type: 'GET',
                             success: function (replies) {
                                 $('#reply-list').empty();
@@ -1986,23 +2416,7 @@
                             }
                         });
                     },
-                    deleteReply(replyNo) {
-                        if (!confirm('답변을 삭제하시겠습니까?')) return;
-
-                        $.ajax({
-                            url: `/admin/inquiries/replies/${replyNo}`,
-                            type: 'DELETE',
-                            success: function () {
-                                alert('삭제되었습니다.');
-                                // 삭제 후 문의 상태를 "N"으로 변경
-                                $.ajax({
-                                    url: `/admin/inquiries/${qsNo}/status`,
-                                    type: 'PUT',
-                                    data: { status: 'N' }
-                                });
-                            }
-                        });
-                    },
+                
                     stripHtml(html) {
                         const tmp = document.createElement("div");
                         tmp.innerHTML = html;
@@ -2137,11 +2551,13 @@
                             'C': '배송취소'
                         };
                         return statusMap[status] || status;
-                    }
+                    },
+                    
                 },
                 mounted() {
                     this.loadDashboardData();
                     this.fetchProducts();
+                    this.fetchInquiries();
                 }
             });
             app.mount('#app');

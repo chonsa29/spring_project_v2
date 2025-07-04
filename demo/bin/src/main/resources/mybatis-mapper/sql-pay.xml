@@ -10,11 +10,47 @@
 	    WHERE P_NO = #{pNo}
 	</select>
 	
-	<insert id="paymentSell" parameterType="hashmap">
-		INSERT INTO PAY (pNo, pWay, price, pDate)
-		VALUES (#{pNo}, #{pWay}, #{price}, SYSDATE)
+	<insert id="paymentSell" parameterType="map">
+	    <selectKey keyProperty="orderKey" resultType="int" order="BEFORE">
+	        SELECT ORDER_SEQ.NEXTVAL FROM DUAL
+	    </selectKey>
+	
+	    INSERT INTO ORDER_LIST (
+	        ORDER_KEY, CART_KEY, ITEM_NO, USERID, PRICE, ORDER_DATE, CARD,
+	        ORDER_STATUS, USERNAME, ZIPCODE, ADDRESS, PHONE, ORDER_COUNT, P_NO, REQUEST, CANCEL_REASON
+	    ) VALUES (
+	        #{orderKey},                -- selectKey로 미리 얻은 값
+	        #{cartKey, jdbcType=NUMERIC},
+	        #{itemNo, jdbcType=NUMERIC},
+	        #{userId, jdbcType=VARCHAR},
+	        #{price, jdbcType=NUMERIC},
+	        TO_DATE(#{orderDate}, 'YYYY-MM-DD HH24:MI:SS'),
+	        #{card, jdbcType=VARCHAR},
+	        'P',
+	        #{userName, jdbcType=VARCHAR},
+	        #{zipCode, jdbcType=VARCHAR},
+	        #{address, jdbcType=VARCHAR},
+	        #{phone, jdbcType=VARCHAR},
+	        #{orderCount, jdbcType=NUMERIC},
+	        #{pNo, jdbcType=NUMERIC},
+	        #{request, jdbcType=VARCHAR},
+	        NULL
+	    )
 	</insert>
 	
+	<insert id="insertOrderDetail" parameterType="map">
+	    INSERT INTO ORDER_DETAILS (
+	        DETAIL_ID, ORDER_KEY, ITEM_NO, COUNT, PRICE, DISCOUNT
+	    ) VALUES (
+	        ORDER_DETAILS_SEQ.NEXTVAL,
+	        #{orderKey},
+	        #{itemNo},
+	        #{count, jdbcType=NUMERIC},     
+	        #{price, jdbcType=NUMERIC},
+	        #{discount, jdbcType=NUMERIC}
+	    )
+	</insert>
+
 	<select id="payProductInfo" parameterType="hashmap" resultType="com.example.demo.model.Product">
 		SELECT *
 	    FROM PRODUCT P
@@ -24,13 +60,17 @@
 	
 	<select id="payMemberInfo" parameterType="map" resultType="com.example.demo.model.Member">
         SELECT 
-        	M.GROUP_ID, M.USERID, M.USERNAME, M.GRADE, G.GRADE_NAME, G.SALE, O.ZIPCODE,
+        	M.GROUP_ID, M.USERID, M.USERNAME, M.GRADE, G.GRADE_NAME, G.SALE, 
         	M.ADDRESS, M.PHONE, M.POINT, C.COUPON_NAME, C.DISCOUNT_AMOUNT
 		FROM MEMBER M
-		INNER JOIN ORDER_LIST O ON O.USERID = M.USERID
+		
 		INNER JOIN COUPON C ON M.USERID = C.USERID AND C.IS_USED = 'N' 
         INNER JOIN GRADE G ON G.GRADE_ID = M.GRADE
 	    WHERE M.USERID = #{userId}
+	    
+	    <!-- 필요한지 체크
+	     , O.*
+	     INNER JOIN ORDER_LIST O ON O.USERID = M.USERID -->
 	</select>
 	
 	<select id="selectAllProducts" resultType="com.example.demo.model.Product">
@@ -38,5 +78,16 @@
 	    FROM product P
 	    LEFT JOIN PRODUCT_IMG I ON P.ITEM_NO = I.ITEM_NO
 	</select>
+	
+	<delete id="deleteOrderedCart" parameterType="hashmap">
+		DELETE FROM CART
+		WHERE ITEM_NO = #{itemNo} AND USERID = #{userId}
+	</delete>
+	
+	<update id="pointSave" parameterType="hashmap">
+	    UPDATE MEMBER
+	    SET POINT = NVL(point, 0) + #{point}
+	    WHERE USERID = #{userId}
+	</update>
 	
 </mapper>
