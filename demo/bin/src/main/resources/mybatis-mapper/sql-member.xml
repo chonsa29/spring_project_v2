@@ -95,6 +95,37 @@
         WHERE USERID = #{memberId}
     </update>
     
+    <!--비밀번호찾기-->
+     <update id="updatePasswordByEmail" parameterType="map">
+
+        UPDATE members
+
+        SET password = #{pwd}
+
+        WHERE email = #{email}
+
+    </update>
+
+    <update id="updatePassword">
+
+        UPDATE member
+
+        SET password = #{password}
+
+        WHERE email = #{email}
+
+    </update>
+
+   <select id="isEmailRegistered" parameterType="String" resultType="boolean">
+
+  SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+
+        FROM MEMBER
+
+        WHERE EMAIL = #{email}
+
+</select>
+    
 <select id="selectMemberInfo" parameterType="hashmap" resultType="Member">
         SELECT 
             USERID as userId,
@@ -119,16 +150,22 @@
     </select>
     
     <!-- 회원 등급 정보 조회 -->
-    <select id="selectMemberGradeInfo" parameterType="hashmap" resultType="Member">
-        SELECT 
-            m.GRADE,
-            m.GROUP_ID as groupId,
-            m.POINT
-        FROM 
-            MEMBER m
-        WHERE 
-            m.USERID = #{userId}
-    </select>
+	<select id="selectMemberGradeInfo" parameterType="hashmap" resultType="Member">
+	    SELECT 
+	        m.GRADE,
+	        m.GROUP_ID as groupId,
+	        m.POINT,
+	        NVL((
+	            SELECT SUM(o.PRICE) 
+	            FROM ORDER_LIST o 
+	            WHERE o.USERID = m.USERID 
+	            AND o.ORDER_DATE >= ADD_MONTHS(SYSDATE, -1)
+	        ), 0) as monthSpent
+	    FROM 
+	        MEMBER m
+	    WHERE 
+	        m.USERID = #{userId}
+	</select>
 	    
 	<!-- 주문 목록 조회 -->
 	<select id="selectOrderList" resultType="Order">
@@ -139,12 +176,12 @@
 	        NVL((
 	            SELECT SUM(d.PRICE * d.COUNT - NVL(d.DISCOUNT, 0)) 
 	            FROM order_details d 
-	            WHERE d.ORDER_ID = o.ORDER_KEY
+	            WHERE d.ORDER_KEY = o.ORDER_KEY
 	        ), 0) as totalPrice,
 	        (
 	            SELECT COUNT(*) 
 	            FROM order_details d 
-	            WHERE d.ORDER_ID = o.ORDER_KEY
+	            WHERE d.ORDER_KEY = o.ORDER_KEY
 	        ) as itemCount
 	    FROM ORDER_LIST o
 	    WHERE o.USERID = #{userId, jdbcType=VARCHAR}
@@ -235,12 +272,108 @@
 	        d.LEADER_ID as leaderId,
 	        g.JOIN_DATE as joinDate,
 	        g.ROLE as groupRole,
-	        g.STATUS as groupStatus
+	        g.STATUS as groupStatus,
+	        d.MONTH_SPENT as monthSpent
 	    FROM 
 	        GROUP_INFO d
 	        JOIN GROUP_USER g ON g.GROUP_ID = d.GROUP_ID
 	    WHERE 
 	        g.USERID = #{userId}
-	        AND g.STATUS = 'ACTIVE'
 	</select>
+	
+	<!-- 그룹 멤버 조회 쿼리 추가 -->
+	<select id="selectGroupMembers" resultType="Member">
+	    SELECT 
+	        m.USERID as userId,
+	        m.USERNAME as userName,
+	        m.EMAIL as email,
+	        gu.ROLE as groupRole,
+	        CASE WHEN gu.USERID = d.LEADER_ID THEN '리더' ELSE '멤버' END as groupRoleName
+	    FROM 
+	        GROUP_USER gu
+	        JOIN MEMBER m ON gu.USERID = m.USERID
+	        JOIN GROUP_INFO d ON gu.GROUP_ID = d.GROUP_ID
+	    WHERE 
+	        gu.GROUP_ID = #{groupId}
+	    ORDER BY
+	        CASE WHEN gu.USERID = d.LEADER_ID THEN 0 ELSE 1 END,
+	        m.USERNAME
+	</select>
+	
+	<!-- 회원정보 업데이트 쿼리 -->
+	<update id="updateMemberInfo" parameterType="hashmap">
+	    UPDATE MEMBER
+	    <set>
+	        <if test="nickname != null">NICKNAME = #{nickname},</if>
+	        <if test="phone != null">PHONE = #{phone},</if>
+	        <if test="email != null">EMAIL = #{email},</if>
+	        <if test="address != null">ADDRESS = #{address},</if>
+	        <if test="password != null">PASSWORD = #{password},</if>	
+	    </set>
+	    WHERE USERID = #{userId}
+	</update>
+	
+	<!--회원탈퇴-->
+    <select id="selectPassword" parameterType="String" resultType="String">
+        SELECT password
+        FROM member
+        WHERE userid = #{userId}
+    </select>
+    
+    <select id="countActiveOrders" parameterType="string" resultType="int">
+	    SELECT COUNT(*)
+	    FROM order_list
+	    WHERE userid = #{userId}
+	</select>
+	
+	<delete id="updateMemberStatus2">
+		DELETE MEMBER
+		WHERE USERID = #{userId}
+	</delete>
+	
+	<select id="selectDeliveryByOrderKey" resultType="Delivery">
+	    SELECT 
+	        DELIVERY_NO,
+	        ORDER_KEY,
+	        CART_KEY,
+	        DELIVERY_STATUS,
+	        TRACKING_NUMBER,
+	        DELIVERY_DATE,
+	        DELIVERY_FEE
+	    FROM 
+	        DELIVERY
+	    WHERE 
+	        ORDER_KEY = #{orderKey}
+	</select>
+	
+	<insert id="insertReview" parameterType="ReviewDTO">
+	    INSERT INTO REVIEW (
+	        REVIEW_NO,
+	        ORDER_KEY,
+	        ITEM_NO,
+	        USERID,
+	        REVIEW_TITLE,
+	        REVIEW_SCORE,
+	        CDATETIME,
+	        REVIEW_CONTENTS
+	    ) VALUES (
+	        REVIEW_SEQ.NEXTVAL,
+	        #{orderKey},
+	        #{itemNo},
+	        #{userid},
+	        #{reviewTitle},
+	        #{reviewScore},
+	        SYSDATE,
+	        #{reviewContents}
+	    )
+	</insert>
+	
+	<select id="selectReviewCount" resultType="int">
+	    SELECT COUNT(*)
+	    FROM REVIEW
+	    WHERE ORDER_KEY = #{orderKey}
+	      AND ITEM_NO = #{itemNo}
+	</select>
+
+
 </mapper>

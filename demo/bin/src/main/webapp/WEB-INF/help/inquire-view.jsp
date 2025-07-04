@@ -18,7 +18,7 @@
         <h2 class="inquire">문의게시판</h2>
             <!-- 제목 & 프로필 컨테이너 -->
             <div class="title-container">
-                <img src="/images/profile.png" class="profile-img" alt="프로필">
+                <img src="../img/profil.png" class="profile-img" alt="프로필">
                 <div class="post-title">{{ info.qsTitle }}</div>
             </div>
 

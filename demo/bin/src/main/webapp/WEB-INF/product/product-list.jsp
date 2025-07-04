@@ -17,7 +17,7 @@
 
         <div id="app">
             <div id="rootname">
-                <a href="/home.do">HOME</a> > <a href="/product.do">PRODUCT</a> > {{ selectedCategory }}
+                <a href="/home.do" style="color: #aaa;">HOME</a> > <a href="/product.do" style="color: #aaa;" >PRODUCT</a> > {{ selectedCategory }}
             </div>
             <div id="name">
                 <div class="custom-dropdown">
@@ -84,10 +84,9 @@
                     </div>
                 </div>
             </div>
-            <div id="indexnum">
+            <!-- <div id="indexnum">
                 <a v-if="page !=1" id="index" href="javascript:;" class="color-black" @click="fnPageMove('prev')">
-                    < 
-                </a>
+                    < </a>
                         <a id="index" href="javascript:;" v-for="num in index" @click="fnPage(num)">
                             <span v-if="page == num">
                                 {{num}}
@@ -96,11 +95,17 @@
                                 {{num}}
                             </span>
                         </a>
-                <a v-if="page!=index" id="index" href="javascript:;" class="color-black"
-                    @click="fnPageMove('next')"> 
-                    > 
-                </a>
-            </div>
+                        <a v-if="page!=index" id="index" href="javascript:;" class="color-black"
+                            @click="fnPageMove('next')">
+                            >
+                        </a>
+            </div> -->
+            <!-- 그룹 페이징 -->
+			<div class="pagination">
+				<a v-if="page != 1" id="index" href="javascript:;" @click="fnPageMove('prev')"> < </a>
+				<a href="javascript:;" v-for="num in index" @click="fnPage(num)" :class="{ active: page === num }">{{ num }}</a>
+				<a v-if="page != index" id="index" href="javascript:;" @click="fnPageMove('next')"> > </a>
+			</div>
         </div>
         </div>
         <jsp:include page="/WEB-INF/common/footer.jsp" />
@@ -168,6 +173,8 @@
                                 self.allCategory = [{ category: "전체메뉴" }, ...data.category];
                                 console.log(self.allCategory);
                                 self.index = Math.ceil(data.count / self.pageSize);
+
+                                
                             } else {
                                 console.log("실패");
                             }
