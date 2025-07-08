@@ -18,7 +18,8 @@
         <jsp:include page="/WEB-INF/common/header.jsp" />
         <div id="app">
             <div id="root">
-                <a href="/home.do" style="color:#aaa"> HOME </a> > <a href="/product.do" style="color: #aaa;"> PRODUCT </a> > {{info.category}} >
+                <a href="/home.do" style="color:#aaa"> HOME </a> > <a href="/product.do" style="color: #aaa;"> PRODUCT
+                </a> > {{info.category}} >
                 {{info.itemName}}
             </div>
             <div class="info-container">
@@ -70,7 +71,9 @@
                                         <span class="value">{{ formatPrice(info.price * 3) }}원</span>
                                     </div>
                                     <div class="discount-detail">
-                                        <span>ㄴ 세일 (25.04.01 ~ 25.05.31)</span>
+                                        <span>
+                                            ㄴ 세일 (<span id="saleStartDate"></span> ~ <span id="saleEndDate"></span>)
+                                        </span>
                                         <span class="discount-amount">- {{ formatPrice((info.price * 3) - info.price)
                                             }}원</span>
                                     </div>
@@ -409,6 +412,36 @@
 
             let obj = document.getElementById("day");
             if (obj) obj.innerHTML = day;
+        }, 1000);
+
+        // 세일 시작일 계산 및 표시 (예: 오늘 날짜)
+        setInterval(() => {
+            let now = new Date();
+
+            const startYear = now.getFullYear().toString().slice(2);
+            const startMonth = (now.getMonth() + 1).toString().padStart(2, '0');
+            const startDate = now.getDate().toString().padStart(2, '0');
+
+            let startDayStr = startYear+"."+startMonth+"."+startDate;
+
+            let obj = document.getElementById("saleStartDate");
+            if (obj) obj.innerHTML = startDayStr;
+        }, 1000);
+
+        // 세일 종료일 계산 및 표시 (예: 한 달 뒤)
+        setInterval(() => {
+            let now = new Date();
+            let oneMonthLater = new Date(now);
+            oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
+
+            const endYear = oneMonthLater.getFullYear().toString().slice(2);
+            const endMonth = (oneMonthLater.getMonth() + 1).toString().padStart(2, '0');
+            const endDate = oneMonthLater.getDate().toString().padStart(2, '0');
+
+            let endDayStr = endYear+"."+endMonth+"."+endDate;
+
+            let obj = document.getElementById("saleEndDate");
+            if (obj) obj.innerHTML = endDayStr;
         }, 1000);
 
         const app = Vue.createApp({
